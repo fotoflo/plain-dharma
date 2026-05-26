@@ -47,3 +47,6 @@ next-env.d.ts
 
 # leftover from font download
 .tmp-fonts/
+
+# agent illustration backups (scratch only)
+public/illustrations/_backup/

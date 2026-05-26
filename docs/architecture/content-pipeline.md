@@ -1,0 +1,88 @@
+# Content Pipeline — Plain Dharma
+
+*Last updated: 2026-05-26*
+
+Single source of truth: one MDX file per teaching. Every surface on the site
+(per-teaching page, `/read`, home listing, og:image) is composed from these
+files — nothing else stores the text.
+
+## Overview
+
+```
+src/content/en/*.mdx
+     │
+     ├── index.ts  ─── SUTTAS array (canonical order)
+     │              ── SUTTA_META (titles, Pali names, teasers)
+     │              ── LOADERS map (dynamic import per slug/locale)
+     │              ── loadSutta() / getMeta() / getNeighbors()
+     │
+     ├── drops.ts  ─── DROPS (one editorial wisdom line per teaching)
+     │              ── PREFACE / CLOSING (framing prose for /read)
+     │
+     ├── canonical-links.ts ─── Pali reference IDs + external translation links
+     │
+     └── illustrations.ts   ─── getIllustrationUrl(slug) — mtime-versioned URLs
+```
+
+## Key files
+
+| File | Role |
+|---|---|
+| `src/content/en/{slug}.mdx` | Authoritative text for each teaching (six files) |
+| `src/content/index.ts` | Canonical slug order, metadata registry, locale-aware loader |
+| `src/content/drops.ts` | Editorial one-liners and framing prose for `/read` |
+| `src/content/canonical-links.ts` | Pali name, Nikaya reference, links to scholarly translations |
+| `src/content/illustrations.ts` | Cache-busting URL helper (reads mtime from filesystem) |
+
+## Frontmatter convention
+
+MDX files carry YAML frontmatter, but it is **stripped at compile time** by
+`remark-frontmatter` — it does not render into the page. Metadata lives in
+`SUTTA_META` in `index.ts` so it is typed and tree-shakeable.
+
+```mdx
+---
+slug: fire-sermon
+title: The Buddha's Third Talk: The Fire Sermon
+subtitle: Given on a hilltop near Gaya...
+ordinal: 3
+---
+
+The body of the teaching starts here.
+```
+
+## Data flow
+
+```
+LOADERS[locale][slug]()       →  dynamic import of .mdx module
+  └── mod.default (ComponentType) rendered inside <article className="prose-dharma">
+
+SUTTA_META[slug]              →  title / subtitle / pali_name / teaser
+  └── used by: [slug]/page, read/page, home/page, generateMetadata()
+
+DROPS[slug]                   →  <Drop text={...} /> after each article
+CANONICAL_LINKS[slug]         →  <CanonicalLinks slug={...} /> at page bottom
+```
+
+## Important patterns and gotchas
+
+**Turbopack-compatible remark plugins** — `remarkPlugins` in `next.config.ts`
+must use string names, not imported functions, because Rust cannot cross the
+JS boundary with function references:
+```ts
+remarkPlugins: [["remark-frontmatter", ["yaml"]]]
+```
+
+**`LOADERS` must be exhaustive** — TypeScript will error if any `SuttaSlug` is
+missing from `LOADERS[locale]`. Adding a new locale means adding a full inner
+record; adding a new slug means updating both `SUTTAS` and every locale's loader.
+
+**`getAvailableLocales(slug)`** checks `LOADERS` rather than the filesystem —
+it is O(1) and works in edge runtimes. Only returns locales that have an actual
+loader registered.
+
+**One typo fix, everywhere** — edit a word in `fire-sermon.mdx` and the per-
+teaching page, `/read`, og:image, and future PDF all pick it up on next build.
+
+**`combined-suttas.md` is a generated artifact**, not a source. The six
+`src/content/en/*.mdx` files are the canonical source.

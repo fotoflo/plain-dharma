@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Plain Dharma sun mark">
+  <defs>
+    <radialGradient id="gDisc" cx="44%" cy="40%" r="62%">
+      <stop offset="0%" stop-color="#f2ab5b"/>
+      <stop offset="55%" stop-color="#da7a2c"/>
+      <stop offset="100%" stop-color="#c7651c" stop-opacity="0.9"/>
+    </radialGradient>
+  </defs>
+  <path d="M50 13 C68 10 90 28 88 49 C91 70 69 90 49 88 C29 91 10 69 12 49 C9 31 32 15 50 13 Z" fill="url(#gDisc)"/>
+</svg>

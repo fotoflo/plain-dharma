@@ -122,6 +122,44 @@
   --accent-foreground: var(--color-text);
 }
 
+/* ── Reader font-size scale ──────────────────────────────────────────────────
+   Applied by ReadingControls.tsx — sets a class on <html> and persists to
+   localStorage. The no-flicker init script in layout.tsx applies the saved
+   class before React hydrates (mirrors the dark-mode themeInitScript pattern).
+   ──────────────────────────────────────────────────────────────────────────── */
+html {
+  --reading-scale: 1;
+}
+html.reading-size-sm { --reading-scale: 0.9; }
+html.reading-size-md { --reading-scale: 1; }
+html.reading-size-lg { --reading-scale: 1.15; }
+html.reading-size-xl { --reading-scale: 1.35; }
+
+/* ── Reader contrast ─────────────────────────────────────────────────────────
+   Overrides --color-ink (mapped to --color-text in :root) per contrast level.
+   med matches the current :root default — no regression for first-time visitors.
+   low:  warm sepia ~6:1 (WCAG AA)   comfortable for sustained reading
+   med:  deep warm ink ~12:1          current default
+   high: pure black ~16:1             max contrast for low-vision readers
+   ──────────────────────────────────────────────────────────────────────────── */
+html.contrast-low  { --color-text: #5C4D3A; }
+html.contrast-med  { --color-text: #1F1812; }
+html.contrast-high { --color-text: #000000; }
+
+/* ── Reader font choice ──────────────────────────────────────────────────────
+   font-serif-pref: keeps Garamond Libre (the default — no-op class).
+   font-accessible-pref: swaps body reading content to Atkinson Hyperlegible
+   (Braille Institute, SIL OFL) — designed for low-vision readers.
+   Only the prose/reading content is swapped; headings, nav, and footer keep
+   their original faces.
+   ──────────────────────────────────────────────────────────────────────────── */
+html.font-accessible-pref .prose-dharma,
+html.font-accessible-pref .preface-dharma,
+html.font-accessible-pref .closing-dharma,
+html.font-accessible-pref .drop-dharma {
+  font-family: var(--font-accessible), system-ui, sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -190,26 +228,36 @@
     color: var(--color-text);
     max-width: 68ch;
     font-family: var(--font-serif);
-    /* Responsive prose ramp — matches body scale so teaching pages
-       (/read, /[slug]) feel intentional on every screen size. */
-    font-size: 1.0625rem; /* 17px */
+    /* Responsive prose ramp — scaled by --reading-scale so the user's
+       chosen reader size flows through every breakpoint proportionally. */
+    font-size: calc(1.0625rem * var(--reading-scale)); /* 17px × scale */
     line-height: 1.75;
   }
   @media (min-width: 640px) {
     .prose-dharma {
-      font-size: 1.09375rem; /* 17.5px */
+      font-size: calc(1.09375rem * var(--reading-scale)); /* 17.5px × scale */
     }
   }
   @media (min-width: 768px) {
     .prose-dharma {
-      font-size: 1.125rem; /* 18px */
+      font-size: calc(1.125rem * var(--reading-scale)); /* 18px × scale */
       line-height: 1.8;
     }
   }
   @media (min-width: 1024px) {
     .prose-dharma {
-      font-size: 1.1875rem; /* 19px */
+      font-size: calc(1.1875rem * var(--reading-scale)); /* 19px × scale */
     }
+  }
+  /* Preface and Closing wrappers — scale proportionally with reader size */
+  .preface-dharma,
+  .closing-dharma {
+    font-size: calc(1rem * var(--reading-scale));
+  }
+  /* Drop (editor's note) — relative to its container so em-based sizing
+     continues to work; multiply the container base by reading-scale */
+  .drop-dharma {
+    font-size: calc(0.95rem * var(--reading-scale));
   }
   .prose-dharma h1,
   .prose-dharma h2,

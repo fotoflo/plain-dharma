@@ -12,6 +12,7 @@
     "start": "next start",
     "lint": "eslint",
     "generate-illustrations": "node --env-file=.env.local --import tsx scripts/generate-illustrations.ts",
+    "generate-audio": "node --env-file=.env.local --import tsx scripts/generate-audio.ts",
     "transparentize-illustrations": "tsx scripts/transparentize-illustrations.ts"
   },
   "dependencies": {

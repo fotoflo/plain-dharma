@@ -10,6 +10,7 @@ import { Wash } from "@/components/Wash";
 import { Drop } from "@/components/Drop";
 import { Preface } from "@/components/Preface";
 import { Closing } from "@/components/Closing";
+import { ReadingControls } from "@/components/ReadingControls";
 
 export const metadata: Metadata = {
   title: "Read all six teachings",
@@ -26,6 +27,8 @@ export default async function ReadPage() {
   );
 
   return (
+    <>
+    <ReadingControls />
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:py-16">
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[16rem_1fr]">
         <aside className="lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:self-start lg:overflow-y-auto">
@@ -110,5 +113,6 @@ export default async function ReadPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -19,6 +19,16 @@ export function Footer() {
             </a>
             . Made for free distribution.
           </p>
+          <p className="mt-1 text-xs text-ink/50">
+            by{" "}
+            <a
+              href="https://aimhuge.com"
+              target="_blank"
+              rel="noopener"
+            >
+              Alex Miller
+            </a>
+          </p>
         </div>
         <div className="flex items-center gap-5 text-xs">
           <Link href="/about">About</Link>

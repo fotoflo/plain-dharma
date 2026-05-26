@@ -11,10 +11,13 @@ import {
   DEFAULT_LOCALE,
 } from "@/content";
 import { DROPS } from "@/content/drops";
+import { getAudioManifest } from "@/content/audio";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { Wash } from "@/components/Wash";
 import { Drop } from "@/components/Drop";
 import { CanonicalLinks } from "@/components/CanonicalLinks";
+import { ReadingControls } from "@/components/ReadingControls";
+import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
 
 export function generateStaticParams() {
   return SUTTAS.map((slug) => ({ slug }));
@@ -46,11 +49,15 @@ export default async function SuttaPage({
   const { slug } = await params;
   if (!isSuttaSlug(slug)) notFound();
   const safeSlug = slug as SuttaSlug;
+  const locale = DEFAULT_LOCALE;
   const meta = getMeta(safeSlug);
-  const Content = await loadSutta(DEFAULT_LOCALE, safeSlug);
+  const Content = await loadSutta(locale, safeSlug);
   const { prev, next } = getNeighbors(safeSlug);
+  const manifest = await getAudioManifest(locale, safeSlug);
 
   return (
+    <>
+    <ReadingControls />
     <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
       <header className="relative mb-12 overflow-hidden">
         {/* Opposite-side composition vs. the homepage hero for visual rhythm */}
@@ -73,6 +80,13 @@ export default async function SuttaPage({
           {meta.subtitle}
         </p>
       </header>
+
+      {manifest && (
+        <FloatingAudioPlayer
+          manifest={manifest}
+          audioBaseUrl={`/audio/${locale}/${safeSlug}`}
+        />
+      )}
 
       <article className="prose-dharma">
         <Content />
@@ -124,5 +138,6 @@ export default async function SuttaPage({
         </Link>
       </div>
     </div>
+    </>
   );
 }

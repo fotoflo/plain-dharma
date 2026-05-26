@@ -113,10 +113,14 @@ export function Wash({
     borderRadius: "50%",
   };
 
+  // The wash is a warm saffron paper accent. In dark mode it both clashes with
+  // the cool night-sky palette and gets clipped to a hard rectangle by any
+  // `overflow-hidden` parent — so hide it; the starfield/nebula carries the
+  // dark-mode atmosphere instead.
   return (
     <div
       aria-hidden="true"
-      className={className}
+      className={["dark:hidden", className].filter(Boolean).join(" ")}
       style={containerStyle}
     >
       <div style={washStyle} />

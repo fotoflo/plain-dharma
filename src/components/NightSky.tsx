@@ -200,7 +200,7 @@ export function NightSky() {
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 0,
+        zIndex: -1,
         pointerEvents: "none",
       }}
     />

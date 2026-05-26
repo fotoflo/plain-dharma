@@ -152,6 +152,13 @@
     line-height: 1.75;
     -webkit-font-smoothing: antialiased;
   }
+  /* In dark mode the fixed NightSky canvas sits at z-index:-1; the body must be
+     transparent so it shows through (html still paints the navy base behind it).
+     In light mode the body keeps its opaque paper fill, which also hides the
+     decorative z-index:-1 Wash glows — as in the original design. */
+  .dark body {
+    background: transparent;
+  }
   @media (min-width: 640px) {
     body {
       font-size: 1.09375rem; /* 17.5px */

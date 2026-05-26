@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 738 176" role="img" aria-label="Plain Dharma">
+  <defs>
+    <radialGradient id="moonDisc" cx="40%" cy="36%" r="66%">
+      <stop offset="0%" stop-color="#dbe2ee"/>
+      <stop offset="52%" stop-color="#aab9d1"/>
+      <stop offset="100%" stop-color="#7c8ea7" stop-opacity="0.92"/>
+    </radialGradient>
+    <mask id="crescent">
+      <circle cx="80" cy="86" r="30" fill="#fff"/>
+      <circle cx="95" cy="78" r="27" fill="#000"/>
+    </mask>
+  </defs>
+
+  <!-- Moon mark: cool watercolor-style disc + cream crescent + stars -->
+  <circle cx="86" cy="88" r="66" fill="url(#moonDisc)"/>
+  <circle cx="80" cy="86" r="30" fill="#ECE3D2" mask="url(#crescent)"/>
+  <circle cx="120" cy="62" r="2.4" fill="#ECE3D2"/>
+  <circle cx="128" cy="78" r="1.6" fill="#ECE3D2"/>
+  <circle cx="112" cy="48" r="1.3" fill="#ECE3D2"/>
+
+  <!-- Wordmark -->
+  <text x="182" y="120" font-family="'Garamond Libre','Garamond','Georgia',serif" font-size="90">
+    <tspan font-weight="400" fill="#ECE3D2">Plain</tspan><tspan font-weight="700" fill="#e0833a">Dharma</tspan>
+  </text>
+</svg>

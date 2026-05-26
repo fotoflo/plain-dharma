@@ -8,8 +8,7 @@ import { useEffect, useRef } from "react";
  * Only active in dark mode (the `.dark` class on <html>, toggled by ThemeToggle).
  * In light mode the canvas is cleared, so the paper background shows through.
  *
- * Settings match the approved preview: a faint, barely-visible twinkle field
- * (~10% brightness) over a near-black base, with a subtle indigo/teal nebula
+ * A soft twinkle field over a deep blue-black base, with a subtle blue nebula
  * tint that gives the whole thing a navy "night sky" cast, plus a slow parallax
  * drift. Honors prefers-reduced-motion by painting a single static frame.
  */
@@ -25,11 +24,21 @@ type Star = {
   depth: number; // parallax depth 0..1
 };
 
-const COUNT = 110; // density
-const BRIGHTNESS = 0.1; // overall star opacity scale (~10%)
+// Star count scales with viewport area so density stays consistent on any
+// screen (a fixed count looks dense in a small preview, empty full-screen).
+const STAR_DENSITY = 42; // stars per 100,000 px²
+const MIN_STARS = 80;
+const MAX_STARS = 650; // cap for very large displays
+const BRIGHTNESS = 0.05; // overall star opacity scale
 const SPEED = 3; // twinkle speed (1–10 in the preview)
 const DRIFT = true; // slow parallax drift
-const NEBULA = true; // faint navy-leaning color glows
+const NEBULA = true; // faint navy color glows
+
+const starCountFor = (w: number, h: number) =>
+  Math.max(
+    MIN_STARS,
+    Math.min(MAX_STARS, Math.round(((w * h) / 100000) * STAR_DENSITY)),
+  );
 
 export function NightSky() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -67,13 +76,14 @@ export function NightSky() {
 
     const build = () => {
       stars = [];
-      for (let i = 0; i < COUNT; i++) {
+      const count = starCountFor(width, height);
+      for (let i = 0; i < count; i++) {
         const layer = Math.random();
         stars.push({
           x: Math.random(),
           y: Math.random(),
-          r: 0.4 + layer * 1.2,
-          base: 0.25 + Math.random() * 0.4,
+          r: 0.7 + layer * 1.7,
+          base: 0.45 + Math.random() * 0.5,
           amp: 0.25 + Math.random() * 0.4,
           phase: Math.random() * Math.PI * 2,
           freq: 0.3 + Math.random() * 0.9,

@@ -1,7 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { SUTTAS_IN_ORDER } from "@/content";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { Wash } from "@/components/Wash";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { url: "/" },
+};
 
 // Editorial layout config for the six hero illustrations.
 //
@@ -100,6 +107,15 @@ export default function HomePage() {
           land than wade through the footnotes. Free to read, free to copy,
           free to print, free to translate.
         </p>
+      </section>
+
+      {/* Newsletter signup — placed between the hero and the list so it's
+          visible above the fold on most desktops but doesn't interrupt the
+          editorial composition above. */}
+      <section className="mt-20">
+        <div className="mx-auto max-w-2xl">
+          <NewsletterSignup />
+        </div>
       </section>
 
       {/* Existing list of the six teachings */}

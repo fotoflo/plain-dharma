@@ -31,13 +31,32 @@ const atkinson = Atkinson_Hyperlegible({
   display: "swap",
 });
 
+const SITE_URL = "https://plaindharma.com";
+const SITE_DESCRIPTION =
+  "The Buddha's foundational teachings in plain modern English. Free, CC0, for anyone.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Plain Dharma",
     template: "%s · Plain Dharma",
   },
-  description:
-    "The Buddha's foundational teachings in plain modern English. Free, CC0, for anyone.",
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "Plain Dharma",
+    locale: "en_US",
+    url: SITE_URL,
+    title: "Plain Dharma",
+    description: SITE_DESCRIPTION,
+    // Image is supplied by src/app/opengraph-image.tsx (file-based convention).
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Plain Dharma",
+    description: SITE_DESCRIPTION,
+    // X / Slack / Discord fall back to og:image when twitter:image is unset.
+  },
 };
 
 export default function RootLayout({
@@ -49,7 +68,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${garamond.variable} ${GeistSans.variable} h-full antialiased`}
     >
-      <head>
+      <head suppressHydrationWarning>
         {/* Theme FOUC-prevention — must run before paint */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         {/* Reading preferences FOUC-prevention — reads all three localStorage
@@ -57,7 +76,7 @@ export default function RootLayout({
             one synchronous pass before React hydrates. */}
         <script dangerouslySetInnerHTML={{ __html: readingPrefsInitScript }} />
       </head>
-      <body className={`min-h-full flex flex-col ${atkinson.variable}`}>
+      <body suppressHydrationWarning className={`min-h-full flex flex-col ${atkinson.variable}`}>
         <NightSky />
         <Header />
         <main className="flex-1">{children}</main>

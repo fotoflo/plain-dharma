@@ -2,10 +2,25 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Wash } from "@/components/Wash";
 
+const TITLE = "Glossary";
+const DESCRIPTION =
+  "Key terms in plain English, with the Pali / Sanskrit where it matters.";
+
 export const metadata: Metadata = {
-  title: "Glossary",
-  description:
-    "Key terms in plain English, with the Pali / Sanskrit where it matters.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/glossary" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/glossary",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 type GlossaryEntry = {

@@ -6,29 +6,52 @@ import {
   DEFAULT_LOCALE,
 } from "@/content";
 import { DROPS } from "@/content/drops";
+import { getCombinedAudioManifest } from "@/content/audio";
 import { Wash } from "@/components/Wash";
 import { Drop } from "@/components/Drop";
 import { Preface } from "@/components/Preface";
 import { Closing } from "@/components/Closing";
 import { ReadingControls } from "@/components/ReadingControls";
+import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
+
+const TITLE = "Read all six teachings";
+const DESCRIPTION =
+  "The six foundational teachings of the Buddha, in order, in plain modern English.";
 
 export const metadata: Metadata = {
-  title: "Read all six teachings",
-  description:
-    "The six foundational teachings of the Buddha, in order, in plain modern English.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/read" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/read",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default async function ReadPage() {
-  const sections = await Promise.all(
-    SUTTAS_IN_ORDER.map(async (meta) => ({
-      meta,
-      Content: await loadSutta(DEFAULT_LOCALE, meta.slug),
-    }))
-  );
+  const [sections, combinedAudio] = await Promise.all([
+    Promise.all(
+      SUTTAS_IN_ORDER.map(async (meta) => ({
+        meta,
+        Content: await loadSutta(DEFAULT_LOCALE, meta.slug),
+      }))
+    ),
+    getCombinedAudioManifest(DEFAULT_LOCALE),
+  ]);
 
   return (
     <>
     <ReadingControls />
+    {combinedAudio && (
+      <FloatingAudioPlayer manifest={combinedAudio} audioBaseUrl="" />
+    )}
     <div className="mx-auto w-full max-w-5xl px-6 py-12 sm:py-16">
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[16rem_1fr]">
         <aside className="lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:self-start lg:overflow-y-auto">

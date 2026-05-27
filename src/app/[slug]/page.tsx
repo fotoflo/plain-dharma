@@ -36,9 +36,24 @@ export async function generateMetadata({
   const { slug } = await params;
   if (!isSuttaSlug(slug)) return {};
   const meta = getMeta(slug);
+  const url = `/${slug}`;
   return {
     title: meta.title,
     description: meta.subtitle,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: meta.title,
+      description: meta.subtitle,
+      // Image supplied by src/app/[slug]/opengraph-image.tsx — generated
+      // per-slug at build time with the Plain Dharma card template.
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: meta.title,
+      description: meta.subtitle,
+    },
   };
 }
 

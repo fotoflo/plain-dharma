@@ -2,10 +2,25 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Wash } from "@/components/Wash";
 
+const TITLE = "About this version";
+const DESCRIPTION =
+  "What Plain Dharma is, who it’s for, and where the original teachings come from.";
+
 export const metadata: Metadata = {
-  title: "About this version",
-  description:
-    "What Plain Dharma is, who it’s for, and where the original teachings come from.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/about",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function AboutPage() {

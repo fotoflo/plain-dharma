@@ -1,6 +1,9 @@
 "use client";
 
 import { useSyncExternalStore, useState, useEffect, useRef, useCallback } from "react";
+import { usePathname } from "next/navigation";
+import { getStrings } from "@/content/strings";
+import { getLocaleFromPathname } from "@/lib/locale-href";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -9,24 +12,6 @@ export type ReadingContrast = "low" | "med" | "high";
 export type ReadingFont     = "serif" | "accessible";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-
-const SIZES: { key: ReadingSize; label: string; ariaLabel: string; scale: number }[] = [
-  { key: "sm",  label: "A",  ariaLabel: "Small",       scale: 0.82 },
-  { key: "md",  label: "A",  ariaLabel: "Medium",      scale: 1.0  },
-  { key: "lg",  label: "A",  ariaLabel: "Large",       scale: 1.2  },
-  { key: "xl",  label: "A",  ariaLabel: "Extra large", scale: 1.45 },
-];
-
-const CONTRASTS: { key: ReadingContrast; label: string }[] = [
-  { key: "low",  label: "Low"  },
-  { key: "med",  label: "Med"  },
-  { key: "high", label: "High" },
-];
-
-const FONTS: { key: ReadingFont; label: string }[] = [
-  { key: "serif",      label: "Serif"      },
-  { key: "accessible", label: "Accessible" },
-];
 
 const SIZE_KEY     = "pd-reading-size";
 const CONTRAST_KEY = "pd-reading-contrast";
@@ -134,6 +119,28 @@ function segmentedBtn(active: boolean) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function ReadingControls() {
+  const pathname = usePathname() ?? "/";
+  const locale = getLocaleFromPathname(pathname);
+  const s = getStrings(locale);
+
+  const SIZES: { key: ReadingSize; label: string; ariaLabel: string; scale: number }[] = [
+    { key: "sm",  label: "A",  ariaLabel: s.readingControls.sizeSmall,      scale: 0.82 },
+    { key: "md",  label: "A",  ariaLabel: s.readingControls.sizeMedium,     scale: 1.0  },
+    { key: "lg",  label: "A",  ariaLabel: s.readingControls.sizeLarge,      scale: 1.2  },
+    { key: "xl",  label: "A",  ariaLabel: s.readingControls.sizeExtraLarge, scale: 1.45 },
+  ];
+
+  const CONTRASTS: { key: ReadingContrast; label: string }[] = [
+    { key: "low",  label: s.readingControls.contrastLow  },
+    { key: "med",  label: s.readingControls.contrastMed  },
+    { key: "high", label: s.readingControls.contrastHigh },
+  ];
+
+  const FONTS: { key: ReadingFont; label: string }[] = [
+    { key: "serif",      label: s.readingControls.fontSerif      },
+    { key: "accessible", label: s.readingControls.fontAccessible },
+  ];
+
   const currentSize     = useSyncExternalStore(subscribeSize,     getSizeSnapshot,     getServerSizeSnapshot);
   const currentContrast = useSyncExternalStore(subscribeContrast, getContrastSnapshot, getServerContrastSnapshot);
   const currentFont     = useSyncExternalStore(subscribeFont,     getFontSnapshot,     getServerFontSnapshot);
@@ -195,7 +202,7 @@ export function ReadingControls() {
       <button
         ref={buttonRef}
         type="button"
-        aria-label="Reading preferences"
+        aria-label={s.readingControls.a11yTrigger}
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => setOpen((v) => !v)}
@@ -215,7 +222,7 @@ export function ReadingControls() {
         <div
           ref={popoverRef}
           role="dialog"
-          aria-label="Reading preferences"
+          aria-label={s.readingControls.a11yPanel}
           onKeyDown={handlePopoverKeyDown}
           className={[
             "flex flex-col gap-3 rounded-2xl p-4 w-64",
@@ -224,17 +231,18 @@ export function ReadingControls() {
         >
           {/* ── Size ── */}
           <div>
-            <p className="mb-1.5 text-xs uppercase tracking-wide text-ink/60 font-sans">Size</p>
-            <div role="group" aria-label="Text size" className="flex flex-row gap-1">
-              {SIZES.map((s) => {
-                const active = currentSize === s.key;
+            <p className="mb-1.5 text-xs uppercase tracking-wide text-ink/60 font-sans">{s.readingControls.sectionSize}</p>
+            <div role="group" aria-label={s.readingControls.a11ySize} className="flex flex-row gap-1">
+              {SIZES.map((size) => {
+                const active = currentSize === size.key;
+                const label = `${size.ariaLabel} ${s.readingControls.a11ySizeSuffix}${active ? ` ${s.readingControls.a11ySelectedSuffix}` : ""}`;
                 return (
                   <button
-                    key={s.key}
+                    key={size.key}
                     type="button"
-                    aria-label={`${s.ariaLabel} text size${active ? " (selected)" : ""}`}
+                    aria-label={label}
                     aria-pressed={active}
-                    onClick={() => applySize(s.key)}
+                    onClick={() => applySize(size.key)}
                     className={[
                       "flex h-9 w-10 items-center justify-center rounded-xl font-sans font-medium transition-colors",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
@@ -242,9 +250,9 @@ export function ReadingControls() {
                         ? "bg-accent text-white"
                         : "border border-accent/40 bg-transparent text-ink/70 hover:border-accent hover:text-accent",
                     ].join(" ")}
-                    style={{ fontSize: `${s.scale * 0.9}rem` }}
+                    style={{ fontSize: `${size.scale * 0.9}rem` }}
                   >
-                    {s.label}
+                    {size.label}
                   </button>
                 );
               })}
@@ -253,15 +261,16 @@ export function ReadingControls() {
 
           {/* ── Contrast ── */}
           <div>
-            <p className="mb-1.5 text-xs uppercase tracking-wide text-ink/60 font-sans">Contrast</p>
-            <div role="group" aria-label="Contrast level" className="flex flex-row gap-1">
+            <p className="mb-1.5 text-xs uppercase tracking-wide text-ink/60 font-sans">{s.readingControls.sectionContrast}</p>
+            <div role="group" aria-label={s.readingControls.a11yContrast} className="flex flex-row gap-1">
               {CONTRASTS.map((c) => {
                 const active = currentContrast === c.key;
+                const label = `${c.label} ${s.readingControls.a11yContrastSuffix}${active ? ` ${s.readingControls.a11ySelectedSuffix}` : ""}`;
                 return (
                   <button
                     key={c.key}
                     type="button"
-                    aria-label={`${c.label} contrast${active ? " (selected)" : ""}`}
+                    aria-label={label}
                     aria-pressed={active}
                     onClick={() => applyContrast(c.key)}
                     className={segmentedBtn(active)}
@@ -275,15 +284,16 @@ export function ReadingControls() {
 
           {/* ── Font ── */}
           <div>
-            <p className="mb-1.5 text-xs uppercase tracking-wide text-ink/60 font-sans">Font</p>
-            <div role="group" aria-label="Font choice" className="flex flex-row gap-1">
+            <p className="mb-1.5 text-xs uppercase tracking-wide text-ink/60 font-sans">{s.readingControls.sectionFont}</p>
+            <div role="group" aria-label={s.readingControls.a11yFont} className="flex flex-row gap-1">
               {FONTS.map((f) => {
                 const active = currentFont === f.key;
+                const label = `${f.label} ${s.readingControls.a11yFontSuffix}${active ? ` ${s.readingControls.a11ySelectedSuffix}` : ""}`;
                 return (
                   <button
                     key={f.key}
                     type="button"
-                    aria-label={`${f.label} font${active ? " (selected)" : ""}`}
+                    aria-label={label}
                     aria-pressed={active}
                     onClick={() => applyFont(f.key)}
                     className={segmentedBtn(active)}

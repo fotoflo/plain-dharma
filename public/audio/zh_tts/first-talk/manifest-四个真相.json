@@ -1,0 +1,15 @@
+{
+  "slug": "first-talk",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T18:27:02.275Z",
+  "sections": [
+    {
+      "id": "四个真相",
+      "title": "四个真相",
+      "file": "02-四个真相.mp3",
+      "duration_sec": 78
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+% Plain Dharma — XeLaTeX preamble for the PRINT PDF (KDP Print upload).
+%
+% Differs from pdf-preamble.tex in three ways:
+%   1. Twoside book class with mirrored margins and a binding gutter
+%   2. PDF page = 5.25"×8.25" (5×8 trim + 0.125" bleed each side)
+%   3. Hyperlinks render as plain ink (no color) — print can't follow them
+
+% Garamond Libre — same family as the screen PDF.
+\setmainfont{GaramondLibre}[
+  Path=__FONTS_DIR__/,
+  Extension=.otf,
+  UprightFont=*-Regular,
+  ItalicFont=*-Italic,
+  BoldFont=*-Bold,
+  BoldItalicFont=*-BoldItalic,
+  Ligatures=TeX,
+  Numbers=OldStyle
+]
+
+% Brand palette — same colors so chapter titles, drop epigraphs etc. match
+% the screen edition even though the page color is up to the variant.
+\definecolor{cream}{HTML}{F5EFE0}
+\definecolor{ink}{HTML}{2A2520}
+\definecolor{muted}{HTML}{6B5F50}
+\definecolor{saffron}{HTML}{C7651C}
+
+% Per-variant page color. The build script substitutes this token.
+% `__PAGECOLOR_SETUP__` becomes `\pagecolor{cream}` for the color variant,
+% or empty for the B&W variant (white paper).
+__PAGECOLOR_SETUP__
+
+\color{ink}
+\linespread{1.18}
+
+% Chapter heading — same as screen but slightly tighter to suit 5×8.
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{ink}}
+  {}
+  {0pt}
+  {\huge}
+\titlespacing*{\chapter}{0pt}{30pt}{24pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{ink}}
+  {}
+  {0pt}
+  {}
+
+% Blockquote (per-chapter drops): italic, muted, indented.
+\renewenvironment{quote}{%
+  \begin{list}{}{%
+    \leftmargin=1.2em\rightmargin=1.2em\itemindent=0pt%
+  }\item\itshape\color{muted}}{%
+  \end{list}}
+
+% Cap images at 70% of the text width.
+\usepackage{graphicx}
+\setkeys{Gin}{width=0.7\linewidth,keepaspectratio}
+
+% Pali diacritics fallback (same as screen PDF).
+\usepackage{newunicodechar}
+\newfontfamily\palifallback{STIX Two Text}
+\newunicodechar{ṇ}{{\palifallback ṇ}}
+\newunicodechar{ṭ}{{\palifallback ṭ}}
+
+\usepackage{enumitem}
+\setlist{itemsep=0.15em,topsep=0.3em}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\hyphenation{Mindfulness Loving-Kindness Dharma Buddha Buddhist}
+
+% Print hyperlink convention: render link text as plain ink (no color).
+% Pandoc still emits \href{} but the visual treatment is uniform.
+\AtBeginDocument{%
+  \hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    pdfsubject={Six Foundational Buddhist Teachings in Plain Modern English},
+    pdfkeywords={Buddhism, suttas, dharma, meditation, mindfulness},
+    pdfcreator={pandoc + XeLaTeX (print edition)}
+  }%
+}

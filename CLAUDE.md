@@ -4,7 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Plain Dharma (plaindharma.com) — a free, CC0 reading site for six foundational Buddhist suttas in plain modern English. Reading-first static site: no auth, no database, no API routes, no middleware, no server actions, no user state. Designed to build, deploy, and serve from CDN edge with zero runtime cost. New code must remain compatible with `output: 'export'` even though Vercel hosts it as hybrid static/RSC.
+Plain Dharma (plaindharma.com) — a free, CC0 reading site for six foundational Buddhist suttas in plain modern English. Reading-first hybrid static/RSC site on Vercel: no auth, no database, no middleware, no server actions, no user state.
+
+**Server-side carve-outs** (the only routes that aren't statically prerendered):
+- `src/app/api/checkout/route.ts` — Stripe Checkout Session creator powering the donation flow on `/download/donate`.
+- `src/app/api/subscribe/route.ts` — Mailjet newsletter signup, called from the home-page form. Keys are server-only so the Mailjet secret never reaches the browser.
+
+Everything else should remain compatible with `output: 'export'`. Don't add more API routes or server-only features without equivalent justification (paid services with keys that must stay server-side, or persistence the static site genuinely can't do).
 
 ## Commands
 

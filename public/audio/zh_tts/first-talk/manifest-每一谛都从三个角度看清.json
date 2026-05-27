@@ -1,0 +1,15 @@
+{
+  "slug": "first-talk",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T18:27:17.933Z",
+  "sections": [
+    {
+      "id": "每一谛都从三个角度看清",
+      "title": "每一谛都从三个角度看清",
+      "file": "03-每一谛都从三个角度看清.mp3",
+      "duration_sec": 94.1
+    }
+  ]
+}

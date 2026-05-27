@@ -1,18 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-const LINKS = [
-  { href: "/read", label: "Read" },
-  { href: "/about", label: "About" },
-  { href: "/glossary", label: "Glossary" },
-  { href: "/download", label: "Download" },
-] as const;
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { getStrings } from "@/content/strings";
+import { getLocaleFromPathname, localizedHref } from "@/lib/locale-href";
 
 export function Header() {
+  const pathname = usePathname() ?? "/";
+  const locale = getLocaleFromPathname(pathname);
+  const s = getStrings(locale);
+
+  // Download is EN-only — we keep it pointing at /download regardless of
+  // the current locale so ZH readers can still find the download page.
+  const LINKS = [
+    { href: localizedHref(locale, "read"), label: s.nav.read },
+    { href: localizedHref(locale, "about"), label: s.nav.about },
+    { href: localizedHref(locale, "glossary"), label: s.nav.glossary },
+    { href: "/download", label: s.nav.download },
+  ];
+
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -40,14 +50,16 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
+            <LocaleSwitcher />
             <ThemeToggle />
           </nav>
 
           <div className="flex items-center gap-1 sm:hidden">
+            <LocaleSwitcher />
             <ThemeToggle />
             <button
               type="button"
-              aria-label={open ? "Close menu" : "Open menu"}
+              aria-label={open ? s.nav.closeMenu : s.nav.openMenu}
               aria-expanded={open}
               aria-controls="mobile-nav-panel"
               onClick={() => setOpen((v) => !v)}
@@ -91,7 +103,7 @@ export function Header() {
       {open && (
         <button
           type="button"
-          aria-label="Close menu"
+          aria-label={s.nav.closeMenu}
           tabIndex={-1}
           onClick={() => setOpen(false)}
           className="fixed inset-0 z-30 bg-black/30 sm:hidden"

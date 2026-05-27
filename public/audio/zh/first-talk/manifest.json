@@ -1,0 +1,51 @@
+{
+  "slug": "first-talk",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-28T01:30:00.000Z",
+  "sections": [
+    {
+      "id": "title",
+      "title": "转法轮经 · 佛陀的第一次开示",
+      "file": "00-title.mp3",
+      "duration_sec": 19.4
+    },
+    {
+      "id": "preface",
+      "title": "Preface",
+      "file": "00b-preface.mp3",
+      "duration_sec": 69.5
+    },
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 140.2
+    },
+    {
+      "id": "四个真相",
+      "title": "四个真相",
+      "file": "02-四个真相.mp3",
+      "duration_sec": 101.4
+    },
+    {
+      "id": "每一谛都从三个角度看清",
+      "title": "每一谛都从三个角度看清",
+      "file": "03-每一谛都从三个角度看清.mp3",
+      "duration_sec": 122.4
+    },
+    {
+      "id": "他们是怎么听到的",
+      "title": "他们是怎么听到的",
+      "file": "04-他们是怎么听到的.mp3",
+      "duration_sec": 152.7
+    },
+    {
+      "id": "drop",
+      "title": "Drop",
+      "file": "99-drop.mp3",
+      "duration_sec": 11.4
+    }
+  ]
+}

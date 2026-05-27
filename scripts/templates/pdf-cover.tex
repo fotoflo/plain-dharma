@@ -1,0 +1,24 @@
+% Full-page cover image on page 1, sized to match the document's 6×9 trim.
+%
+% Previously used pdfpages with fitpaper=true — but that adjusts the paper
+% size of the cover page to the image's native pixel dimensions (1600×2560
+% ≈ 22×36 inches at 72 DPI), making the cover absurdly larger than the body.
+%
+% eso-pic lets us place the image at absolute page coordinates inside the
+% existing \paperwidth × \paperheight canvas, so the cover stays at 6×9.
+% The cover is 5:8; the page is 2:3 — keepaspectratio leaves thin cream bars
+% on the sides, invisible against the cream \pagecolor.
+\usepackage{eso-pic}
+\let\frontmatter\relax
+\renewcommand{\maketitle}{%
+  \thispagestyle{empty}%
+  \AddToShipoutPictureFG*{%
+    \AtPageCenter{%
+      \makebox(0,0){%
+        \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{__COVER_PATH__}%
+      }%
+    }%
+  }%
+  \null
+  \clearpage
+}

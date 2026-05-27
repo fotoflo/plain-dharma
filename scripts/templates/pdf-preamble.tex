@@ -1,0 +1,96 @@
+% Plain Dharma — XeLaTeX preamble for the screen PDF.
+% Loaded by pandoc via --include-in-header. Pandoc's default book template
+% supplies \maketitle, \tableofcontents, hyperref, microtype, etc. — this file
+% only adds the project-specific tuning: fonts, palette, chapter typography.
+
+% Local Garamond Libre fonts (same files served by the website).
+% Family name has no space so the `*` wildcard expands to the actual filename
+% (e.g. `*-Regular` → `GaramondLibre-Regular.otf`).
+\setmainfont{GaramondLibre}[
+  Path=__FONTS_DIR__/,
+  Extension=.otf,
+  UprightFont=*-Regular,
+  ItalicFont=*-Italic,
+  BoldFont=*-Bold,
+  BoldItalicFont=*-BoldItalic,
+  Ligatures=TeX,
+  Numbers=OldStyle
+]
+
+% Brand palette — matches the site's --color-* tokens.
+\definecolor{cream}{HTML}{F5EFE0}
+\definecolor{ink}{HTML}{2A2520}
+\definecolor{muted}{HTML}{6B5F50}
+\definecolor{saffron}{HTML}{C7651C}
+\definecolor{linkcolor}{HTML}{8A4F18}
+
+% Cream page background — matches the cover artwork and the website. Without
+% this the cover (cream) → inner pages (white) transition is jarring.
+\pagecolor{cream}
+
+% Body color and slightly looser line spacing for reading on screen.
+\color{ink}
+\linespread{1.18}
+
+% Chapter heading: no "Chapter N" prefix, smaller and quieter than LaTeX default.
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Huge\bfseries\color{ink}}
+  {}
+  {0pt}
+  {\Huge}
+\titlespacing*{\chapter}{0pt}{40pt}{30pt}
+
+% Section heading: also calmer than default.
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{ink}}
+  {}
+  {0pt}
+  {}
+
+% Blockquote (used by the per-chapter drops): italic, indented, muted color.
+\renewenvironment{quote}{%
+  \begin{list}{}{%
+    \leftmargin=1.5em\rightmargin=1.5em\itemindent=0pt%
+  }\item\itshape\color{muted}}{%
+  \end{list}}
+
+% Cap images at 70% of the text width. Pandoc wraps standalone-paragraph
+% images in its own centering — overriding \includegraphics here breaks
+% inline-context placements (e.g. images inside quote blocks), so we only
+% touch the default size.
+\usepackage{graphicx}
+\setkeys{Gin}{width=0.7\linewidth,keepaspectratio}
+
+% Garamond Libre is missing some Pali diacritics (ṇ U+1E47, ṭ U+1E6D, etc).
+% Fall back to STIX Two Text — a serif with full Unicode coverage that pairs
+% visually with Garamond — for just those characters. Avoids the unsightly
+% missing-glyph blank in chapter subtitles like "Ādittapariyāya Sutta".
+\usepackage{newunicodechar}
+\newfontfamily\palifallback{STIX Two Text}
+\newunicodechar{ṇ}{{\palifallback ṇ}}
+\newunicodechar{ṭ}{{\palifallback ṭ}}
+
+% Tighter list spacing (pandoc's default is roomy).
+\usepackage{enumitem}
+\setlist{itemsep=0.15em,topsep=0.3em}
+
+% Don't break paragraphs with hanging indents — use space between paragraphs.
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+% Hyphenation hints — chapter titles shouldn't break the brand or compound
+% words at awkward places ("Mind-fulness" looked bad in the first render).
+\hyphenation{Mindfulness Loving-Kindness Dharma Buddha Buddhist}
+
+% Hyperlink colors are wired via pandoc's `-V colorlinks/linkcolor/urlcolor`
+% CLI flags — pandoc loads hyperref *after* this header, so calling
+% \hypersetup directly here would fire before the package exists.
+% Use \AtBeginDocument to defer until hyperref is loaded.
+\AtBeginDocument{%
+  \hypersetup{
+    pdfsubject={Six Foundational Buddhist Teachings in Plain Modern English},
+    pdfkeywords={Buddhism, suttas, dharma, meditation, mindfulness},
+    pdfcreator={pandoc + XeLaTeX}
+  }%
+}

@@ -1,0 +1,15 @@
+{
+  "slug": "first-talk",
+  "locale": "zh",
+  "voice": "qwKjxMVO8wNg6qaKKH1k",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T18:14:14.591Z",
+  "sections": [
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 95.4
+    }
+  ]
+}

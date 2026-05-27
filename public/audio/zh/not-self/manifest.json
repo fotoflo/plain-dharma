@@ -1,0 +1,15 @@
+{
+  "slug": "not-self",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T19:01:48.000Z",
+  "sections": [
+    { "id": "title", "title": "无我相经", "file": "00-title.mp3", "duration_sec": 16.4 },
+    { "id": "opening", "title": "Opening", "file": "01-opening.mp3", "duration_sec": 151.2 },
+    { "id": "那几个问题", "title": "那几个问题", "file": "02-那几个问题.mp3", "duration_sec": 78.1 },
+    { "id": "落到哪里", "title": "落到哪里", "file": "03-落到哪里.mp3", "duration_sec": 90.8 },
+    { "id": "他们是怎么听到的", "title": "他们是怎么听到的", "file": "04-他们是怎么听到的.mp3", "duration_sec": 46.4 },
+    { "id": "drop", "title": "Drop", "file": "99-drop.mp3", "duration_sec": 14.7 }
+  ]
+}

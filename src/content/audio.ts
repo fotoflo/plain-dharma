@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { SUTTAS, type SuttaSlug } from "./index";
 
+type AvailableEntry = { slug: SuttaSlug; manifest: AudioManifest };
+
 // Append `?v=<mtime-seconds>` so a regenerated mp3 invalidates the browser
 // cache automatically (same trick as illustrations.ts). Server-only.
 function versionSuffix(absPath: string): string {
@@ -65,11 +67,13 @@ export function getAudioFileUrl(
 }
 
 /**
- * Stitch all six per-sutta manifests into a single playlist for `/read`.
+ * Stitch every available per-sutta manifest into a single playlist for `/read`.
  * Each section's `file` is an absolute `/audio/...` path so the player can
  * resolve files from different per-sutta dirs without per-section base URLs.
  * Section ids are prefixed with the slug to avoid collisions ("opening" etc.
- * exist in every sutta). Returns null if any per-sutta manifest is missing.
+ * exist in every sutta). Missing per-sutta manifests are skipped — the player
+ * renders with whatever is recorded. Returns null only if no audio exists for
+ * the locale at all.
  */
 export async function getCombinedAudioManifest(
   locale: string
@@ -77,12 +81,16 @@ export async function getCombinedAudioManifest(
   const perSutta = await Promise.all(
     SUTTAS.map((slug) => getAudioManifest(locale, slug))
   );
-  if (perSutta.some((m) => m === null)) return null;
+  const available = perSutta
+    .map((m, idx): AvailableEntry | null =>
+      m ? { slug: SUTTAS[idx], manifest: m } : null
+    )
+    .filter((x): x is AvailableEntry => x !== null);
+  if (available.length === 0) return null;
 
   const sections: AudioSection[] = [];
-  perSutta.forEach((m, idx) => {
-    const slug = SUTTAS[idx];
-    for (const s of m!.sections) {
+  for (const { slug, manifest } of available) {
+    for (const s of manifest.sections) {
       sections.push({
         id: `${slug}--${s.id}`,
         title: s.title,
@@ -90,9 +98,9 @@ export async function getCombinedAudioManifest(
         duration_sec: s.duration_sec,
       });
     }
-  });
+  }
 
-  const first = perSutta[0]!;
+  const first = available[0].manifest;
   return {
     slug: "all",
     locale,

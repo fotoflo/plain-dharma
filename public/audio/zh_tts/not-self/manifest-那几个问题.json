@@ -1,0 +1,15 @@
+{
+  "slug": "not-self",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T19:00:42.056Z",
+  "sections": [
+    {
+      "id": "那几个问题",
+      "title": "那几个问题",
+      "file": "02-那几个问题.mp3",
+      "duration_sec": 60.1
+    }
+  ]
+}

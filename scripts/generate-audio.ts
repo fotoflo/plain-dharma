@@ -96,7 +96,7 @@ type Manifest = {
 function toKebabCase(str: string): string {
   return str
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/[^a-z0-9一-鿿㐀-䶿\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-");
 }
@@ -262,12 +262,11 @@ async function callElevenLabsTTS(
     text: cleanedText,
     model_id: ELEVEN_MODEL,
     voice_settings: {
-      // Robust preset, deep end: pin the voice character — including accent —
-      // strongly across the whole sutta. At 0.75 v3 still drifts in/out of
-      // Priyanka's Indian accent on proper nouns vs plain English narration;
-      // 0.85 holds it consistent. Going higher (>0.9) flattens prosody.
-      stability: 0.85,
-      similarity_boost: 0.75,
+      // Lower stability + non-zero style = more expressive prosody. Override
+      // via --stability=N --style=N CLI flags for per-run tuning.
+      stability: FLAGS.stability ? Number(FLAGS.stability) : 0.5,
+      similarity_boost: FLAGS.similarity ? Number(FLAGS.similarity) : 0.75,
+      style: FLAGS.style ? Number(FLAGS.style) : 0.5,
       use_speaker_boost: true,
     },
   };

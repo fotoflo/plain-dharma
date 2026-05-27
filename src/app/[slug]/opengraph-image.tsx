@@ -4,7 +4,7 @@ import {
   OG_SIZE,
   OG_CONTENT_TYPE,
 } from "@/lib/og-card";
-import { SUTTAS, getMeta, isSuttaSlug } from "@/content";
+import { SUTTAS, getMeta, isSuttaSlug, DEFAULT_LOCALE } from "@/content";
 
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
@@ -24,7 +24,7 @@ export async function generateImageMetadata({
 }) {
   const { slug } = await params;
   if (!isSuttaSlug(slug)) return [];
-  const meta = getMeta(slug);
+  const meta = getMeta(DEFAULT_LOCALE, slug);
   return [
     {
       id: "card",
@@ -50,7 +50,7 @@ export default async function OgImage({
       illustrationDataUrl: fallbackArt,
     });
   }
-  const meta = getMeta(slug);
+  const meta = getMeta(DEFAULT_LOCALE, slug);
   const illustrationDataUrl = await publicImageDataUrl(
     `/illustrations/${slug}.png`,
   );

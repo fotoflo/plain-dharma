@@ -1,11 +1,12 @@
 import { PREFACE } from "@/content/drops";
+import { DEFAULT_LOCALE, type Locale } from "@/content";
 
 /**
  * Editorial preface for the /read page — italic Garamond, multi-paragraph,
  * generous whitespace. Splits on \n\n into paragraphs.
  */
-export function Preface() {
-  const paragraphs = PREFACE.split(/\n\n+/);
+export function Preface({ locale = DEFAULT_LOCALE }: { locale?: Locale } = {}) {
+  const paragraphs = PREFACE[locale].split(/\n\n+/);
   return (
     <div className="my-16 max-w-[68ch] space-y-6 font-serif italic leading-relaxed text-ink/85">
       {paragraphs.map((p, i) => (

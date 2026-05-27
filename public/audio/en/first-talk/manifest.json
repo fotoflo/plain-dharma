@@ -1,33 +1,33 @@
 {
   "slug": "first-talk",
   "locale": "en",
-  "voice": "Charon",
-  "model": "gemini-2.5-flash-preview-tts",
-  "generated_at": "2026-05-26T14:46:20.527Z",
+  "voice": "sage",
+  "model": "gpt-4o-mini-tts",
+  "generated_at": "2026-05-27T02:03:07.518Z",
   "sections": [
     {
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 140.5
+      "duration_sec": 134.6
     },
     {
       "id": "the-four-noble-truths",
       "title": "The Four Noble Truths",
       "file": "02-the-four-noble-truths.mp3",
-      "duration_sec": 84
+      "duration_sec": 61.2
     },
     {
       "id": "knowing-each-one-three-ways",
       "title": "Knowing Each One Three Ways",
       "file": "03-knowing-each-one-three-ways.mp3",
-      "duration_sec": 68.8
+      "duration_sec": 71.8
     },
     {
       "id": "how-they-heard-it",
       "title": "How They Heard It",
       "file": "04-how-they-heard-it.mp3",
-      "duration_sec": 99.3
+      "duration_sec": 86.4
     }
   ]
 }

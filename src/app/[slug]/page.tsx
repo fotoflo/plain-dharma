@@ -15,6 +15,7 @@ import { getAudioManifest } from "@/content/audio";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { Wash } from "@/components/Wash";
 import { Drop } from "@/components/Drop";
+import { Preface } from "@/components/Preface";
 import { CanonicalLinks } from "@/components/CanonicalLinks";
 import { ReadingControls } from "@/components/ReadingControls";
 import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
@@ -87,6 +88,8 @@ export default async function SuttaPage({
           audioBaseUrl={`/audio/${locale}/${safeSlug}`}
         />
       )}
+
+      {safeSlug === "first-talk" && <Preface />}
 
       <article className="prose-dharma">
         <Content />

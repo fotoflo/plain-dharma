@@ -1,6 +1,6 @@
 # Audio Playback — Plain Dharma
 
-*Last updated: 2026-05-27*
+*Last updated: 2026-05-28*
 
 Synthesized narration for all six suttas. Audio is generated via OpenAI's TTS API or
 ElevenLabs' API, mirrored into MDX files with inline pause/emphasis tags (for ElevenLabs),
@@ -46,10 +46,11 @@ src/components/FloatingAudioPlayer.tsx
 |---|---|
 | `scripts/generate-audio.ts` | TTS pipeline: reads MDX, calls OpenAI/ElevenLabs API, writes mp3s + manifests |
 | `src/content/en_tts/` | ElevenLabs-specific MDX mirrors with inline pause/emphasis tags |
-| `src/content/audio.ts` | `getAudioManifest` / `getCombinedAudioManifest` — loads JSON playlists |
-| `src/components/AudioPlayer.tsx` | Playback UI: controls, timeline, section list with fade/gap and auto-scroll |
-| `src/components/FloatingAudioPlayer.tsx` | Wraps AudioPlayer in a closeable popup; keeps audio mounted |
-| `public/audio/{locale}/{slug}/` | Output: per-sutta mp3s + manifest.json |
+| `src/content/audio.ts` | `getAudioManifest` / `getCombinedAudioManifest` — loads JSON playlists; `versionSuffix()` appends cache-bust query string |
+| `src/content/strings.ts` | `getStrings(locale).audio` — UI labels (listen, pause, play, prev, next, back5, forward5, seek, close, section templates) |
+| `src/components/AudioPlayer.tsx` | Two-mode playback UI: TOC (section list) ↔ Player (transport row + scrubber); accepts `locale` prop; strings from `getStrings` |
+| `src/components/FloatingAudioPlayer.tsx` | Wraps AudioPlayer in a closeable popup; keeps audio mounted; passes `locale` through |
+| `public/audio/{locale}/{slug}/` | Output: per-sutta mp3s + manifest.json (URLs include cache-bust `?v=<mtime>` suffix) |
 | `next.config.ts` | `rehypePlugins: [["rehype-slug"]]` adds id="..." to H2 headings |
 | `.env.local` | `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` required |
 | `.claude/settings.json` | tsconfig excludes `scripts/` from typecheck |
@@ -109,31 +110,34 @@ Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
     {
       "id": "title",
       "title": "The Buddha's First Talk: The Middle Way",
-      "file": "01-title.mp3",
+      "file": "01-title.mp3?v=1717000800",
       "duration_sec": 14.3
     },
     {
       "id": "opening",
       "title": "Opening",
-      "file": "02-opening.mp3",
+      "file": "02-opening.mp3?v=1717000800",
       "duration_sec": 41.2
     },
     {
       "id": "the-three-marks",
       "title": "The Three Marks of Existence",
-      "file": "03-the-three-marks.mp3",
+      "file": "03-the-three-marks.mp3?v=1717000800",
       "duration_sec": 127.5
     }
   ]
 }
 ```
 
-Per-sutta manifests are at `public/audio/{locale}/{slug}/manifest.json`.
+Per-sutta manifests are at `public/audio/{locale}/{slug}/manifest.json`. Each `file` entry
+includes a `?v=<mtime-seconds>` suffix (appended by `versionSuffix()` in `audio.ts` during
+load, mirroring the illustrations pattern). When an mp3 is regenerated, its mtime changes
+and the URL automatically changes, invalidating the browser cache.
 
 Combined manifest (for `/read`) has:
 - `slug: "all"`
 - section IDs prefixed with slug (`"first-talk--opening"`, `"first-talk--the-three-marks"`, etc.)
-- absolute `/audio/...` file paths (since sections live in different per-sutta dirs)
+- absolute `/audio/...` file paths with cache-bust suffixes (since sections live in different per-sutta dirs)
 
 ## Playback flow
 
@@ -148,7 +152,25 @@ Combined manifest (for `/read`) has:
 3. `<FloatingAudioPlayer manifest={combinedAudio} audioBaseUrl="" />`
 4. Player seamlessly streams across all six suttas without reload
 
-## AudioPlayer features
+## AudioPlayer — two-mode UI
+
+AudioPlayer switches between TOC (section list) and Player (transport controls) modes based on playback state:
+
+**TOC Mode** (paused):
+- Displays a scrollable list of all sections with durations
+- Each row shows a play icon, section title, and duration (e.g., "3:42")
+- The active/currently-loaded section is highlighted with a subtle bg and accent color
+- Footer shows total section count and combined duration (e.g., "6 sections · 28 minutes total")
+- Tap any row to jump to that section and start playing; tap the active row to resume from where you paused
+
+**Player Mode** (playing):
+- Hides the section list and shows the current section title (centered, serif)
+- Transport row spreads across the full width: prev section | back 5s | **BIG PAUSE** | fwd 5s | next section
+- All transport buttons `stopPropagation()` to prevent the wrapper's click-to-pause from firing
+- Progress scrubber (range input) + elapsed/total time below the transport row
+- Anywhere else in the player box (except scrubber) pauses playback and returns to TOC mode
+- X button in the header (when playing) pauses playback; the popup itself stays open
+- All button labels and aria-labels come from `getStrings(locale).audio` for i18n support
 
 **Cross-section transitions:**
 - Last 700ms of each section fades from 1.0 to 0.0 volume
@@ -166,11 +188,12 @@ Combined manifest (for `/read`) has:
 - Lock-screen player controls (native iOS/Android media controls)
 - Updates metadata (title, duration, cover art) when section changes
 - Allows play/pause from device controls
+- Transport callbacks (goPrev/goNext/seekBy) are wired to both visible buttons and MediaSession actions
 
 **Memoized file URL resolution:**
 - `getFileUrl()` callback is memoized on `audioBaseUrl`
-- Per-sutta manifests: bare filenames ("01-opening.mp3") → resolved to "/audio/en/slug/01-opening.mp3"
-- Combined manifest: absolute paths ("/audio/en/first-talk/01-opening.mp3") → passed through
+- Per-sutta manifests: bare filenames ("01-opening.mp3?v=...") → resolved to "/audio/en/slug/01-opening.mp3?v=..."
+- Combined manifest: absolute paths ("/audio/en/first-talk/01-opening.mp3?v=...") → passed through
 - Prevents listener re-attachment when parent re-renders (e.g., FloatingAudioPlayer toggle)
 
 ## Floating popup behavior
@@ -197,6 +220,20 @@ while fetching fresh in the background. Prevents repeat visits from re-downloadi
 but allows occasional updates without manual cache busting.
 
 ## Important patterns and gotchas
+
+**Cache-busting with `versionSuffix()`** — `audio.ts` calls `statSync()` on each mp3 file
+at load time (during RSC/build), appends `?v=<mtime-seconds>` to the file URL in the manifest,
+and the browser cache automatically invalidates when the file is regenerated. This mirrors
+the illustrations pattern. Server-only; never import `versionSuffix()` into Client Components.
+
+**`locale` prop is required** — AudioPlayer and FloatingAudioPlayer both accept a `locale`
+prop to fetch UI strings from `getStrings(locale).audio`. All button labels, aria-labels,
+and template strings come from there for i18n. Missing locale will cause a runtime error.
+
+**Strings are templates** — `getStrings(locale).audio.playSectionLabel` and `sectionsTotalLine`
+are template strings with `{title}`, `{n}`, and `{time}` placeholders. AudioPlayer interpolates
+them at render time via `.replace()` calls. Update `src/content/strings.ts` when adding new
+placeholder strings or locales.
 
 **Section IDs must be unique** — the script uses kebab-case heading text to generate
 `id="opening"`, `id="the-three-marks"`, etc. Duplicate H2 headings within a sutta will

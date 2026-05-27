@@ -1,5 +1,33 @@
 # File Size Snapshots
 
+## 2026-05-28
+
+### Distribution
+
+| Bucket     | Count | Δ vs 2026-05-27 |
+|------------|-------|-----------------|
+| <=50       | 47    | +21             |
+| 51-150     | 39    | +8              |
+| 151-300    | 14    | +5              |
+| 301-500    | 3     | 0               |
+| 501-1000   | 1     | +1              |
+| 1001-2000  | 0     | 0               |
+| 2000+      | 0     | 0               |
+
+Total files: 104 (+35)
+
+### Largest File
+
+`src/components/AudioPlayer.tsx` — 508 lines
+
+### Files Over 500 Lines
+
+1 file: `src/components/AudioPlayer.tsx`
+
+### Delta
+
+Repo continued to expand (69 → 104 files, +35). Most growth in small files (<=50 and 51-150 brackets). AudioPlayer.tsx crossed the 500-line threshold, now 508 lines. First file to exceed the 500-line guideline — candidate for refactoring.
+
 ## 2026-05-27
 
 ### Distribution

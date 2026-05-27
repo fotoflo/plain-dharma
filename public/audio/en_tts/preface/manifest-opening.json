@@ -1,15 +1,15 @@
 {
-  "slug": "first-talk-title",
+  "slug": "preface",
   "locale": "en",
   "voice": "BpjGufoPiobT79j2vtj4",
   "model": "eleven_v3",
-  "generated_at": "2026-05-27T10:41:04.900Z",
+  "generated_at": "2026-05-27T10:41:15.167Z",
   "sections": [
     {
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 14.4
+      "duration_sec": 41.8
     }
   ]
 }

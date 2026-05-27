@@ -16,9 +16,18 @@ function formatTime(sec: number): string {
   return `${m}:${rem.toString().padStart(2, "0")}`;
 }
 
+// Cross-section transition: fade out the last FADE_MS of each section, then
+// leave a GAP_MS silence before the next one starts. (Next section starts at
+// full volume — fade-in turned out to feel artificial; the gap is enough.)
+const FADE_MS = 700;
+const GAP_MS = 1400;
+const FADE_SEC = FADE_MS / 1000;
+
 export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
   const getFileUrl = (file: string) => `${audioBaseUrl}/${file}`;
   const audioRef = useRef<HTMLAudioElement>(null);
+  // True once we've started the end-of-section fade-out; reset on each load.
+  const fadeOutStartedRef = useRef(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -27,6 +36,22 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
 
   const sections = manifest.sections;
   const currentSection: AudioSection = sections[currentIdx];
+
+  // Animate audio.volume from its current value to `to` over `durationMs`.
+  const fadeVolume = useCallback((to: number, durationMs: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const from = audio.volume;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const el = audioRef.current;
+      if (!el) return;
+      const t = Math.min(1, (now - start) / durationMs);
+      el.volume = Math.max(0, Math.min(1, from + (to - from) * t));
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, []);
 
   // Load a section by index
   const loadSection = useCallback(
@@ -39,6 +64,8 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
       setCurrentTime(0);
       setDuration(0);
       setIsLoaded(false);
+      fadeOutStartedRef.current = false;
+      audio.volume = 1;
       audio.src = getFileUrl(sec.file);
       audio.load();
       if (autoplay) {
@@ -48,15 +75,15 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
           .catch(() => setIsPlaying(false));
       }
     },
-    [sections, getFileUrl]
+    [sections, getFileUrl, fadeVolume]
   );
 
-  // When the audio element ends, advance to next section
+  // When the audio element ends, wait a beat for breath, then advance.
   const handleEnded = useCallback(() => {
     setIsPlaying(false);
     const nextIdx = currentIdx + 1;
     if (nextIdx < sections.length) {
-      loadSection(nextIdx, true);
+      window.setTimeout(() => loadSection(nextIdx, true), GAP_MS);
     }
   }, [currentIdx, sections.length, loadSection]);
 
@@ -65,7 +92,20 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+      // Auto-advance only fires fade-out for non-last sections; the very last
+      // section also fades to silence naturally for a clean end-of-sutta.
+      if (
+        !fadeOutStartedRef.current &&
+        isFinite(audio.duration) &&
+        audio.duration > 0 &&
+        audio.currentTime >= audio.duration - FADE_SEC
+      ) {
+        fadeOutStartedRef.current = true;
+        fadeVolume(0, FADE_MS);
+      }
+    };
     const handleDurationChange = () => {
       if (isFinite(audio.duration)) setDuration(audio.duration);
     };
@@ -97,7 +137,7 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [handleEnded, getFileUrl, sections]);
+  }, [handleEnded, getFileUrl, sections, fadeVolume]);
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
@@ -118,6 +158,13 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
     const val = parseFloat(e.target.value);
     audio.currentTime = val;
     setCurrentTime(val);
+    // If scrubbing back from inside the end-fade zone, restore full volume so
+    // the section doesn't stay silent and let fade-out re-trigger near end.
+    const fadeStart = isFinite(audio.duration) ? audio.duration - FADE_SEC : Infinity;
+    if (val < fadeStart) {
+      fadeOutStartedRef.current = false;
+      audio.volume = 1;
+    }
   };
 
   const handleSectionClick = (idx: number) => {

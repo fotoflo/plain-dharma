@@ -250,7 +250,11 @@ async function callElevenLabsTTS(
     text,
     model_id: ELEVEN_MODEL,
     voice_settings: {
-      stability: 0.5,
+      // Robust preset, deep end: pin the voice character — including accent —
+      // strongly across the whole sutta. At 0.75 v3 still drifts in/out of
+      // Priyanka's Indian accent on proper nouns vs plain English narration;
+      // 0.85 holds it consistent. Going higher (>0.9) flattens prosody.
+      stability: 0.85,
       similarity_boost: 0.75,
       use_speaker_boost: true,
     },
@@ -330,20 +334,17 @@ async function main() {
     process.exit(1);
   }
 
-  // OpenAI uses the voice prompt as the `instructions` field; ElevenLabs
-  // ignores it (direction is woven inline into the mirror MDX). We still
-  // load it for OpenAI.
-  let instructions = "";
-  if (PROVIDER === "openai") {
-    if (!existsSync(promptPath)) {
-      console.error(`ERROR: voice prompt not found: ${promptPath}`);
-      process.exit(1);
-    }
-    instructions = readFileSync(promptPath, "utf8").trim();
-    console.log(
-      `Loaded voice prompt: ${promptPath} (${instructions.length} chars)`
-    );
+  // Load the voice prompt for both providers:
+  //   - OpenAI: passed as the `instructions` field (separate from text).
+  //   - ElevenLabs: prepended to the input text as shaping context.
+  if (!existsSync(promptPath)) {
+    console.error(`ERROR: voice prompt not found: ${promptPath}`);
+    process.exit(1);
   }
+  const instructions = readFileSync(promptPath, "utf8").trim();
+  console.log(
+    `Loaded voice prompt: ${promptPath} (${instructions.length} chars)`
+  );
 
   const outDir = join(ROOT, "public", "audio", outLocaleDir, SLUG);
   const manifestPath = join(outDir, "manifest.json");

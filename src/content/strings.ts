@@ -64,7 +64,7 @@ const en = {
     p1: "These six teachings are rendered here in plain modern English — not as a scholarly translation, but as a plain reading of what the Buddha actually said. The goal is to make the foundational teachings accessible to a first-time reader without sacrificing the substance.",
     p2: "This is not a substitute for canonical translation. If you find a teaching here that moves you, the next step is to read the same passage as translated by Bhikkhu Bodhi, Thanissaro Bhikkhu, or the collaborative team at SuttaCentral — three rigorous sources, all freely available.",
     p3PreservedStripped:
-      "What's preserved: the structure, the repetitions, the key images, and the moments where the original itself does something striking — like the cosmic ending of the first talk, or the mother-and-only-child image in the Mettā Sutta. What's stripped: archaic English (\"thus have I heard\"), unfamiliar terminology where a modern word does the same job, and the formal cadences that can put a contemporary reader to sleep.",
+      "What's preserved: the structure, the repetitions, the key images, and the moments where the original itself does something striking — like the cosmic ending of the first talk, or the mother-and-only-child image in the Mettā Sutra. What's stripped: archaic English (\"thus have I heard\"), unfamiliar terminology where a modern word does the same job, and the formal cadences that can put a contemporary reader to sleep.",
     h2WhySix: "Why six?",
     pWhySix1:
       "These six are the foundation. Every later teaching, every commentary, every Buddhist tradition — they all build on these. If you've read them, you've read what was there at the start.",
@@ -159,6 +159,16 @@ const en = {
     playSectionLabel: "Play section: {title}",
     // Template — `{n}` and `{time}` are interpolated at render time.
     sectionsTotalLine: "{n} sections · {time} total",
+  },
+  canonicalLinks: {
+    paliSourcePrefix: "Pali source —",
+    compareIntro: "Compare with canonical translations:",
+  },
+  glossary: {
+    metadataDescription:
+      "Key terms in plain English, with the Pali / Sanskrit where it matters.",
+    subtitle:
+      "Key terms in plain English, with the Pali / Sanskrit where it matters.",
   },
 };
 
@@ -305,6 +315,16 @@ const zh: Strings = {
     seek: "拖动定位",
     playSectionLabel: "播放章节：{title}",
     sectionsTotalLine: "共 {n} 段 · 总长 {time}",
+  },
+  canonicalLinks: {
+    paliSourcePrefix: "巴利原典 ——",
+    compareIntro: "可对照参考汉译经典：",
+  },
+  glossary: {
+    metadataDescription:
+      "几个关键术语，用平实的现代汉语解释，必要时附上对应的巴利文 / 梵文。",
+    subtitle:
+      "几个关键术语，用平实的现代汉语解释，必要时附上对应的巴利文 / 梵文。",
   },
 };
 

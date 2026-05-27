@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bash -c 'if [ \"$NGROK\" = \"1\" ]; then ./scripts/shell/ngrok-dev.sh 8008 & fi && next dev -p 8008'",
+    "dev": "bash -c 'lsof -ti:8008 | xargs kill -9 2>/dev/null || true; rm -rf .next; if [ \"$NGROK\" = \"1\" ]; then ./scripts/shell/ngrok-dev.sh 8008 & fi && next dev -p 8008'",
     "dev:tunnel": "bash -c 'NGROK=1 pnpm dev'",
     "ngrok": "./scripts/shell/ngrok-dev.sh",
     "ngrok:status": "./scripts/shell/ngrok-status.sh",

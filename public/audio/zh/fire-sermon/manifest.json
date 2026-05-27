@@ -1,0 +1,15 @@
+{
+  "slug": "fire-sermon",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T19:34:31Z",
+  "sections": [
+    { "id": "title",        "title": "燃烧经",          "file": "00-title.mp3",          "duration_sec": 18.0 },
+    { "id": "opening",      "title": "Opening",         "file": "01-opening.mp3",        "duration_sec": 101.4 },
+    { "id": "同一把火，烧遍一切", "title": "同一把火，烧遍一切", "file": "02-同一把火，烧遍一切.mp3", "duration_sec": 126.6 },
+    { "id": "怎么办",        "title": "怎么办",          "file": "03-怎么办.mp3",          "duration_sec": 77.0 },
+    { "id": "他们是怎么听到的", "title": "他们是怎么听到的",  "file": "04-他们是怎么听到的.mp3",  "duration_sec": 30.8 },
+    { "id": "drop",         "title": "Drop",            "file": "99-drop.mp3",           "duration_sec": 18.5 }
+  ]
+}

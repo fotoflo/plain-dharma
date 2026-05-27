@@ -78,7 +78,7 @@ export async function SuttaView({ locale, slug }: SuttaViewProps) {
           <Drop text={DROPS[locale][slug]} />
         </div>
 
-        <CanonicalLinks slug={slug} />
+        <CanonicalLinks locale={locale} slug={slug} />
 
         <nav className="mt-20 grid grid-cols-1 gap-4 border-t border-divider/80 pt-8 sm:grid-cols-2">
           <div>

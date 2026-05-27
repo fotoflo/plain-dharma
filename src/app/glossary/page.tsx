@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { getStrings } from "@/content/strings";
 import { GlossaryView } from "@/views/GlossaryView";
 
-const TITLE = "Glossary";
-const DESCRIPTION =
-  "Key terms in plain English, with the Pali / Sanskrit where it matters.";
+const s = getStrings("en");
+const TITLE = s.nav.glossary;
+const DESCRIPTION = s.glossary.metadataDescription;
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -1,0 +1,51 @@
+{
+  "slug": "how-to-decide",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-28T02:36:00Z",
+  "sections": [
+    {
+      "id": "title",
+      "title": "Title",
+      "file": "00-title.mp3",
+      "duration_sec": 12.0
+    },
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 85.0
+    },
+    {
+      "id": "不要光听谁说就当真",
+      "title": "不要光听谁说就当真",
+      "file": "02-不要光听谁说就当真.mp3",
+      "duration_sec": 90.6
+    },
+    {
+      "id": "那要靠什么呢",
+      "title": "那要靠什么呢？",
+      "file": "03-那要靠什么呢.mp3",
+      "duration_sec": 144.2
+    },
+    {
+      "id": "反过来再走一遍",
+      "title": "反过来再走一遍",
+      "file": "04-反过来再走一遍.mp3",
+      "duration_sec": 102.3
+    },
+    {
+      "id": "最后的那份安心",
+      "title": "最后的那份安心",
+      "file": "05-最后的那份安心.mp3",
+      "duration_sec": 78.0
+    },
+    {
+      "id": "drop",
+      "title": "Drop",
+      "file": "99-drop.mp3",
+      "duration_sec": 19.7
+    }
+  ]
+}

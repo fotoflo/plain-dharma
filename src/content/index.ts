@@ -48,32 +48,32 @@ const SUTTA_BASE: Record<SuttaSlug, SuttaBase> = {
   "first-talk": {
     slug: "first-talk",
     ordinal: 1,
-    pali_name: "Dhammacakkappavattana Sutta",
+    pali_name: "Dhammacakkappavattana Sutra",
   },
   "not-self": {
     slug: "not-self",
     ordinal: 2,
-    pali_name: "Anattalakkhana Sutta",
+    pali_name: "Anattalakkhana Sutra",
   },
   "fire-sermon": {
     slug: "fire-sermon",
     ordinal: 3,
-    pali_name: "Adittapariyaya Sutta",
+    pali_name: "Adittapariyaya Sutra",
   },
   "loving-kindness": {
     slug: "loving-kindness",
     ordinal: 4,
-    pali_name: "Metta Sutta",
+    pali_name: "Metta Sutra",
   },
   mindfulness: {
     slug: "mindfulness",
     ordinal: 5,
-    pali_name: "Satipatthana Sutta",
+    pali_name: "Satipatthana Sutra",
   },
   "how-to-decide": {
     slug: "how-to-decide",
     ordinal: 6,
-    pali_name: "Kalama Sutta",
+    pali_name: "Kalama Sutra",
   },
 };
 
@@ -143,12 +143,14 @@ const SUTTA_DISPLAY: Record<Locale, Record<SuttaSlug, SuttaDisplay>> = {
         "在伽耶附近的一座山头上，对从前拜火的一千位修行者讲的。",
       teaser:
         "一切都在燃烧。烧的是什么，以及怎么冷下来。",
+      kicker_override: "燃烧经",
     },
     "loving-kindness": {
       title: "关于慈心",
       subtitle: "佛陀关于善意的那段开示。很短，几乎像一首诗。",
       teaser:
         "在心里守住一个愿——愿每一个活着的生命，毫无例外，都安好。",
+      kicker_override: "慈经",
     },
     mindfulness: {
       title: "觉察的四个根基",
@@ -156,12 +158,14 @@ const SUTTA_DISPLAY: Record<Locale, Record<SuttaSlug, SuttaDisplay>> = {
         "佛陀一步一步讲怎么保持觉察，原文里那段反复的句子完整保留。",
       teaser:
         "清清楚楚地看身体、感受、心，以及经验里发生的一切。",
+      kicker_override: "念处经",
     },
     "how-to-decide": {
       title: "怎么决定该相信什么",
       subtitle: "佛陀关于自己用脑子想清楚的那段开示。",
       teaser:
         "不要凭权威接受任何东西。拿你自己亲眼看到的去验证它。",
+      kicker_override: "卡拉玛经",
     },
   },
 };

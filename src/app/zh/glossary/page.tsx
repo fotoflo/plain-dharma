@@ -4,10 +4,7 @@ import { GlossaryView } from "@/views/GlossaryView";
 
 const s = getStrings("zh");
 const TITLE = s.nav.glossary;
-// NOTE: There is no localized glossary description in strings.ts yet.
-// We reuse the EN description until a `glossary` section is added.
-const DESCRIPTION =
-  "Key terms in plain English, with the Pali / Sanskrit where it matters.";
+const DESCRIPTION = s.glossary.metadataDescription;
 
 export const metadata: Metadata = {
   title: TITLE,

@@ -1,0 +1,45 @@
+{
+  "slug": "mindfulness",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T19:37:08.280Z",
+  "sections": [
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 70.7
+    },
+    {
+      "id": "1-看身体",
+      "title": "1. 看身体",
+      "file": "02-1-看身体.mp3",
+      "duration_sec": 452.8
+    },
+    {
+      "id": "2-看感受",
+      "title": "2. 看感受",
+      "file": "03-2-看感受.mp3",
+      "duration_sec": 97.6
+    },
+    {
+      "id": "3-看心",
+      "title": "3. 看心",
+      "file": "04-3-看心.mp3",
+      "duration_sec": 113.5
+    },
+    {
+      "id": "4-看经验里发生的一切",
+      "title": "4. 看经验里发生的一切",
+      "file": "05-4-看经验里发生的一切.mp3",
+      "duration_sec": 452.7
+    },
+    {
+      "id": "这条路通到哪里",
+      "title": "这条路通到哪里",
+      "file": "06-这条路通到哪里.mp3",
+      "duration_sec": 44.2
+    }
+  ]
+}

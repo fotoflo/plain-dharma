@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import { GeistSans } from "geist/font/sans";
 import { Atkinson_Hyperlegible } from "next/font/google";
 import "./globals.css";
@@ -8,6 +9,9 @@ import { Footer } from "@/components/layout/Footer";
 import { themeInitScript } from "@/components/ThemeToggle";
 import { readingPrefsInitScript } from "@/components/ReadingControls";
 import { NightSky } from "@/components/NightSky";
+
+const GA_ID = "G-FNHT1NCRS5";
+const GA_ENABLED = process.env.NODE_ENV === "production";
 
 const garamond = localFont({
   src: [
@@ -58,6 +62,20 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        {GA_ENABLED && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

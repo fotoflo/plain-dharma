@@ -1,0 +1,15 @@
+{
+  "slug": "mindfulness",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T19:35:17.049Z",
+  "sections": [
+    {
+      "id": "2-看感受",
+      "title": "2. 看感受",
+      "file": "03-2-看感受.mp3",
+      "duration_sec": 97.6
+    }
+  ]
+}

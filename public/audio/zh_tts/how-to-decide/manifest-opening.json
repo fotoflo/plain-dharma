@@ -1,0 +1,15 @@
+{
+  "slug": "how-to-decide",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T19:34:17.773Z",
+  "sections": [
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 65.4
+    }
+  ]
+}

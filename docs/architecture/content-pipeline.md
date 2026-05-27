@@ -14,25 +14,32 @@ src/content/
      ├── en/*.mdx / zh/*.mdx  ─── teaching texts per locale
      │
      ├── index.ts  ─── SUTTAS array (canonical order)
-     │              ── SUTTA_META (titles, Pali names, teasers)
-     │              ── LOADERS map (dynamic import per slug/locale)
-     │              ── loadSutta() / getMeta() / getNeighbors()
+     │              ── SUTTA_BASE (slug, ordinal, pali_name)
+     │              ── SUTTA_DISPLAY[locale] (title, subtitle, teaser, kicker_override)
+     │              ── LOADERS[locale][slug] (dynamic import per sutta/locale)
+     │              ── getMeta(locale, slug) / getSuttasInOrder(locale)
      │
-     ├── strings.ts  ─── i18n strings for all UI + metadata
+     ├── strings.ts  ─── i18n UI strings (nav, audio, home, footer, etc.)
+     │               ── getStrings(locale) helper
      │               ── canonicalLinks, glossary subtitles/labels
      │
-     ├── drops.ts  ─── DROPS (one editorial wisdom line per teaching)
-     │              ── PREFACE / CLOSING (framing prose for /read)
+     ├── drops.ts  ─── DROPS[locale][slug] (editorial one-liner per sutta)
+     │              ── PREFACE[locale] / CLOSING[locale] (framing for /read)
      │
-     ├── canonical-links.ts ─── linksByLocale: Pali refs + translation links
+     ├── canonical-links.ts ─── CANONICAL_LINKS[locale][slug]
      │                       ── locale-keyed (EN: Access to Insight + SuttaCentral;
      │                          ZH: SuttaCentral Āgama + CBETA Taishō)
      │
-     ├── glossary.ts  ─── NEW: GLOSSARY[locale][] with 18 parallel entries
-     │                  ── extracted from inline GlossaryView
+     ├── glossary.ts  ─── GLOSSARY[locale][] with parallel entries
      │
-     ├── illustrations.ts   ─── getIllustrationUrl(slug) — mtime-versioned URLs
+     ├── audio.ts     ─── getAudioManifest(locale, slug)
+     │                 ── getCombinedAudioManifest(locale)
+     │                 ── partial manifest support (skips missing)
+     │
+     └── illustrations.ts   ─── getIllustrationUrl(slug) — mtime-versioned URLs
 ```
+
+**Locale support:** All six suttas are available in English (EN) and Chinese (ZH). The registry is structured to add new locales without code changes — see `docs/architecture/i18n.md` for details.
 
 ## Key files
 

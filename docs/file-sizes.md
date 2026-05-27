@@ -4,17 +4,17 @@
 
 ### Distribution
 
-| Bucket     | Count | Δ vs 2026-05-28 |
+| Bucket     | Count | Δ vs 2026-05-27 |
 |------------|-------|-----------------|
-| <=50       | 61    | +14             |
-| 51-150     | 41    | +2              |
-| 151-300    | 15    | +1              |
-| 301-500    | 3     | 0               |
+| <=50       | 61    | 0               |
+| 51-150     | 41    | 0               |
+| 151-300    | 15    | 0               |
+| 301-500    | 4     | +1              |
 | 501-1000   | 1     | 0               |
 | 1001-2000  | 0     | 0               |
 | 2000+      | 0     | 0               |
 
-Total files: 121 (+17)
+Total files: 122 (+1)
 
 ### Largest File
 
@@ -26,7 +26,7 @@ Total files: 121 (+17)
 
 ### Delta
 
-Modest growth since last snapshot (104 → 121 files, +17). Most additions in the <=50 bracket (+14). AudioPlayer.tsx remains at 508 lines. No files newly crossed the 500-line threshold.
+Minimal change since last snapshot (121 → 122 files, +1). One additional file entered the 301-500 bracket. AudioPlayer.tsx remains at 508 lines. Codebase holding stable.
 
 ## 2026-05-28 (previous)
 

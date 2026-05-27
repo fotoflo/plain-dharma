@@ -1,0 +1,15 @@
+{
+  "slug": "loving-kindness",
+  "locale": "zh",
+  "voice": "bU2VfAdiOb2Gv2eZWlFq",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T19:33:22.761Z",
+  "sections": [
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 178.9
+    }
+  ]
+}

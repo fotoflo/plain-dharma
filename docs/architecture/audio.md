@@ -58,7 +58,7 @@ src/components/FloatingAudioPlayer.tsx
 ## Generation pipeline
 
 ```
-pnpm generate-audio [slug] [locale] [--provider=openai|elevenlabs] [--model=eleven_v3] [--voiceId=...] [--section=...]
+pnpm generate-audio [slug] [locale] [--provider=openai|elevenlabs] [--model=eleven_v3] [--voiceId=...] [--stability=N] [--style=N] [--similarity=N] [--section=...]
 ```
 
 Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
@@ -87,6 +87,25 @@ Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
 - Understands `[pause]`, `[long pause]`, `[gentle]` tags (only in v3)
 - Falls back to `src/content/{locale}/{slug}.mdx` if mirror doesn't exist
 
+**Prosody tuning** (ElevenLabs):
+- `--stability=N` (0–1, default 0.5) — higher = more consistent; lower = more expressive
+- `--style=N` (0–1, default 0.5) — style strength for the chosen voice
+- `--similarity=N` (0–1, default 0.75) — similarity boost to the base voice character
+
+### Locale-specific narration
+
+**English (Sage, OpenAI):**
+- Provider: OpenAI `gpt-4o-mini-tts`
+- Voice: `sage` (contemplative, steady tone)
+- **Tempo:** ffmpeg `atempo=0.8333` post-process applies 20% meditative slowdown (time-stretches audio without changing pitch, extending ~10-minute narration to ~12 minutes)
+
+**Chinese (Carter, ElevenLabs multilingual):**
+- Provider: ElevenLabs `eleven_multilingual_v2` (supports mixed Pali/Chinese text)
+- Voice: Carter (`bU2VfAdiOb2Gv2eZWlFq`) — meditative male voice
+- Prosody: `stability=0.75, style=0.1, similarity=0.75` (lower stability + minimal style for measured, expressive base)
+- **Tempo:** ffmpeg `atempo=0.7692` post-process applies 30% meditative slowdown (time-stretches audio without changing pitch, extending 10-minute narration to ~13 minutes)
+- Status: first-talk, not-self, fire-sermon, loving-kindness, how-to-decide complete; mindfulness still recording in parallel
+
 **Duration:**
 - Uses `ffprobe` to measure actual mp3 duration (accurate)
 - Falls back to estimation (coarse) if ffprobe unavailable
@@ -102,28 +121,28 @@ Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
 ```json
 {
   "slug": "first-talk",
-  "locale": "en",
-  "voice": "sage",
-  "model": "gpt-4o-mini-tts",
-  "generated_at": "2026-05-27T22:00:00Z",
+  "locale": "zh",
+  "voice": "Carter",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-28T02:00:00Z",
   "sections": [
     {
       "id": "title",
-      "title": "The Buddha's First Talk: The Middle Way",
-      "file": "01-title.mp3?v=1717000800",
-      "duration_sec": 14.3
+      "title": "佛陀的第一次开示 The Buddha's First Talk",
+      "file": "00-title.mp3?v=1717939200",
+      "duration_sec": 18.7
     },
     {
       "id": "opening",
       "title": "Opening",
-      "file": "02-opening.mp3?v=1717000800",
-      "duration_sec": 41.2
+      "file": "01-opening.mp3?v=1717939200",
+      "duration_sec": 52.4
     },
     {
       "id": "the-three-marks",
       "title": "The Three Marks of Existence",
-      "file": "03-the-three-marks.mp3?v=1717000800",
-      "duration_sec": 127.5
+      "file": "02-the-three-marks.mp3?v=1717939200",
+      "duration_sec": 165.3
     }
   ]
 }
@@ -133,6 +152,10 @@ Per-sutta manifests are at `public/audio/{locale}/{slug}/manifest.json`. Each `f
 includes a `?v=<mtime-seconds>` suffix (appended by `versionSuffix()` in `audio.ts` during
 load, mirroring the illustrations pattern). When an mp3 is regenerated, its mtime changes
 and the URL automatically changes, invalidating the browser cache.
+
+**Locale-aware playback:** The manifest carries the `locale` and `voice` for reference, but the
+player respects the manifest's section titles (which may include both English and locale-specific
+text) and file paths.
 
 Combined manifest (for `/read`) has:
 - `slug: "all"`
@@ -260,6 +283,16 @@ render all metadata — this is expected and graceful.
 Pass `/audio/en/first-talk` not `/audio/en/first-talk/`. Combined manifests pass `""` as
 base since file paths are absolute.
 
+**Partial manifests (locale-specific in-progress recording)** — `getCombinedAudioManifest()`
+skips missing per-sutta manifests instead of failing. This allows recording audio for one sutta
+while others remain playable. Chinese audio is still being recorded for mindfulness; the player
+renders all available sections in order. No code changes needed — just regenerate the manifest
+when the final sutta is complete.
+
 **rehype-slug on next build only** — H2 heading ids are generated at build time, not runtime.
 If you edit a heading, rebuild to get the new anchor. Dev mode reflects changes immediately,
 but production pages are static and must be rebuilt.
+
+**CJK heading ids** — `toKebabCase()` in `generate-audio.ts` preserves CJK Unified Ideographs
+(U+4E00–U+9FFF and Extensions) so Chinese headings generate readable ids like `the-three-marks`
+(romanized) or `三种标记` (Chinese preserved).

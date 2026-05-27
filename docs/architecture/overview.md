@@ -7,8 +7,10 @@
 | Topic | File |
 |---|---|
 | Content pipeline (MDX, SUTTAS registry, loaders) | [content-pipeline.md](content-pipeline.md) |
+| Internationalization (i18n routing, registry, locales) | [i18n.md](i18n.md) |
 | Design system (palette, typography, Wash, NightSky) | [design-system.md](design-system.md) |
 | Illustrations (Gemini generation, transparency pipeline) | [illustrations.md](illustrations.md) |
+| Audio playback (TTS pipeline, manifests, player) | [audio.md](audio.md) |
 | Dev workflow (ngrok tunnel, QR code, scripts) | [dev-workflow.md](dev-workflow.md) |
 | Deployment (Vercel, DNS, routing) | [deployment.md](deployment.md) |
 | Sitemap and URL structure | [../sitemap.md](../sitemap.md) |

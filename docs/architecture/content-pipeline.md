@@ -1,6 +1,6 @@
 # Content Pipeline — Plain Dharma
 
-*Last updated: 2026-05-26*
+*Last updated: 2026-05-28*
 
 Single source of truth: one MDX file per teaching. Every surface on the site
 (per-teaching page, `/read`, home listing, og:image) is composed from these
@@ -9,29 +9,41 @@ files — nothing else stores the text.
 ## Overview
 
 ```
-src/content/en/*.mdx
+src/content/
+     │
+     ├── en/*.mdx / zh/*.mdx  ─── teaching texts per locale
      │
      ├── index.ts  ─── SUTTAS array (canonical order)
      │              ── SUTTA_META (titles, Pali names, teasers)
      │              ── LOADERS map (dynamic import per slug/locale)
      │              ── loadSutta() / getMeta() / getNeighbors()
      │
+     ├── strings.ts  ─── i18n strings for all UI + metadata
+     │               ── canonicalLinks, glossary subtitles/labels
+     │
      ├── drops.ts  ─── DROPS (one editorial wisdom line per teaching)
      │              ── PREFACE / CLOSING (framing prose for /read)
      │
-     ├── canonical-links.ts ─── Pali reference IDs + external translation links
+     ├── canonical-links.ts ─── linksByLocale: Pali refs + translation links
+     │                       ── locale-keyed (EN: Access to Insight + SuttaCentral;
+     │                          ZH: SuttaCentral Āgama + CBETA Taishō)
      │
-     └── illustrations.ts   ─── getIllustrationUrl(slug) — mtime-versioned URLs
+     ├── glossary.ts  ─── NEW: GLOSSARY[locale][] with 18 parallel entries
+     │                  ── extracted from inline GlossaryView
+     │
+     ├── illustrations.ts   ─── getIllustrationUrl(slug) — mtime-versioned URLs
 ```
 
 ## Key files
 
 | File | Role |
 |---|---|
-| `src/content/en/{slug}.mdx` | Authoritative text for each teaching (six files) |
+| `src/content/{locale}/{slug}.mdx` | Authoritative text per teaching per locale (six EN files, six ZH files, etc.) |
 | `src/content/index.ts` | Canonical slug order, metadata registry, locale-aware loader |
+| `src/content/strings.ts` | i18n strings for UI labels, metadata descriptions, canonical-links and glossary subtitles |
 | `src/content/drops.ts` | Editorial one-liners and framing prose for `/read` |
-| `src/content/canonical-links.ts` | Pali name, Nikaya reference, links to scholarly translations |
+| `src/content/canonical-links.ts` | Locale-keyed Pali refs + translation links (EN vs ZH sources differ) |
+| `src/content/glossary.ts` | Locale-parallel glossary entries (extracted from inline view code) |
 | `src/content/illustrations.ts` | Cache-busting URL helper (reads mtime from filesystem) |
 
 ## Frontmatter convention
@@ -60,8 +72,15 @@ LOADERS[locale][slug]()       →  dynamic import of .mdx module
 SUTTA_META[slug]              →  title / subtitle / pali_name / teaser
   └── used by: [slug]/page, read/page, home/page, generateMetadata()
 
+getStrings(locale)            →  all UI strings including canonicalLinks, glossary labels
+  
 DROPS[slug]                   →  <Drop text={...} /> after each article
-CANONICAL_LINKS[slug]         →  <CanonicalLinks slug={...} /> at page bottom
+
+CANONICAL_LINKS[locale][slug] →  <CanonicalLinks locale={locale} slug={slug} />
+  └── reads localized labels from getStrings(locale).canonicalLinks
+
+GLOSSARY[locale]              →  <GlossaryView locale={locale} />
+  └── reads localized subtitle from getStrings(locale).glossary
 ```
 
 ## Important patterns and gotchas

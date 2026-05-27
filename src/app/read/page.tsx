@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ComponentPropsWithoutRef } from "react";
 import type { Metadata } from "next";
 import {
   SUTTAS_IN_ORDER,
@@ -13,6 +14,22 @@ import { Preface } from "@/components/Preface";
 import { Closing } from "@/components/Closing";
 import { ReadingControls } from "@/components/ReadingControls";
 import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
+
+// Six MDX files render on a single page, so `rehype-slug`'s per-file
+// deduping isn't enough — multiple suttas share H2 text like "How They
+// Heard It". Prefix every heading id with the sutta slug so they stay
+// unique AND match the combined-audio manifest's "{slug}--{section}" ids.
+function prefixedMdxComponents(slug: string) {
+  const prefix = (id: string | undefined) => (id ? `${slug}--${id}` : undefined);
+  return {
+    h2: ({ id, ...props }: ComponentPropsWithoutRef<"h2">) => (
+      <h2 id={prefix(id)} {...props} />
+    ),
+    h3: ({ id, ...props }: ComponentPropsWithoutRef<"h3">) => (
+      <h3 id={prefix(id)} {...props} />
+    ),
+  };
+}
 
 const TITLE = "Read all six teachings";
 const DESCRIPTION =
@@ -89,8 +106,6 @@ export default async function ReadPage() {
             </p>
           </header>
 
-          <Preface />
-
           <div className="space-y-24">
             {sections.map(({ meta, Content }, idx) => (
               <section
@@ -104,7 +119,10 @@ export default async function ReadPage() {
                   position={idx % 2 === 0 ? "top-right" : "top-left"}
                   intensity={0.09}
                 />
-                <header className="mb-10 border-t border-divider/80 pt-8">
+                <header
+                  id={`${meta.slug}--title`}
+                  className="mb-10 border-t border-divider/80 pt-8 scroll-mt-12"
+                >
                   <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
                     {String(meta.ordinal).padStart(2, "0")} ·{" "}
                     {meta.pali_name}
@@ -116,10 +134,20 @@ export default async function ReadPage() {
                     {meta.subtitle}
                   </p>
                 </header>
-                <article className="prose-dharma">
-                  <Content />
+                {meta.slug === "first-talk" && (
+                  <div id="first-talk--preface" className="scroll-mt-12">
+                    <Preface />
+                  </div>
+                )}
+                <article
+                  id={`${meta.slug}--opening`}
+                  className="prose-dharma scroll-mt-12"
+                >
+                  <Content components={prefixedMdxComponents(meta.slug)} />
                 </article>
-                <Drop text={DROPS[meta.slug]} />
+                <div id={`${meta.slug}--drop`} className="scroll-mt-12">
+                  <Drop text={DROPS[meta.slug]} />
+                </div>
                 <div className="mt-6 text-right">
                   <Link
                     href={`/${meta.slug}`}

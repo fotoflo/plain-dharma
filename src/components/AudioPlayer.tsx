@@ -157,26 +157,25 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
     activeLiRef.current?.scrollIntoView({ block: "nearest" });
   }, [currentIdx]);
 
-  // Scroll the page to the matching sutta anchor when audio crosses into a new
-  // sutta. Combined-manifest section ids are of the form "{slug}--{section}";
-  // per-sutta manifests use bare section ids (no `--`). We only scroll when
-  // the anchor changes, so intra-sutta section advances don't jump the page.
-  const prevAnchorRef = useRef<string | null>(null);
+  // Scroll the page to the matching anchor whenever the audio enters a new
+  // section. Combined-manifest section ids look like "{slug}--{section}";
+  // per-sutta manifests use bare ids. Try the full id first (sections wrap
+  // themselves on /read with prefixed ids, on /[slug] with bare ids), and
+  // fall back to the slug-only anchor for combined manifests so a section
+  // missing a wrapper still lands roughly in the right place.
   const initialMountRef = useRef(true);
   useEffect(() => {
     const sec = sections[currentIdx];
     if (!sec) return;
-    const anchor = sec.id.includes("--") ? sec.id.split("--")[0] : sec.id;
     if (initialMountRef.current) {
       initialMountRef.current = false;
-      prevAnchorRef.current = anchor;
       return;
     }
-    if (anchor === prevAnchorRef.current) return;
-    prevAnchorRef.current = anchor;
-    document
-      .getElementById(anchor)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const slugOnly = sec.id.includes("--") ? sec.id.split("--")[0] : null;
+    const target =
+      document.getElementById(sec.id) ??
+      (slugOnly ? document.getElementById(slugOnly) : null);
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [currentIdx, sections]);
 
   // Media Session API integration — gives OS-level controls (lock screen,

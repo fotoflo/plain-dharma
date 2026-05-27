@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { MDXContent } from "mdx/types";
 
 export const SUTTAS = [
   "first-talk",
@@ -106,7 +106,7 @@ export function getNeighbors(slug: SuttaSlug): {
   return { prev, next };
 }
 
-type MDXModule = { default: ComponentType };
+type MDXModule = { default: MDXContent };
 
 const LOADERS: Record<Locale, Record<SuttaSlug, () => Promise<MDXModule>>> = {
   en: {
@@ -122,7 +122,7 @@ const LOADERS: Record<Locale, Record<SuttaSlug, () => Promise<MDXModule>>> = {
 export async function loadSutta(
   locale: Locale,
   slug: SuttaSlug
-): Promise<ComponentType> {
+): Promise<MDXContent> {
   const loader = LOADERS[locale]?.[slug];
   if (!loader) {
     throw new Error(`No content for ${locale}/${slug}`);

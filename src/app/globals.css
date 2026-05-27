@@ -266,6 +266,8 @@ html.font-accessible-pref .drop-dharma {
     color: var(--color-text);
     font-weight: 600;
     letter-spacing: -0.01em;
+    /* Breathing room when AudioPlayer scrolls a heading to the top edge. */
+    scroll-margin-top: 3rem;
   }
   .prose-dharma h1 {
     font-size: 2rem;

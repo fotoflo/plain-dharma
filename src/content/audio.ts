@@ -1,7 +1,18 @@
-import { promises as fs } from "node:fs";
+import { promises as fs, statSync } from "node:fs";
 import path from "node:path";
 
-import { SUTTAS_IN_ORDER, type SuttaSlug } from "./index";
+import { SUTTAS, type SuttaSlug } from "./index";
+
+// Append `?v=<mtime-seconds>` so a regenerated mp3 invalidates the browser
+// cache automatically (same trick as illustrations.ts). Server-only.
+function versionSuffix(absPath: string): string {
+  try {
+    const mtime = statSync(absPath).mtimeMs;
+    return `?v=${Math.floor(mtime / 1000)}`;
+  } catch {
+    return "";
+  }
+}
 
 export type AudioSection = {
   id: string;
@@ -33,7 +44,13 @@ export async function getAudioManifest(
   );
   try {
     const raw = await fs.readFile(filePath, "utf8");
-    return JSON.parse(raw) as AudioManifest;
+    const manifest = JSON.parse(raw) as AudioManifest;
+    const dir = path.dirname(filePath);
+    manifest.sections = manifest.sections.map((s) => ({
+      ...s,
+      file: s.file + versionSuffix(path.join(dir, s.file)),
+    }));
+    return manifest;
   } catch {
     return null;
   }
@@ -58,13 +75,13 @@ export async function getCombinedAudioManifest(
   locale: string
 ): Promise<AudioManifest | null> {
   const perSutta = await Promise.all(
-    SUTTAS_IN_ORDER.map((m) => getAudioManifest(locale, m.slug))
+    SUTTAS.map((slug) => getAudioManifest(locale, slug))
   );
   if (perSutta.some((m) => m === null)) return null;
 
   const sections: AudioSection[] = [];
   perSutta.forEach((m, idx) => {
-    const slug = SUTTAS_IN_ORDER[idx].slug;
+    const slug = SUTTAS[idx];
     for (const s of m!.sections) {
       sections.push({
         id: `${slug}--${s.id}`,

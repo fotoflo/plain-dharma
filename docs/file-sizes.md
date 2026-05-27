@@ -6,8 +6,8 @@
 
 | Bucket     | Count | Δ vs 2026-05-26 |
 |------------|-------|-----------------|
-| <=50       | 27    | +12             |
-| 51-150     | 30    | +17             |
+| <=50       | 26    | +11             |
+| 51-150     | 31    | +18             |
 | 151-300    | 9     | +4              |
 | 301-500    | 3     | +3              |
 | 501-1000   | 0     | 0               |
@@ -18,7 +18,7 @@ Total files: 69 (+36)
 
 ### Largest File
 
-`src/components/AudioPlayer.tsx` — 444 lines
+`src/components/AudioPlayer.tsx` — 440 lines
 
 ### Files Over 500 Lines
 

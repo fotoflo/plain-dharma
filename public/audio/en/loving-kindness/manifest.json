@@ -1,0 +1,27 @@
+{
+  "slug": "loving-kindness",
+  "locale": "en",
+  "voice": "UmQN7jS1Ee8B1czsUtQh",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T13:31:58.862Z",
+  "sections": [
+    {
+      "id": "title",
+      "title": "Metta Sutta",
+      "file": "00-title.mp3",
+      "duration_sec": 9.9
+    },
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 143.4
+    },
+    {
+      "id": "drop",
+      "title": "Drop",
+      "file": "99-drop.mp3",
+      "duration_sec": 10.2
+    }
+  ]
+}

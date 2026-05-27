@@ -7,7 +7,10 @@ const withMDX = createMDX({
     // Turbopack requires plugin names as strings (functions can't cross the
     // JS<->Rust boundary). Next.js resolves the package internally.
     remarkPlugins: [["remark-frontmatter", ["yaml"]]],
-    rehypePlugins: [],
+    // rehype-slug adds id="..." to every heading. Powers the AudioPlayer's
+    // auto-scroll on per-sutta pages: when audio reaches a new H2 section,
+    // the page scrolls to that heading's anchor.
+    rehypePlugins: [["rehype-slug"]],
   },
 });
 
@@ -32,6 +35,22 @@ const nextConfig: NextConfig = {
         pathname: "/logo/**",
       },
     ],
+  },
+  async headers() {
+    return [
+      {
+        // Audio mp3s are large and rarely change between deploys. One week fresh
+        // + one day stale-while-revalidate keeps repeat visits cheap without
+        // pinning forever (we still update audio occasionally).
+        source: "/audio/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=86400",
+          },
+        ],
+      },
+    ];
   },
 };
 

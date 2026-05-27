@@ -24,10 +24,23 @@ const GAP_MS = 1400;
 const FADE_SEC = FADE_MS / 1000;
 
 export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
-  const getFileUrl = (file: string) => `${audioBaseUrl}/${file}`;
+  // Per-section `file` is usually a bare filename ("01-opening.mp3"), but the
+  // combined /read playlist passes absolute "/audio/.../foo.mp3" paths since
+  // its sections live in different per-sutta dirs. Detect and pass through.
+  // Memoized so the listener-setup useEffect doesn't tear down and re-attach
+  // on every parent re-render (e.g. when the floating popup toggles open).
+  const getFileUrl = useCallback(
+    (file: string) =>
+      file.startsWith("/") || file.startsWith("http")
+        ? file
+        : `${audioBaseUrl}/${file}`,
+    [audioBaseUrl]
+  );
   const audioRef = useRef<HTMLAudioElement>(null);
   // True once we've started the end-of-section fade-out; reset on each load.
   const fadeOutStartedRef = useRef(false);
+  // Scrolling the active section into the (potentially clipped) list viewport.
+  const activeLiRef = useRef<HTMLLIElement>(null);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -75,7 +88,7 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
           .catch(() => setIsPlaying(false));
       }
     },
-    [sections, getFileUrl, fadeVolume]
+    [sections, getFileUrl]
   );
 
   // When the audio element ends, wait a beat for breath, then advance.
@@ -139,6 +152,119 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
     };
   }, [handleEnded, getFileUrl, sections, fadeVolume]);
 
+  // Keep the active section visible in the (possibly scrolled) section list.
+  useEffect(() => {
+    activeLiRef.current?.scrollIntoView({ block: "nearest" });
+  }, [currentIdx]);
+
+  // Scroll the page to the matching sutta anchor when audio crosses into a new
+  // sutta. Combined-manifest section ids are of the form "{slug}--{section}";
+  // per-sutta manifests use bare section ids (no `--`). We only scroll when
+  // the anchor changes, so intra-sutta section advances don't jump the page.
+  const prevAnchorRef = useRef<string | null>(null);
+  const initialMountRef = useRef(true);
+  useEffect(() => {
+    const sec = sections[currentIdx];
+    if (!sec) return;
+    const anchor = sec.id.includes("--") ? sec.id.split("--")[0] : sec.id;
+    if (initialMountRef.current) {
+      initialMountRef.current = false;
+      prevAnchorRef.current = anchor;
+      return;
+    }
+    if (anchor === prevAnchorRef.current) return;
+    prevAnchorRef.current = anchor;
+    document
+      .getElementById(anchor)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [currentIdx, sections]);
+
+  // Media Session API integration — gives OS-level controls (lock screen,
+  // notification shade, hardware media keys, headphone buttons) and signals
+  // to the browser that this is real foreground media so autoplay across
+  // section boundaries is more reliable when the tab is backgrounded.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) {
+      return;
+    }
+    const ms = navigator.mediaSession;
+    ms.metadata = new MediaMetadata({
+      title: currentSection.title,
+      artist: "Plain Dharma",
+      album: manifest.slug === "all"
+        ? "The Buddha's foundational teachings"
+        : manifest.slug,
+    });
+
+    const actions: Array<[MediaSessionAction, MediaSessionActionHandler]> = [
+      ["play", () => void audioRef.current?.play()],
+      ["pause", () => audioRef.current?.pause()],
+      [
+        "nexttrack",
+        () => {
+          if (currentIdx + 1 < sections.length) loadSection(currentIdx + 1, true);
+        },
+      ],
+      [
+        "previoustrack",
+        () => {
+          if (currentIdx > 0) loadSection(currentIdx - 1, true);
+        },
+      ],
+      [
+        "seekbackward",
+        (details) => {
+          const a = audioRef.current;
+          if (!a) return;
+          a.currentTime = Math.max(0, a.currentTime - (details.seekOffset ?? 10));
+        },
+      ],
+      [
+        "seekforward",
+        (details) => {
+          const a = audioRef.current;
+          if (!a) return;
+          a.currentTime = Math.min(
+            isFinite(a.duration) ? a.duration : Infinity,
+            a.currentTime + (details.seekOffset ?? 10)
+          );
+        },
+      ],
+    ];
+
+    for (const [action, handler] of actions) {
+      try {
+        ms.setActionHandler(action, handler);
+      } catch {
+        // Some browsers don't support every action; ignore.
+      }
+    }
+
+    return () => {
+      for (const [action] of actions) {
+        try {
+          ms.setActionHandler(action, null);
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, [
+    currentSection.title,
+    currentIdx,
+    sections.length,
+    loadSection,
+    manifest.slug,
+  ]);
+
+  // Mirror playback state so the OS playback indicator stays accurate.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) {
+      return;
+    }
+    navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
+  }, [isPlaying]);
+
   const togglePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -172,12 +298,8 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
       togglePlayPause();
     } else {
       loadSection(idx, true);
-      // Optional: scroll to section heading
-      const sec = sections[idx];
-      const el = document.getElementById(sec.id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
+      // The page scroll is handled by the currentIdx effect below, which
+      // also fires on auto-advance — keeps one source of truth.
     }
   };
 
@@ -186,7 +308,6 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
   return (
     <div className="rounded-lg border border-accent/40 bg-paper shadow-xl overflow-hidden">
       {/* Hidden native audio element */}
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={audioRef} preload="metadata" />
 
       {/* Header */}
@@ -252,13 +373,18 @@ export function AudioPlayer({ manifest, audioBaseUrl }: Props) {
         />
       </div>
 
-      {/* Section list */}
-      <ul role="list" className="divide-y divide-divider">
+      {/* Section list — bounded height so long playlists (e.g. /read's 37
+          sections) don't blow out the popup. Scrolls internally; we nudge the
+          active section into view on each change. */}
+      <ul
+        role="list"
+        className="divide-y divide-divider max-h-[50vh] overflow-y-auto"
+      >
         {sections.map((sec, idx) => {
           const isActive = idx === currentIdx;
           const isThisPlaying = isActive && isPlaying;
           return (
-            <li key={sec.id}>
+            <li key={sec.id} ref={isActive ? activeLiRef : undefined}>
               <button
                 onClick={() => handleSectionClick(idx)}
                 aria-pressed={isActive}

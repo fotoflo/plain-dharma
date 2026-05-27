@@ -50,9 +50,12 @@ const PROVIDER = (FLAGS.provider ?? "openai") as "openai" | "elevenlabs";
 const OPENAI_MODEL = "gpt-4o-mini-tts";
 const OPENAI_VOICE = "sage";
 
-// ElevenLabs v3 — voice IDs come from the ElevenLabs voice library.
+// ElevenLabs — voice IDs come from the ElevenLabs voice library.
 // Priyanka: BpjGufoPiobT79j2vtj4
-const ELEVEN_MODEL = "eleven_v3";
+// `--model=eleven_v3` (default) honors inline [pause]/[gentle] audio tags.
+// `--model=eleven_multilingual_v2` is more voice-stable but doesn't understand
+// audio tags — the script strips them from the text on that path.
+const ELEVEN_MODEL = FLAGS.model ?? "eleven_v3";
 const ELEVEN_VOICE_ID = FLAGS.voiceId ?? "BpjGufoPiobT79j2vtj4";
 
 // Voice prompt + TTS-mirror MDX live under src/content/{locale}_tts/.
@@ -148,10 +151,13 @@ function parseMDX(filePath: string): Section[] {
     const headingText =
       lineBreak === -1 ? part.trim() : part.slice(0, lineBreak).trim();
     const body = lineBreak === -1 ? "" : part.slice(lineBreak + 1).trim();
+    // Speak the section heading before the body. Period+long-pause gives v3
+    // a clear pause; v2 ignores the tag and just respects the period.
+    const cleanedBody = cleanForTTS(body);
     sections.push({
       id: toKebabCase(headingText),
       title: headingText,
-      text: cleanForTTS(body),
+      text: `${headingText}. [long pause] ${cleanedBody}`,
     });
   }
 
@@ -246,8 +252,14 @@ async function callElevenLabsTTS(
 ): Promise<TTSSuccess | { error: string }> {
   const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
 
+  // Only v3 understands inline audio tags. For v2 (or any non-v3), strip the
+  // bracketed tags so they aren't read aloud literally.
+  const cleanedText = ELEVEN_MODEL === "eleven_v3"
+    ? text
+    : text.replace(/\[[^\]]+\]/g, "").replace(/\s+/g, " ").trim();
+
   const body = {
-    text,
+    text: cleanedText,
     model_id: ELEVEN_MODEL,
     voice_settings: {
       // Robust preset, deep end: pin the voice character — including accent —
@@ -303,8 +315,13 @@ async function main() {
       console.error("ERROR: ELEVEN_LABS_KEY not set in .env.local.");
       process.exit(1);
     }
-    // Eleven path reads the audio-tag-laden mirror MDX.
-    mdxPath = join(ROOT, "src", "content", ttsDir, `${SLUG}.mdx`);
+    // Eleven path prefers the audio-tag-laden mirror MDX. Falls back to the
+    // canonical en/ file when no mirror exists — on v2 audio tags are stripped
+    // anyway, so the canonical content works fine for the simpler model.
+    const mirrorPath = join(ROOT, "src", "content", ttsDir, `${SLUG}.mdx`);
+    mdxPath = existsSync(mirrorPath)
+      ? mirrorPath
+      : join(ROOT, "src", "content", LOCALE, `${SLUG}.mdx`);
     outLocaleDir = ttsDir; // public/audio/en_tts/<slug>/
     modelLabel = ELEVEN_MODEL;
     voiceLabel = ELEVEN_VOICE_ID;

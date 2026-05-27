@@ -1,0 +1,57 @@
+{
+  "slug": "mindfulness",
+  "locale": "en",
+  "voice": "UmQN7jS1Ee8B1czsUtQh",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T13:34:22.547Z",
+  "sections": [
+    {
+      "id": "title",
+      "title": "Satipatthana Sutta",
+      "file": "00-title.mp3",
+      "duration_sec": 11.7
+    },
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 59.7
+    },
+    {
+      "id": "1-watching-the-body",
+      "title": "1. Watching the Body",
+      "file": "02-1-watching-the-body.mp3",
+      "duration_sec": 340
+    },
+    {
+      "id": "2-watching-your-feelings",
+      "title": "2. Watching Your Feelings",
+      "file": "03-2-watching-your-feelings.mp3",
+      "duration_sec": 69.5
+    },
+    {
+      "id": "3-watching-your-mind",
+      "title": "3. Watching Your Mind",
+      "file": "04-3-watching-your-mind.mp3",
+      "duration_sec": 85.5
+    },
+    {
+      "id": "4-watching-the-contents-of-experience",
+      "title": "4. Watching the Contents of Experience",
+      "file": "05-4-watching-the-contents-of-experience.mp3",
+      "duration_sec": 301.5
+    },
+    {
+      "id": "what-it-leads-to",
+      "title": "What It Leads To",
+      "file": "06-what-it-leads-to.mp3",
+      "duration_sec": 34.9
+    },
+    {
+      "id": "drop",
+      "title": "Drop",
+      "file": "99-drop.mp3",
+      "duration_sec": 13.7
+    }
+  ]
+}

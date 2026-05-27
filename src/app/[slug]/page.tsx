@@ -75,7 +75,7 @@ export default async function SuttaPage({
     <>
     <ReadingControls />
     <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
-      <header className="relative mb-12 overflow-hidden">
+      <header id="title" className="relative mb-12 overflow-hidden scroll-mt-8">
         {/* Opposite-side composition vs. the homepage hero for visual rhythm */}
         <Wash size="md" position="top-left" intensity={0.1} />
         <SuttaIllustration
@@ -104,13 +104,19 @@ export default async function SuttaPage({
         />
       )}
 
-      {safeSlug === "first-talk" && <Preface />}
+      {safeSlug === "first-talk" && (
+        <div id="preface" className="scroll-mt-8">
+          <Preface />
+        </div>
+      )}
 
-      <article className="prose-dharma">
+      <article id="opening" className="prose-dharma scroll-mt-8">
         <Content />
       </article>
 
-      <Drop text={DROPS[safeSlug]} />
+      <div id="drop" className="scroll-mt-8">
+        <Drop text={DROPS[safeSlug]} />
+      </div>
 
       <CanonicalLinks slug={safeSlug} />
 

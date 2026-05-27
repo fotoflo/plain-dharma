@@ -1,0 +1,45 @@
+{
+  "slug": "not-self",
+  "locale": "en",
+  "voice": "UmQN7jS1Ee8B1czsUtQh",
+  "model": "eleven_multilingual_v2",
+  "generated_at": "2026-05-27T13:31:03.500Z",
+  "sections": [
+    {
+      "id": "title",
+      "title": "Anattalakkhana Sutta",
+      "file": "00-title.mp3",
+      "duration_sec": 12.6
+    },
+    {
+      "id": "opening",
+      "title": "Opening",
+      "file": "01-opening.mp3",
+      "duration_sec": 99.1
+    },
+    {
+      "id": "the-questions",
+      "title": "The Questions",
+      "file": "02-the-questions.mp3",
+      "duration_sec": 56.8
+    },
+    {
+      "id": "the-takeaway",
+      "title": "The Takeaway",
+      "file": "03-the-takeaway.mp3",
+      "duration_sec": 60.2
+    },
+    {
+      "id": "how-they-heard-it",
+      "title": "How They Heard It",
+      "file": "04-how-they-heard-it.mp3",
+      "duration_sec": 26
+    },
+    {
+      "id": "drop",
+      "title": "Drop",
+      "file": "99-drop.mp3",
+      "duration_sec": 8.8
+    }
+  ]
+}

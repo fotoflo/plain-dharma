@@ -34,11 +34,13 @@ export function FloatingAudioPlayer({ manifest, audioBaseUrl }: Props) {
       ref={containerRef}
       className="fixed bottom-24 right-4 z-50 sm:bottom-auto sm:top-36 sm:right-5 flex flex-col items-end gap-2"
     >
-      {open && (
-        <div className="w-[320px] max-w-[calc(100vw-2rem)]">
-          <AudioPlayer manifest={manifest} audioBaseUrl={audioBaseUrl} />
-        </div>
-      )}
+      {/* Keep the player mounted even when collapsed — otherwise closing the
+          popup unmounts <audio> and stops playback. Hide visually instead. */}
+      <div
+        className={`w-[320px] max-w-[calc(100vw-2rem)] ${open ? "" : "hidden"}`}
+      >
+        <AudioPlayer manifest={manifest} audioBaseUrl={audioBaseUrl} />
+      </div>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

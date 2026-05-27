@@ -1,3 +1,7 @@
 {"timestamp":"2026-05-26T14:46:20.563Z","slug":"first-talk","locale":"en","voice":"Charon","model":"gemini-2.5-flash-preview-tts","input_tokens":1109,"output_tokens":9811,"duration_sec":392.6,"sections":4,"estimated_cost_usd":0.098665}
 {"timestamp":"2026-05-26T23:41:13.498Z","slug":"first-talk","locale":"en","voice":"ash","model":"gpt-4o-mini-tts","input_chars":4057,"duration_sec":301.5,"sections":4,"estimated_cost_usd":0.075984}
 {"timestamp":"2026-05-27T02:03:07.558Z","slug":"first-talk","locale":"en","voice":"sage","model":"gpt-4o-mini-tts","input_chars":3937,"duration_sec":310.5,"sections":4,"estimated_cost_usd":0.078216}
+{"timestamp":"2026-05-27T10:15:46.505Z","slug":"first-talk","locale":"en","provider":"elevenlabs","voice":"BpjGufoPiobT79j2vtj4","model":"eleven_v3","input_chars":1601,"duration_sec":134.4,"sections":1,"estimated_cost_usd":0.03384}
+{"timestamp":"2026-05-27T10:16:06.143Z","slug":"preface","locale":"en","provider":"elevenlabs","voice":"BpjGufoPiobT79j2vtj4","model":"eleven_v3","input_chars":627,"duration_sec":40.4,"sections":1,"estimated_cost_usd":0.010194}
+{"timestamp":"2026-05-27T10:20:00.190Z","slug":"first-talk-title","locale":"en","provider":"elevenlabs","voice":"BpjGufoPiobT79j2vtj4","model":"eleven_v3","input_chars":210,"duration_sec":14.6,"sections":1,"estimated_cost_usd":0.003681}
+{"timestamp":"2026-05-27T10:20:23.866Z","slug":"preface","locale":"en","provider":"elevenlabs","voice":"BpjGufoPiobT79j2vtj4","model":"eleven_v3","input_chars":627,"duration_sec":42,"sections":1,"estimated_cost_usd":0.010594}

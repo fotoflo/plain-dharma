@@ -16,6 +16,7 @@ import {
   writeFileSync,
   readFileSync,
   appendFileSync,
+  copyFileSync,
 } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join, dirname } from "node:path";
@@ -466,6 +467,41 @@ async function main() {
 
   writeFileSync(manifestOutPath, JSON.stringify(manifest, null, 2));
   console.log(`\nManifest written to ${manifestOutPath}`);
+
+  // Auto-mirror ElevenLabs staging output to the live audio dir.
+  // OpenAI already writes directly to the live dir, so this is a no-op there.
+  if (PROVIDER === "elevenlabs") {
+    const liveDir = join(ROOT, "public", "audio", LOCALE, SLUG);
+    mkdirSync(liveDir, { recursive: true });
+
+    for (const s of manifestSections) {
+      const src = join(outDir, s.file);
+      const dst = join(liveDir, s.file);
+      copyFileSync(src, dst);
+      console.log(`  Mirrored → ${dst}`);
+    }
+
+    const liveManifestPath = join(liveDir, "manifest.json");
+    let liveManifest: Manifest;
+    if (existsSync(liveManifestPath)) {
+      liveManifest = JSON.parse(readFileSync(liveManifestPath, "utf8")) as Manifest;
+      // Replace any sections whose id matches a regenerated one; keep order.
+      // New ids (not in the live manifest) get appended at the end.
+      const byId = new Map(manifestSections.map((s) => [s.id, s]));
+      const merged = liveManifest.sections.map((s) => byId.get(s.id) ?? s);
+      const existingIds = new Set(liveManifest.sections.map((s) => s.id));
+      const newOnes = manifestSections.filter((s) => !existingIds.has(s.id));
+      liveManifest = {
+        ...liveManifest,
+        generated_at: new Date().toISOString(),
+        sections: [...merged, ...newOnes],
+      };
+    } else {
+      liveManifest = { ...manifest };
+    }
+    writeFileSync(liveManifestPath, JSON.stringify(liveManifest, null, 2));
+    console.log(`  Mirrored manifest → ${liveManifestPath}`);
+  }
 
   const inputCost = (totalInputChars / 1000) * PRICE_INPUT_PER_1K_CHARS;
   const audioCost = (totalDurationSec / 60) * PRICE_PER_AUDIO_MIN;

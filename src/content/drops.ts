@@ -17,9 +17,7 @@ export const DROPS: Record<SuttaSlug, string> = {
 
 export const PREFACE = `After waking under the Bodhi tree, the Buddha sat for a while figuring out what to do. He'd seen something. But could it be said? At first he thought no one would understand. Then he changed his mind, got up, and walked west to find the five old friends he'd left behind when their shared path of harsh self-denial had taken him as far as it could.
 
-He found them in the deer park near Varanasi. They'd resolved not to greet him — he'd quit, after all. But there was something about the way he walked, and by the time he arrived they were preparing him a seat.
-
-This is what he said.`;
+He found them in the deer park near Varanasi. They'd resolved not to greet him — he'd quit, after all. But there was something about the way he walked, and by the time he arrived they were preparing him a seat.`;
 
 export const CLOSING = `Six teachings. That's the foundation — what he actually said, before any of it became a religion, before there were schools or commentaries.
 

@@ -21,6 +21,6 @@ else
     echo "ngrok is not running"
     echo ""
     echo "Start it with:"
-    echo "  pnpm ngrok          # Start tunnel to port 3000"
+    echo "  pnpm ngrok          # Start tunnel to port 8008"
     echo "  pnpm dev:tunnel     # Start dev server + ngrok together"
 fi

@@ -10,7 +10,7 @@ Plain Dharma (plaindharma.com) — a free, CC0 reading site for six foundational
 
 | Command | Notes |
 |---|---|
-| `pnpm dev` | Next.js dev on :3000 |
+| `pnpm dev` | Next.js dev on :8008 |
 | `pnpm dev:tunnel` | Dev + ngrok in parallel; auto-prints QR for phone testing |
 | `pnpm ngrok:qr` / `pnpm ngrok:status` | Reprint QR / show tunnel status |
 | `pnpm build` | Production build (`next build`) |

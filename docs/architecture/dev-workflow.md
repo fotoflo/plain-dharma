@@ -6,7 +6,7 @@
 
 | Command | What it does |
 |---|---|
-| `pnpm dev` | Next.js dev server on port 3000 |
+| `pnpm dev` | Next.js dev server on port 8008 |
 | `pnpm dev:tunnel` | Next.js + ngrok tunnel in parallel; QR auto-printed |
 | `pnpm ngrok` | ngrok tunnel only (useful if dev server is already running) |
 | `pnpm ngrok:qr` | Print QR for the current running tunnel |

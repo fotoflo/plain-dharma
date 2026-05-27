@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Start ngrok tunnel to Next.js dev server (port 3000).
+# Start ngrok tunnel to Next.js dev server (port 8008).
 #
 # Usage: pnpm run ngrok
 
@@ -13,7 +13,7 @@ set -a
 [ -f .env ]       && source .env
 set +a
 
-PORT="${1:-3000}"
+PORT="${1:-8008}"
 
 # Locate ngrok binary — prefer system (typically newer, supports current config
 # format), fall back to project-local npm dev dep for fresh checkouts.

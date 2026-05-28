@@ -1,6 +1,6 @@
 # Architecture — Plain Dharma
 
-*Last updated: 2026-05-26*
+*Last updated: 2026-05-28*
 
 ## Detailed docs
 
@@ -196,15 +196,25 @@ If the English-at-root decision goes that way, `[locale]` still wraps everything
 - Sutta content is selected by locale: `src/content/{locale}/{slug}.mdx`
 - Fallback: if a translation is missing for a given locale, fall back to English with a visible note ("Not yet translated — showing English") rather than 404
 
+## Server-side API routes
+
+A hybrid static/RSC site on Vercel. Two routes are dynamically rendered (not statically prerendered):
+
+| Route | Purpose | Env |
+|---|---|---|
+| `POST /api/subscribe` | Newsletter signup; sends welcome email to subscriber + notification to owner via Resend. No contact list — the signup *is* the two emails. | `RESEND_API_KEY` |
+| `POST /api/checkout` | Stripe Checkout Session creator for the donation flow on `/download/donate` | `STRIPE_SECRET_KEY` |
+
+Everything else is statically generated at build time. Keep all new code compatible with this constraint — don't add server-only features without equivalent justification (paid services with keys that must stay server-side).
+
 ## What this site is *not*
 
 - **No auth.** No accounts, no login, no signup.
 - **No database.** No CMS, no headless CMS, no Sanity, no Contentful. Content lives in the repo.
 - **No user state.** No bookmarks, no progress tracking, no comments.
 - **No analytics at launch** (consider plausible/umami post-launch if the user wants distribution metrics — never GA).
-- **No email capture at launch.** If added later, it lives on `/download` only ("get notified when the audiobook is ready").
 
-This is a pure static site. The entire thing should build, deploy, and serve from CDN edge with zero runtime cost.
+This is a reading-first static site. The entire thing should build, deploy, and serve from CDN edge with zero runtime cost.
 
 ## SEO
 

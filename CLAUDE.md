@@ -8,7 +8,7 @@ Plain Dharma (plaindharma.com) — a free, CC0 reading site for six foundational
 
 **Server-side carve-outs** (the only routes that aren't statically prerendered):
 - `src/app/api/checkout/route.ts` — Stripe Checkout Session creator powering the donation flow on `/download/donate`.
-- `src/app/api/subscribe/route.ts` — Mailjet newsletter signup, called from the home-page form. Keys are server-only so the Mailjet secret never reaches the browser.
+- `src/app/api/subscribe/route.ts` — newsletter signup, called from the home-page form. Sends a welcome email to the subscriber and a notification to the owner via Resend (no contact list). `RESEND_API_KEY` is server-only so it never reaches the browser.
 
 Everything else should remain compatible with `output: 'export'`. Don't add more API routes or server-only features without equivalent justification (paid services with keys that must stay server-side, or persistence the static site genuinely can't do).
 

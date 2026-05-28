@@ -4,17 +4,17 @@
 
 ### Distribution
 
-| Bucket     | Count | Δ vs 2026-05-27 |
-|------------|-------|-----------------|
-| <=50       | 143   | -6              |
-| 51-150     | 106   | +7              |
-| 151-300    | 42    | +2              |
-| 301-500    | 10    | 0               |
-| 501-1000   | 3     | 0               |
-| 1001-2000  | 0     | 0               |
-| 2000+      | 0     | 0               |
+| Bucket     | Count | Δ vs previous |
+|------------|-------|---------------|
+| <=50       | 145   | +2            |
+| 51-150     | 108   | +2            |
+| 151-300    | 42    | —             |
+| 301-500    | 10    | —             |
+| 501-1000   | 3     | —             |
+| 1001-2000  | 0     | —             |
+| 2000+      | 0     | —             |
 
-Total files: 304 (+3)
+Total files: 308 (+4)
 
 ### Largest File
 
@@ -24,11 +24,11 @@ Total files: 304 (+3)
 
 3 files (AudioPlayer.tsx exceeds the 500-line guideline):
 - `src/components/AudioPlayer.tsx` — 647 lines
-- (2 additional files not listed above)
+- (2 additional files)
 
 ### Delta
 
-Modest growth: 301 → 304 files (+3). Slight consolidation in <=50 bucket (-6) with corresponding gains in 51-150 (+7). AudioPlayer.tsx grew from 601 to 647 lines — continuing expansion, deepening refactoring need. Files over 500 lines remain at 3. Recent changes include audio player enhancements, closing/preface text updates, and drop content additions.
+Steady growth: 304 → 308 files (+4). Small distribution shift: <=50 bucket grew by 2, 51-150 by 2; all other buckets stable. AudioPlayer.tsx holds at 647 lines. Recent session added audio variant generation scripts and manifest updates.
 
 ## 2026-05-28 (previous)
 

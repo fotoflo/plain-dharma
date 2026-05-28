@@ -1,6 +1,6 @@
 # Deployment — Plain Dharma
 
-*Last updated: 2026-05-26*
+*Last updated: 2026-05-28*
 
 ## Stack
 
@@ -27,8 +27,23 @@ A  @    76.76.21.21
 A  www  76.76.21.21
 ```
 
-Set via the Spaceship DNS API. Vercel handles SSL automatically once the A
-records propagate.
+Mail is sent through Resend via `POST /api/subscribe` (sends a welcome email to
+the subscriber and a notification email to the owner; no contact list). Resend
+verifies the `plaindharma.com` sending domain using DNS records managed via the
+Spaceship DNS API:
+
+```
+TXT  resend._domainkey  p=MIGf…QAB                          (DKIM)
+TXT  send               v=spf1 include:amazonses.com ~all   (SPF)
+MX   send               feedback-smtp.ap-northeast-1.amazonses.com
+TXT  _dmarc             v=DMARC1; p=none;
+```
+
+Only required env: `RESEND_API_KEY` (server-only, never sent to browser). The
+API route returns 503 if the key is missing, 502 if Resend rejects the send
+(e.g. domain not yet verified in Resend console).
+
+Vercel handles SSL automatically once the A records propagate.
 
 ## `next.config.ts` production-relevant settings
 

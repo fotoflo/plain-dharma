@@ -11,7 +11,10 @@ import {
   type LayoutChangeEvent,
 } from "react-native";
 
+import { type Locale } from "@plain-dharma/content";
+
 import { useAudio } from "@/audio/AudioProvider";
+import { useDownloads } from "@/audio/DownloadsProvider";
 import { sectionDuration } from "@/audio/manifest";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -54,7 +57,36 @@ function ProgressBar({
   );
 }
 
-export function AudioPanel() {
+// "Download all for offline" — shown only when this locale isn't downloaded yet
+// (per-language download; the audios are short). Hidden once downloaded.
+function DownloadControl({ locale }: { locale: Locale }) {
+  const { palette } = useTheme();
+  const { downloaded, busyLocale, progress, download } = useDownloads();
+  if (downloaded[locale]) return null;
+  const busy = busyLocale === locale;
+  return (
+    <Pressable
+      onPress={() => {
+        if (!busy) void download(locale);
+      }}
+      disabled={busy}
+      style={[styles.dlBtn, { borderColor: palette.divider }]}
+    >
+      {busy ? (
+        <ActivityIndicator size="small" color={palette.accent} />
+      ) : (
+        <Ionicons name="arrow-down-circle-outline" size={16} color={palette.accent} />
+      )}
+      <Text style={[styles.dlText, { color: busy ? palette.ink : palette.accent }]}>
+        {busy
+          ? `Downloading${progress ? ` ${progress.done}/${progress.total}` : "…"}`
+          : "Download for offline"}
+      </Text>
+    </Pressable>
+  );
+}
+
+export function AudioPanel({ locale }: { locale: Locale }) {
   const { palette } = useTheme();
   const {
     sections,
@@ -186,6 +218,7 @@ export function AudioPanel() {
         {!isLoaded ? (
           <ActivityIndicator color={palette.accent} style={{ marginTop: 8 }} />
         ) : null}
+        <DownloadControl locale={locale} />
       </View>
     );
   }
@@ -234,6 +267,7 @@ export function AudioPanel() {
           {sections.length} sections · {formatTime(total)}
         </Text>
       </View>
+      <DownloadControl locale={locale} />
     </View>
   );
 }
@@ -284,4 +318,17 @@ const styles = StyleSheet.create({
     marginTop: 2,
     borderTopWidth: 1,
   },
+  dlBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    marginTop: 16,
+    alignSelf: "center",
+  },
+  dlText: { fontSize: 13 },
 });

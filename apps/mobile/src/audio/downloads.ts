@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SUTTAS, type Locale, type SuttaSlug } from "@plain-dharma/content";
 import type { AudioManifest } from "@plain-dharma/content/audio";
 import { Directory, File, Paths } from "expo-file-system";
@@ -14,8 +13,6 @@ import {
 //   <document>/audio/<locale>/<slug>/<file>.mp3
 // v1 downloads the SLOW renditions only (the default pace); fast variants stay
 // streamed when online and are simply unavailable offline.
-
-const flagKey = (locale: Locale) => `offline:${locale}`;
 
 function suttaDir(locale: Locale, slug: SuttaSlug): Directory {
   return new Directory(Paths.document, "audio", locale, slug);
@@ -42,17 +39,12 @@ async function readLocalManifest(
   }
 }
 
-/** True when every sutta for a locale has a locally-stored manifest. */
-export async function isLocaleDownloaded(locale: Locale): Promise<boolean> {
-  if ((await AsyncStorage.getItem(flagKey(locale))) !== "1") return false;
-  // Reconcile against disk so a cleared cache doesn't leave a stale flag.
-  for (const slug of SUTTAS) {
-    if (!manifestFile(locale, slug).exists) {
-      await AsyncStorage.removeItem(flagKey(locale));
-      return false;
-    }
-  }
-  return true;
+/**
+ * Downloaded when every sutta has a locally-stored manifest. Disk is the source
+ * of truth — no separate persisted flag that can drift out of sync.
+ */
+export function isLocaleDownloaded(locale: Locale): boolean {
+  return SUTTAS.every((slug) => manifestFile(locale, slug).exists);
 }
 
 /**
@@ -98,15 +90,12 @@ export async function downloadLocale(
     const m = manifests[slug];
     if (m) manifestFile(locale, slug).write(JSON.stringify(m));
   }
-
-  await AsyncStorage.setItem(flagKey(locale), "1");
 }
 
-/** Delete all offline audio for a locale and clear its flag. */
-export async function removeLocale(locale: Locale): Promise<void> {
+/** Delete all offline audio for a locale. */
+export function removeLocale(locale: Locale): void {
   const root = localeRoot(locale);
   if (root.exists) root.delete();
-  await AsyncStorage.removeItem(flagKey(locale));
 }
 
 /**

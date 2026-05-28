@@ -50,7 +50,7 @@ export function FloatingAudioPlayer({
             { backgroundColor: palette.bg, borderColor: palette.accent },
           ]}
         >
-          <AudioPanel />
+          <AudioPanel locale={locale} />
         </View>
       ) : null}
       <Pressable

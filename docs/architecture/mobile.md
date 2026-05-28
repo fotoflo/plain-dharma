@@ -82,12 +82,37 @@ perms).
 | `manifest.ts` | Fetches a sutta's manifest from `plaindharma.com`, derives slow/fast URLs (`fast/<file>`) + durations |
 | `service.ts` | Playback service — OS remote controls (lock screen, headphones) |
 | `setup.ts` | Idempotent `setupPlayer` + capabilities |
-| `AudioProvider.tsx` | Queue state; `load(locale, slug)` and `loadCombined(locale)` (stitched /read queue); fraction-preserving slow↔fast pace switch; keyed dedup |
-| `downloads.ts` | Offline: per-language bulk download to `Paths.document`; `resolveSuttaSections` returns local `file://` URIs when downloaded, else streams |
+| `AudioProvider.tsx` | Queue state; `load(locale, slug)` and `loadCombined(locale)` (stitched /read queue); fraction-preserving slow↔fast pace switch; **queue rebuild on source URL change** (triggers when online→offline, e.g., after download) |
+| `downloads.ts` | Offline: per-language bulk download to `Paths.document`; `isLocaleDownloaded()` checks disk (manifest.json exists for each sutta), not AsyncStorage; **file/disk-based source of truth**; `resolveSuttaSections` returns local `file://` URIs when downloaded, else streams |
 | `DownloadsProvider.tsx` | Offline download state + progress |
 
 `AudioPanel` (TOC + transport + tap-to-seek + pace) and `FloatingAudioPlayer`
-(the "Listen" pill, with a `combined` prop for /read) are the UI.
+(the "Listen" pill, with `DownloadControl` in-player download button, `combined` prop for /read) are the UI.
+
+### Offline download: detection and playback
+
+**Detection** (`src/audio/downloads.ts` `isLocaleDownloaded()`) is **file/disk-based**:
+- Checks whether each sutta's `manifest.json` exists on disk under `Paths.document/{locale}/`.
+- Does **not** rely on an AsyncStorage flag (which didn't persist reliably).
+- `downloadLocale` / `removeLocale` no longer touch AsyncStorage — they only manage files.
+- This is the source of truth for "is this locale ready to play offline?"
+
+**Playback** (`src/audio/AudioProvider.tsx`):
+- `loadKey` now **always re-resolves sections and rebuilds the track-player queue** when the resolved source URL changes (e.g., a streaming queue becomes local `file://` URLs after download).
+- Previously skipped rebuild on slug-only dedup, so downloaded audio didn't play offline.
+- Now detects the URL change and queues the local files.
+
+**UI entry points:**
+- `DownloadControl` in `AudioPanel` (the "Listen" pill): shows "Download for offline" when locale is not downloaded, hidden once it is.
+- `OfflineDownload.tsx` on the More screen: simplified label "Download for offline", per-language selector + progress bar.
+
+### Audio → page scroll sync
+
+`src/app/[slug].tsx` renders the sutta body as per-section `<View>`s:
+- `splitSections` in `src/content/markdown.ts` splits markdown on `## ` headings into id'd sections.
+- Each section's Y position is recorded via `onLayout`.
+- When audio advances to a new section, `ScrollView` scrolls to that section's Y.
+- Keeps the visual flow synchronized with audio playback.
 
 ## Routing (`src/app/`, expo-router)
 
@@ -128,6 +153,26 @@ npx expo run:ios        # prebuild + pods + simulator (first run is slow)
 npx expo start --dev-client   # fast JS iteration after the first build
 ```
 
+**On this Mac (Xcode 26.5):** Local `npx expo run:ios` is blocked — the iOS
+simulator platform for Xcode 26.5 isn't installed (only 18.6 and 26.3 runtimes,
+and building needs the matching platform, ~7 GB download). **Workaround: EAS
+cloud simulator build:**
+
+```bash
+# Build on EAS (requires @flexbiketeam/mobile project + eas.json with ios.simulator:true)
+eas build -p ios --profile development
+# Download the .tar.gz artifact; unzip locally
+
+# Register with simulator
+xcrun simctl install <udid> mobile.app
+
+# Start Metro dev server
+cd apps/mobile && expo start --dev-client
+
+# Route to the dev client
+xcrun simctl openurl <udid> "mobile://expo-development-client/?url=http://localhost:8081"
+```
+
 `scripts/audio-reencode-ab.sh` (repo root, throwaway) A/Bs lighter mp3 encodings
 if download size becomes a concern (files are currently mp3 44.1 kHz mono 64 kbps).
 
@@ -143,5 +188,7 @@ if download size becomes a concern (files are currently mp3 44.1 kHz mono 64 kbp
 - **Decorative backgrounds** (`DecorativeBackground`) are dependency-free
   approximations (translucent discs for the light wash, static dots for the dark
   star field) — no canvas/SVG/blur deps; twinkle animation is a follow-up.
+- **`<Link asChild>` rejects ARRAY `style` props** — wrap multi-style arrays in
+  `StyleSheet.flatten([...])` (e.g., `apps/mobile/src/app/(tabs)/index.tsx`).
 - **Nothing native is runtime-verified by typecheck/bundle** — playback,
   downloads, and the tab bar need a device/simulator run.

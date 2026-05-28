@@ -3,6 +3,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -89,10 +90,14 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const { playing } = useIsPlaying();
   const isPlaying = playing ?? false;
   const isPlayingRef = useRef(false);
-  isPlayingRef.current = isPlaying;
 
   const { position, duration } = useProgress(250);
   const activeTrack = useActiveTrack();
+
+  // Mirror isPlaying state in a ref for use in stable callbacks.
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   // Active track index drives the highlighted section + page sync.
   useTrackPlayerEvents([Event.PlaybackActiveTrackChanged], (e) => {
@@ -113,22 +118,42 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  // Shared loader for a dedup key (no-op if that key is already loaded).
+  // Shared loader. Always re-resolves (cheap: a local read or one fetch) so a
+  // queue that was built from streaming URLs gets rebuilt with local file://
+  // URLs once the audio is downloaded — and vice versa. Skips the rebuild only
+  // when the same key resolves to the same source, so it never interrupts
+  // ongoing playback needlessly.
   const loadKey = useCallback(
     async (
       locale: Locale,
       key: string,
       build: () => Promise<{ secs: PlayerSection[]; album: string }>
     ) => {
-      if (loadedKeyRef.current === key) return;
+      setError(null);
+      let resolved: { secs: PlayerSection[]; album: string };
+      try {
+        resolved = await build();
+      } catch (err) {
+        if (loadedKeyRef.current !== key) {
+          setError(err instanceof Error ? err.message : "Failed to load audio");
+        }
+        return;
+      }
+      const nextUrl = resolved.secs[0]
+        ? sectionUrl(resolved.secs[0], speedRef.current)
+        : "";
+      const curUrl = sectionsRef.current[0]
+        ? sectionUrl(sectionsRef.current[0], speedRef.current)
+        : "";
+      if (loadedKeyRef.current === key && nextUrl === curUrl && nextUrl !== "") {
+        return; // already loaded from the same source — keep playing
+      }
       loadedKeyRef.current = key;
       localeRef.current = locale;
       setLoadedKey(key);
       setLoading(true);
-      setError(null);
       try {
-        const { secs, album } = await build();
-        await installQueue(secs, album);
+        await installQueue(resolved.secs, resolved.album);
       } catch (err) {
         loadedKeyRef.current = null;
         setLoadedKey(null);

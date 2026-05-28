@@ -50,14 +50,18 @@ export default function HomeScreen() {
 
       <View style={styles.ctaRow}>
         <Link href="/read" asChild>
-          <Pressable style={[styles.ctaPrimary, { backgroundColor: palette.accentStrong }]}>
+          <Pressable
+            style={StyleSheet.flatten([styles.ctaPrimary, { backgroundColor: palette.accentStrong }])}
+          >
             <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 15 }}>
               {s.ctaReadAll}
             </Text>
           </Pressable>
         </Link>
         <Link href="/more" asChild>
-          <Pressable style={[styles.ctaSecondary, { borderColor: palette.divider }]}>
+          <Pressable
+            style={StyleSheet.flatten([styles.ctaSecondary, { borderColor: palette.divider }])}
+          >
             <Text style={{ color: palette.ink, fontFamily: FONTS.serif, fontSize: 15 }}>
               {s.ctaDownload}
             </Text>
@@ -81,7 +85,9 @@ export default function HomeScreen() {
       <View style={{ borderTopWidth: 1, borderColor: palette.divider, marginTop: 16 }}>
         {suttas.map((sutta) => (
           <Link key={sutta.slug} href={`/${sutta.slug}`} asChild>
-            <Pressable style={[styles.row, { borderColor: palette.divider }]}>
+            <Pressable
+              style={StyleSheet.flatten([styles.row, { borderColor: palette.divider }])}
+            >
               <SuttaIllustration slug={sutta.slug} size={72} />
               <View style={{ flex: 1 }}>
                 <View style={styles.rowHead}>

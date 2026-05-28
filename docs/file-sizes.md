@@ -7,14 +7,14 @@
 | Bucket     | Count | Δ vs prev |
 |------------|-------|-----------|
 | <=50       | 154   | —         |
-| 51-150     | 123   | +2        |
-| 151-300    | 48    | —         |
-| 301-500    | 10    | —         |
+| 51-150     | 124   | +1        |
+| 151-300    | 47    | -1        |
+| 301-500    | 12    | +2        |
 | 501-1000   | 4     | —         |
 | 1001-2000  | 0     | —         |
 | 2000+      | 0     | —         |
 
-Total files: 339 (+2)
+Total files: 341 (+2)
 
 ### Largest File
 
@@ -28,7 +28,7 @@ Total files: 339 (+2)
 
 ### Delta
 
-OG session: added the `ogBase()` metadata helper (`src/lib/og-meta.ts`), five ZH Open Graph image routes under `src/app/zh/`, and `scripts/generate-og-fonts.ts`. Net +2 in the 51-150 bucket (some new files counted in the prior same-day snapshot). No threshold crossings; largest file remains AudioPlayer.tsx at 647 lines — still the standing refactor candidate.
+Minor consolidation: two files moved into the 301–500 bracket (likely from contact form and contribute view additions), one file shrunk out of 151–300. AudioPlayer.tsx remains the largest at 647 lines. No new threshold-crossing files; the 501-1000 bucket remains stable at 4 files.
 
 ## 2026-05-28 (previous)
 

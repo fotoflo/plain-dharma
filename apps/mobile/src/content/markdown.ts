@@ -50,3 +50,38 @@ export function stripFrontmatter(src: string): string {
 export function getSuttaMarkdown(locale: Locale, slug: SuttaSlug): string {
   return stripFrontmatter(RAW[locale][slug]);
 }
+
+// Slugify a heading to match the audio manifest's section ids (rehype-slug
+// style: lowercase, drop punctuation, spaces → hyphens).
+export function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+export type ContentSection = { id: string; markdown: string };
+
+/**
+ * Split a sutta body into ordered sections aligned with the audio manifest:
+ * everything before the first `## ` heading is `opening`; each `## Heading`
+ * starts a new section whose id is the slugified heading. Lets the reader scroll
+ * to the section the audio is on.
+ */
+export function splitSections(markdown: string): ContentSection[] {
+  const out: ContentSection[] = [];
+  let current: ContentSection = { id: "opening", markdown: "" };
+  for (const line of markdown.split("\n")) {
+    const h2 = /^##\s+(.+?)\s*$/.exec(line);
+    if (h2) {
+      if (current.markdown.trim()) out.push(current);
+      current = { id: slugifyHeading(h2[1]), markdown: `${line}\n` };
+    } else {
+      current.markdown += `${line}\n`;
+    }
+  }
+  if (current.markdown.trim()) out.push(current);
+  return out;
+}

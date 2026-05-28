@@ -1,24 +1,57 @@
 import { DEFAULT_LOCALE, getMeta, isSuttaSlug } from "@plain-dharma/content";
 import { Link, useLocalSearchParams } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useRef } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  type LayoutChangeEvent,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
 import { FloatingReadingControls } from "@/components/FloatingReadingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
-import { getSuttaMarkdown } from "@/content/markdown";
+import { getSuttaMarkdown, splitSections } from "@/content/markdown";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme } from "@/theme/ThemeContext";
 import { CONTRAST_BG, FONTS } from "@/theme/tokens";
 
-// Placeholder reading screen — verification scaffolding. The real chrome
-// (reading controls, audio player, prev/next nav) is gated until web settles.
 export default function SuttaScreen() {
   const { theme, palette } = useTheme();
   const { contrast } = useReadingPrefs();
   const insets = useSafeAreaInsets();
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const { sections: audioSections, index } = useAudio();
+
+  const scrollRef = useRef<ScrollView>(null);
+  const positions = useRef<Record<string, number>>({});
+  const didMount = useRef(false);
+
+  // Active audio section, with the combined "slug--section" prefix stripped.
+  const activeId = audioSections[index]?.id?.split("--").pop();
+
+  const recordPos = useCallback((id: string) => (e: LayoutChangeEvent) => {
+    positions.current[id] = e.nativeEvent.layout.y;
+  }, []);
+
+  // Follow the audio: scroll to the section it just moved to. Skip the first
+  // run so we don't yank the page on load.
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    if (!activeId) return;
+    const y = positions.current[activeId];
+    if (y != null) {
+      scrollRef.current?.scrollTo({ y: Math.max(0, y - 16), animated: true });
+    }
+  }, [activeId]);
+
   const screenBg = CONTRAST_BG[theme][contrast] ?? palette.bg;
 
   if (!slug || !isSuttaSlug(slug)) {
@@ -33,37 +66,41 @@ export default function SuttaScreen() {
   }
 
   const meta = getMeta(DEFAULT_LOCALE, slug);
-  const body = getSuttaMarkdown(DEFAULT_LOCALE, slug);
+  const contentSections = splitSections(getSuttaMarkdown(DEFAULT_LOCALE, slug));
 
   return (
     <View style={{ flex: 1, backgroundColor: screenBg }}>
       <DecorativeBackground />
       <ScrollView
+        ref={scrollRef}
         style={{ backgroundColor: "transparent" }}
         contentContainerStyle={{
-        paddingTop: insets.top + 24,
-        paddingBottom: insets.bottom + 64,
-        paddingHorizontal: 24,
-      }}
-    >
-      <Link href="/" style={[styles.back, { color: palette.link, fontFamily: FONTS.serif }]}>
-        ← All talks
-      </Link>
-      <Text style={[styles.kicker, { color: palette.accent, fontFamily: FONTS.serif }]}>
-        {meta.kicker_override ?? meta.pali_name}
-      </Text>
-      <Text style={[styles.h1, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        {meta.title}
-      </Text>
-      <Text
-        style={[styles.subtitle, { color: palette.ink, fontFamily: FONTS.serifItalic }]}
+          paddingTop: insets.top + 24,
+          paddingBottom: insets.bottom + 96,
+          paddingHorizontal: 24,
+        }}
       >
-        {meta.subtitle}
-      </Text>
+        <Link href="/" style={[styles.back, { color: palette.link, fontFamily: FONTS.serif }]}>
+          ← All talks
+        </Link>
 
-      <View style={{ marginTop: 24 }}>
-        <MarkdownRenderer>{body}</MarkdownRenderer>
-      </View>
+        <View onLayout={recordPos("title")} style={{ marginBottom: 8 }}>
+          <Text style={[styles.kicker, { color: palette.accent, fontFamily: FONTS.serif }]}>
+            {meta.kicker_override ?? meta.pali_name}
+          </Text>
+          <Text style={[styles.h1, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+            {meta.title}
+          </Text>
+          <Text style={[styles.subtitle, { color: palette.ink, fontFamily: FONTS.serifItalic }]}>
+            {meta.subtitle}
+          </Text>
+        </View>
+
+        {contentSections.map((sec) => (
+          <View key={sec.id} onLayout={recordPos(sec.id)}>
+            <MarkdownRenderer>{sec.markdown}</MarkdownRenderer>
+          </View>
+        ))}
       </ScrollView>
       <FloatingReadingControls />
       <FloatingAudioPlayer locale={DEFAULT_LOCALE} slug={slug} />

@@ -61,7 +61,7 @@ export function OfflineDownload({ locale }: { locale: Locale }) {
         style={[styles.btn, { backgroundColor: palette.accentStrong }]}
       >
         <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 16 }}>
-          Download all audio · {LANG_NAME[locale]} ({SIZE_ESTIMATE[locale]})
+          Download for offline ({SIZE_ESTIMATE[locale]})
         </Text>
       </Pressable>
       {error ? <Text style={{ color: "#c0392b", marginTop: 8 }}>{error}</Text> : null}

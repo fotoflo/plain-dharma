@@ -26,23 +26,38 @@ const FADE_MS = 700;
 const GAP_MS = 1400;
 const FADE_SEC = FADE_MS / 1000;
 
+// Playback pace. "slow" = the default -20% meditative rendition (per-section
+// `file`); "fast" = the optional -7.5% rendition (`fileFast`). The speed
+// control only appears when a fast variant exists for the manifest.
+type Speed = "slow" | "fast";
+
 export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
   const s = getStrings(locale).audio;
-  // Per-section `file` is usually a bare filename ("01-opening.mp3"), but the
-  // combined /read playlist passes absolute "/audio/.../foo.mp3" paths since
-  // its sections live in different per-sutta dirs. Detect and pass through.
-  // Memoized so the listener-setup useEffect doesn't tear down and re-attach
-  // on every parent re-render (e.g. when the floating popup toggles open).
-  const getFileUrl = useCallback(
-    (file: string) =>
-      file.startsWith("/") || file.startsWith("http")
+  // Resolve a section to its mp3 URL for the given pace. A section's `file`
+  // (slow) is usually a bare filename ("01-opening.mp3"), but the combined
+  // /read playlist passes absolute "/audio/.../foo.mp3" paths since its
+  // sections live in different per-sutta dirs — detect and pass through.
+  // `fileFast` mirrors that shape. Takes the pace explicitly (rather than
+  // closing over `speed`) so it stays stable across pace changes.
+  const sectionUrl = useCallback(
+    (sec: AudioSection, pace: Speed) => {
+      const file = pace === "fast" && sec.fileFast ? sec.fileFast : sec.file;
+      return file.startsWith("/") || file.startsWith("http")
         ? file
-        : `${audioBaseUrl}/${file}`,
+        : `${audioBaseUrl}/${file}`;
+    },
     [audioBaseUrl]
   );
+  // Only offer the speed control when the manifest actually has a fast variant
+  // (e.g. en). Locales without one (zh) get no control and play at slow pace.
+  const hasFast = manifest.sections.some((sec) => sec.fileFast);
   const audioRef = useRef<HTMLAudioElement>(null);
   // True once we've started the end-of-section fade-out; reset on each load.
   const fadeOutStartedRef = useRef(false);
+  // True during the brief gap between a section ending and the next one
+  // starting on auto-advance. Keeps the player UI up (suppresses the flip to
+  // the TOC) and ignores the intervening pause/load events.
+  const autoAdvancingRef = useRef(false);
   // Scrolling the active section into the (potentially clipped) list viewport.
   const activeLiRef = useRef<HTMLLIElement>(null);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -50,9 +65,19 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [speed, setSpeed] = useState<Speed>("slow");
 
   const sections = manifest.sections;
   const currentSection: AudioSection = sections[currentIdx];
+
+  // A section's listed duration depends on the active pace.
+  const secDuration = useCallback(
+    (sec: AudioSection) =>
+      speed === "fast" && sec.duration_fast_sec
+        ? sec.duration_fast_sec
+        : sec.duration_sec,
+    [speed]
+  );
 
   // Animate audio.volume from its current value to `to` over `durationMs`.
   const fadeVolume = useCallback((to: number, durationMs: number) => {
@@ -77,30 +102,89 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
       if (!audio) return;
       const sec = sections[idx];
       if (!sec) return;
+      // A programmatic load that will resume playback (auto-advance, or
+      // prev/next while playing) calls audio.load(), which fires a `pause`
+      // event. Flag it so handlePause doesn't flip the UI back to the TOC.
+      if (autoplay) autoAdvancingRef.current = true;
       setCurrentIdx(idx);
       setCurrentTime(0);
       setDuration(0);
       setIsLoaded(false);
       fadeOutStartedRef.current = false;
       audio.volume = 1;
-      audio.src = getFileUrl(sec.file);
+      audio.src = sectionUrl(sec, speed);
       audio.load();
       if (autoplay) {
         audio
           .play()
-          .then(() => setIsPlaying(true))
-          .catch(() => setIsPlaying(false));
+          .then(() => {
+            autoAdvancingRef.current = false;
+            setIsPlaying(true);
+          })
+          .catch(() => {
+            autoAdvancingRef.current = false;
+            setIsPlaying(false);
+          });
       }
     },
-    [sections, getFileUrl]
+    [sections, sectionUrl, speed]
+  );
+
+  // Switch pace in place: reload the current section at the new speed,
+  // preserving the fractional play position and resuming if it was playing.
+  const changeSpeed = useCallback(
+    (next: Speed) => {
+      if (next === speed) return;
+      setSpeed(next);
+      const audio = audioRef.current;
+      const sec = sections[currentIdx];
+      if (!audio || !sec) return;
+      const frac =
+        isFinite(audio.duration) && audio.duration > 0
+          ? audio.currentTime / audio.duration
+          : 0;
+      const wasPlaying = !audio.paused;
+      // Same as loadSection: the reload fires a `pause` event. If we're going
+      // to resume, suppress the flip to the TOC.
+      if (wasPlaying) autoAdvancingRef.current = true;
+      fadeOutStartedRef.current = false;
+      audio.volume = 1;
+      audio.src = sectionUrl(sec, next);
+      audio.load();
+      const onMeta = () => {
+        audio.removeEventListener("loadedmetadata", onMeta);
+        if (isFinite(audio.duration)) {
+          audio.currentTime = frac * audio.duration;
+          setCurrentTime(audio.currentTime);
+        }
+        if (wasPlaying) {
+          audio
+            .play()
+            .then(() => {
+              autoAdvancingRef.current = false;
+            })
+            .catch(() => {
+              autoAdvancingRef.current = false;
+            });
+        }
+      };
+      audio.addEventListener("loadedmetadata", onMeta);
+    },
+    [speed, sections, currentIdx, sectionUrl]
   );
 
   // When the audio element ends, wait a beat for breath, then advance.
   const handleEnded = useCallback(() => {
-    setIsPlaying(false);
     const nextIdx = currentIdx + 1;
     if (nextIdx < sections.length) {
+      // Auto-advance: keep the player UI visible through the silent gap rather
+      // than flashing back to the TOC and in again. autoAdvancingRef tells the
+      // pause handler to ignore the intervening pause/load events.
+      autoAdvancingRef.current = true;
       window.setTimeout(() => loadSection(nextIdx, true), GAP_MS);
+    } else {
+      // End of the playlist — nothing to advance to, so return to the TOC.
+      setIsPlaying(false);
     }
   }, [currentIdx, sections.length, loadSection]);
 
@@ -169,7 +253,12 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
       if (isFinite(audio.duration)) setDuration(audio.duration);
     };
     const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
+    const handlePause = () => {
+      // During auto-advance the element pauses/reloads between sections; keep
+      // the player UI up instead of flashing back to the TOC.
+      if (autoAdvancingRef.current) return;
+      setIsPlaying(false);
+    };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("durationchange", handleDurationChange);
@@ -180,7 +269,7 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
 
     // Load the first section on mount (no autoplay)
     if (!audio.src) {
-      audio.src = getFileUrl(sections[0].file);
+      audio.src = sectionUrl(sections[0], speed);
       audio.load();
     }
 
@@ -192,7 +281,7 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [handleEnded, getFileUrl, sections, fadeVolume]);
+  }, [handleEnded, sectionUrl, speed, sections, fadeVolume]);
 
   // Keep the active section visible in the (possibly scrolled) section list.
   useEffect(() => {
@@ -298,18 +387,59 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
     }
   };
 
-  const totalDuration = sections.reduce((n, s) => n + s.duration_sec, 0);
+  const totalDuration = sections.reduce((n, sec) => n + secDuration(sec), 0);
 
-  const effectiveDuration = duration > 0 ? duration : currentSection.duration_sec;
+  const effectiveDuration = duration > 0 ? duration : secDuration(currentSection);
+
+  // Pace control (Slower/Faster). Rendered inside the player body / TOC footer
+  // rather than the header so it gets its own breathing room. Only shown when a
+  // fast variant exists for this manifest (en); absent for zh.
+  const paceControl = hasFast ? (
+    <div
+      role="group"
+      aria-label={s.pace}
+      className="flex items-center gap-0.5 rounded-full border border-divider py-0.5 pl-1.5 pr-0.5"
+    >
+      {/* Speedometer icon — affordance that this control sets pace. */}
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        className="mr-0.5 h-3.5 w-3.5 fill-current text-ink/40"
+      >
+        <path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z" />
+        <path d="M10.59 15.41a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z" />
+      </svg>
+      {(
+        [
+          ["slow", s.slower],
+          ["fast", s.faster],
+        ] as const
+      ).map(([val, label]) => (
+        <button
+          key={val}
+          type="button"
+          aria-pressed={speed === val}
+          onClick={() => changeSpeed(val)}
+          className={[
+            "rounded-full px-2.5 py-0.5 font-sans text-[11px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent",
+            speed === val ? "bg-accent text-white" : "text-ink/55 hover:text-ink",
+          ].join(" ")}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  ) : null;
 
   return (
     <div className="rounded-lg border border-accent/40 bg-paper shadow-xl overflow-hidden">
       {/* Hidden native audio element */}
       <audio ref={audioRef} preload="metadata" />
 
-      {/* Header: label + (in player mode) close-player button that returns
-          to the TOC by pausing playback. The popup itself stays open. */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-divider">
+      {/* Header: label + (in player mode) a close-player button that pauses and
+          returns to the TOC. The popup itself stays open. The pace control lives
+          in the body/footer (below), not here. */}
+      <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-divider">
         <span className="font-sans text-xs font-semibold uppercase tracking-[0.15em] text-ink/50">
           {isPlaying ? s.nowPlaying : s.listen}
         </span>
@@ -445,6 +575,14 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
               <span>{formatTime(effectiveDuration)}</span>
             </div>
           </div>
+
+          {/* Pace control — its own row so it isn't crammed into the header.
+              stopPropagation so tapping it doesn't pause via the wrapper. */}
+          {paceControl && (
+            <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
+              {paceControl}
+            </div>
+          )}
         </div>
       ) : (
         /* TOC MODE — section list. Tap any row to play that section. */
@@ -486,7 +624,7 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
                       {sec.title}
                     </span>
                     <span className="flex-shrink-0 font-sans text-xs tabular-nums text-ink/40">
-                      {formatTime(sec.duration_sec)}
+                      {formatTime(secDuration(sec))}
                     </span>
                   </button>
                 </li>
@@ -494,8 +632,9 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
             })}
           </ul>
 
-          <div className="px-4 py-2 border-t border-divider flex justify-end">
-            <span className="font-sans text-xs text-ink/35">
+          <div className="px-4 py-2 border-t border-divider flex items-center justify-between gap-2">
+            {paceControl}
+            <span className="ml-auto font-sans text-xs text-ink/35">
               {s.sectionsTotalLine
                 .replace("{n}", String(sections.length))
                 .replace("{time}", formatTime(totalDuration))}

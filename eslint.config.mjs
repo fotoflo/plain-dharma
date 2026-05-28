@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Claude Code agent worktrees are isolated branches (e.g. the RN mobile
+    // port) — not part of this project's lint surface.
+    ".claude/worktrees/**",
   ]),
 ]);
 

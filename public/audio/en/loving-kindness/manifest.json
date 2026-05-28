@@ -9,19 +9,22 @@
       "id": "title",
       "title": "Metta Sutta",
       "file": "00-title.mp3",
-      "duration_sec": 11.8
+      "duration_sec": 11.8,
+      "duration_fast_sec": 10.7
     },
     {
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 172.0
+      "duration_sec": 172,
+      "duration_fast_sec": 155
     },
     {
       "id": "drop",
       "title": "Drop",
       "file": "99-drop.mp3",
-      "duration_sec": 12.2
+      "duration_sec": 12.2,
+      "duration_fast_sec": 11
     }
   ]
 }

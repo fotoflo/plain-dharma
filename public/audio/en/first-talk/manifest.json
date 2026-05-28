@@ -9,43 +9,50 @@
       "id": "title",
       "title": "Dhammacakkappavattana Sutta",
       "file": "00-title.mp3",
-      "duration_sec": 16.1
+      "duration_sec": 16.1,
+      "duration_fast_sec": 14.5
     },
     {
       "id": "preface",
       "title": "Preface",
       "file": "00b-preface.mp3",
-      "duration_sec": 54.3
+      "duration_sec": 54.3,
+      "duration_fast_sec": 48.9
     },
     {
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 115.7
+      "duration_sec": 115.7,
+      "duration_fast_sec": 104.2
     },
     {
       "id": "the-four-noble-truths",
       "title": "The Four Noble Truths",
       "file": "02-the-four-noble-truths.mp3",
-      "duration_sec": 83.9
+      "duration_sec": 83.9,
+      "duration_fast_sec": 75.6
     },
     {
       "id": "knowing-each-one-three-ways",
       "title": "Knowing Each One Three Ways",
       "file": "03-knowing-each-one-three-ways.mp3",
-      "duration_sec": 89.4
+      "duration_sec": 89.4,
+      "duration_fast_sec": 80.6
     },
     {
       "id": "how-they-heard-it",
       "title": "How They Heard It",
       "file": "04-how-they-heard-it.mp3",
-      "duration_sec": 115.1
+      "duration_sec": 115.1,
+      "duration_fast_sec": 103.7
     },
     {
       "id": "drop",
       "title": "Drop",
       "file": "99-drop.mp3",
-      "duration_sec": 9.0
+      "duration_sec": 9,
+      "duration_fast_sec": 8.1
     }
   ]
 }

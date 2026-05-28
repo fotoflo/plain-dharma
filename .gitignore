@@ -51,3 +51,6 @@ next-env.d.ts
 # agent illustration backups (scratch only)
 public/illustrations/_backup/
 .vercel
+
+# claude code agent worktrees (isolated branches, not part of this tree)
+.claude/worktrees/

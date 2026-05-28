@@ -21,6 +21,11 @@ export type AudioSection = {
   title: string;
   file: string;
   duration_sec: number;
+  // Optional alternate-speed ("faster", -7.5%) rendition. Present only when a
+  // `fast/<file>` exists on disk for this section; absent for locales/suttas
+  // with no fast variant (e.g. zh), so the player hides its speed control.
+  fileFast?: string;
+  duration_fast_sec?: number;
 };
 
 export type AudioManifest = {
@@ -48,10 +53,16 @@ export async function getAudioManifest(
     const raw = await fs.readFile(filePath, "utf8");
     const manifest = JSON.parse(raw) as AudioManifest;
     const dir = path.dirname(filePath);
-    manifest.sections = manifest.sections.map((s) => ({
-      ...s,
-      file: s.file + versionSuffix(path.join(dir, s.file)),
-    }));
+    manifest.sections = manifest.sections.map((s) => {
+      const fastRel = `fast/${s.file}`;
+      const fastV = versionSuffix(path.join(dir, fastRel));
+      return {
+        ...s,
+        file: s.file + versionSuffix(path.join(dir, s.file)),
+        // Only expose the fast variant when the rendered file actually exists.
+        ...(fastV ? { fileFast: fastRel + fastV } : {}),
+      };
+    });
     return manifest;
   } catch {
     return null;
@@ -96,6 +107,12 @@ export async function getCombinedAudioManifest(
         title: s.title,
         file: `/audio/${locale}/${slug}/${s.file}`,
         duration_sec: s.duration_sec,
+        ...(s.fileFast
+          ? {
+              fileFast: `/audio/${locale}/${slug}/${s.fileFast}`,
+              duration_fast_sec: s.duration_fast_sec,
+            }
+          : {}),
       });
     }
   }

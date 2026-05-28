@@ -46,7 +46,8 @@ src/components/FloatingAudioPlayer.tsx
 |---|---|
 | `scripts/generate-audio.ts` | TTS pipeline: reads MDX, calls OpenAI/ElevenLabs API, writes mp3s + manifests |
 | `src/content/en_tts/` | ElevenLabs-specific MDX mirrors with inline pause/emphasis tags |
-| `src/content/audio.ts` | `getAudioManifest` / `getCombinedAudioManifest` — loads JSON playlists; `versionSuffix()` appends cache-bust query string |
+| `src/content/audio.ts` | `getAudioManifest` / `getCombinedAudioManifest` — loads JSON playlists; `versionSuffix()` appends cache-bust query string; exposes optional `fileFast`/`duration_fast_sec` per section |
+| `scripts/make-audio-variant.ts` | Renders an alternate-speed set (`fast/`, −7.5%) from `candidates/orig-*` and patches `duration_fast_sec` into manifests |
 | `src/content/strings.ts` | `getStrings(locale).audio` — UI labels (listen, pause, play, prev, next, back5, forward5, seek, close, section templates) |
 | `src/components/AudioPlayer.tsx` | Two-mode playback UI: TOC (section list) ↔ Player (transport row + scrubber); accepts `locale` prop; strings from `getStrings` |
 | `src/components/FloatingAudioPlayer.tsx` | Wraps AudioPlayer in a closeable popup; keeps audio mounted; passes `locale` through |
@@ -94,10 +95,11 @@ Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
 
 ### Locale-specific narration
 
-**English (Sage, OpenAI):**
-- Provider: OpenAI `gpt-4o-mini-tts`
-- Voice: `sage` (contemplative, steady tone)
-- **Tempo:** ffmpeg `atempo=0.8333` post-process applies 20% meditative slowdown (time-stretches audio without changing pitch, extending ~10-minute narration to ~12 minutes)
+**English (Theo Silk, ElevenLabs multilingual):**
+- Provider: ElevenLabs `eleven_multilingual_v2`
+- Voice: Theo Silk (`UmQN7jS1Ee8B1czsUtQh`) — soft, meditative male voice
+- **Tempo:** the live files are time-stretched **−20%** (`atempo≈0.8333`, duration ×1.2) — the default "Slower" meditative pace. This is a post-process applied to the raw ElevenLabs output, not a `generate-audio.ts` step.
+- See **Speed variants** below — the player also offers a gentler **−7.5%** ("Faster") rendition.
 
 **Chinese (Carter, ElevenLabs multilingual):**
 - Provider: ElevenLabs `eleven_multilingual_v2` (supports mixed Pali/Chinese text)
@@ -115,6 +117,30 @@ Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
 - Generated files go to `public/audio/{locale}/{slug}/`
 - Even if the source is `en_tts/`, output mirrors the live directory structure
 - Safe to regenerate — existing files are skipped; only new sections are created
+
+## Speed variants (player pace toggle)
+
+English ships in two paces and the player lets the listener choose:
+
+- **"Slower" (default) = −20%** — the live `public/audio/en/{slug}/{file}.mp3`.
+- **"Faster" = −7.5%** (`atempo=0.925`, playback 92.5%) — `public/audio/en/{slug}/fast/{file}.mp3`.
+
+Both renditions are rendered from the **raw, un-stretched ElevenLabs originals** kept at
+`public/audio/en/{slug}/candidates/orig-*.mp3`. Always derive a new pace from `orig-*`, never by
+re-stretching an already-slowed file — compounding `atempo` passes degrades quality.
+
+```
+tsx scripts/make-audio-variant.ts [locale=en] [variant=fast] [atempo=0.925]
+```
+
+`scripts/make-audio-variant.ts` renders `candidates/orig-<file>` → `<variant>/<file>` for every
+sutta and patches each manifest section with `duration_<variant>_sec` (e.g. `duration_fast_sec`).
+It is purely additive — it never touches the live files or the orig candidates.
+
+**Graceful fallback:** `getAudioManifest` only sets a section's `fileFast` when `fast/<file>`
+actually exists on disk, and `AudioPlayer` renders the pace control only when
+`manifest.sections.some(s => s.fileFast)`. Locales without a fast variant (e.g. zh, which has its
+own baked-in −30% pace) show **no** control and simply play the default `file`.
 
 ## Manifest structure
 
@@ -152,6 +178,11 @@ Per-sutta manifests are at `public/audio/{locale}/{slug}/manifest.json`. Each `f
 includes a `?v=<mtime-seconds>` suffix (appended by `versionSuffix()` in `audio.ts` during
 load, mirroring the illustrations pattern). When an mp3 is regenerated, its mtime changes
 and the URL automatically changes, invalidating the browser cache.
+
+**Optional fast-variant fields:** when a `fast/<file>` exists, `getAudioManifest` adds two fields
+to that section at load time: `fileFast` (the `fast/<file>?v=<mtime>` URL — bare for per-sutta,
+absolute for the combined `/read` playlist) and `duration_fast_sec` (the −7.5% duration, written
+into the on-disk manifest by `make-audio-variant.ts`). Sections without a fast variant omit both.
 
 **Locale-aware playback:** The manifest carries the `locale` and `voice` for reference, but the
 player respects the manifest's section titles (which may include both English and locale-specific

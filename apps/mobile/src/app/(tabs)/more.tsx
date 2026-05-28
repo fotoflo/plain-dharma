@@ -24,9 +24,9 @@ export default function MoreScreen() {
         paddingHorizontal: 24,
       }}
     >
-      <Link href="/" style={[styles.back, { color: palette.link, fontFamily: FONTS.serif }]}>
-        ← All talks
-      </Link>
+      <Text style={[styles.title, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+        Plain Dharma
+      </Text>
 
       <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
         Download
@@ -73,14 +73,31 @@ export default function MoreScreen() {
         Occasional notes when a new talk is added.
       </Text>
       <NewsletterSignup />
+
+      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+        About
+      </Text>
+      <Link
+        href="/about"
+        style={[styles.linkRow, { color: palette.link, borderColor: palette.divider, fontFamily: FONTS.serif }]}
+      >
+        About Plain Dharma
+      </Link>
+      <Link
+        href="/glossary"
+        style={[styles.linkRow, { color: palette.link, borderColor: palette.divider, fontFamily: FONTS.serif }]}
+      >
+        Glossary
+      </Link>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  back: { fontSize: 16, marginBottom: 24 },
+  title: { fontSize: 34, marginBottom: 8 },
   h: { fontSize: 24, marginTop: 28, marginBottom: 6 },
   note: { fontSize: 15, opacity: 0.6, marginBottom: 10 },
   row: { paddingVertical: 14, borderBottomWidth: 1 },
+  linkRow: { fontSize: 17, paddingVertical: 14, borderBottomWidth: 1 },
   donate: { borderRadius: 8, paddingVertical: 14, alignItems: "center", marginTop: 4 },
 });

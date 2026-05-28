@@ -3,6 +3,7 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
 import { FloatingReadingControls } from "@/components/FloatingReadingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
@@ -36,8 +37,9 @@ export default function SuttaScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: screenBg }}>
+      <DecorativeBackground />
       <ScrollView
-        style={{ backgroundColor: screenBg }}
+        style={{ backgroundColor: "transparent" }}
         contentContainerStyle={{
         paddingTop: insets.top + 24,
         paddingBottom: insets.bottom + 64,

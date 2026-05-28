@@ -4,6 +4,7 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { useTheme } from "@/theme/ThemeContext";
@@ -19,14 +20,16 @@ export default function HomeScreen() {
   const suttas = getSuttasInOrder(DEFAULT_LOCALE);
 
   return (
-    <ScrollView
-      style={{ backgroundColor: palette.bg }}
-      contentContainerStyle={{
-        paddingTop: insets.top + 24,
-        paddingBottom: insets.bottom + 56,
-        paddingHorizontal: 24,
-      }}
-    >
+    <View style={{ flex: 1, backgroundColor: palette.bg }}>
+      <DecorativeBackground />
+      <ScrollView
+        style={{ backgroundColor: "transparent" }}
+        contentContainerStyle={{
+          paddingTop: insets.top + 24,
+          paddingBottom: insets.bottom + 56,
+          paddingHorizontal: 24,
+        }}
+      >
       {/* HERO */}
       <Text style={[styles.kicker, { color: palette.link }]}>
         {s.kicker.toUpperCase()}
@@ -122,7 +125,8 @@ export default function HomeScreen() {
           </Link>
         ))}
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 

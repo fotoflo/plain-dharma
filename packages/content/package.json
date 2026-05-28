@@ -1,0 +1,16 @@
+{
+  "name": "@plain-dharma/content",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Platform-agnostic sutta content + registry shared by web and mobile (TypeScript source, consumed via bundler transpilation).",
+  "exports": {
+    ".": "./index.ts",
+    "./strings": "./strings.ts",
+    "./drops": "./drops.ts",
+    "./canonical-links": "./canonical-links.ts",
+    "./glossary": "./glossary.ts",
+    "./audio": "./audio.ts",
+    "./en/*": "./en/*",
+    "./zh/*": "./zh/*"
+  }
+}

@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { themeInitScript } from "@/components/ThemeToggle";
 import { readingPrefsInitScript } from "@/components/ReadingControls";
 import { NightSky } from "@/components/NightSky";
+import { SITE_URL, SITE_DESCRIPTION, ogBase } from "@/lib/og-meta";
 
 const GA_ID = "G-FNHT1NCRS5";
 const GA_ENABLED = process.env.NODE_ENV === "production";
@@ -31,10 +32,6 @@ const atkinson = Atkinson_Hyperlegible({
   display: "swap",
 });
 
-const SITE_URL = "https://plaindharma.com";
-const SITE_DESCRIPTION =
-  "The Buddha's foundational teachings in plain modern English. Free, CC0, for anyone.";
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -43,9 +40,8 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   openGraph: {
+    ...ogBase("en"),
     type: "website",
-    siteName: "Plain Dharma",
-    locale: "en_US",
     url: SITE_URL,
     title: "Plain Dharma",
     description: SITE_DESCRIPTION,

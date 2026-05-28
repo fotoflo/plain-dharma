@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getStrings } from "@/content/strings";
 import { GlossaryView } from "@/views/GlossaryView";
+import { ogBase } from "@/lib/og-meta";
 
 const s = getStrings("zh");
 const TITLE = s.nav.glossary;
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     languages: { en: "/glossary" },
   },
   openGraph: {
+    ...ogBase("zh"),
     title: TITLE,
     description: DESCRIPTION,
     url: "/zh/glossary",

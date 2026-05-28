@@ -7,6 +7,7 @@ import {
   getMeta,
 } from "@/content";
 import { SuttaView } from "@/views/SuttaView";
+import { ogBase } from "@/lib/og-meta";
 
 export function generateStaticParams() {
   return SUTTAS.map((slug) => ({ slug }));
@@ -33,6 +34,7 @@ export async function generateMetadata({
       languages: { en: `/${slug}` },
     },
     openGraph: {
+      ...ogBase("zh"),
       type: "article",
       url,
       title: meta.title,

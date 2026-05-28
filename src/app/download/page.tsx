@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Wash } from "@/components/Wash";
+import { ogBase } from "@/lib/og-meta";
 
 const TITLE = "Download";
 const DESCRIPTION =
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: "/download" },
   openGraph: {
+    ...ogBase("en"),
     title: TITLE,
     description: DESCRIPTION,
     url: "/download",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getStrings } from "@/content/strings";
 import { AboutView } from "@/views/AboutView";
+import { ogBase } from "@/lib/og-meta";
 
 const s = getStrings("zh");
 const TITLE = s.about.metadataTitle;
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
     languages: { en: "/about" },
   },
   openGraph: {
+    ...ogBase("zh"),
     title: TITLE,
     description: DESCRIPTION,
     url: "/zh/about",

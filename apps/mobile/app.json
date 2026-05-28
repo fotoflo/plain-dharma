@@ -2,6 +2,7 @@
   "expo": {
     "name": "mobile",
     "slug": "mobile",
+    "owner": "flexbiketeam",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,8 +11,11 @@
     "ios": {
       "icon": "./assets/expo.icon",
       "infoPlist": {
-        "UIBackgroundModes": ["audio"]
-      }
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      },
+      "bundleIdentifier": "com.flexbiketeam.mobile"
     },
     "android": {
       "adaptiveIcon": {
@@ -47,6 +51,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "836bed63-8989-4e82-8e94-3ffd28e10db3"
+      }
     }
   }
 }

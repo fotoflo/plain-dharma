@@ -20,6 +20,7 @@ export function Header() {
     { href: localizedHref(locale, "read"), label: s.nav.read },
     { href: localizedHref(locale, "about"), label: s.nav.about },
     { href: localizedHref(locale, "glossary"), label: s.nav.glossary },
+    { href: localizedHref(locale, "contribute"), label: s.nav.contribute },
     { href: "/download", label: s.nav.download },
   ];
 

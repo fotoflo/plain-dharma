@@ -81,6 +81,13 @@ export function AboutView({ locale }: { locale: Locale }) {
           </Link>
           {s.about.pGlossaryRefSuffix}
         </p>
+
+        <h2>{s.about.h2HowMade}</h2>
+        <p>{s.about.pHowMade1}</p>
+        <p>{s.about.pHowMadeSoftware}</p>
+        <p>{s.about.pHowMade2}</p>
+        <p>{s.about.pHowMade3}</p>
+        <p>{s.about.pHowMade4}</p>
       </article>
 
       <div className="mt-16 text-center">

@@ -44,6 +44,9 @@ export function Footer() {
           <Link href={localizedHref(locale, "glossary")}>
             {s.footer.glossaryLink}
           </Link>
+          <Link href={localizedHref(locale, "contribute")}>
+            {s.footer.contributeLink}
+          </Link>
           <a
             href="https://github.com/fotoflo/plain-dharma"
             target="_blank"

@@ -30,7 +30,7 @@ const en = {
   },
   home: {
     kicker: "Plain Dharma",
-    heroLine1: "Old wisdom.",
+    heroLine1: "Old Wisdom.",
     heroLine2: "Plain English.",
     heroSubtitle:
       "The Buddha's foundational teachings, in plain modern English.",

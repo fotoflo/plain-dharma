@@ -13,7 +13,7 @@ export default async function OgImage() {
   const illustrationDataUrl = await publicImageDataUrl("/illustrations/first-talk.png");
   return renderOgCard({
     eyebrow: "Plain Dharma",
-    title: "Old wisdom.\nPlain English.",
+    title: "Old Wisdom.\nPlain English.",
     tagline: "Buddhist foundational teachings.",
     illustrationDataUrl,
   });

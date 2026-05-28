@@ -4,7 +4,7 @@ import {
   OG_SIZE,
   OG_CONTENT_TYPE,
 } from "@/lib/og-card";
-import { SUTTAS, getMeta, isSuttaSlug, DEFAULT_LOCALE } from "@/content";
+import { SUTTAS, getMeta, isSuttaSlug } from "@/content";
 
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
@@ -24,7 +24,7 @@ export async function generateImageMetadata({
 }) {
   const { slug } = await params;
   if (!isSuttaSlug(slug)) return [];
-  const meta = getMeta(DEFAULT_LOCALE, slug);
+  const meta = getMeta("zh", slug);
   return [
     {
       id: "card",
@@ -45,18 +45,19 @@ export default async function OgImage({
   if (!isSuttaSlug(slug)) {
     return renderOgCard({
       eyebrow: "Plain Dharma",
-      title: "Old Wisdom.\nPlain English.",
-      tagline: "Buddhist foundational teachings.",
+      title: "古老的智慧。\n平实的语言。",
       illustrationDataUrl: fallbackArt,
+      cjk: true,
     });
   }
-  const meta = getMeta(DEFAULT_LOCALE, slug);
+  const meta = getMeta("zh", slug);
   const illustrationDataUrl = await publicImageDataUrl(
     `/illustrations/${slug}.png`,
   );
   return renderOgCard({
-    eyebrow: meta.pali_name,
+    eyebrow: meta.kicker_override ?? meta.pali_name,
     title: meta.title,
     illustrationDataUrl,
+    cjk: true,
   });
 }

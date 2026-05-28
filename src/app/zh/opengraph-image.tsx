@@ -5,7 +5,7 @@ import {
   OG_CONTENT_TYPE,
 } from "@/lib/og-card";
 
-export const alt = "Plain Dharma — old wisdom in plain English";
+export const alt = "Plain Dharma — 古老的智慧，平实的语言";
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 
@@ -13,8 +13,8 @@ export default async function OgImage() {
   const illustrationDataUrl = await publicImageDataUrl("/illustrations/first-talk.png");
   return renderOgCard({
     eyebrow: "Plain Dharma",
-    title: "Old Wisdom.\nPlain English.",
-    tagline: "Buddhist foundational teachings.",
+    title: "古老的智慧。\n平实的语言。",
     illustrationDataUrl,
+    cjk: true,
   });
 }

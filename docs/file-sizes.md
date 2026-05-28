@@ -1,6 +1,36 @@
 # File Size Snapshots
 
-## 2026-05-28 (current)
+## 2026-05-29 (current)
+
+### Distribution
+
+| Bucket     | Count | Δ vs prev |
+|------------|-------|-----------|
+| <=50       | 156   | +2        |
+| 51-150     | 125   | +1        |
+| 151-300    | 44    | -3        |
+| 301-500    | 11    | -1        |
+| 501-1000   | 4     | —         |
+| 1001-2000  | 0     | —         |
+| 2000+      | 0     | —         |
+
+Total files: 340 (-1)
+
+### Largest File
+
+`src/components/AudioPlayer.tsx` — 647 lines
+
+### Files Over 500 Lines
+
+4 files exceed the 500-line guideline:
+- `src/components/AudioPlayer.tsx` — 647 lines
+- 3 additional files
+
+### Delta
+
+Content de-duplication: `src/content` lost its 12 duplicate sutta MDX files and the `strings/drops/canonical-links/glossary` modules, while `src/content/{index,audio}.ts` shrank to thin re-export shims — hence the drop in the 151–300 bracket and a slightly lower total (the canonical copies live on in `packages/content`). No threshold-crossing files; the 501–1000 bucket holds steady at 4.
+
+## 2026-05-28 (previous)
 
 ### Distribution
 

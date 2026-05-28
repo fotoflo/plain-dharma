@@ -1,3 +1,8 @@
+import {
+  AtkinsonHyperlegible_400Regular,
+  AtkinsonHyperlegible_400Regular_Italic,
+  AtkinsonHyperlegible_700Bold,
+} from "@expo-google-fonts/atkinson-hyperlegible";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -32,6 +37,9 @@ export default function RootLayout() {
     "GaramondLibre-Bold": require("../../assets/fonts/GaramondLibre-Bold.otf"),
     "GaramondLibre-Italic": require("../../assets/fonts/GaramondLibre-Italic.otf"),
     "GaramondLibre-BoldItalic": require("../../assets/fonts/GaramondLibre-BoldItalic.otf"),
+    AtkinsonHyperlegible_400Regular,
+    AtkinsonHyperlegible_700Bold,
+    AtkinsonHyperlegible_400Regular_Italic,
   });
 
   useEffect(() => {

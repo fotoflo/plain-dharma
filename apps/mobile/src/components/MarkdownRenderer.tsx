@@ -14,18 +14,23 @@ import { BASE_FONT_SIZE, BASE_LINE_HEIGHT, CONTRAST_INK, FONTS } from "../theme/
  */
 export function MarkdownRenderer({ children }: { children: string }) {
   const { theme, palette } = useTheme();
-  const { scale, contrast } = useReadingPrefs();
+  const { scale, contrast, font } = useReadingPrefs();
 
   const styles = useMemo(() => {
     const ink = CONTRAST_INK[theme][contrast];
     const fontSize = BASE_FONT_SIZE * scale;
     const lineHeight = fontSize * BASE_LINE_HEIGHT;
+    // Accessible font swaps body text only — headings keep Garamond (per web).
+    const bodyFont = font === "accessible" ? FONTS.accessible : FONTS.serif;
+    const boldFont = font === "accessible" ? FONTS.accessibleBold : FONTS.serifBold;
+    const italicFont =
+      font === "accessible" ? FONTS.accessibleItalic : FONTS.serifItalic;
 
     return StyleSheet.create({
       // Root — text styles cascade to all inline content.
       body: {
         color: ink,
-        fontFamily: FONTS.serif,
+        fontFamily: bodyFont,
         fontSize,
         lineHeight,
       },
@@ -58,8 +63,8 @@ export function MarkdownRenderer({ children }: { children: string }) {
         marginBottom: 12,
       },
       // Custom fonts don't synthesize bold/italic — switch the family instead.
-      strong: { fontFamily: FONTS.serifBold, color: ink },
-      em: { fontFamily: FONTS.serifItalic },
+      strong: { fontFamily: boldFont, color: ink },
+      em: { fontFamily: italicFont },
       bullet_list: { marginTop: fontSize, marginBottom: fontSize },
       ordered_list: { marginTop: fontSize, marginBottom: fontSize },
       list_item: { marginTop: 4, marginBottom: 4 },
@@ -84,7 +89,7 @@ export function MarkdownRenderer({ children }: { children: string }) {
         textDecorationLine: "underline",
       },
     });
-  }, [theme, palette, scale, contrast]);
+  }, [theme, palette, scale, contrast, font]);
 
   return <Markdown style={styles}>{children}</Markdown>;
 }

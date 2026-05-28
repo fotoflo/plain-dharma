@@ -74,13 +74,15 @@ export type ReadingFont = "serif" | "accessible";
 export const BASE_FONT_SIZE = 17;
 export const BASE_LINE_HEIGHT = 1.75;
 
-// Font-family names registered via expo-font in app/_layout. The accessible
-// face (Atkinson Hyperlegible) backs the font-switch toggle, which is part of
-// the reading-controls chrome — its file is added when that UI is built.
+// Font-family names registered via expo-font in app/_layout. Garamond Libre is
+// the reading face; Atkinson Hyperlegible (via @expo-google-fonts) backs the
+// accessible font-switch option. Names must match the useFonts() keys.
 export const FONTS = {
   serif: "GaramondLibre",
   serifBold: "GaramondLibre-Bold",
   serifItalic: "GaramondLibre-Italic",
   serifBoldItalic: "GaramondLibre-BoldItalic",
-  accessible: "AtkinsonHyperlegible",
+  accessible: "AtkinsonHyperlegible_400Regular",
+  accessibleBold: "AtkinsonHyperlegible_700Bold",
+  accessibleItalic: "AtkinsonHyperlegible_400Regular_Italic",
 } as const;

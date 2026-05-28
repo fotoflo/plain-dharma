@@ -24,12 +24,13 @@ const en = {
     about: "About",
     glossary: "Glossary",
     download: "Download",
+    contribute: "Contribute",
     openMenu: "Open menu",
     closeMenu: "Close menu",
   },
   home: {
     kicker: "Plain Dharma",
-    heroLine1: "Old wisdom.",
+    heroLine1: "Old Wisdom.",
     heroLine2: "Plain English.",
     heroSubtitle:
       "The Buddha's foundational teachings, in plain modern English.",
@@ -71,14 +72,16 @@ const en = {
     pWhySix2:
       "The choice of six (and not ten or twenty) is deliberate: enough to understand the whole shape of the teaching without overwhelming someone new to it. The full site reads in about 45 minutes.",
     h2License: "License",
-    pLicense1Prefix: "Everything on this site is dedicated to the public domain under ",
+    pLicense1Prefix:
+      "Everything on this site is dedicated to the public domain under ",
     pLicense1LinkText: "CC0",
     pLicense1Suffix:
       ". Copy it, print it, translate it, distribute it, modify it. No permission needed; no attribution required.",
     pLicense2:
       "This is in keeping with the Buddhist tradition of the dharma gift — the practice of freely sharing teachings without expectation of return.",
     h2GoingDeeper: "Going deeper",
-    pGoingDeeperIntro: "For the original Pali texts and scholarly translations:",
+    pGoingDeeperIntro:
+      "For the original Pali texts and scholarly translations:",
     liSuttaCentralLink: "SuttaCentral",
     liSuttaCentralSuffix:
       " — modern collaborative translations and parallels across traditions, freely accessible.",
@@ -90,7 +93,53 @@ const en = {
     pGlossaryRefPrefix: "For terminology, see the ",
     pGlossaryRefLinkText: "Glossary",
     pGlossaryRefSuffix: ".",
+    h2HowMade: "How this was made",
+    pHowMade1:
+      "The English was translated from the original Pali by Claude (Anthropic's AI), then edited line by line by Alex Miller. The Chinese was translated from the Pali by Claude too, and edited by Yan Zhang. The audio is an ElevenLabs voice; the art and logos are Gemini, edited by hand.",
+    pHowMadeSoftware:
+      "The site, the mobile app, and the scripts that build the ebooks and generated the narration were all written by Claude too.",
+    pHowMade2:
+      "We tell you plainly because you deserve to know what you're reading and hearing.",
+    pHowMade3:
+      "We don't take lightly what these tools mean for the people whose craft they touch. But we could never have made this ourselves — translating the suttas means reading Pali, and neither of us can. The tools made possible a free gift that was otherwise beyond us, offered in the spirit of the old dharma gift: freely given, asking nothing back.",
+    pHowMade4: "What's here is a starting point, not a final word.",
     ctaStartReading: "Start reading →",
+  },
+  contribute: {
+    metadataTitle: "Contribute",
+    metadataDescription:
+      "Plain Dharma is open and public domain. How copy editors, translators, and voice artists can help carry it further — and how to get in touch.",
+    kicker: "Contribute",
+    h1: "Help carry this further",
+    pHelpIntro:
+      "Plain Dharma is an open, public-domain project, and a work in progress — translated by AI and edited by hand. The clearest way to make it better is with human hands:",
+    liCopyEditorsLabel: "Copy editors",
+    liCopyEditorsBody:
+      " — to sharpen the English, catch what reads stiffly, keep it plain.",
+    liTranslatorsLabel: "Translators",
+    liTranslatorsBody: " — to improve the Mandarin, or open a new language.",
+    liVoiceArtistsLabel: "Voice artists",
+    liVoiceArtistsBody:
+      " — to lend a real human reading in place of the synthetic one. We know the irony of asking this on a page narrated by a machine; if you'd offer your voice as a gift, we'd be honored to let it replace ours.",
+    pHelpClosing:
+      "Nothing here is owned, and nothing you give will be. Your contribution is itself a dharma gift.",
+  },
+  contact: {
+    heading: "Get in touch",
+    lead: "Tell us how you'd like to help, or just say hello. We read everything.",
+    nameLabel: "Your name",
+    namePlaceholder: "Name",
+    emailLabel: "Email address",
+    emailPlaceholder: "you@example.com",
+    messageLabel: "Message",
+    messagePlaceholder: "How would you like to help?",
+    submit: "Send",
+    submitting: "Sending…",
+    successHeading: "Thank you.",
+    successMessage: "Your message is on its way. We'll be in touch.",
+    genericError: "Something went wrong.",
+    networkError: "Network error.",
+    validationError: "Please add your email and a short message.",
   },
   footer: {
     tagline: "The Buddha's foundational teachings in plain modern English.",
@@ -101,6 +150,7 @@ const en = {
     byLineLinkText: "Alex Miller",
     aboutLink: "About",
     glossaryLink: "Glossary",
+    contributeLink: "Contribute",
     githubLink: "GitHub",
   },
   newsletter: {
@@ -159,6 +209,9 @@ const en = {
     playSectionLabel: "Play section: {title}",
     // Template — `{n}` and `{time}` are interpolated at render time.
     sectionsTotalLine: "{n} sections · {time} total",
+    pace: "Pace",
+    slower: "Slower",
+    faster: "Faster",
   },
   canonicalLinks: {
     paliSourcePrefix: "Pali source —",
@@ -182,6 +235,7 @@ const zh: Strings = {
     about: "关于",
     glossary: "词汇表",
     download: "下载",
+    contribute: "参与",
     openMenu: "打开菜单",
     closeMenu: "关闭菜单",
   },
@@ -189,8 +243,7 @@ const zh: Strings = {
     kicker: "Plain Dharma",
     heroLine1: "古老的智慧。",
     heroLine2: "平实的语言。",
-    heroSubtitle:
-      "佛陀最早的几篇开示，用平实的现代汉语呈现。",
+    heroSubtitle: "佛陀最早的几篇开示，用平实的现代汉语呈现。",
     ctaReadAll: "六篇一起读",
     ctaDownload: "下载",
     heroBlurb:
@@ -208,8 +261,7 @@ const zh: Strings = {
       "佛陀最根本的六篇开示，按顺序排好，用平实的现代汉语呈现。",
     kicker: "六篇开示",
     h1: "佛陀最早的几篇开示",
-    subtitle:
-      "按顺序排好，用平实的现代汉语呈现。六篇大约一小时读完。",
+    subtitle: "按顺序排好，用平实的现代汉语呈现。六篇大约一小时读完。",
     onThisPage: "本页内容",
     openOnOwnPage: "单独打开这一篇 →",
   },
@@ -248,7 +300,52 @@ const zh: Strings = {
     pGlossaryRefPrefix: "想查术语，请见 ",
     pGlossaryRefLinkText: "词汇表",
     pGlossaryRefSuffix: "。",
+    h2HowMade: "这是怎么做出来的",
+    pHowMade1:
+      "英文由 Claude（Anthropic 的 AI）从巴利原文译出，再由 Alex Miller 一行一行地修订；中文同样由 Claude 从巴利原文译出，由 Yan Zhang 修订。音频是 ElevenLabs 的合成语音；画作与标志出自 Gemini，再手工修整。",
+    pHowMadeSoftware:
+      "网站、手机应用，连同那些用来生成电子书、制作朗读音频的脚本，也都是 Claude 写的。",
+    pHowMade2:
+      "我们把这些老老实实告诉你，因为你有权知道自己读到的、听到的，究竟是什么。",
+    pHowMade3:
+      "这些工具会触动一些人赖以为生的手艺，我们没有轻看这件事。但这件事，我们靠自己根本做不到——翻译这些经文，得读得懂巴利文，而我们两人都读不懂。是这些工具，让一份原本超出我们能力的免费馈赠成为可能；我们以「法布施」的古老心意把它献出：自由给出，不求回报。",
+    pHowMade4: "这里的一切只是一个起点，不是定论。",
     ctaStartReading: "开始阅读 →",
+  },
+  contribute: {
+    metadataTitle: "参与",
+    metadataDescription:
+      "Plain Dharma 是开放的、属于公有领域的项目。文字编辑、译者、配音者可以怎样一起把它做得更好——以及怎样与我们联系。",
+    kicker: "参与",
+    h1: "一起把它做得更好",
+    pHelpIntro:
+      "Plain Dharma 是一个开放的、属于公有领域的项目，也仍在不断打磨——由 AI 翻译，再经人手编辑。把它做得更好，最直接的办法是靠人的双手：",
+    liCopyEditorsLabel: "文字编辑",
+    liCopyEditorsBody: "——把英文打磨得更利落，挑出读起来生硬的地方，保持平实。",
+    liTranslatorsLabel: "译者",
+    liTranslatorsBody: "——把中文改得更好，或者为一门新的语言打开门。",
+    liVoiceArtistsLabel: "配音者",
+    liVoiceArtistsBody:
+      "——用真实的人声，来替下这把合成的声音。我们清楚，在一个用机器朗读的页面上提这个请求有多讽刺；如果你愿意把自己的声音作为礼物献出来，我们会很荣幸地让它取代我们现在这把。",
+    pHelpClosing:
+      "这里没有什么是被占有的，你给出的也不会被占有。你的贡献，本身就是一份法布施。",
+  },
+  contact: {
+    heading: "联系我们",
+    lead: "告诉我们你想怎样帮忙，或者只是来打个招呼。每一封我们都会读。",
+    nameLabel: "你的名字",
+    namePlaceholder: "名字",
+    emailLabel: "邮箱地址",
+    emailPlaceholder: "you@example.com",
+    messageLabel: "留言",
+    messagePlaceholder: "你想怎样帮忙？",
+    submit: "发送",
+    submitting: "发送中……",
+    successHeading: "谢谢你。",
+    successMessage: "你的留言已经在路上了。我们会与你联系。",
+    genericError: "出了点问题。",
+    networkError: "网络出错了。",
+    validationError: "请填写你的邮箱和一句简短的留言。",
   },
   footer: {
     tagline: "佛陀最早的几篇开示，用平实的现代汉语呈现。",
@@ -259,6 +356,7 @@ const zh: Strings = {
     byLineLinkText: "Alex Miller",
     aboutLink: "关于",
     glossaryLink: "词汇表",
+    contributeLink: "参与",
     githubLink: "GitHub",
   },
   newsletter: {
@@ -269,8 +367,7 @@ const zh: Strings = {
     submit: "订阅",
     submitting: "订阅中……",
     successNew: "谢谢——有新内容上线时我们会写信给你。",
-    successAlreadySubscribed:
-      "你已经在名单上了。谢谢你回来看看。",
+    successAlreadySubscribed: "你已经在名单上了。谢谢你回来看看。",
     genericError: "出了点问题。",
     networkError: "网络出错了。",
   },
@@ -315,6 +412,9 @@ const zh: Strings = {
     seek: "拖动定位",
     playSectionLabel: "播放章节：{title}",
     sectionsTotalLine: "共 {n} 段 · 总长 {time}",
+    pace: "语速",
+    slower: "较慢",
+    faster: "较快",
   },
   canonicalLinks: {
     paliSourcePrefix: "巴利原典 ——",

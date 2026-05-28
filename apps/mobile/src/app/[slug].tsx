@@ -4,17 +4,21 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
+import { FloatingReadingControls } from "@/components/FloatingReadingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown } from "@/content/markdown";
+import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme } from "@/theme/ThemeContext";
-import { FONTS } from "@/theme/tokens";
+import { CONTRAST_BG, FONTS } from "@/theme/tokens";
 
 // Placeholder reading screen — verification scaffolding. The real chrome
 // (reading controls, audio player, prev/next nav) is gated until web settles.
 export default function SuttaScreen() {
-  const { palette } = useTheme();
+  const { theme, palette } = useTheme();
+  const { contrast } = useReadingPrefs();
   const insets = useSafeAreaInsets();
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const screenBg = CONTRAST_BG[theme][contrast] ?? palette.bg;
 
   if (!slug || !isSuttaSlug(slug)) {
     return (
@@ -31,9 +35,9 @@ export default function SuttaScreen() {
   const body = getSuttaMarkdown(DEFAULT_LOCALE, slug);
 
   return (
-    <View style={{ flex: 1, backgroundColor: palette.bg }}>
+    <View style={{ flex: 1, backgroundColor: screenBg }}>
       <ScrollView
-        style={{ backgroundColor: palette.bg }}
+        style={{ backgroundColor: screenBg }}
         contentContainerStyle={{
         paddingTop: insets.top + 24,
         paddingBottom: insets.bottom + 64,
@@ -59,6 +63,7 @@ export default function SuttaScreen() {
         <MarkdownRenderer>{body}</MarkdownRenderer>
       </View>
       </ScrollView>
+      <FloatingReadingControls />
       <FloatingAudioPlayer locale={DEFAULT_LOCALE} slug={slug} />
     </View>
   );

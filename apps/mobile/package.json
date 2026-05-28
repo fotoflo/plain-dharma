@@ -3,6 +3,7 @@
   "main": "index.js",
   "version": "1.0.0",
   "dependencies": {
+    "@expo-google-fonts/atkinson-hyperlegible": "^0.4.1",
     "@expo/ui": "~56.0.14",
     "@expo/vector-icons": "^15.1.1",
     "@plain-dharma/content": "workspace:*",

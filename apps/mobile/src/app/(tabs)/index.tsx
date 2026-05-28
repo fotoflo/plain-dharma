@@ -17,7 +17,6 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const s = getStrings(DEFAULT_LOCALE).home;
   const suttas = getSuttasInOrder(DEFAULT_LOCALE);
-  const firstSlug = suttas[0].slug;
 
   return (
     <ScrollView
@@ -47,7 +46,7 @@ export default function HomeScreen() {
       <Text style={[styles.heroSubtitle, { color: palette.ink }]}>{s.heroSubtitle}</Text>
 
       <View style={styles.ctaRow}>
-        <Link href={`/${firstSlug}`} asChild>
+        <Link href="/read" asChild>
           <Pressable style={[styles.ctaPrimary, { backgroundColor: palette.accentStrong }]}>
             <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 15 }}>
               {s.ctaReadAll}

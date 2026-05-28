@@ -4,17 +4,17 @@
 
 ### Distribution
 
-| Bucket     | Count | Δ vs previous |
-|------------|-------|---------------|
-| <=50       | 145   | +2            |
-| 51-150     | 108   | +2            |
-| 151-300    | 42    | —             |
-| 301-500    | 10    | —             |
-| 501-1000   | 3     | —             |
-| 1001-2000  | 0     | —             |
-| 2000+      | 0     | —             |
+| Bucket     | Count | Δ vs prev |
+|------------|-------|-----------|
+| <=50       | 154   | —         |
+| 51-150     | 123   | +2        |
+| 151-300    | 48    | —         |
+| 301-500    | 10    | —         |
+| 501-1000   | 4     | —         |
+| 1001-2000  | 0     | —         |
+| 2000+      | 0     | —         |
 
-Total files: 308 (+4)
+Total files: 339 (+2)
 
 ### Largest File
 
@@ -22,13 +22,13 @@ Total files: 308 (+4)
 
 ### Files Over 500 Lines
 
-3 files (AudioPlayer.tsx exceeds the 500-line guideline):
+4 files exceed the 500-line guideline:
 - `src/components/AudioPlayer.tsx` — 647 lines
-- (2 additional files)
+- 3 additional files
 
 ### Delta
 
-Steady growth: 304 → 308 files (+4). Small distribution shift: <=50 bucket grew by 2, 51-150 by 2; all other buckets stable. AudioPlayer.tsx holds at 647 lines. Recent session added audio variant generation scripts and manifest updates.
+OG session: added the `ogBase()` metadata helper (`src/lib/og-meta.ts`), five ZH Open Graph image routes under `src/app/zh/`, and `scripts/generate-og-fonts.ts`. Net +2 in the 51-150 bucket (some new files counted in the prior same-day snapshot). No threshold crossings; largest file remains AudioPlayer.tsx at 647 lines — still the standing refactor candidate.
 
 ## 2026-05-28 (previous)
 

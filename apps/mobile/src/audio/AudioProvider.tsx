@@ -1,4 +1,4 @@
-import { getMeta, type Locale, type SuttaSlug } from "@plain-dharma/content";
+import { getMeta, SUTTAS, type Locale, type SuttaSlug } from "@plain-dharma/content";
 import {
   createContext,
   useCallback,
@@ -27,8 +27,8 @@ import {
 import { setupAudioPlayer } from "./setup";
 
 type AudioContextValue = {
-  /** Slug whose queue is currently loaded, or null. */
-  loadedSlug: SuttaSlug | null;
+  /** Dedup key of the loaded queue ("en/first-talk" or "all/en"), or null. */
+  loadedKey: string | null;
   sections: PlayerSection[];
   index: number;
   isPlaying: boolean;
@@ -41,6 +41,8 @@ type AudioContextValue = {
   error: string | null;
   /** Lazily fetch + queue a sutta's audio (no-op if already loaded). */
   load: (locale: Locale, slug: SuttaSlug) => Promise<void>;
+  /** Lazily fetch + queue the combined all-talks /read playlist. */
+  loadCombined: (locale: Locale) => Promise<void>;
   play: () => void;
   pause: () => void;
   togglePlay: () => void;
@@ -70,7 +72,7 @@ function toTracks(
 }
 
 export function AudioProvider({ children }: { children: ReactNode }) {
-  const [loadedSlug, setLoadedSlug] = useState<SuttaSlug | null>(null);
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
   const [sections, setSections] = useState<PlayerSection[]>([]);
   const [speed, setSpeedState] = useState<Speed>("slow");
   const [index, setIndex] = useState(0);
@@ -78,7 +80,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   // Refs mirror state for use inside async/stable callbacks (avoid stale closures).
-  const loadedRef = useRef<SuttaSlug | null>(null);
+  const loadedKeyRef = useRef<string | null>(null);
   const sectionsRef = useRef<PlayerSection[]>([]);
   const speedRef = useRef<Speed>("slow");
   const localeRef = useRef<Locale>("en");
@@ -97,30 +99,70 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     if (e.index != null) setIndex(e.index);
   });
 
-  const load = useCallback(async (locale: Locale, slug: SuttaSlug) => {
-    if (loadedRef.current === slug) return;
-    loadedRef.current = slug;
-    localeRef.current = locale;
-    albumRef.current = getMeta(locale, slug).title;
-    setLoadedSlug(slug);
-    setLoading(true);
-    setError(null);
-    try {
-      const secs = await resolveSuttaSections(locale, slug);
+  // Install a set of sections as the active queue.
+  const installQueue = useCallback(
+    async (secs: PlayerSection[], album: string) => {
+      albumRef.current = album;
       await setupAudioPlayer();
       await TrackPlayer.reset();
-      await TrackPlayer.add(toTracks(secs, speedRef.current, albumRef.current));
+      await TrackPlayer.add(toTracks(secs, speedRef.current, album));
       sectionsRef.current = secs;
       setSections(secs);
       setIndex(0);
-    } catch (err) {
-      loadedRef.current = null;
-      setLoadedSlug(null);
-      setError(err instanceof Error ? err.message : "Failed to load audio");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
+
+  // Shared loader for a dedup key (no-op if that key is already loaded).
+  const loadKey = useCallback(
+    async (
+      locale: Locale,
+      key: string,
+      build: () => Promise<{ secs: PlayerSection[]; album: string }>
+    ) => {
+      if (loadedKeyRef.current === key) return;
+      loadedKeyRef.current = key;
+      localeRef.current = locale;
+      setLoadedKey(key);
+      setLoading(true);
+      setError(null);
+      try {
+        const { secs, album } = await build();
+        await installQueue(secs, album);
+      } catch (err) {
+        loadedKeyRef.current = null;
+        setLoadedKey(null);
+        setError(err instanceof Error ? err.message : "Failed to load audio");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [installQueue]
+  );
+
+  const load = useCallback(
+    (locale: Locale, slug: SuttaSlug) =>
+      loadKey(locale, `${locale}/${slug}`, async () => ({
+        secs: await resolveSuttaSections(locale, slug),
+        album: getMeta(locale, slug).title,
+      })),
+    [loadKey]
+  );
+
+  // Combined /read playlist: stitch every talk's sections (offline-aware via
+  // resolveSuttaSections), prefixing ids with the slug to keep them unique.
+  const loadCombined = useCallback(
+    (locale: Locale) =>
+      loadKey(locale, `all/${locale}`, async () => {
+        const all: PlayerSection[] = [];
+        for (const slug of SUTTAS) {
+          const secs = await resolveSuttaSections(locale, slug);
+          for (const s of secs) all.push({ ...s, id: `${slug}--${s.id}` });
+        }
+        return { secs: all, album: "The Buddha's foundational teachings" };
+      }),
+    [loadKey]
+  );
 
   const play = useCallback(() => {
     void TrackPlayer.play();
@@ -185,7 +227,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AudioContextValue>(
     () => ({
-      loadedSlug,
+      loadedKey,
       sections,
       index,
       isPlaying,
@@ -197,6 +239,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       loading,
       error,
       load,
+      loadCombined,
       play,
       pause,
       togglePlay,
@@ -208,7 +251,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       setSpeed: setSpeedSafe,
     }),
     [
-      loadedSlug,
+      loadedKey,
       sections,
       index,
       isPlaying,
@@ -218,6 +261,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       loading,
       error,
       load,
+      loadCombined,
       play,
       pause,
       togglePlay,

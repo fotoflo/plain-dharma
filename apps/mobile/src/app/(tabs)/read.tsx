@@ -5,6 +5,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
 import { FloatingReadingControls } from "@/components/FloatingReadingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown } from "@/content/markdown";
@@ -99,6 +100,7 @@ export default function ReadScreen() {
         </View>
       </ScrollView>
       <FloatingReadingControls />
+      <FloatingAudioPlayer locale={DEFAULT_LOCALE} combined />
     </View>
   );
 }

@@ -16,19 +16,24 @@ import { AudioPanel } from "./AudioPanel";
 export function FloatingAudioPlayer({
   locale,
   slug,
+  combined = false,
 }: {
   locale: Locale;
-  slug: SuttaSlug;
+  slug?: SuttaSlug;
+  combined?: boolean;
 }) {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
-  const { load } = useAudio();
+  const { load, loadCombined } = useAudio();
   const [open, setOpen] = useState(false);
 
   const toggle = () => {
     setOpen((v) => {
       const nextOpen = !v;
-      if (nextOpen) void load(locale, slug);
+      if (nextOpen) {
+        if (combined) void loadCombined(locale);
+        else if (slug) void load(locale, slug);
+      }
       return nextOpen;
     });
   };

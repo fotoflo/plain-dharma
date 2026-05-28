@@ -3,17 +3,17 @@ import type { Locale, SuttaSlug } from "./index";
 export const DROPS: Record<Locale, Record<SuttaSlug, string>> = {
   en: {
     "first-talk":
-      "Between chasing pleasure and punishing yourself, there's a third way. That's the whole thing.",
+      "Between chasing pleasure and punishing yourself, there is another way.",
     "not-self":
-      "When you loosen your grip on what you take yourself to be, you stop being so easily wounded by what happens to it.",
+      "What changes, breaks down, and cannot be controlled is not fit to be called self.",
     "fire-sermon":
-      "The three fires — wanting, anger, confusion — are always burning somewhere in you. Noticing them is how they cool.",
+      "Burning with wanting, anger, and confusion — that is the condition of ordinary life.",
     "loving-kindness":
-      "Remember the mother and her only child. Open your heart that wide — toward every living thing, with no one left out.",
+      "Remember the mother and her only child. Extend your care that widely — toward every living thing, with no one left out.",
     mindfulness:
-      "You don't have to fix what you notice. Watching is enough. Body, feelings, mind, experience — the four are always there.",
+      "You do not need to interfere with experience. Learn to see it clearly.",
     "how-to-decide":
-      "Nothing here asks for your faith. Test it against your own life. If it leads to harm, drop it. If it leads to ease and clarity, take it up.",
+      "Do not accept something merely because it is repeated, inherited, or taught with authority. Look carefully for yourself.",
   },
   zh: {
     "first-talk":
@@ -41,7 +41,7 @@ He found them in the deer park near Varanasi. They'd resolved not to greet him �
 };
 
 export const CLOSING: Record<Locale, string> = {
-  en: `Six teachings. That's the foundation — what he actually said, before any of it became a religion, before there were schools or commentaries.
+  en: `Six teachings. That's the foundation — what he actually taught, before there were schools, systems, and centuries of commentary built around it.
 
 Read them slowly. Read them more than once. The work from here is yours.`,
   zh: `六篇开示。这就是根基——他真正说过的话，在这一切变成一个宗教之前，在那些宗派和注解出现之前。

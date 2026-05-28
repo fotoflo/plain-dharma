@@ -129,6 +129,11 @@
    ──────────────────────────────────────────────────────────────────────────── */
 html {
   --reading-scale: 1;
+  /* Reading-text colour, driven by the contrast control. Defaults to the base
+     ink and is consumed only by the reading content (prose + editorial notes),
+     so the contrast slider never recolours UI chrome (nav, footer, the
+     reading-controls panel). */
+  --reading-ink: var(--color-text);
 }
 html.reading-size-sm { --reading-scale: 0.9; }
 html.reading-size-md { --reading-scale: 1; }
@@ -136,15 +141,29 @@ html.reading-size-lg { --reading-scale: 1.15; }
 html.reading-size-xl { --reading-scale: 1.35; }
 
 /* ── Reader contrast ─────────────────────────────────────────────────────────
-   Overrides --color-ink (mapped to --color-text in :root) per contrast level.
-   med matches the current :root default — no regression for first-time visitors.
-   low:  warm sepia ~6:1 (WCAG AA)   comfortable for sustained reading
-   med:  deep warm ink ~12:1          current default
-   high: pure black ~16:1             max contrast for low-vision readers
+   Mode-aware "soft ↔ sharp" axis. Each level sets the reading-ink (consumed by
+   the prose + editorial notes) and, where useful, the screen background. "med"
+   always equals that theme's default, so first-time visitors see no change.
+
+   Light mode — vary the ink; high also brightens the paper toward white:
+     low   warm sepia on paper      gentle, low-glare daytime reading
+     med   deep ink on cream        default
+     high  pure black on near-white max contrast / low-vision
+
+   Dark mode — vary both screen and ink. low/high drop to flat black (the
+   decorative star field is suppressed; see NightSky.tsx); med keeps the navy
+   night sky:
+     low   dim warm-grey on black   night reading, minimal glare/strain
+     med   warm off-white on navy   default
+     high  pure white on black      max legibility
    ──────────────────────────────────────────────────────────────────────────── */
-html.contrast-low  { --color-text: #5C4D3A; }
-html.contrast-med  { --color-text: #1F1812; }
-html.contrast-high { --color-text: #000000; }
+html:not(.dark).contrast-low  { --reading-ink: #5c4d3a; }
+html:not(.dark).contrast-med  { --reading-ink: #1f1812; }
+html:not(.dark).contrast-high { --reading-ink: #000000; --color-bg: #ffffff; }
+
+html.dark.contrast-low  { --reading-ink: #9a9285; --color-bg: #000000; }
+html.dark.contrast-med  { --reading-ink: #ece3d2; --color-bg: #101a30; }
+html.dark.contrast-high { --reading-ink: #ffffff; --color-bg: #000000; }
 
 /* ── Reader font choice ──────────────────────────────────────────────────────
    font-serif-pref: keeps Garamond Libre (the default — no-op class).
@@ -157,6 +176,19 @@ html.font-accessible-pref .prose-dharma,
 html.font-accessible-pref .preface-dharma,
 html.font-accessible-pref .closing-dharma,
 html.font-accessible-pref .drop-dharma {
+  font-family: var(--font-accessible), system-ui, sans-serif;
+}
+
+/* ── Reading-view header ──────────────────────────────────────────────────────
+   The page header (eyebrow, title, subtitle) sits outside .prose-dharma, so it
+   has to opt into the reading controls explicitly. The wrapper sets a scale
+   anchor (1rem × reading-scale); its text children size in em, so the size
+   control reaches them. The accessible-font choice swaps the header text too —
+   this unlayered rule overrides the children's font-serif / font-sans utilities. */
+.reading-head {
+  font-size: calc(1rem * var(--reading-scale));
+}
+html.font-accessible-pref .reading-head :where(h1, h2, p) {
   font-family: var(--font-accessible), system-ui, sans-serif;
 }
 
@@ -225,7 +257,7 @@ html.font-accessible-pref .drop-dharma {
 
 @layer components {
   .prose-dharma {
-    color: var(--color-text);
+    color: var(--reading-ink);
     max-width: 68ch;
     font-family: var(--font-serif);
     /* Responsive prose ramp — scaled by --reading-scale so the user's
@@ -249,21 +281,27 @@ html.font-accessible-pref .drop-dharma {
       font-size: calc(1.1875rem * var(--reading-scale)); /* 19px × scale */
     }
   }
-  /* Preface and Closing wrappers — scale proportionally with reader size */
+  /* Preface and Closing wrappers — inherit body size (1em) and scale
+     proportionally with reader size. Using 1em (not 1rem) keeps them matched
+     to the responsive body ramp instead of snapping to a fixed 16px. */
   .preface-dharma,
   .closing-dharma {
-    font-size: calc(1rem * var(--reading-scale));
+    font-size: calc(1em * var(--reading-scale));
+    /* Track the reading-ink (so contrast reaches the framing too), softened
+       like the old text-ink/85 it replaces. */
+    color: color-mix(in oklab, var(--reading-ink) 85%, transparent);
   }
   /* Drop (editor's note) — relative to its container so em-based sizing
      continues to work; multiply the container base by reading-scale */
   .drop-dharma {
-    font-size: calc(0.95rem * var(--reading-scale));
+    font-size: calc(0.95em * var(--reading-scale));
+    color: color-mix(in oklab, var(--reading-ink) 80%, transparent);
   }
   .prose-dharma h1,
   .prose-dharma h2,
   .prose-dharma h3 {
     font-family: var(--font-serif);
-    color: var(--color-text);
+    color: var(--reading-ink);
     font-weight: 600;
     letter-spacing: -0.01em;
     /* Breathing room when AudioPlayer scrolls a heading to the top edge. */
@@ -297,7 +335,7 @@ html.font-accessible-pref .drop-dharma {
   }
   .prose-dharma strong {
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--reading-ink);
   }
   .prose-dharma ol,
   .prose-dharma ul {
@@ -321,7 +359,7 @@ html.font-accessible-pref .drop-dharma {
     border-left: 3px solid var(--color-accent-raw);
     padding-left: 1.25em;
     margin: 1.5em 0;
-    color: var(--color-text);
+    color: var(--reading-ink);
   }
   .prose-dharma hr {
     border: 0;

@@ -151,7 +151,12 @@ export function NightSky() {
 
     const frame = () => {
       // Sync to live theme changes (ThemeToggle dispatches "themechange").
-      const nowDark = document.documentElement.classList.contains("dark");
+      // The flat-black reading-contrast modes (low/high) suppress the star
+      // field entirely so the pure-black --color-bg shows through.
+      const cl = document.documentElement.classList;
+      const flatBlack =
+        cl.contains("contrast-low") || cl.contains("contrast-high");
+      const nowDark = cl.contains("dark") && !flatBlack;
       if (nowDark !== isDark) {
         isDark = nowDark;
         clearedOnce = false;

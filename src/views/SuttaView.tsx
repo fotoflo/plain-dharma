@@ -34,7 +34,7 @@ export async function SuttaView({ locale, slug }: SuttaViewProps) {
     <>
       <ReadingControls />
       <div className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
-        <header id="title" className="relative mb-12 overflow-hidden scroll-mt-8">
+        <header id="title" className="reading-head relative mb-12 overflow-hidden scroll-mt-8">
           {/* Opposite-side composition vs. the homepage hero for visual rhythm */}
           <Wash size="md" position="top-left" intensity={0.1} />
           <SuttaIllustration
@@ -45,13 +45,13 @@ export async function SuttaView({ locale, slug }: SuttaViewProps) {
             priority
             className="mb-8 mx-auto h-auto w-full max-w-[400px]"
           />
-          <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
+          <p className="font-sans text-[0.75em] uppercase tracking-[0.2em] text-link">
             {meta.kicker_override ?? meta.pali_name}
           </p>
-          <h1 className="mt-3 font-serif text-4xl leading-tight text-ink sm:text-5xl">
+          <h1 className="mt-3 font-serif text-[2.25em] leading-tight text-ink sm:text-[3em]">
             {meta.title}
           </h1>
-          <p className="mt-4 font-serif text-lg italic leading-relaxed text-ink/70">
+          <p className="mt-4 font-serif text-[1.125em] italic leading-relaxed text-ink/70">
             {meta.subtitle}
           </p>
         </header>

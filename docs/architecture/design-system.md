@@ -1,6 +1,6 @@
 # Design System — Plain Dharma
 
-*Last updated: 2026-05-26*
+*Last updated: 2026-05-28*
 
 Reading-first. Every decision optimizes for long-form prose on a range of
 screens. No dark mode at launch was an early principle; dark mode was
@@ -90,6 +90,102 @@ a custom `"themechange"` DOM event. The `themeInitScript` string (exported from
 the same file) is injected into `<head>` as a `dangerouslySetInnerHTML` script
 to apply the saved/system theme before first paint, preventing flash.
 
+### `ReadingControls`
+Client component. Floating "Aa" panel (top-right on desktop, bottom-right on
+mobile) with three controls: **SIZE** (sm/md/lg/xl), **CONTRAST** (low/med/high),
+and **FONT** (serif/accessible). Each setting persists to `localStorage` and is
+applied via HTML class names managed by `useSyncExternalStore`. The component
+dispatches `readingsizechange`, `readingcontrastchange`, and `readingfontchange`
+events to notify other components of changes. Uses the same FOUC-prevention
+pattern as `ThemeToggle` — the `readingPrefsInitScript` is injected into
+`<head>` to apply all three classes before React hydrates, preventing flicker.
+
+## Reading Controls System
+
+The three user-facing reading controls—**SIZE**, **CONTRAST**, and **FONT**—use
+dedicated CSS custom properties and class-based state to scale, recolor, and
+restyle prose independently from UI chrome (nav, footer, controls panel itself).
+
+### Size Control (`--reading-scale`)
+
+`ReadingControls` allows users to choose from four scale options: **sm** (0.9×),
+**md** (1.0×, default), **lg** (1.15×), and **xl** (1.35×). Each option applies
+a class `reading-size-{sm|md|lg|xl}` to `<html>`, which sets the `--reading-scale`
+CSS custom property.
+
+The `.prose-dharma` prose component multiplies its `font-size` by `var(--reading-scale)`
+at every breakpoint, so the responsive ramp scales proportionally. The `reading-head`
+class (applied to headers outside `.prose-dharma`) sets `font-size: calc(1rem * var(--reading-scale))`
+as a scale anchor; its children (`h1`, `h2`, `p`) use `em` units, so they inherit
+the scaling. Editorial components (`.preface-dharma`, `.closing-dharma`, `.drop-dharma`)
+also use `em`-based sizes with `var(--reading-scale)` to stay synchronized.
+
+### Contrast Control (`--reading-ink` + `--color-bg`)
+
+`ReadingControls` offers three contrast levels: **low** (soft/minimal glare),
+**med** (default), and **high** (max legibility). Each applies a class
+`contrast-{low|med|high}` to `<html>`, which drives two CSS custom properties:
+
+**`--reading-ink`**: The color of all reading content (prose, blockquotes, headings,
+editorial notes). This does NOT affect `--color-text`, which is reserved for UI
+chrome (nav, footer, the controls panel). This decoupling is intentional—changing
+the reading contrast only recolors the text the user is reading, not buttons and
+labels.
+
+**`--color-bg`**: In light mode, stays at the paper default (#F5EFE0) except in
+high-contrast mode, which brightens it to pure white for maximum contrast. In
+dark mode, low and high contrast modes drop to flat black (#000000) to minimize
+glare/flicker; med mode keeps the navy background (#101A30).
+
+| Mode | Contrast | `--reading-ink` | `--color-bg` | Use |
+|---|---|---|---|---|
+| Light | low | `#5c4d3a` (warm sepia) | `#F5EFE0` (paper) | Gentle daytime reading, low glare |
+| Light | med | `#1F1812` (deep brown) | `#F5EFE0` (paper) | Default |
+| Light | high | `#000000` (pure black) | `#FFFFFF` (white) | Low-vision, high contrast |
+| Dark | low | `#9A9285` (dim warm grey) | `#000000` (black) | Night reading, minimal strain |
+| Dark | med | `#ECE3D2` (warm off-white) | `#101A30` (navy) | Default with night sky |
+| Dark | high | `#FFFFFF` (white) | `#000000` (black) | Maximum legibility |
+
+**NightSky suppression:** In dark mode, the decorative animated star field
+(`NightSky.tsx`) is suppressed when in `contrast-low` or `contrast-high` mode,
+because those modes use flat-black backgrounds. The component detects these
+classes and clears the canvas instead of rendering, allowing the pure-black
+`--color-bg` to show through without animation interference.
+
+### Font Control (`--font-accessible` + unlayered rules)
+
+Users can choose **serif** (Garamond Libre, the default) or **accessible**
+(Atkinson Hyperlegible, designed for low-vision readers). Each applies a class
+`font-{serif|accessible}-pref` to `<html>`.
+
+The accessible font is controlled by unlayered CSS rules in `globals.css` that
+target prose components directly:
+
+```css
+html.font-accessible-pref .prose-dharma,
+html.font-accessible-pref .preface-dharma,
+html.font-accessible-pref .closing-dharma,
+html.font-accessible-pref .drop-dharma {
+  font-family: var(--font-accessible), system-ui, sans-serif;
+}
+html.font-accessible-pref .reading-head :where(h1, h2, p) {
+  font-family: var(--font-accessible), system-ui, sans-serif;
+}
+```
+
+Unlayered rules have high specificity and override component-level `font-serif`
+utilities, ensuring the choice reaches all reading surfaces—prose, editorial
+notes, and headers.
+
+### Key files
+
+| File | Role |
+|---|---|
+| `src/components/ReadingControls.tsx` | Floating control panel; manages size, contrast, font state via `useSyncExternalStore` and localStorage |
+| `src/app/globals.css` | All CSS custom properties, `--reading-scale`, `--reading-ink`, contrast levels, and `.reading-head` scale anchor |
+| `src/app/layout.tsx` | Injects `readingPrefsInitScript` into `<head>` to apply saved size/contrast/font classes before hydration |
+| `src/views/SuttaView.tsx`, `src/views/ReadView.tsx` | Apply `reading-head` class to headers so they scale with the size control |
+
 ## Important patterns and gotchas
 
 **Tailwind v4 `@theme inline`** — the `inline` modifier makes CSS variables
@@ -106,3 +202,10 @@ value in `:root`/`.dark`, then alias it in `@theme inline`.
 which fails AA for body text. `--color-accent-strong-raw` (#B25916) is 4.85:1
 and is used for interactive fills where white text appears on a saffron
 background.
+
+**Reading contrast is isolated from UI chrome** — The `CONTRAST` control modifies
+`--reading-ink` (used only by `.prose-dharma`, `.preface-dharma`, `.closing-dharma`,
+`.drop-dharma`, and `.reading-head`) and `--color-bg` (the page background).
+It does NOT change `--color-text`, which is reserved for UI chrome (nav, footer,
+buttons). This means adjusting reading contrast never accidentally recolors the
+controls panel or makes navigation harder to read.

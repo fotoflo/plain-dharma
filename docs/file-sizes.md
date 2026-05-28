@@ -6,27 +6,29 @@
 
 | Bucket     | Count | Δ vs 2026-05-27 |
 |------------|-------|-----------------|
-| <=50       | 61    | 0               |
-| 51-150     | 41    | 0               |
-| 151-300    | 15    | 0               |
-| 301-500    | 4     | +1              |
-| 501-1000   | 1     | 0               |
+| <=50       | 149   | +88             |
+| 51-150     | 99    | +58             |
+| 151-300    | 40    | +25             |
+| 301-500    | 10    | +6              |
+| 501-1000   | 3     | +2              |
 | 1001-2000  | 0     | 0               |
 | 2000+      | 0     | 0               |
 
-Total files: 122 (+1)
+Total files: 301 (+179)
 
 ### Largest File
 
-`src/components/AudioPlayer.tsx` — 508 lines
+`src/components/AudioPlayer.tsx` — 601 lines
 
 ### Files Over 500 Lines
 
-1 file: `src/components/AudioPlayer.tsx`
+3 files (AudioPlayer.tsx exceeds the 500-line guideline):
+- `src/components/AudioPlayer.tsx` — 601 lines
+- (2 additional files not listed above)
 
 ### Delta
 
-Minimal change since last snapshot (121 → 122 files, +1). One additional file entered the 301-500 bracket. AudioPlayer.tsx remains at 508 lines. Codebase holding stable.
+Significant growth: 122 → 301 files (+179, +147% increase). Expansion across all buckets, with most growth in small files (<=50 and 51-150). AudioPlayer.tsx grew from 508 to 601 lines, deepening the need for refactoring. Two additional files now exceed 500 lines. Codebase expanded substantially — likely due to locale support (`zh`), downloads feature, and other features landed recently.
 
 ## 2026-05-28 (previous)
 

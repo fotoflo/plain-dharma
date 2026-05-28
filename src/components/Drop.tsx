@@ -15,10 +15,7 @@ export function Drop({ text }: DropProps) {
         aria-hidden="true"
         className="h-px w-12 bg-accent/70"
       />
-      <p
-        className="mt-8 max-w-[50ch] text-center font-serif italic leading-relaxed text-ink/80"
-        style={{ fontSize: "0.95em" }}
-      >
+      <p className="drop-dharma mt-8 max-w-[50ch] text-center font-serif italic leading-relaxed">
         {text}
       </p>
     </div>

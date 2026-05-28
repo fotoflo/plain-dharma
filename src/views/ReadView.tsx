@@ -106,16 +106,16 @@ export async function ReadView({ locale }: { locale: Locale }) {
                   />
                   <header
                     id={`${meta.slug}--title`}
-                    className="mb-10 border-t border-divider/80 pt-8 scroll-mt-12"
+                    className="reading-head mb-10 border-t border-divider/80 pt-8 scroll-mt-12"
                   >
-                    <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
+                    <p className="font-sans text-[0.75em] uppercase tracking-[0.2em] text-link">
                       {String(meta.ordinal).padStart(2, "0")} ·{" "}
                       {meta.kicker_override ?? meta.pali_name}
                     </p>
-                    <h2 className="mt-3 font-serif text-3xl leading-tight text-ink sm:text-4xl">
+                    <h2 className="mt-3 font-serif text-[1.875em] leading-tight text-ink sm:text-[2.25em]">
                       {meta.title}
                     </h2>
-                    <p className="mt-3 font-serif text-base italic leading-relaxed text-ink/70">
+                    <p className="mt-3 font-serif text-[1em] italic leading-relaxed text-ink/70">
                       {meta.subtitle}
                     </p>
                   </header>

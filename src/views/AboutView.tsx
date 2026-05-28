@@ -88,6 +88,7 @@ export function AboutView({ locale }: { locale: Locale }) {
         <p>{s.about.pHowMade2}</p>
         <p>{s.about.pHowMade3}</p>
         <p>{s.about.pHowMade4}</p>
+        <p>{s.about.pCoverCredit}</p>
       </article>
 
       <div className="mt-16 text-center">

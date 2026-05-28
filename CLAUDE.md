@@ -72,5 +72,6 @@ Adding a new sutta = update `SUTTAS`, add to `SUTTA_META`, add to every locale i
 - `illustrations.md` — Gemini generation + transparency pipeline
 - `dev-workflow.md` — ngrok, MDX authoring, phone-on-LAN
 - `deployment.md` — Vercel project `fastmonitor/plain-dharma`, DNS, static-export compatibility
+- `mobile.md` — React Native (Expo) app, pnpm monorepo (`apps/mobile` + `packages/content`), shared content, audio/offline
 
 `DESIGN_REVIEW.md` at the repo root is a code+rendered-asset review with measured WCAG contrast numbers and prioritized fixes — consult before changing palette tokens or the muted-ink scale.

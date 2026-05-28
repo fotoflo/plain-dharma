@@ -117,3 +117,12 @@ query string (`?v=...`), resulting in broken illustrations in production.
 **pnpm lockfile** — Vercel auto-detects pnpm and uses the lockfile for
 deterministic installs. Do not commit a mixed yarn/npm lockfile alongside
 `pnpm-lock.yaml`.
+
+**Monorepo / hoisted workspace** — the repo is a pnpm workspace (the web app at
+the root, plus `apps/mobile` and `packages/content`). `pnpm-workspace.yaml` sets
+`nodeLinker: hoisted` (required for React Native under pnpm; workspace-wide).
+`next build` only compiles the Next app graph, so the mobile app doesn't affect
+the web build — but Vercel installs the whole workspace (including Expo deps), a
+heavier install. The web has not moved to `apps/web/` yet; if install weight
+becomes a problem, set the Vercel root directory to the web app or exclude
+`apps/mobile` from the production install. See [mobile.md](mobile.md).

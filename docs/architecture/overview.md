@@ -13,9 +13,14 @@
 | Audio playback (TTS pipeline, manifests, player) | [audio.md](audio.md) |
 | Dev workflow (ngrok tunnel, QR code, scripts) | [dev-workflow.md](dev-workflow.md) |
 | Deployment (Vercel, DNS, routing) | [deployment.md](deployment.md) |
+| Mobile app (React Native / Expo monorepo) | [mobile.md](mobile.md) |
 | Sitemap and URL structure | [../sitemap.md](../sitemap.md) |
 
 The stack, the conventions, and the *why* behind each decision. This is a reading-first static site. Every choice below serves that.
+
+## Monorepo (web + mobile)
+
+This is a pnpm workspace. The Next.js web app currently lives at the repo root; a React Native (Expo) app lives in `apps/mobile`, and both share the sutta content via `packages/content` (registry, strings, drops, glossary, audio types + the canonical `.mdx`). `pnpm-workspace.yaml` uses `nodeLinker: hoisted` (required for React Native under pnpm — workspace-wide, so the web installs hoisted too). The web has **not** been physically moved to `apps/web/` yet; that restructure is deferred. See [mobile.md](mobile.md).
 
 ## Stack
 

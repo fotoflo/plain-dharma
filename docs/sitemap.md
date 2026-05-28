@@ -13,6 +13,7 @@ plaindharma.com/
 ├── /glossary          Key terms in plain English, with Pali / Sanskrit where it matters
 ├── /download          PDF / ePub / print-ready files (the dharma-gift hub)
 │   └── /download/donate   Stripe Checkout-backed donation flow (EN-only)
+├── /contribute        How editors, translators & voice artists can help + contact form
 │
 └── Per-teaching pages (SEO + shareability):
     ├── /first-talk             The Buddha's first talk (Dhammacakkappavattana)
@@ -30,6 +31,7 @@ plaindharma.com/
 - **`/download`** is the hub for the dharma-gift physical distribution flow. PDF, ePub, and print-ready files live here. QR codes on physical booklets point here.
 - **`/glossary`** is the standing reference page — terms readers encounter on the teaching pages, defined once.
 - **`/about`** answers: who made this, why, what license, what sources, what's different about this version. Critical for trust.
+- **`/contribute`** is the "get involved / get in touch" door — it invites copy editors, translators, and voice artists to help carry the public-domain project further, and hosts the Resend-backed contact form.
 - **`/`** is intentionally minimal: tagline, the six teachings as a list, "Read all" CTA. No hero imagery, no ornament — the home page is a doorway, not a destination.
 
 ## Localization
@@ -49,6 +51,7 @@ Every page in the sitemap above is mirrored under each locale prefix, **except**
 /zh/read                   Chinese all-teachings page
 /zh/about                  Chinese about page
 /zh/glossary               Chinese glossary
+/zh/contribute             Chinese contribute page
 /zh/first-talk             Chinese first talk
 /zh/not-self
 /zh/fire-sermon
@@ -65,8 +68,8 @@ Implementation: rather than an `app/[locale]/...` dynamic segment, EN routes liv
 
 `src/app/sitemap.ts` emits `https://plaindharma.com/sitemap.xml` covering:
 
-- The 5 EN static pages (`/`, `/read`, `/about`, `/glossary`, `/download`)
-- The 4 ZH static pages (`/zh`, `/zh/read`, `/zh/about`, `/zh/glossary` — no `/zh/download`)
+- The 6 EN static pages (`/`, `/read`, `/about`, `/glossary`, `/download`, `/contribute`)
+- The 5 ZH static pages (`/zh`, `/zh/read`, `/zh/about`, `/zh/glossary`, `/zh/contribute` — no `/zh/download`)
 - All 6 EN sutta pages
 - All 6 ZH sutta pages
 

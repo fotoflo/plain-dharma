@@ -22,7 +22,7 @@ import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { SUTTAS } from "../src/content/index.js";
+import { SUTTAS } from "@plain-dharma/content";
 import {
   AUTHOR,
   BOOK_SUBTITLE,

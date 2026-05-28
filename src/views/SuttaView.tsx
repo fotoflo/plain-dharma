@@ -6,8 +6,8 @@ import {
   getNeighbors,
   loadSutta,
 } from "@/content";
-import { DROPS } from "@/content/drops";
-import { getStrings } from "@/content/strings";
+import { DROPS } from "@plain-dharma/content/drops";
+import { getStrings } from "@plain-dharma/content/strings";
 import { getAudioManifest } from "@/content/audio";
 import { localizedHref } from "@/lib/locale-href";
 import { SuttaIllustration } from "@/components/SuttaIllustration";

@@ -13,15 +13,16 @@ import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { getSuttasInOrder, DEFAULT_LOCALE } from "../../src/content/index.js";
-import { DROPS, PREFACE, CLOSING } from "../../src/content/drops.js";
-import { CANONICAL_LINKS } from "../../src/content/canonical-links.js";
+import { getSuttasInOrder, DEFAULT_LOCALE } from "@plain-dharma/content";
+import { DROPS, PREFACE, CLOSING } from "@plain-dharma/content/drops";
+import { CANONICAL_LINKS } from "@plain-dharma/content/canonical-links";
 
 const SUTTAS_IN_ORDER = getSuttasInOrder(DEFAULT_LOCALE);
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = join(dirname(__filename), "..", "..");
-const CONTENT_DIR = join(ROOT, "src", "content", "en");
+// Canonical MDX lives in the shared @plain-dharma/content package.
+const CONTENT_DIR = join(ROOT, "packages", "content", "en");
 
 export const BOOK_TITLE = "Plain Dharma";
 export const BOOK_SUBTITLE =
@@ -89,6 +90,7 @@ export function buildBookMarkdown(opts: BookSourceOptions): string {
     `## License\n\nReleased into the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Copy it, print it, translate it, distribute it, modify it. No permission needed; no attribution required.\n\nThis is in keeping with the Buddhist tradition of free dharma distribution.\n`
   );
   parts.push(`Source text and revisions: <${SITE_URL}>\n`);
+  parts.push(`*Cover design by ${AUTHOR} and Ellen Shapiro.*\n`);
 
   parts.push(`# Preface {.unnumbered}\n`);
   parts.push(`${PREFACE[DEFAULT_LOCALE]}\n`);
@@ -132,7 +134,9 @@ export function buildBookMarkdown(opts: BookSourceOptions): string {
     const entry = CANONICAL_LINKS[meta.slug];
     parts.push(`## ${meta.ordinal}. ${meta.title}\n`);
     parts.push(`*${entry.paliName}* — ${entry.paliReference}\n`);
-    const bullets = entry.links.map((l) => `- [${l.label}](${l.url})`).join("\n");
+    const bullets = entry.linksByLocale[DEFAULT_LOCALE]
+      .map((l) => `- [${l.label}](${l.url})`)
+      .join("\n");
     parts.push(`${bullets}\n`);
   }
 

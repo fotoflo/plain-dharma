@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Locale } from "@/content";
-import { GLOSSARY } from "@/content/glossary";
-import { getStrings } from "@/content/strings";
+import { GLOSSARY } from "@plain-dharma/content/glossary";
+import { getStrings } from "@plain-dharma/content/strings";
 import { localizedHref } from "@/lib/locale-href";
 import { Wash } from "@/components/Wash";
 

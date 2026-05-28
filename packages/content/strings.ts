@@ -37,7 +37,7 @@ const en = {
     ctaReadAll: "Read all six",
     ctaDownload: "Download",
     heroBlurb:
-      "Six short readings — the ones at the root of the whole tradition — rendered for a first-time reader who'd rather have the meaning land than wade through the footnotes. Free to read, free to copy, free to print, free to translate.",
+      "Six short sutras — the ones at the root of the whole tradition — rendered for a first-time reader who'd rather understand than wade through footnotes. Free to read, free to copy, free to print, free to listen.",
     sixTeachingsLabel: "The six teachings",
   },
   sutta: {
@@ -247,7 +247,7 @@ const zh: Strings = {
     ctaReadAll: "六篇一起读",
     ctaDownload: "下载",
     heroBlurb:
-      "六篇短短的开示——整个传承的根基——为第一次接触的读者而做，让你直接读懂意思，不必先扎进脚注里。可以自由阅读、自由复制、自由打印、自由翻译。",
+      "六篇短短的开示——整个传承的根基——为第一次接触的读者而做，与其在脚注里钻来钻去，不如直接读懂。可以自由阅读、自由复制、自由打印、自由聆听。",
     sixTeachingsLabel: "这六篇开示",
   },
   sutta: {

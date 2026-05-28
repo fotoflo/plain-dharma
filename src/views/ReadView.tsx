@@ -5,8 +5,8 @@ import {
   loadSutta,
   type Locale,
 } from "@/content";
-import { DROPS } from "@/content/drops";
-import { getStrings } from "@/content/strings";
+import { DROPS } from "@plain-dharma/content/drops";
+import { getStrings } from "@plain-dharma/content/strings";
 import { getCombinedAudioManifest } from "@/content/audio";
 import { localizedHref } from "@/lib/locale-href";
 import { Wash } from "@/components/Wash";

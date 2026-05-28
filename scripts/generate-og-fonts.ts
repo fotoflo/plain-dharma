@@ -26,7 +26,7 @@ const OUT = join(ROOT, "src/app/fonts/NotoSerifSC-OG-700.ttf");
 // Sources that contribute Chinese text to a card: the content registry (ZH
 // sutta titles + kicker_override) and the ZH OG route files (static card copy).
 const SOURCES = [
-  "src/content/index.ts",
+  "packages/content/index.ts",
   "src/app/zh/opengraph-image.tsx",
   "src/app/zh/read/opengraph-image.tsx",
   "src/app/zh/about/opengraph-image.tsx",

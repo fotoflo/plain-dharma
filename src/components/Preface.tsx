@@ -1,4 +1,4 @@
-import { PREFACE } from "@/content/drops";
+import { PREFACE } from "@plain-dharma/content/drops";
 import { DEFAULT_LOCALE, type Locale } from "@/content";
 
 /**

@@ -60,8 +60,8 @@ const ELEVEN_VOICE_ID = FLAGS.voiceId ?? "BpjGufoPiobT79j2vtj4";
 
 // Voice prompt + TTS-mirror MDX live under src/content/{locale}_tts/.
 // The mirror has inline audio tags woven through the text; the OpenAI path
-// reads the cleaner src/content/{locale}/ MDX and passes the prompt as the
-// `instructions` field instead.
+// reads the cleaner canonical MDX from packages/content/{locale}/ and passes
+// the prompt as the `instructions` field instead.
 const TTS_DIR_SUFFIX = "_tts";
 const VOICE_PROMPT_FILENAME = "voice-prompt.txt";
 
@@ -320,7 +320,7 @@ async function main() {
     const mirrorPath = join(ROOT, "src", "content", ttsDir, `${SLUG}.mdx`);
     mdxPath = existsSync(mirrorPath)
       ? mirrorPath
-      : join(ROOT, "src", "content", LOCALE, `${SLUG}.mdx`);
+      : join(ROOT, "packages", "content", LOCALE, `${SLUG}.mdx`);
     outLocaleDir = ttsDir; // public/audio/en_tts/<slug>/
     modelLabel = ELEVEN_MODEL;
     voiceLabel = ELEVEN_VOICE_ID;
@@ -330,7 +330,7 @@ async function main() {
       console.error("ERROR: OPENAI_SECRET_KEY not set in .env.local.");
       process.exit(1);
     }
-    mdxPath = join(ROOT, "src", "content", LOCALE, `${SLUG}.mdx`);
+    mdxPath = join(ROOT, "packages", "content", LOCALE, `${SLUG}.mdx`);
     outLocaleDir = LOCALE; // public/audio/en/<slug>/
     modelLabel = OPENAI_MODEL;
     voiceLabel = OPENAI_VOICE;

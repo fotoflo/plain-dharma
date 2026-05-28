@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Locale } from "@/content";
-import { getStrings } from "@/content/strings";
+import { getStrings } from "@plain-dharma/content/strings";
 import { localizedHref } from "@/lib/locale-href";
 import { Wash } from "@/components/Wash";
 

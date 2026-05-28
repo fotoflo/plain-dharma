@@ -22,7 +22,7 @@ import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { getSuttasInOrder, DEFAULT_LOCALE } from "../src/content/index.js";
+import { getSuttasInOrder, DEFAULT_LOCALE } from "@plain-dharma/content";
 import { getAudioManifest } from "../src/content/audio.js";
 import { AUTHOR, BOOK_TITLE, PUBLISHER } from "./lib/book-source.js";
 

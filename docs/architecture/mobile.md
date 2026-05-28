@@ -40,10 +40,14 @@ transpilation (no build step). Exports (`package.json` `exports` map):
 | `./audio` | `AudioSection`/`AudioManifest` types, `combineManifests` (pure /read stitch), `getAudioFileUrl` |
 | `./en/*`, `./zh/*` | the canonical sutta `.mdx` |
 
-What stays **web-only** (not shared): the MDX `LOADERS`/`loadSutta` (bundler-
-specific `import('*.mdx')`) and `illustrations.ts` (`fs.statSync`). The web's
-`src/content` is unchanged; `packages/content` is a parallel copy of the
-shareable parts (content is the source of truth — keep them in sync).
+What stays **web-only** (not shared, lives in `src/content`): the MDX
+`LOADERS`/`loadSutta` (bundler-specific `import('*.mdx')`), the `fs`-based audio
+manifest readers, and `illustrations.ts` (`fs.statSync`). As of 2026-05-29 the
+content is **deduplicated** — `packages/content` is the single canonical copy
+(no more parallel trees to keep in sync). The web's `src/content/index.ts` and
+`audio.ts` are thin shims that `export *` from this package and add only those
+web-specific pieces; the web app depends on `@plain-dharma/content`
+(`workspace:*`) and Next compiles its `.mdx` via `transpilePackages`.
 
 ## Content rendering on mobile
 

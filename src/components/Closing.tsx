@@ -1,4 +1,4 @@
-import { CLOSING } from "@/content/drops";
+import { CLOSING } from "@plain-dharma/content/drops";
 import { DEFAULT_LOCALE, type Locale } from "@/content";
 
 /**

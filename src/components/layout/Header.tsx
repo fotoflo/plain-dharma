@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
-import { getStrings } from "@/content/strings";
+import { getStrings } from "@plain-dharma/content/strings";
 import { getLocaleFromPathname, localizedHref } from "@/lib/locale-href";
 
 export function Header() {

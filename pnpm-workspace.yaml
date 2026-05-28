@@ -1,3 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Expo + React Native need a hoisted node_modules layout under pnpm; isolated
+# (default) installs break Metro/native module resolution for RN libraries.
+# See https://docs.expo.dev/guides/monorepos/. Scoped to this worktree branch.
+nodeLinker: hoisted
+
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver

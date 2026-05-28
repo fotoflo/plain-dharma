@@ -36,6 +36,7 @@ export function FloatingAudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
   return (
     <div
       ref={containerRef}
+      data-mn-ui
       className="fixed bottom-24 right-4 z-50 sm:bottom-6 sm:right-5 flex flex-col items-end gap-2"
     >
       {/* Keep the player mounted even when collapsed — otherwise closing the

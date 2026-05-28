@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { themeInitScript } from "@/components/ThemeToggle";
 import { readingPrefsInitScript } from "@/components/ReadingControls";
 import { NightSky } from "@/components/NightSky";
+import Marginalia from "@/components/marginalia/Marginalia";
 import { SITE_URL, SITE_DESCRIPTION, ogBase } from "@/lib/og-meta";
 
 const GA_ID = "G-FNHT1NCRS5";
@@ -75,7 +76,13 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`min-h-full flex flex-col ${atkinson.variable}`}>
         <NightSky />
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1" data-mn-scope>
+          {children}
+        </main>
+        {/* Margin Notes layer — global so highlights/notes work on every page's
+            reading content (titles, preface, prose, drops). Mounted outside
+            <main> so its own fixed UI sits outside the annotatable scope. */}
+        <Marginalia />
         <Footer />
         {GA_ENABLED && (
           <>

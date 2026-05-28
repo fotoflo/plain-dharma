@@ -66,6 +66,11 @@
   --color-link-raw: #8b3a0f;
   --color-border-warm: #e0d4b8;
 
+  /* Margin Notes highlight — a warm amber wash over cream; dark ink stays well
+     above WCAG AA on top of it. -strong is the hover / flash state. */
+  --color-highlight: rgba(213, 150, 64, 0.34);
+  --color-highlight-strong: rgba(213, 150, 64, 0.55);
+
   --background: var(--color-bg);
   --foreground: var(--color-text);
   --card: var(--color-bg);
@@ -112,6 +117,10 @@
   --color-accent-strong-raw: #b25916;
   --color-link-raw: #e0a05a;
   --color-border-warm: #283450;
+
+  /* Warm glow against the night sky; off-white reading ink stays legible. */
+  --color-highlight: rgba(224, 131, 58, 0.30);
+  --color-highlight-strong: rgba(224, 131, 58, 0.48);
 
   /* neutral shadcn surfaces → navy-tinted darks */
   --secondary: oklch(0.27 0.03 255);
@@ -372,5 +381,44 @@ html.font-accessible-pref .reading-head :where(h1, h2, p) {
     text-decoration: underline;
     text-decoration-color: var(--color-link-raw);
     text-underline-offset: 0.2em;
+  }
+
+  /* ── Margin Notes marks ──────────────────────────────────────────────────
+     Injected <mark> wrappers for highlights and notes. A warm wash that reads
+     as a soft highlighter on paper / a gentle glow on the night sky — never a
+     neon block. A note adds a dotted accent underline to say "there's more
+     here". box-decoration-break keeps the wash continuous across line wraps. */
+  .dharma-mark {
+    background-color: var(--color-highlight);
+    color: inherit;
+    border-radius: 0.15em;
+    padding: 0.02em 0;
+    cursor: pointer;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    transition: background-color 160ms ease;
+  }
+  .dharma-mark:hover {
+    background-color: var(--color-highlight-strong);
+  }
+  .dharma-mark-note {
+    border-bottom: 1.5px dotted var(--color-accent-raw);
+  }
+  .dharma-mark.dharma-flashing {
+    animation: dharma-pulse 1.5s ease-out;
+  }
+  @keyframes dharma-pulse {
+    0% { background-color: var(--color-highlight-strong); }
+    100% { background-color: var(--color-highlight); }
+  }
+  /* Deep-link (?h=) arrival: pulse, then fade out — the JS removes it after. */
+  .dharma-mark-flash {
+    background-color: var(--color-highlight-strong);
+    border-radius: 0.15em;
+    animation: dharma-flash 4s ease-out forwards;
+  }
+  @keyframes dharma-flash {
+    0%, 55% { background-color: var(--color-highlight-strong); }
+    100% { background-color: transparent; }
   }
 }

@@ -197,7 +197,7 @@ export function ReadingControls() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 right-4 z-50 sm:bottom-auto sm:top-20 sm:right-5 flex flex-col items-end gap-2">
+    <div data-mn-ui className="fixed bottom-6 right-4 z-50 sm:bottom-auto sm:top-20 sm:right-5 flex flex-col items-end gap-2">
       {/* Trigger pill — unchanged */}
       <button
         ref={buttonRef}

@@ -1,0 +1,16 @@
+# Keep audio-pipeline source artifacts out of the Vercel deploy upload.
+# These are NOT served by the app (getAudioManifest only reads
+# public/audio/{en,zh}/<slug>/), they only exist locally for the TTS +
+# speed-variant pipeline. Shipping them was bloating "Deploying outputs"
+# (~113 MB of 182 MB) and timing out production deploys.
+#
+# NOTE: only excludes non-served files. The live en/zh narration and the
+# en fast/ variants still ship via Vercel. manifest.json is NOT excluded —
+# audio.ts reads it from the filesystem at build time.
+
+# Raw ElevenLabs originals (source for scripts/make-audio-variant.ts)
+public/audio/*/*/candidates/
+
+# ElevenLabs TTS mirror outputs (intermediate; app reads en/ and zh/, not *_tts/)
+public/audio/en_tts/
+public/audio/zh_tts/

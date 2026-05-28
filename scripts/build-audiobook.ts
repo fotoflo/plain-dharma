@@ -72,7 +72,10 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
     }
     const short = SHORT_TITLES[meta.slug] ?? meta.title;
     for (const section of manifest.sections) {
-      const filePath = join(AUDIO_DIR, meta.slug, section.file);
+      // getAudioManifest appends a `?v=<mtime>` cache-bust query to `file` for
+      // the browser; strip it to get the real on-disk filename.
+      const fileName = section.file.split("?")[0];
+      const filePath = join(AUDIO_DIR, meta.slug, fileName);
       if (!existsSync(filePath)) {
         throw new Error(`Missing audio file: ${filePath}`);
       }

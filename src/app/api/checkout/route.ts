@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { amount?: unknown; file?: unknown };
+  let body: { amount?: unknown; file?: unknown; platform?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -73,6 +73,18 @@ export async function POST(req: Request) {
   const stripe = new Stripe(secret);
   const baseUrl = getBaseUrl(req);
 
+  // The mobile app can't receive Stripe's https redirect directly, so it routes
+  // through /download/return, a page that bounces into the app's `mobile://`
+  // deep link. The flag is server-trusted — we build our own URLs, never echo a
+  // client-supplied one (avoids an open redirect through Stripe).
+  const isMobile = body.platform === "mobile";
+  const successUrl = isMobile
+    ? `${baseUrl}/download/return?to=thankyou&file=${file}`
+    : `${baseUrl}/download/thank-you?file=${file}&session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = isMobile
+    ? `${baseUrl}/download/return?to=cancel&file=${file}`
+    : `${baseUrl}/download/donate?file=${file}&cancelled=1`;
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -96,8 +108,8 @@ export async function POST(req: Request) {
       // the Dashboard, repeat donations roll up under one person, and we can
       // run follow-up emails later if we ever want to.
       customer_creation: "always",
-      success_url: `${baseUrl}/download/thank-you?file=${file}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/download/donate?file=${file}&cancelled=1`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: { file },
     });
 

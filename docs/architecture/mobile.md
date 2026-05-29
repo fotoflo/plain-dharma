@@ -129,20 +129,71 @@ app/
 │   ├── read.tsx        ← combined /read (all six + combined audio)
 │   └── more.tsx        ← downloads / offline / donate / newsletter / about+glossary links
 ├── [slug].tsx          ← single talk, full-screen above the tab bar
+├── download/           ← book download → donate → Stripe flow (native)
+│   ├── index.tsx       ← edition picker (EPUB / PDF / M4B), mirrors web /download
+│   ├── donate.tsx      ← pay-what-you-want; opens web Stripe; deep-link return listener
+│   └── thank-you.tsx   ← auto-delivers the file via the OS share sheet
 ├── about.tsx           ← root-level, pushed
 └── glossary.tsx        ← root-level, pushed
 ```
+
+## Book download & donation flow
+
+Mirrors the web `/download` → `/download/donate` → Stripe → `/download/thank-you`
+flow with native screens (`app/download/`). Donations are **optional** — the file
+is always freely downloadable — and payment happens on **web Stripe Checkout**,
+never in-app: Apple only permits in-app donations for registered nonprofits (which
+Plain Dharma is not), so keeping the charge in the browser is the compliant path.
+`@stripe/stripe-react-native` (as flexbike uses) was rejected for this reason —
+better UX, but it would read as IAP circumvention for a digital good.
+
+**Round trip** — Stripe's `success_url` must be https, so it can't target a
+`mobile://` link directly:
+
+1. `donate.tsx` POSTs `{ amount, file, platform: "mobile" }` to
+   `plaindharma.com/api/checkout`; for mobile the route points success/cancel at
+   `/download/return?to=thankyou|cancel&file=…`.
+2. `WebBrowser.openBrowserAsync` opens Stripe (no auth-session consent dialog).
+3. Stripe redirects to `/download/return`, a **Universal Link / App Link** — the OS
+   hands the URL back to the app. `Return.tsx` also bounces a
+   `mobile://download/donate?to=…` custom scheme + shows manual links as fallback.
+4. `donate.tsx`'s `Linking` listener reads `to=` off whichever URL arrives,
+   `dismissBrowser()` (iOS only), and routes to `thank-you` (or shows the cancelled
+   banner). `thank-you.tsx` auto-delivers the file via the share sheet. The "skip
+   and download for free" path calls `deliverBookFile` directly (no Stripe).
+
+**Universal / App Link config:**
+- `app.json`: `ios.associatedDomains: ["applinks:plaindharma.com"]`;
+  `android.intentFilters` (`autoVerify`, host `plaindharma.com`, pathPrefix
+  `/download/return`).
+- Web hosts the verification files, **scoped to `/download/return*`** so the rest of
+  the reading site still opens in a browser:
+  - `public/.well-known/apple-app-site-association` — `appID`
+    `H78XB55WG8.com.plaindharma.app` (same Apple Developer team as flexbike); served
+    as `application/json` via `next.config.ts` `headers()`.
+  - `public/.well-known/assetlinks.json` — package `com.plaindharma.app`;
+    **`sha256_cert_fingerprints` is still a placeholder** (fill from the EAS Android
+    keystore / Play app-signing SHA-256).
+- **Reliable here because** `/download/return` is only ever hit from the app's own
+  flow (web donations use `/download/thank-you`), so the app is always installed
+  when the link fires.
+
+**Operational order:** deploy the web changes first (the AASA must be live for iOS
+to verify) → rebuild under `com.plaindharma.app` (native config change) → test on a
+real device (simulators don't verify universal links).
+`applinks:plaindharma.com?mode=developer` bypasses Apple's CDN cache during dev.
 
 ## Assets & backend
 
 Mobile owns no audio/illustration/download files — it streams them from the
 deployed `plaindharma.com`:
 
-- Audio mp3s + manifests, illustration PNGs (`expo-image`), and book downloads
-  (`Linking.openURL` → system browser) all hit the live site.
-- Newsletter → `POST plaindharma.com/api/subscribe`; donate → `expo-web-browser`
-  to `/download/donate` (the web Stripe Checkout — App-Store-compliant since the
-  content is free).
+- Audio mp3s + manifests and illustration PNGs (`expo-image`) hit the live site.
+  Book files are fetched to the cache and handed to the OS share sheet
+  (`deliverBookFile` — `expo-file-system` + `expo-sharing`).
+- Newsletter → `POST plaindharma.com/api/subscribe`. The general "Support" donate
+  button → `expo-web-browser` to `/download/donate`. The **book-download** donate
+  flow is native — see "Book download & donation flow" below.
 - **Implication:** fast-mode audio, the contribute/contact routes, and any new
   content must be **deployed to production** before they work on mobile.
 

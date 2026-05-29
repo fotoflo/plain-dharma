@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { OfflineDownload } from "@/components/OfflineDownload";
-import { DOWNLOADS, openDonate, openDownload } from "@/lib/links";
+import { openDonate } from "@/lib/links";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -34,17 +34,12 @@ export default function MoreScreen() {
       <Text style={[styles.note, { color: palette.ink }]}>
         Free, CC0 — the whole book in three formats.
       </Text>
-      {DOWNLOADS.map((d) => (
-        <Pressable
-          key={d.format}
-          onPress={() => openDownload(d.format)}
-          style={[styles.row, { borderColor: palette.divider }]}
-        >
-          <Text style={{ color: palette.link, fontFamily: FONTS.serif, fontSize: 17 }}>
-            {d.label}
-          </Text>
-        </Pressable>
-      ))}
+      <Link
+        href="/download"
+        style={[styles.linkRow, { color: palette.link, borderColor: palette.divider, fontFamily: FONTS.serif }]}
+      >
+        Download the book →
+      </Link>
 
       <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
         Listen offline
@@ -97,7 +92,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 34, marginBottom: 8 },
   h: { fontSize: 24, marginTop: 28, marginBottom: 6 },
   note: { fontSize: 15, opacity: 0.6, marginBottom: 10 },
-  row: { paddingVertical: 14, borderBottomWidth: 1 },
   linkRow: { fontSize: 17, paddingVertical: 14, borderBottomWidth: 1 },
   donate: { borderRadius: 8, paddingVertical: 14, alignItems: "center", marginTop: 4 },
 });

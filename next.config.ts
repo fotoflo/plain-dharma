@@ -55,6 +55,13 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // The Apple App Site Association file is extensionless; iOS expects it
+        // served as JSON over HTTPS with no redirect. Enables Universal Links
+        // for the mobile app's Stripe donation return (/download/return).
+        source: "/.well-known/apple-app-site-association",
+        headers: [{ key: "Content-Type", value: "application/json" }],
+      },
     ];
   },
 };

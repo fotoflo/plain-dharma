@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["H78XB55WG8.com.plaindharma.app"],
+        "components": [
+          {
+            "/": "/download/return*",
+            "comment": "Stripe donation payment return — opens the mobile app"
+          }
+        ]
+      }
+    ]
+  }
+}

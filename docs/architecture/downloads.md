@@ -42,7 +42,8 @@ generate-cover.ts
 | `scripts/build-ebook.ts` | Build EPUB from MDX sources via pandoc; publish as final step. |
 | `scripts/build-pdf.ts` | Build screen PDF (6×9 inch, xelatex) from shared book markdown; publish as final step. |
 | `scripts/build-audiobook.ts` | Stitch per-sutta MP3 manifests into single M4B with chapter markers; publish as final step. |
-| `scripts/generate-cover.ts` | Rasterize cover image via Chromium; publish as final step. |
+| `scripts/generate-cover.ts` | Rasterize InDesign cover PDF (6×9", CMYK) to 1600×2400 JPEG (sRGB) via pdftoppm + ImageMagick; publish as final step. |
+| `scripts/assets/PlainDharma_Cover.pdf` | Designer's InDesign cover (source of truth for cover.jpg). Rendered at 320 DPI and downscaled by `generate-cover.ts`. |
 | `scripts/publish-downloads.ts` | Batch convenience: republish all four at once from current `dist/` contents. Used only when re-syncing artifacts from elsewhere (e.g. after a fresh checkout with committed dist/ files). Missing sources are skipped — e.g. an incomplete audiobook won't block republishing the EPUB/PDF. |
 
 ## Data flow
@@ -61,7 +62,12 @@ generate-cover.ts
 
 **`scripts/publish-downloads.ts` is a batch convenience** — normally, each generator publishes its own output. But if you have fresh artifacts in `dist/` (e.g. from a fresh clone or a CI build) and want to re-sync them all at once, `pnpm publish-downloads` does that. Missing sources are skipped — the script doesn't error if the audiobook isn't ready yet.
 
-**Cover is shared** — `generate-cover.ts` rasterizes the cover once and saves it to `dist/ebook/cover.jpg`. Both `build-pdf.ts` and `build-audiobook.ts` read from that same file, so regenerating the cover updates all three formats. A missing cover is non-fatal — the EPUB, PDF, and audiobook all build successfully without one, just with a `console.warn`.
+**Cover is shared and designer-sourced** — `generate-cover.ts` rasterizes the designer's InDesign cover PDF (`scripts/assets/PlainDharma_Cover.pdf`) into a single 1600×2400 JPEG at `dist/ebook/cover.jpg`. It uses `pdftoppm` (poppler) to render the 6×9" CMYK PDF at 320 DPI, then ImageMagick to downscale and convert to sRGB (matching browser/e-reader color spaces). Both `build-pdf.ts` and `build-audiobook.ts` read from that same file, so regenerating the cover updates all three formats. A missing cover is non-fatal — the EPUB, PDF, and audiobook all build successfully without one, just with a `console.warn`.
+
+**Cover design credit** — "Cover design by Alex Miller and Ellen Shapiro" appears in three places:
+- **Book colophon** (`scripts/lib/book-source.ts` buildBookMarkdown, "About This Book" section) — in all formats (EPUB, PDF).
+- **EPUB metadata** (`scripts/build-ebook.ts` buildMetadataYaml) — dc:contributor with role `cov` (Dublin Core standard for cover contributors).
+- **Website About page** (`packages/content/strings.ts` about.pCoverCredit, rendered in `src/views/AboutView.tsx`) — visible in en and zh locales.
 
 **Illustrations are format-specific** — each builder resizes + recompresses the source PNGs differently:
 - **EPUB** → 800px JPEG, q=85 on cream (Kindle target, ~50 KB per image).

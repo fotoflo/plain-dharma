@@ -4,7 +4,9 @@
     "target": {
       "namespace": "android_app",
       "package_name": "com.plaindharma.app",
-      "sha256_cert_fingerprints": ["REPLACE_WITH_ANDROID_SHA256_FINGERPRINT"]
+      "sha256_cert_fingerprints": [
+        "BA:9C:1A:AC:42:70:11:39:E2:31:B5:3E:6E:46:53:6F:32:CD:E0:55:1D:71:D8:09:6C:34:2B:A7:D3:C4:A8:EC"
+      ]
     }
   }
 ]

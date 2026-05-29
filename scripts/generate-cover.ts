@@ -19,6 +19,8 @@ import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { publishToDownloads } from "./lib/publish.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = join(dirname(__filename), "..");
 const OUT_DIR = join(ROOT, "dist", "ebook");
@@ -62,6 +64,10 @@ function main(): void {
   rmSync(tmpPng, { force: true });
 
   console.log(`[generate-cover] wrote ${cover} from ${SOURCE_PDF}`);
+
+  // Publishing is tied to generation — push the just-built cover to the site.
+  publishToDownloads(cover, "plain-dharma-cover.jpg");
+
   console.log(`[generate-cover] now run \`pnpm build-ebook\` / \`build-pdf\` to attach it.`);
 }
 

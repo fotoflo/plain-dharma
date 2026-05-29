@@ -1,10 +1,17 @@
 /**
- * Copy the latest built EPUB + PDF + cover JPEG into public/downloads/ so
- * they're served from the site. Run after `pnpm build-ebook` / `build-pdf`.
+ * Batch-republish everything currently in dist/ into public/downloads/.
+ *
+ * Normally you don't need this: each build script (build-ebook, build-pdf,
+ * build-audiobook, generate-cover) publishes its own output as the last step,
+ * so generating an artifact already serves it from /downloads/*. This is the
+ * "re-sync all four at once" convenience — e.g. after pulling fresh dist/
+ * artifacts from elsewhere. Missing sources are skipped (not an error), so a
+ * deferred audiobook won't block republishing the EPUB/PDF.
  *
  * The files are publicly accessible at:
  *   /downloads/plain-dharma.epub
  *   /downloads/plain-dharma.pdf
+ *   /downloads/plain-dharma.m4b
  *   /downloads/plain-dharma-cover.jpg
  *
  * This is intentional — the donation flow is honor-system. Anyone who guesses
@@ -14,12 +21,12 @@
  * Run: pnpm publish-downloads
  */
 
-import { copyFileSync, existsSync, mkdirSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { publishToDownloads } from "./lib/publish.js";
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DEST = join(ROOT, "public", "downloads");
 
 const ARTIFACTS = [
   { src: "dist/ebook/plain-dharma.epub",    dest: "plain-dharma.epub" },
@@ -29,17 +36,8 @@ const ARTIFACTS = [
 ];
 
 function main(): void {
-  if (!existsSync(DEST)) mkdirSync(DEST, { recursive: true });
   for (const { src, dest } of ARTIFACTS) {
-    const srcAbs = join(ROOT, src);
-    if (!existsSync(srcAbs)) {
-      console.error(`[publish-downloads] missing: ${src} — run the corresponding build script first`);
-      process.exit(1);
-    }
-    const destAbs = join(DEST, dest);
-    copyFileSync(srcAbs, destAbs);
-    const size = (statSync(destAbs).size / 1024).toFixed(0);
-    console.log(`[publish-downloads] ${dest}  ${size} KB`);
+    publishToDownloads(join(ROOT, src), dest);
   }
 }
 

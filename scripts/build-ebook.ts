@@ -32,6 +32,7 @@ import {
   buildBookMarkdown,
   generateQrCode,
 } from "./lib/book-source.js";
+import { publishToDownloads } from "./lib/publish.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = join(dirname(__filename), "..");
@@ -169,6 +170,9 @@ function runPandoc(): void {
 
   execFileSync("pandoc", args, { stdio: "inherit" });
   console.log(`\n[build-ebook] wrote ${outEpub}`);
+
+  // Publishing is tied to generation — push the just-built EPUB to the site.
+  publishToDownloads(outEpub, "plain-dharma.epub");
 }
 
 function main(): void {

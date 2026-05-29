@@ -125,10 +125,12 @@ the dedup.)
 **`combined-suttas.md` is a generated artifact**, not a source. The six
 `packages/content/en/*.mdx` files are the canonical source.
 
-**Build scripts** (`scripts/build-ebook.ts`, `build-audiobook.ts`,
+**Build scripts** (`scripts/build-ebook.ts`, `build-pdf.ts`, `build-audiobook.ts`,
 `lib/book-source.ts`, `generate-og-fonts.ts`) and the TTS pipeline
 (`generate-audio.ts`) all read content from `@plain-dharma/content` /
-`packages/content/{locale}/`, not from `src/content`.
+`packages/content/{locale}/`, not from `src/content`. Each build script publishes
+its final output to `public/downloads/` as the last step — see
+`docs/architecture/downloads.md` for the distribution pipeline.
 
 ## Audio narration
 

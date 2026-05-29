@@ -6,15 +6,15 @@
 
 | Bucket     | Count | Δ vs prev |
 |------------|-------|-----------|
-| <=50       | 156   | +2        |
-| 51-150     | 125   | +1        |
-| 151-300    | 44    | -3        |
-| 301-500    | 11    | -1        |
+| <=50       | 157   | +1        |
+| 51-150     | 125   | —         |
+| 151-300    | 44    | —         |
+| 301-500    | 11    | —         |
 | 501-1000   | 4     | —         |
 | 1001-2000  | 0     | —         |
 | 2000+      | 0     | —         |
 
-Total files: 340 (-1)
+Total files: 341
 
 ### Largest File
 
@@ -28,7 +28,7 @@ Total files: 340 (-1)
 
 ### Delta
 
-Content de-duplication: `src/content` lost its 12 duplicate sutta MDX files and the `strings/drops/canonical-links/glossary` modules, while `src/content/{index,audio}.ts` shrank to thin re-export shims — hence the drop in the 151–300 bracket and a slightly lower total (the canonical copies live on in `packages/content`). No threshold-crossing files; the 501–1000 bucket holds steady at 4.
+Stable session: one additional small file created (<=50 bucket +1), no other changes. No threshold-crossing files; the 501–1000 bucket holds steady at 4. AudioPlayer.tsx remains the largest at 647 lines.
 
 ## 2026-05-28 (previous)
 

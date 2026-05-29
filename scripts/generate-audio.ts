@@ -2,11 +2,15 @@
  * Generate chunked audio narration per sutta via OpenAI gpt-4o-mini-tts.
  *
  * Usage:
- *   pnpm generate-audio [slug] [locale]
+ *   pnpm generate-audio [slug] [locale] [--force] [--provider=openai]
  *
- * Defaults: slug=first-talk, locale=en
+ * Defaults: slug=first-talk, locale=en, provider=elevenlabs
+ *   (eleven_multilingual_v2 / voice UmQN7jS1Ee8B1czsUtQh — matches the live
+ *    public/audio/en/ narration; writes straight to that live tree).
+ *   Pass --force to regenerate even when output already exists (e.g. after an
+ *   MDX edit — the skip check only compares model/voice, not source text).
  *
- * Requires: OPENAI_SECRET_KEY in .env.local
+ * Requires: ELEVEN_LABS_KEY (default) or OPENAI_SECRET_KEY (--provider=openai) in .env.local
  * Optional: ffprobe in PATH (for accurate mp3 duration; estimates otherwise)
  */
 
@@ -41,7 +45,8 @@ const FLAGS: Record<string, string> = Object.fromEntries(flagPairs);
 const SLUG = positionals[0] ?? "first-talk";
 const LOCALE = positionals[1] ?? "en";
 const SECTION_FILTER = FLAGS.section; // undefined = all sections
-const PROVIDER = (FLAGS.provider ?? "openai") as "openai" | "elevenlabs";
+const FORCE = FLAGS.force !== undefined; // regenerate even if output already exists
+const PROVIDER = (FLAGS.provider ?? "elevenlabs") as "openai" | "elevenlabs";
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 
@@ -51,12 +56,17 @@ const OPENAI_MODEL = "gpt-4o-mini-tts";
 const OPENAI_VOICE = "sage";
 
 // ElevenLabs — voice IDs come from the ElevenLabs voice library.
-// Priyanka: BpjGufoPiobT79j2vtj4
-// `--model=eleven_v3` (default) honors inline [pause]/[gentle] audio tags.
-// `--model=eleven_multilingual_v2` is more voice-stable but doesn't understand
-// audio tags — the script strips them from the text on that path.
-const ELEVEN_MODEL = FLAGS.model ?? "eleven_v3";
-const ELEVEN_VOICE_ID = FLAGS.voiceId ?? "BpjGufoPiobT79j2vtj4";
+// The default model+voice match the LIVE site narration under public/audio/en/
+// so a bare `pnpm generate-audio <slug> en` reproduces the published voice.
+//   • eleven_multilingual_v2 (default) — voice-stable, ignores audio tags (the
+//     script strips them). Reads canonical MDX, writes to live public/audio/<loc>/.
+//   • --model=eleven_v3 — honors inline [pause]/[gentle] tags; reads the
+//     audio-tag mirror under src/content/<loc>_tts/ and writes to public/audio/<loc>_tts/.
+// Override voice/model per run with --voiceId / --model.
+// Voices: UmQN7jS1Ee8B1czsUtQh = Theo Silk (default, live narration);
+//         BpjGufoPiobT79j2vtj4 = Priyanka.
+const ELEVEN_MODEL = FLAGS.model ?? "eleven_multilingual_v2";
+const ELEVEN_VOICE_ID = FLAGS.voiceId ?? "UmQN7jS1Ee8B1czsUtQh"; // Theo Silk
 
 // Voice prompt + TTS-mirror MDX live under src/content/{locale}_tts/.
 // The mirror has inline audio tags woven through the text; the OpenAI path
@@ -314,14 +324,23 @@ async function main() {
       console.error("ERROR: ELEVEN_LABS_KEY not set in .env.local.");
       process.exit(1);
     }
-    // Eleven path prefers the audio-tag-laden mirror MDX. Falls back to the
-    // canonical en/ file when no mirror exists — on v2 audio tags are stripped
-    // anyway, so the canonical content works fine for the simpler model.
-    const mirrorPath = join(ROOT, "src", "content", ttsDir, `${SLUG}.mdx`);
-    mdxPath = existsSync(mirrorPath)
-      ? mirrorPath
-      : join(ROOT, "packages", "content", LOCALE, `${SLUG}.mdx`);
-    outLocaleDir = ttsDir; // public/audio/en_tts/<slug>/
+    // Two ElevenLabs lanes, keyed on model:
+    //   • eleven_v3 (tag-aware) → read the audio-tag mirror under
+    //     src/content/<loc>_tts/ (fall back to canonical) and write to the
+    //     experimental public/audio/<loc>_tts/ tree.
+    //   • eleven_multilingual_v2 (the live default) → tags are stripped anyway,
+    //     so read the canonical MDX (always carries the latest edits) and write
+    //     straight to the LIVE public/audio/<loc>/ tree the site + audiobook use.
+    if (ELEVEN_MODEL === "eleven_v3") {
+      const mirrorPath = join(ROOT, "src", "content", ttsDir, `${SLUG}.mdx`);
+      mdxPath = existsSync(mirrorPath)
+        ? mirrorPath
+        : join(ROOT, "packages", "content", LOCALE, `${SLUG}.mdx`);
+      outLocaleDir = ttsDir; // public/audio/en_tts/<slug>/
+    } else {
+      mdxPath = join(ROOT, "packages", "content", LOCALE, `${SLUG}.mdx`);
+      outLocaleDir = LOCALE; // public/audio/en/<slug>/ (live)
+    }
     modelLabel = ELEVEN_MODEL;
     voiceLabel = ELEVEN_VOICE_ID;
   } else {
@@ -365,7 +384,7 @@ async function main() {
   const outDir = join(ROOT, "public", "audio", outLocaleDir, SLUG);
   const manifestPath = join(outDir, "manifest.json");
 
-  if (existsSync(manifestPath) && !SECTION_FILTER) {
+  if (existsSync(manifestPath) && !SECTION_FILTER && !FORCE) {
     const existing = JSON.parse(readFileSync(manifestPath, "utf8")) as Manifest;
     const sameModel =
       existing.model === modelLabel && existing.voice === voiceLabel;

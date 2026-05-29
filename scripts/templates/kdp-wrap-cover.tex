@@ -1,0 +1,53 @@
+% Plain Dharma — KDP wraparound cover (back | spine | front), one landscape page.
+%
+% A KDP paperback cover is a single PDF: back panel on the LEFT, spine in the
+% MIDDLE, front panel on the RIGHT, with 0.125in bleed all around the outside.
+% build-kdp.ts substitutes the __TOKENS__ — crucially __SPINE_W__, computed from
+% the interior's page count × paper caliper.
+%
+% Trim is 6×9, so the existing front (cover.jpg) and back (back-cover.jpg) art —
+% both 6×9 with their gold stripe on the spine-facing edge — drop straight in.
+% The spine is filled gold, so the back stripe + spine + front stripe read as one
+% continuous binding band across the flattened cover.
+\documentclass{article}
+\usepackage[paperwidth=__PAPER_W__,paperheight=__PAPER_H__,margin=0pt]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+\definecolor{cream}{HTML}{F5EFE0}
+\definecolor{gold}{HTML}{FBC608}
+\pagecolor{cream}      % fills the bleed; cover edges are cream so seams vanish
+\pagestyle{empty}
+
+\setlength{\parindent}{0pt}
+
+% Geometry (origin = page south-west via the current-page node; needs 2 passes).
+\newlength{\bleed}\setlength{\bleed}{0.125in}
+\newlength{\trimW}\setlength{\trimW}{6in}
+\newlength{\trimH}\setlength{\trimH}{9in}
+\newlength{\spineW}\setlength{\spineW}{__SPINE_W__}
+\newlength{\spineLeft}\setlength{\spineLeft}{\dimexpr\bleed+\trimW\relax}
+\newlength{\spineRight}\setlength{\spineRight}{\dimexpr\bleed+\trimW+\spineW\relax}
+
+\begin{document}
+\begin{tikzpicture}[remember picture,overlay]
+  % Spine: full-bleed gold band between the two panels.
+  \fill[gold]
+    ([xshift=\spineLeft]current page.south west)
+    rectangle ([xshift=\spineRight]current page.north west);
+  % Cover art is scaled to the FULL bleed height and pinned by its spine-facing
+  % (stripe) edge, so it overflows the top, bottom, and outer bleed — every edge
+  % bleeds, including the gold stripes, with no cream sliver if the cut drifts.
+  % Aspect is preserved (height-only scale); the ~0.17in outer overflow is the
+  % covers' cream margin, which is exactly what should fall in the trim waste.
+  % Back cover — right (stripe) edge pinned to the spine's left edge.
+  \node[anchor=south east,inner sep=0pt] at
+    ([xshift=\spineLeft,yshift=0pt]current page.south west)
+    {\includegraphics[height=\paperheight]{__BACK_IMG__}};
+  % Front cover — left (stripe) edge pinned to the spine's right edge (mirror).
+  \node[anchor=south west,inner sep=0pt] at
+    ([xshift=\spineRight,yshift=0pt]current page.south west)
+    {\includegraphics[height=\paperheight]{__FRONT_IMG__}};
+\end{tikzpicture}
+\end{document}

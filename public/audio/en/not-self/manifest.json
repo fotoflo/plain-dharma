@@ -3,7 +3,7 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-05-27T19:28:33.000Z",
+  "generated_at": "2026-05-29T22:14:37.900Z",
   "sections": [
     {
       "id": "title",
@@ -16,29 +16,29 @@
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 118.9,
-      "duration_fast_sec": 107.1
+      "duration_sec": 116.5,
+      "duration_fast_sec": 105
     },
     {
       "id": "the-questions",
       "title": "The Questions",
       "file": "02-the-questions.mp3",
-      "duration_sec": 68.1,
-      "duration_fast_sec": 61.4
+      "duration_sec": 68.5,
+      "duration_fast_sec": 61.7
     },
     {
       "id": "the-takeaway",
       "title": "The Takeaway",
       "file": "03-the-takeaway.mp3",
-      "duration_sec": 72.3,
-      "duration_fast_sec": 65.1
+      "duration_sec": 74,
+      "duration_fast_sec": 66.7
     },
     {
       "id": "how-they-heard-it",
       "title": "How They Heard It",
       "file": "04-how-they-heard-it.mp3",
-      "duration_sec": 31.1,
-      "duration_fast_sec": 28
+      "duration_sec": 32,
+      "duration_fast_sec": 28.8
     },
     {
       "id": "drop",

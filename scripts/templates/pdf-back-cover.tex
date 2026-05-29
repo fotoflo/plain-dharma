@@ -1,0 +1,22 @@
+% Full-page back cover on the FINAL page, sized to the 6×9 trim.
+%
+% Mirror of pdf-cover.tex, but appended instead of prepended: pdf-cover.tex
+% redefines \maketitle to place the front cover on page 1; this hooks
+% \AtEndDocument to ship one last empty-styled page carrying the back cover.
+%
+% The back cover (dist/ebook/back-cover.jpg) is 1600×2400 = 2:3, matching the
+% 6×9 page exactly, so keepaspectratio fills it edge-to-edge with no letterbox.
+\usepackage{eso-pic}
+\AtEndDocument{%
+  \clearpage                 % flush the last content page
+  \thispagestyle{empty}%
+  \AddToShipoutPictureFG*{%   % starred = next shipout only (this page)
+    \AtPageCenter{%
+      \makebox(0,0){%
+        \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{__BACK_COVER_PATH__}%
+      }%
+    }%
+  }%
+  \null
+  \clearpage                 % ship the back cover page
+}

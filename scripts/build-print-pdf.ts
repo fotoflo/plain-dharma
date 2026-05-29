@@ -10,8 +10,10 @@
  *   - Twoside book class, openright (chapters start on recto)
  *   - Mirrored margins with 0.125" binding gutter
  *   - No cover page (KDP wants the wraparound cover as a separate file —
- *     use dist/ebook/cover.jpg as the front art, run KDP's Cover Creator
- *     once you know the page count for the spine width)
+ *     use dist/ebook/cover.jpg as the front art and dist/ebook/back-cover.jpg
+ *     as the back art, run KDP's Cover Creator once you know the page count for
+ *     the spine width). The back cover IS embedded in the screen PDF (build-pdf)
+ *     but never in the print interior — it belongs on the external wraparound.
  *   - Hyperlinks render as plain ink (print can't follow them)
  *
  * Run: pnpm build-print-pdf
@@ -42,6 +44,11 @@ const ILLUSTRATIONS_DIR = join(ROOT, "public", "illustrations");
 const FONTS_DIR = join(ROOT, "src", "app", "fonts");
 const TEMPLATE_DIR = join(ROOT, "scripts", "templates");
 const OUT_DIR = join(ROOT, "dist", "print");
+// Print-trim back covers (5.25×8.25 + bleed) live alongside the ebook artifacts;
+// generate-back-cover.ts emits a color and a grayscale variant. Appended as the
+// final page of each interior so the print PDFs are self-contained books. (KDP
+// uploads still want a separate wraparound — use these same images for it.)
+const EBOOK_DIR = join(ROOT, "dist", "ebook");
 
 const ILLUSTRATION_TARGET_WIDTH = 1200; // 300 PPI at 4" displayed width
 const ILLUSTRATION_JPEG_QUALITY = 88;
@@ -58,6 +65,8 @@ type VariantCfg = {
   illustrationBg: string;
   /** If true, convert illustrations to grayscale before embedding. */
   grayscale: boolean;
+  /** Print-trim back cover (in dist/ebook) appended as the final page. */
+  backCoverImage: string;
 };
 
 const VARIANTS: Record<Variant, VariantCfg> = {
@@ -66,12 +75,14 @@ const VARIANTS: Record<Variant, VariantCfg> = {
     pagecolorSetup: "% B&W variant: pages are white (no \\pagecolor needed)",
     illustrationBg: "white",
     grayscale: true,
+    backCoverImage: "back-cover-print-bw.jpg",
   },
   color: {
     slug: "color",
     pagecolorSetup: "\\pagecolor{cream}",
     illustrationBg: "#F5EFE0",
     grayscale: false,
+    backCoverImage: "back-cover-print-color.jpg",
   },
 };
 
@@ -125,10 +136,31 @@ function renderPreamble(variant: Variant, variantDir: string): string {
   return out;
 }
 
+// Render the back-cover include for this variant, or null if its image is
+// missing. Reuses the same pdf-back-cover.tex as the screen PDF — it sizes the
+// image to \paperwidth × \paperheight, so it adapts to the 5.25×8.25 print page.
+function renderBackCover(variant: Variant, variantDir: string): string | null {
+  const cfg = VARIANTS[variant];
+  const imgPath = join(EBOOK_DIR, cfg.backCoverImage);
+  if (!existsSync(imgPath)) {
+    console.warn(
+      `[build-print-pdf:${variant}] no back cover at ${imgPath} — building ` +
+        `without one. Run \`pnpm generate-back-cover\` first to include it.`
+    );
+    return null;
+  }
+  const tpl = readFileSync(join(TEMPLATE_DIR, "pdf-back-cover.tex"), "utf8");
+  const rendered = tpl.replace(/__BACK_COVER_PATH__/g, imgPath);
+  const out = join(variantDir, "back-cover-include.tex");
+  writeFileSync(out, rendered);
+  return out;
+}
+
 function runPandoc(
   variant: Variant,
   bookMdPath: string,
   preamblePath: string,
+  backCoverPath: string | null,
   outPdf: string
 ): void {
   const args = [
@@ -136,6 +168,8 @@ function runPandoc(
     "--to=pdf",
     `--pdf-engine=${findXelatex()}`,
     `--include-in-header=${preamblePath}`,
+    // Back cover appends itself via \AtEndDocument — also a preamble include.
+    ...(backCoverPath ? [`--include-in-header=${backCoverPath}`] : []),
     "--top-level-division=chapter",
     "--toc",
     "--toc-depth=2",
@@ -185,8 +219,9 @@ function buildVariant(variant: Variant): void {
   writeFileSync(bookMd, md);
 
   const preamble = renderPreamble(variant, variantDir);
+  const backCover = renderBackCover(variant, variantDir);
   const outPdf = join(OUT_DIR, `plain-dharma-print-${cfg.slug}.pdf`);
-  runPandoc(variant, bookMd, preamble, outPdf);
+  runPandoc(variant, bookMd, preamble, backCover, outPdf);
 }
 
 function main(): void {

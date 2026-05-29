@@ -3,7 +3,7 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-05-27T19:28:33.000Z",
+  "generated_at": "2026-05-29T22:15:38.225Z",
   "sections": [
     {
       "id": "title",
@@ -16,8 +16,8 @@
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 172,
-      "duration_fast_sec": 155
+      "duration_sec": 170,
+      "duration_fast_sec": 153.1
     },
     {
       "id": "drop",

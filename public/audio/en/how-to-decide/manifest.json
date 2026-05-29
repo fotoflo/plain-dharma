@@ -3,7 +3,7 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-05-27T19:28:33.000Z",
+  "generated_at": "2026-05-29T22:19:02.684Z",
   "sections": [
     {
       "id": "title",
@@ -16,36 +16,36 @@
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 61.1,
-      "duration_fast_sec": 55.1
+      "duration_sec": 73.9,
+      "duration_fast_sec": 66.6
     },
     {
       "id": "dont-just-take-anyones-word-for-it",
       "title": "Don't Just Take Anyone's Word For It",
       "file": "02-dont-just-take-anyones-word-for-it.mp3",
-      "duration_sec": 56.7,
-      "duration_fast_sec": 51.1
+      "duration_sec": 54.8,
+      "duration_fast_sec": 49.4
     },
     {
       "id": "so-what-do-you-go-on",
       "title": "So What *Do* You Go On?",
       "file": "03-so-what-do-you-go-on.mp3",
-      "duration_sec": 101.7,
-      "duration_fast_sec": 91.6
+      "duration_sec": 103.1,
+      "duration_fast_sec": 92.9
     },
     {
       "id": "now-run-it-the-other-way",
       "title": "Now Run It the Other Way",
       "file": "04-now-run-it-the-other-way.mp3",
-      "duration_sec": 69.9,
-      "duration_fast_sec": 62.9
+      "duration_sec": 70.2,
+      "duration_fast_sec": 63.2
     },
     {
       "id": "the-reassurance-at-the-end",
       "title": "The Reassurance at the End",
       "file": "05-the-reassurance-at-the-end.mp3",
-      "duration_sec": 52.8,
-      "duration_fast_sec": 47.5
+      "duration_sec": 72,
+      "duration_fast_sec": 64.9
     },
     {
       "id": "drop",

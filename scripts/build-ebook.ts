@@ -39,6 +39,9 @@ const ROOT = join(dirname(__filename), "..");
 const ILLUSTRATIONS_DIR = join(ROOT, "public", "illustrations");
 const OUT_DIR = join(ROOT, "dist", "ebook");
 const IMAGES_DIR = join(OUT_DIR, "images");
+// Front cover rides pandoc's --epub-cover-image; EPUB has no back-cover slot,
+// so the back cover is appended as a full-width final page (see appendBackCover).
+const BACK_COVER_PATH = join(OUT_DIR, "back-cover.jpg");
 
 // Target width for the embedded illustrations. Kindle Paperwhite tops out at
 // 1236px; illustrations display at ~70% page width, so the rendered size is
@@ -134,7 +137,26 @@ img { max-width: 70%; display: block; margin: 1.5em auto; }
 hr { border: none; text-align: center; margin: 2em 0; }
 hr::before { content: "* * *"; letter-spacing: 0.5em; color: #888; }
 p { text-indent: 0; margin: 0.8em 0; }
+/* Back cover: its own page, image edge-to-edge (overrides the 70% img rule). */
+.back-cover-page { page-break-before: always; text-align: center; margin: 0; padding: 0; }
+.back-cover-page img { max-width: 100%; width: 100%; height: auto; margin: 0; }
 `;
+
+// Append the back cover as a full-width final page. EPUB has no native back
+// cover, so it's plain content: a fenced div (page-break + full-bleed CSS) with
+// an empty-alt image (empty alt avoids pandoc's implicit_figures caption).
+// Done here, not in the shared book-source, so it stays out of the PDF body
+// (the PDF appends its back cover via LaTeX \AtEndDocument instead).
+function appendBackCover(md: string): string {
+  if (!existsSync(BACK_COVER_PATH)) {
+    console.warn(
+      "[build-ebook] no back-cover.jpg found — building EPUB without a back " +
+        "cover. Run `pnpm generate-back-cover` to create one."
+    );
+    return md;
+  }
+  return `${md}\n\n::: {.back-cover-page}\n![](${BACK_COVER_PATH})\n:::\n`;
+}
 
 function ensureOutDir(): void {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
@@ -180,10 +202,12 @@ function main(): void {
   ensureOutDir();
 
   const qrPath = generateQrCode(SITE_URL, join(IMAGES_DIR, "qr.png"));
-  const md = buildBookMarkdown({
-    getIllustrationPath: prepareIllustration,
-    qrCodePath: qrPath,
-  });
+  const md = appendBackCover(
+    buildBookMarkdown({
+      getIllustrationPath: prepareIllustration,
+      qrCodePath: qrPath,
+    })
+  );
   writeFileSync(join(OUT_DIR, "book.md"), md);
   writeFileSync(join(OUT_DIR, "metadata.yaml"), buildMetadataYaml());
   writeFileSync(join(OUT_DIR, "ebook.css"), EBOOK_CSS);

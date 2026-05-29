@@ -1,0 +1,159 @@
+% Plain Dharma — XeLaTeX back cover, 6×9" (2:3), to pair with the front cover.
+%
+% The front cover is a designer's InDesign PDF (scripts/assets/PlainDharma_Cover.pdf)
+% that generate-cover.ts merely rasterizes. There is no InDesign back cover, so
+% this file IS the back-cover source: a self-contained XeLaTeX page that
+% generate-back-cover.ts compiles → PDF, then runs through the same
+% pdftoppm → magick rasterizer the front cover uses.
+%
+% Palette + fonts match scripts/templates/pdf-preamble.tex and the site tokens.
+% The gold "stitched" stripe mirrors the front cover's binding edge — on the
+% FRONT it sits at the left (spine) edge; on the BACK the spine is the right
+% edge, so the stripe lives on the right and the two covers mirror across it.
+%
+% This file is a TEMPLATE: generate-back-cover.ts substitutes the __TOKENS__
+% per target (screen 6×9, or print 5.25×8.25 = 5×8 trim + 0.125in bleed) so one
+% layout drives every trim. __FONTS_DIR__ becomes the absolute fonts dir
+% (fontspec's Path= won't reliably expand a relative path); the geometry/stripe/
+% overlay tokens shrink the page and inset the artwork to clear the print bleed.
+\documentclass[__FONTSIZE__]{article}
+
+\usepackage{fontspec}
+\usepackage[paperwidth=__PAPER_W__,paperheight=__PAPER_H__,top=__M_TOP__,bottom=__M_BOT__,left=__M_LEFT__,right=__M_RIGHT__]{geometry}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{eso-pic}
+\usepackage{newunicodechar}
+
+% Brand palette — matches the site's --color-* tokens and pdf-preamble.tex.
+% Stripe gold + stitch saffron are sampled from the rasterized front cover so
+% the pair matches exactly (#FBC608 band, #F26C15 dashed stitch).
+\definecolor{cream}{HTML}{F5EFE0}
+\definecolor{ink}{HTML}{2A2520}
+\definecolor{muted}{HTML}{6B5F50}
+\definecolor{saffron}{HTML}{F26C15}
+\definecolor{gold}{HTML}{FBC608}
+\definecolor{boxborder}{HTML}{D8CBAE}
+
+% Local Garamond Libre — the same OTFs the website and the book PDF use.
+\setmainfont{GaramondLibre}[
+  Path=__FONTS_DIR__/,
+  Extension=.otf,
+  UprightFont=*-Regular,
+  ItalicFont=*-Italic,
+  BoldFont=*-Bold,
+  BoldItalicFont=*-BoldItalic,
+  Ligatures=TeX,
+  Numbers=OldStyle
+]
+
+% Pali-diacritic fallback (defensive — the back-cover names use no macrons,
+% but keep parity with the book preamble in case copy changes).
+\newfontfamily\palifallback{STIX Two Text}
+\newunicodechar{ṇ}{{\palifallback ṇ}}
+\newunicodechar{ṭ}{{\palifallback ṭ}}
+
+\pagecolor{cream}
+\color{ink}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\linespread{1.08}
+
+% Gold stitched stripe on the RIGHT (spine) edge + dashed saffron stitch.
+% Band mirrors the front cover; stitch sits 0.07in inside the band's inner edge.
+% On print trims the band is widened so it still reads ~0.5in after the bleed is
+% guillotined off the right. current-page node needs two passes.
+\newlength{\stripeW}\setlength{\stripeW}{__STRIPE_W__}
+\newlength{\stitchX}\setlength{\stitchX}{__STITCH_X__}
+\AddToShipoutPictureBG{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[gold]
+      ([xshift=-\stripeW]current page.north east) rectangle (current page.south east);
+    \draw[saffron,line width=1.4pt,dash pattern=on 9pt off 6pt]
+      ([xshift=-\stitchX]current page.north east) -- ([xshift=-\stitchX]current page.south east);
+  \end{tikzpicture}%
+}
+
+% Bottom block (site + license + formats, and the ISBN/barcode placeholder),
+% drawn as a page overlay anchored to the bottom edge rather than placed in the
+% text flow. In-flow placement fought LaTeX's page-break algorithm (the \vspace
+% before it is a legal breakpoint and the block spilled to a 2nd page even with
+% room to spare); anchoring guarantees one fixed-layout page. Insets match the
+% text margins (0.9in left); the barcode sits clear of the right-edge stripe.
+% The flow content above is tuned to end above this block so they never collide.
+\AddToShipoutPictureFG{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=south west,inner sep=0pt] at
+      ([xshift=__OV_LEFT__,yshift=__OV_Y__]current page.south west) {%
+      \begin{minipage}[b]{__OV_TEXTW__}
+        \raggedright
+        {\large\bfseries plaindharma.com}\par
+        \vspace{0.4em}
+        {\footnotesize\color{muted}Released under CC0 1.0 — copy it, print it, translate it, distribute it. No permission needed.}\par
+        \vspace{0.3em}
+        {\footnotesize\color{muted}Free PDF, EPUB, audiobook, and printable booklets.}
+      \end{minipage}%
+    };
+    \node[anchor=south east,inner sep=0pt] at
+      ([xshift=-__OV_RIGHT__,yshift=__OV_Y__]current page.south east) {%
+      \fcolorbox{boxborder}{white}{%
+        \begin{minipage}[c][0.62in][c]{1.05in}
+          \centering
+          {\scriptsize\color{muted}ISBN}\\[0.12em]
+          {\color{ink}\rule{0.8in}{0.34in}}\\[0.16em]
+          {\tiny\color{muted}barcode placeholder}
+        \end{minipage}%
+      }%
+    };
+  \end{tikzpicture}%
+}
+
+% Short saffron divider rule, matching the editorial drops' hairline.
+\newcommand{\dividerrule}{\par\vspace{0.85em}{\color{saffron}\rule{3.2em}{1.1pt}}\par\vspace{0.85em}}
+
+% One entry in the numbered list: bold English title, italic muted Pali below.
+\newcommand{\suttaentry}[2]{%
+  {\large\bfseries #1}\par
+  \vspace{0.1em}
+  {\itshape\color{muted}#2}\par
+  \vspace{0.42em}%
+}
+
+\begin{document}
+\raggedright
+\sloppy
+\hyphenation{Mindfulness Loving-Kindness Dharma Buddha Buddhist
+  Dhammacakkappavattana Anattalakkhana Adittapariyaya Satipatthana}
+
+% ── Tagline (italic, muted — same treatment as the chapter epigraphs) ────────
+{\large\itshape\color{muted}%
+What the Buddha actually taught — before the schools, the systems, and the centuries of commentary.\par}
+
+\vspace{1.4em}
+
+% ── Main blurb (two short paragraphs) ────────────────────────────────────────
+The first three talks he gave. The instructions on loving-kindness. The foundations of mindfulness. And his answer to the question of how to decide what to believe.
+
+\vspace{0.6em}
+
+Six teachings, rendered in plain modern English — not a scholarly translation, but a plain reading, meant to make the foundational suttas accessible to a first-time reader without sacrificing the substance.
+
+\dividerrule
+
+% ── The six (numbered, Pali title italic underneath each) ────────────────────
+\suttaentry{1.\quad The Buddha's First Talk}{Dhammacakkappavattana Sutra}
+\suttaentry{2.\quad The Buddha's Second Talk}{Anattalakkhana Sutra}
+\suttaentry{3.\quad The Fire Sermon}{Adittapariyaya Sutra}
+\suttaentry{4.\quad On Loving-Kindness}{Metta Sutra}
+\suttaentry{5.\quad The Foundations of Mindfulness}{Satipatthana Sutra}
+\suttaentry{6.\quad How to Decide What to Believe}{Kalama Sutra}
+
+\dividerrule
+
+% ── Closing line (italic — lifted from the book's Closing chapter) ───────────
+{\itshape\color{muted}Read them slowly. Read them more than once. The work from here is yours.\par}
+
+% Bottom block (site, license, barcode) is drawn by the page overlay defined
+% in the preamble — kept out of the flow so the page never breaks.
+\end{document}

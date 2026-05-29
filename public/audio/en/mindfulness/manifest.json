@@ -3,7 +3,7 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-05-27T19:28:33.000Z",
+  "generated_at": "2026-05-29T22:18:07.418Z",
   "sections": [
     {
       "id": "title",
@@ -16,43 +16,43 @@
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 71.7,
-      "duration_fast_sec": 64.5
+      "duration_sec": 68.4,
+      "duration_fast_sec": 61.6
     },
     {
       "id": "1-watching-the-body",
       "title": "1. Watching the Body",
       "file": "02-1-watching-the-body.mp3",
-      "duration_sec": 408,
-      "duration_fast_sec": 367.6
+      "duration_sec": 404.1,
+      "duration_fast_sec": 364
     },
     {
       "id": "2-watching-your-feelings",
       "title": "2. Watching Your Feelings",
       "file": "03-2-watching-your-feelings.mp3",
-      "duration_sec": 83.4,
-      "duration_fast_sec": 75.1
+      "duration_sec": 79,
+      "duration_fast_sec": 71.2
     },
     {
       "id": "3-watching-your-mind",
       "title": "3. Watching Your Mind",
       "file": "04-3-watching-your-mind.mp3",
-      "duration_sec": 102.6,
-      "duration_fast_sec": 92.4
+      "duration_sec": 112,
+      "duration_fast_sec": 100.9
     },
     {
       "id": "4-watching-the-contents-of-experience",
       "title": "4. Watching the Contents of Experience",
       "file": "05-4-watching-the-contents-of-experience.mp3",
-      "duration_sec": 361.8,
-      "duration_fast_sec": 325.9
+      "duration_sec": 366.8,
+      "duration_fast_sec": 330.4
     },
     {
       "id": "what-it-leads-to",
       "title": "What It Leads To",
       "file": "06-what-it-leads-to.mp3",
-      "duration_sec": 41.9,
-      "duration_fast_sec": 37.7
+      "duration_sec": 39.8,
+      "duration_fast_sec": 35.8
     },
     {
       "id": "drop",

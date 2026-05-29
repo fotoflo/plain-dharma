@@ -3,7 +3,7 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-05-27T19:28:33.000Z",
+  "generated_at": "2026-05-29T22:15:14.541Z",
   "sections": [
     {
       "id": "title",
@@ -16,29 +16,29 @@
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 75.2,
-      "duration_fast_sec": 67.8
+      "duration_sec": 73.7,
+      "duration_fast_sec": 66.4
     },
     {
       "id": "the-same-fire-everywhere",
       "title": "The Same Fire, Everywhere",
       "file": "02-the-same-fire-everywhere.mp3",
-      "duration_sec": 90.2,
-      "duration_fast_sec": 81.2
+      "duration_sec": 90.3,
+      "duration_fast_sec": 81.4
     },
     {
       "id": "what-to-do-about-it",
       "title": "What to Do About It",
       "file": "03-what-to-do-about-it.mp3",
-      "duration_sec": 51.6,
-      "duration_fast_sec": 46.5
+      "duration_sec": 55,
+      "duration_fast_sec": 49.6
     },
     {
       "id": "how-they-heard-it",
       "title": "How They Heard It",
       "file": "04-how-they-heard-it.mp3",
-      "duration_sec": 23.5,
-      "duration_fast_sec": 21.1
+      "duration_sec": 21.4,
+      "duration_fast_sec": 19.3
     },
     {
       "id": "drop",

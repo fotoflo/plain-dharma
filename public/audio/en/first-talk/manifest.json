@@ -3,7 +3,7 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-05-27T19:28:33.000Z",
+  "generated_at": "2026-05-29T22:13:52.089Z",
   "sections": [
     {
       "id": "title",
@@ -23,29 +23,29 @@
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 115.7,
-      "duration_fast_sec": 104.2
+      "duration_sec": 110.3,
+      "duration_fast_sec": 99.3
     },
     {
       "id": "the-four-noble-truths",
       "title": "The Four Noble Truths",
       "file": "02-the-four-noble-truths.mp3",
-      "duration_sec": 83.9,
-      "duration_fast_sec": 75.6
+      "duration_sec": 79.6,
+      "duration_fast_sec": 71.7
     },
     {
       "id": "knowing-each-one-three-ways",
       "title": "Knowing Each One Three Ways",
       "file": "03-knowing-each-one-three-ways.mp3",
-      "duration_sec": 89.4,
-      "duration_fast_sec": 80.6
+      "duration_sec": 83.7,
+      "duration_fast_sec": 75.4
     },
     {
       "id": "how-they-heard-it",
       "title": "How They Heard It",
       "file": "04-how-they-heard-it.mp3",
-      "duration_sec": 115.1,
-      "duration_fast_sec": 103.7
+      "duration_sec": 114.3,
+      "duration_fast_sec": 103
     },
     {
       "id": "drop",

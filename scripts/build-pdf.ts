@@ -46,6 +46,7 @@ const TEMPLATE_DIR = join(ROOT, "scripts", "templates");
 const OUT_DIR = join(ROOT, "dist", "pdf");
 const IMAGES_DIR = join(OUT_DIR, "images");
 const COVER_PATH = join(ROOT, "dist", "ebook", "cover.jpg");
+const BACK_COVER_PATH = join(ROOT, "dist", "ebook", "back-cover.jpg");
 
 // Illustrations are rendered at 70% of \linewidth on a 6" page = ~4.2"; at
 // 1000px source that's ~240 PPI which is sharp on screen and acceptable at
@@ -127,10 +128,29 @@ function renderCover(): string | null {
   return out;
 }
 
+// Returns the path to the rendered back-cover .tex include, or null if no back
+// cover exists. The back cover is appended as the final page; mirrors the front
+// cover handling above. Run `pnpm generate-back-cover` to (re)build the image.
+function renderBackCover(): string | null {
+  if (!existsSync(BACK_COVER_PATH)) {
+    console.warn(
+      `[build-pdf] no back cover at ${BACK_COVER_PATH} — building PDF without one. ` +
+        `Run \`pnpm generate-back-cover\` first to include it.`
+    );
+    return null;
+  }
+  const tpl = readFileSync(join(TEMPLATE_DIR, "pdf-back-cover.tex"), "utf8");
+  const rendered = tpl.replace(/__BACK_COVER_PATH__/g, BACK_COVER_PATH);
+  const out = join(OUT_DIR, "back-cover-include.tex");
+  writeFileSync(out, rendered);
+  return out;
+}
+
 function runPandoc(
   bookMdPath: string,
   preamblePath: string,
-  coverPath: string | null
+  coverPath: string | null,
+  backCoverPath: string | null
 ): void {
   const outPdf = join(OUT_DIR, "plain-dharma.pdf");
   const luaFilter = join(TEMPLATE_DIR, "center-images.lua");
@@ -149,6 +169,10 @@ function runPandoc(
   // requires being defined in the LaTeX preamble.
   if (coverPath) {
     args.push(`--include-in-header=${coverPath}`);
+  }
+  // Back cover appends itself via \AtEndDocument — also a preamble include.
+  if (backCoverPath) {
+    args.push(`--include-in-header=${backCoverPath}`);
   }
   args.push(
     "-V", "documentclass=book",
@@ -200,7 +224,8 @@ function main(): void {
   writeFileSync(bookMd, md);
   const preamble = renderPreamble();
   const coverInclude = renderCover();
-  runPandoc(bookMd, preamble, coverInclude);
+  const backCoverInclude = renderBackCover();
+  runPandoc(bookMd, preamble, coverInclude, backCoverInclude);
 }
 
 main();

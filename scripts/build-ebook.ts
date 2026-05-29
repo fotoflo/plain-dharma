@@ -22,7 +22,7 @@ import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { SUTTAS } from "../src/content/index.js";
+import { SUTTAS } from "@plain-dharma/content";
 import {
   AUTHOR,
   BOOK_SUBTITLE,
@@ -32,6 +32,7 @@ import {
   buildBookMarkdown,
   generateQrCode,
 } from "./lib/book-source.js";
+import { publishToDownloads } from "./lib/publish.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = join(dirname(__filename), "..");
@@ -90,6 +91,11 @@ function buildMetadataYaml(): string {
     "creator:",
     "  - role: author",
     `    text: ${JSON.stringify(AUTHOR)}`,
+    "contributor:",
+    "  - role: cov",
+    `    text: ${JSON.stringify(AUTHOR)}`,
+    "  - role: cov",
+    `    text: ${JSON.stringify("Ellen Shapiro")}`,
     "language: en",
     `publisher: ${JSON.stringify(PUBLISHER)}`,
     `date: ${TODAY}`,
@@ -164,6 +170,9 @@ function runPandoc(): void {
 
   execFileSync("pandoc", args, { stdio: "inherit" });
   console.log(`\n[build-ebook] wrote ${outEpub}`);
+
+  // Publishing is tied to generation — push the just-built EPUB to the site.
+  publishToDownloads(outEpub, "plain-dharma.epub");
 }
 
 function main(): void {

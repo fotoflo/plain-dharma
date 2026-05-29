@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getStrings } from "@/content/strings";
+import { getStrings } from "@plain-dharma/content/strings";
 import { GlossaryView } from "@/views/GlossaryView";
 import { ogBase } from "@/lib/og-meta";
 

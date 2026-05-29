@@ -32,7 +32,7 @@ This is a pnpm workspace. The Next.js web app currently lives at the repo root; 
 | Component system | shadcn/ui                             | Design system foundation — minimal use expected (reading site, mostly typography)                    |
 | Typography       | `@tailwindcss/typography` (`prose`)   | Drop-in beautiful prose styling for the reading pages                                                |
 | Fonts            | Garamond Libre (local OTF) + Geist (Vercel package) | Garamond Libre for body and headings (classical serif carrying the ancient content); Geist for UI — nav, footer, buttons, meta labels, TOC (modern sans as the contemporary wrapper). *Framing: new book with old content. Garamond carries the ancient content; Geist carries the contemporary wrapper. The tension is intentional.* |
-| Content          | MDX per teaching, per locale          | Single source of truth at `src/content/{locale}/{slug}.mdx`; every surface composes from these       |
+| Content          | MDX per teaching, per locale          | Single source of truth at `packages/content/{locale}/{slug}.mdx` (`@plain-dharma/content`); every surface composes from these |
 | Package manager  | pnpm                                  | Fast, disk-efficient, deterministic                                                                  |
 | Deployment       | Vercel                                | Zero-config Next.js, edge CDN, free tier covers this project comfortably; static export also viable  |
 
@@ -64,12 +64,18 @@ Locked. Driven by CSS variables in `src/app/globals.css` under `@theme inline { 
 
 ## Content architecture — **Decided 2026-05-25**
 
-Single source of truth per `(teaching × locale)`. Every surface — per-teaching pages, the `/read` long-form view, the home index, downloads, and og:images — composes from these MDX files. Nothing else stores the text.
+Single source of truth per `(teaching × locale)`, living in the
+`@plain-dharma/content` workspace package (`packages/content/`) and shared by
+the web and mobile apps. Every surface — per-teaching pages, the `/read`
+long-form view, the home index, downloads, og:images, and the mobile reader —
+composes from these MDX files. Nothing else stores the text. (As of 2026-05-29
+the content is deduplicated into this package; `src/content` keeps only
+web-specific shims/assets — see [content-pipeline.md](content-pipeline.md).)
 
 ### Layout
 
 ```
-src/content/
+packages/content/                ← @plain-dharma/content (shared by web + mobile)
 ├── en/
 │   ├── first-talk.mdx
 │   ├── not-self.mdx
@@ -77,12 +83,11 @@ src/content/
 │   ├── loving-kindness.mdx
 │   ├── mindfulness.mdx
 │   └── how-to-decide.mdx
-├── th/
-│   ├── first-talk.mdx          ← Thai translation when ready
+├── zh/
+│   └── ...                      ← Chinese (live)
+├── th/                          ← future locale: drop in an MDX dir
 │   └── ...
-├── cn/
-│   └── ...
-└── index.ts                    ← canonical order + helpers
+└── index.ts                     ← canonical order + helpers
 ```
 
 ### Frontmatter convention (per file)
@@ -112,7 +117,7 @@ Every surface imports from these files; nothing else stores the text.
 
 ### Canonical index
 
-`src/content/index.ts` is the **only** place that knows the canonical order:
+`packages/content/index.ts` is the **only** place that knows the canonical order:
 
 ```ts
 export const SUTTAS = [
@@ -123,21 +128,21 @@ export const SUTTAS = [
 
 ### Translation flow
 
-A Thai translator drops `src/content/th/first-talk.mdx` into the repo. `/th/first-talk` lights up automatically — no code changes, no config edits.
+A Thai translator drops `packages/content/th/first-talk.mdx` into the repo and registers it in `SUTTA_DISPLAY` + the web/mobile loaders. `/th/first-talk` lights up — no further config edits.
 
-A helper `getAvailableLocales(slug: string): Promise<string[]>` scans the filesystem at build time and powers a "Read in another language" widget at the bottom of each page, listing only the locales that actually have a translation for that specific sutta.
+A helper `getAvailableLocales(slug)` reads the `SUTTA_DISPLAY` map (not the filesystem) and powers a "Read in another language" widget at the bottom of each page, listing only the locales that actually have a translation for that specific sutta.
 
 ### `combined-suttas.md` is now a generated artifact
 
-The current `combined-suttas.md` at the repo root is **no longer the source of truth**. The six `src/content/en/*.mdx` files are authoritative. `combined-suttas.md` can be regenerated from them by the same build script that produces the PDF.
+The current `combined-suttas.md` at the repo root is **no longer the source of truth**. The six `packages/content/en/*.mdx` files are authoritative. `combined-suttas.md` can be regenerated from them by the same build script that produces the PDF.
 
 ### The "one typo fix" test
 
-Fix a typo in `src/content/en/fire-sermon.mdx` → next build, the per-teaching page, `/read`, the PDF, the ePub, and the og:image all reflect the fix. One edit, everywhere.
+Fix a typo in `packages/content/en/fire-sermon.mdx` → the per-teaching page, `/read`, the PDF, the ePub, the og:image, **and the mobile app** all reflect the fix. One edit, everywhere.
 
 ## PDF / ePub build — Phase 2 deferred
 
-The build script will read from `src/content/{locale}/*.mdx`, concatenate in ordinal order, and pipe through pandoc → output to `public/downloads/`. Detailed design is **deferred until pages are built and shipped** — see `todos.md`. Pages first, PDF later.
+The build script reads from `packages/content/{locale}/*.mdx`, concatenates in ordinal order, and pipes through pandoc → output to `public/downloads/`. Detailed design is **deferred until pages are built and shipped** — see `todos.md`. Pages first, PDF later.
 
 ## File / folder convention (proposed)
 
@@ -198,7 +203,7 @@ If the English-at-root decision goes that way, `[locale]` still wraps everything
 - `app/[locale]/...` dynamic segment wraps the whole route tree
 - Supported locales declared in `src/lib/i18n.ts`
 - `generateStaticParams` enumerates locales × pages at build time → fully static
-- Sutta content is selected by locale: `src/content/{locale}/{slug}.mdx`
+- Sutta content is selected by locale: `packages/content/{locale}/{slug}.mdx`
 - Fallback: if a translation is missing for a given locale, fall back to English with a visible note ("Not yet translated — showing English") rather than 404
 
 ## Server-side API routes

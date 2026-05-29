@@ -1,25 +1,28 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
-    "owner": "flexbiketeam",
+    "name": "Plain Dharma",
+    "slug": "plain-dharma",
+    "owner": "fotoflo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
         ]
       },
-      "bundleIdentifier": "com.flexbiketeam.mobile"
+      "bundleIdentifier": "com.plaindharma.app",
+      "associatedDomains": [
+        "applinks:plaindharma.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#F5EFE0",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -28,6 +31,24 @@
       "permissions": [
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ],
+      "package": "com.plaindharma.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "plaindharma.com",
+              "pathPrefix": "/download/return"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ]
     },
     "web": {
@@ -39,10 +60,10 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#F5EFE0",
           "android": {
             "image": "./assets/images/splash-icon.png",
-            "imageWidth": 76
+            "imageWidth": 120
           }
         }
       ],
@@ -55,7 +76,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "836bed63-8989-4e82-8e94-3ffd28e10db3"
+        "projectId": "f54b73b7-d4de-4feb-8d1a-0c050a76499f"
       }
     }
   }

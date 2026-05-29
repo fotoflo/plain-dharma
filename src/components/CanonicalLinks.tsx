@@ -1,6 +1,6 @@
 import type { Locale, SuttaSlug } from "@/content";
-import { CANONICAL_LINKS } from "@/content/canonical-links";
-import { getStrings } from "@/content/strings";
+import { CANONICAL_LINKS } from "@plain-dharma/content/canonical-links";
+import { getStrings } from "@plain-dharma/content/strings";
 
 function getSuttaCentralUrl(links: { label: string; url: string }[]): string | null {
   const sc = links.find((l) => l.url.includes("suttacentral.net"));

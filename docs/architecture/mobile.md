@@ -1,6 +1,6 @@
 # Mobile app (React Native / Expo) — Plain Dharma
 
-*Last updated: 2026-05-28*
+*Last updated: 2026-05-29*
 
 A React Native port of the reading site, sharing the sutta content with the web
 via a pnpm-monorepo workspace. Expo SDK 56 (React 19.2.3 / RN 0.85.3, New
@@ -40,10 +40,14 @@ transpilation (no build step). Exports (`package.json` `exports` map):
 | `./audio` | `AudioSection`/`AudioManifest` types, `combineManifests` (pure /read stitch), `getAudioFileUrl` |
 | `./en/*`, `./zh/*` | the canonical sutta `.mdx` |
 
-What stays **web-only** (not shared): the MDX `LOADERS`/`loadSutta` (bundler-
-specific `import('*.mdx')`) and `illustrations.ts` (`fs.statSync`). The web's
-`src/content` is unchanged; `packages/content` is a parallel copy of the
-shareable parts (content is the source of truth — keep them in sync).
+What stays **web-only** (not shared, lives in `src/content`): the MDX
+`LOADERS`/`loadSutta` (bundler-specific `import('*.mdx')`), the `fs`-based audio
+manifest readers, and `illustrations.ts` (`fs.statSync`). As of 2026-05-29 the
+content is **deduplicated** — `packages/content` is the single canonical copy
+(no more parallel trees to keep in sync). The web's `src/content/index.ts` and
+`audio.ts` are thin shims that `export *` from this package and add only those
+web-specific pieces; the web app depends on `@plain-dharma/content`
+(`workspace:*`) and Next compiles its `.mdx` via `transpilePackages`.
 
 ## Content rendering on mobile
 
@@ -142,6 +146,29 @@ deployed `plaindharma.com`:
 - **Implication:** fast-mode audio, the contribute/contact routes, and any new
   content must be **deployed to production** before they work on mobile.
 
+## App identity & icon
+
+Configured in `apps/mobile/app.json`:
+
+- **Name** "Plain Dharma" (home-screen label / `CFBundleDisplayName`), **slug**
+  `plain-dharma`, **owner** `fotoflo`.
+- **Bundle id / Android package**: `com.plaindharma.app`.
+- **EAS project**: `@fotoflo/plain-dharma` (`extra.eas.projectId`). Non-interactive
+  `eas` runs authenticate with the `plain-dharma` robot token — `EXPO_ROBOT_TOKEN`
+  in the **repo-root** `.env.local`, exported as `EXPO_TOKEN` for the command.
+- **Icon**: the web's saffron watercolor sun disc (`public/logo/mark.png`) centered
+  on the `#F5EFE0` paper background, rendered to PNGs with ImageMagick (no AI).
+  Variants in `assets/images/`:
+  - `icon.png` (1024², flattened) — iOS (`ios.icon`) + top-level `icon` (Android
+    legacy + web favicon source).
+  - `android-icon-foreground.png` (disc on transparent, inside the adaptive safe
+    zone) + `-background.png` (solid paper) + `-monochrome.png` (disc silhouette);
+    `adaptiveIcon.backgroundColor` `#F5EFE0`.
+  - `splash-icon.png` (transparent disc) + `favicon.png`; splash `backgroundColor`
+    `#F5EFE0`. The old Expo `expo.icon` template bundle was removed.
+- Because `ios/` is gitignored (CNG), EAS reprebuilds the icon + identity from
+  `app.json` on its servers — there is no committed native copy to keep in sync.
+
 ## Build / run
 
 Native modules (track-player, async-storage, file-system) mean **Expo Go won't
@@ -153,24 +180,23 @@ npx expo run:ios        # prebuild + pods + simulator (first run is slow)
 npx expo start --dev-client   # fast JS iteration after the first build
 ```
 
-**On this Mac (Xcode 26.5):** Local `npx expo run:ios` is blocked — the iOS
-simulator platform for Xcode 26.5 isn't installed (only 18.6 and 26.3 runtimes,
-and building needs the matching platform, ~7 GB download). **Workaround: EAS
-cloud simulator build:**
+**On this Mac (Xcode 26.5):** Local `npx expo run:ios` is blocked — `xcodebuild
+-showdestinations` lists no iOS Simulator destinations, only the device
+placeholder with *"iOS 26.5 is not installed"* (the platform SDK component isn't
+downloaded, even though the 18.6/26.3 sim runtimes are). Fix locally with
+`xcodebuild -downloadPlatform iOS`, **or** skip it and use the EAS cloud
+simulator build:**
 
 ```bash
-# Build on EAS (requires @flexbiketeam/mobile project + eas.json with ios.simulator:true)
-eas build -p ios --profile development
-# Download the .tar.gz artifact; unzip locally
+# EXPO_TOKEN must be set (plain-dharma robot token from repo-root .env.local).
+# eas.json "development" profile has ios.simulator:true → an unsigned .app for the sim.
+eas build -p ios --profile development --non-interactive
 
-# Register with simulator
-xcrun simctl install <udid> mobile.app
+# Download + install the latest build on a booted simulator and launch it, one step:
+eas build:run -p ios --latest
 
-# Start Metro dev server
+# Fast JS iteration after install:
 cd apps/mobile && expo start --dev-client
-
-# Route to the dev client
-xcrun simctl openurl <udid> "mobile://expo-development-client/?url=http://localhost:8081"
 ```
 
 `scripts/audio-reencode-ab.sh` (repo root, throwaway) A/Bs lighter mp3 encodings

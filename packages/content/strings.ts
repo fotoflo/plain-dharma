@@ -37,7 +37,7 @@ const en = {
     ctaReadAll: "Read all six",
     ctaDownload: "Download",
     heroBlurb:
-      "Six short readings — the ones at the root of the whole tradition — rendered for a first-time reader who'd rather have the meaning land than wade through the footnotes. Free to read, free to copy, free to print, free to translate.",
+      "Six short sutras — the ones at the root of the whole tradition — rendered for a first-time reader who'd rather understand than wade through footnotes. Free to read, free to copy, free to print, free to listen.",
     sixTeachingsLabel: "The six teachings",
   },
   sutta: {
@@ -103,6 +103,7 @@ const en = {
     pHowMade3:
       "We don't take lightly what these tools mean for the people whose craft they touch. But we could never have made this ourselves — translating the suttas means reading Pali, and neither of us can. The tools made possible a free gift that was otherwise beyond us, offered in the spirit of the old dharma gift: freely given, asking nothing back.",
     pHowMade4: "What's here is a starting point, not a final word.",
+    pCoverCredit: "Cover design by Alex Miller and Ellen Shapiro.",
     ctaStartReading: "Start reading →",
   },
   contribute: {
@@ -247,7 +248,7 @@ const zh: Strings = {
     ctaReadAll: "六篇一起读",
     ctaDownload: "下载",
     heroBlurb:
-      "六篇短短的开示——整个传承的根基——为第一次接触的读者而做，让你直接读懂意思，不必先扎进脚注里。可以自由阅读、自由复制、自由打印、自由翻译。",
+      "六篇短短的开示——整个传承的根基——为第一次接触的读者而做，与其在脚注里钻来钻去，不如直接读懂。可以自由阅读、自由复制、自由打印、自由聆听。",
     sixTeachingsLabel: "这六篇开示",
   },
   sutta: {
@@ -310,6 +311,7 @@ const zh: Strings = {
     pHowMade3:
       "这些工具会触动一些人赖以为生的手艺，我们没有轻看这件事。但这件事，我们靠自己根本做不到——翻译这些经文，得读得懂巴利文，而我们两人都读不懂。是这些工具，让一份原本超出我们能力的免费馈赠成为可能；我们以「法布施」的古老心意把它献出：自由给出，不求回报。",
     pHowMade4: "这里的一切只是一个起点，不是定论。",
+    pCoverCredit: "封面设计：Alex Miller、Ellen Shapiro。",
     ctaStartReading: "开始阅读 →",
   },
   contribute: {

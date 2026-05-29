@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { HomeView } from "@/views/HomeView";
-import { getStrings } from "@/content/strings";
+import { getStrings } from "@plain-dharma/content/strings";
 import { ogBase, SITE_NAME } from "@/lib/og-meta";
 
 const s = getStrings("zh");

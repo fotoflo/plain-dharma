@@ -1,9 +1,22 @@
+// Web shim over the shared @plain-dharma/content/audio module.
+//
+// The platform-agnostic audio types, the URL helper, and the pure
+// `combineManifests` stitching live in the workspace package. This file adds
+// the web-only pieces that read manifests off disk at build time (fs +
+// mtime-based cache-busting) — mobile instead fetches the same manifests over
+// HTTP, so those readers stay out of the shared package.
 import { promises as fs, statSync } from "node:fs";
 import path from "node:path";
 
-import { SUTTAS, type SuttaSlug } from "./index";
+import {
+  SUTTAS,
+  combineManifests,
+  type AudioManifest,
+  type ManifestEntry,
+} from "@plain-dharma/content/audio";
+import type { SuttaSlug } from "@plain-dharma/content";
 
-type AvailableEntry = { slug: SuttaSlug; manifest: AudioManifest };
+export * from "@plain-dharma/content/audio";
 
 // Append `?v=<mtime-seconds>` so a regenerated mp3 invalidates the browser
 // cache automatically (same trick as illustrations.ts). Server-only.
@@ -15,27 +28,6 @@ function versionSuffix(absPath: string): string {
     return "";
   }
 }
-
-export type AudioSection = {
-  id: string;
-  title: string;
-  file: string;
-  duration_sec: number;
-  // Optional alternate-speed ("faster", -7.5%) rendition. Present only when a
-  // `fast/<file>` exists on disk for this section; absent for locales/suttas
-  // with no fast variant (e.g. zh), so the player hides its speed control.
-  fileFast?: string;
-  duration_fast_sec?: number;
-};
-
-export type AudioManifest = {
-  slug: string;
-  locale: string;
-  voice: string;
-  model: string;
-  generated_at: string;
-  sections: AudioSection[];
-};
 
 export async function getAudioManifest(
   locale: string,
@@ -69,22 +61,11 @@ export async function getAudioManifest(
   }
 }
 
-export function getAudioFileUrl(
-  locale: string,
-  slug: string,
-  file: string
-): string {
-  return `/audio/${locale}/${slug}/${file}`;
-}
-
 /**
- * Stitch every available per-sutta manifest into a single playlist for `/read`.
- * Each section's `file` is an absolute `/audio/...` path so the player can
- * resolve files from different per-sutta dirs without per-section base URLs.
- * Section ids are prefixed with the slug to avoid collisions ("opening" etc.
- * exist in every sutta). Missing per-sutta manifests are skipped — the player
- * renders with whatever is recorded. Returns null only if no audio exists for
- * the locale at all.
+ * Read every per-sutta manifest off disk and stitch them into a single `/read`
+ * playlist via the shared `combineManifests`. Missing per-sutta manifests are
+ * skipped — the player renders with whatever is recorded. Returns null only if
+ * no audio exists for the locale at all.
  */
 export async function getCombinedAudioManifest(
   locale: string
@@ -92,38 +73,10 @@ export async function getCombinedAudioManifest(
   const perSutta = await Promise.all(
     SUTTAS.map((slug) => getAudioManifest(locale, slug))
   );
-  const available = perSutta
-    .map((m, idx): AvailableEntry | null =>
-      m ? { slug: SUTTAS[idx], manifest: m } : null
+  const entries = perSutta
+    .map((manifest, idx): ManifestEntry | null =>
+      manifest ? { slug: SUTTAS[idx], manifest } : null
     )
-    .filter((x): x is AvailableEntry => x !== null);
-  if (available.length === 0) return null;
-
-  const sections: AudioSection[] = [];
-  for (const { slug, manifest } of available) {
-    for (const s of manifest.sections) {
-      sections.push({
-        id: `${slug}--${s.id}`,
-        title: s.title,
-        file: `/audio/${locale}/${slug}/${s.file}`,
-        duration_sec: s.duration_sec,
-        ...(s.fileFast
-          ? {
-              fileFast: `/audio/${locale}/${slug}/${s.fileFast}`,
-              duration_fast_sec: s.duration_fast_sec,
-            }
-          : {}),
-      });
-    }
-  }
-
-  const first = available[0].manifest;
-  return {
-    slug: "all",
-    locale,
-    voice: first.voice,
-    model: first.model,
-    generated_at: new Date().toISOString(),
-    sections,
-  };
+    .filter((x): x is ManifestEntry => x !== null);
+  return combineManifests(locale, entries);
 }

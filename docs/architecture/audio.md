@@ -48,7 +48,7 @@ src/components/FloatingAudioPlayer.tsx
 | `src/content/en_tts/` | ElevenLabs-specific MDX mirrors with inline pause/emphasis tags |
 | `src/content/audio.ts` | `getAudioManifest` / `getCombinedAudioManifest` — loads JSON playlists; `versionSuffix()` appends cache-bust query string; exposes optional `fileFast`/`duration_fast_sec` per section |
 | `scripts/make-audio-variant.ts` | Renders an alternate-speed set (`fast/`, −7.5%) from `candidates/orig-*` and patches `duration_fast_sec` into manifests |
-| `src/content/strings.ts` | `getStrings(locale).audio` — UI labels (listen, pause, play, prev, next, back5, forward5, seek, close, section templates) |
+| `packages/content/strings.ts` | `getStrings(locale).audio` — UI labels (listen, pause, play, prev, next, back5, forward5, seek, close, section templates) |
 | `src/components/AudioPlayer.tsx` | Two-mode playback UI: TOC (section list) ↔ Player (transport row + scrubber); accepts `locale` prop; strings from `getStrings` |
 | `src/components/FloatingAudioPlayer.tsx` | Wraps AudioPlayer in a closeable popup; keeps audio mounted; passes `locale` through |
 | `public/audio/{locale}/{slug}/` | Output: per-sutta mp3s + manifest.json (URLs include cache-bust `?v=<mtime>` suffix) |
@@ -77,7 +77,7 @@ Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
 **OpenAI** (`--provider=openai`, default):
 - Model: `gpt-4o-mini-tts`
 - Voice: `sage` (can override with env var `OPENAI_VOICE`)
-- Reads clean source `src/content/en/{slug}.mdx`
+- Reads clean source `packages/content/en/{slug}.mdx`
 - Voice direction passed as `instructions` field
 - Strips markdown formatting before sending
 
@@ -86,7 +86,7 @@ Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
 - Voice ID: `BpjGufoPiobT79j2vtj4` (Priyanka, default) or custom via `--voiceId=`
 - Reads TTS-mirror `src/content/{locale}_tts/{slug}.mdx` with inline audio tags
 - Understands `[pause]`, `[long pause]`, `[gentle]` tags (only in v3)
-- Falls back to `src/content/{locale}/{slug}.mdx` if mirror doesn't exist
+- Falls back to `packages/content/{locale}/{slug}.mdx` if mirror doesn't exist
 
 **Prosody tuning** (ElevenLabs):
 - `--stability=N` (0–1, default 0.5) — higher = more consistent; lower = more expressive
@@ -286,7 +286,7 @@ and template strings come from there for i18n. Missing locale will cause a runti
 
 **Strings are templates** — `getStrings(locale).audio.playSectionLabel` and `sectionsTotalLine`
 are template strings with `{title}`, `{n}`, and `{time}` placeholders. AudioPlayer interpolates
-them at render time via `.replace()` calls. Update `src/content/strings.ts` when adding new
+them at render time via `.replace()` calls. Update `packages/content/strings.ts` when adding new
 placeholder strings or locales.
 
 **Section IDs must be unique** — the script uses kebab-case heading text to generate

@@ -29,24 +29,33 @@ No test runner is configured.
 
 ## Architecture (big picture)
 
-**Content is the source of truth.** Six MDX files under `src/content/en/{slug}.mdx` are authoritative for every surface (per-teaching pages, `/read`, home listing, og:images, future PDF). `combined-suttas.md` at the repo root, if present, is a *generated artifact* — never edit it as source.
+**Content is the source of truth, and it lives in one place: the `@plain-dharma/content` workspace package (`packages/content/`).** Six MDX files under `packages/content/en/{slug}.mdx` (and `zh/`) are authoritative for every surface — web *and* the Expo mobile app. `combined-suttas.md` at the repo root, if present, is a *generated artifact* — never edit it as source. (Historically this content was duplicated under `src/content`; it has been deduplicated — see `docs/architecture/content-pipeline.md`.)
 
-**The registry in `src/content/index.ts` is the only place that knows the canonical order, metadata, and how to load each sutta:**
+**The registry in `packages/content/index.ts` is the only place that knows the canonical order, metadata, and per-locale display strings:**
 
 - `SUTTAS` — canonical slug order (`as const` tuple)
-- `SUTTA_META` — title, subtitle, ordinal, `pali_name`, teaser (typed `Record<SuttaSlug, …>`)
-- `LOADERS[locale][slug]` — dynamic MDX imports; **must be exhaustive** (TS errors if a slug is missing for a locale)
-- `loadSutta`, `getMeta`, `getNeighbors`, `getAvailableLocales`
+- `SUTTA_META` / `SUTTA_DISPLAY` — title, subtitle, ordinal, `pali_name`, teaser (typed `Record<SuttaSlug, …>`)
+- `getMeta`, `getNeighbors`, `getAvailableLocales`, `getSuttasInOrder`
 
-Adding a new sutta = update `SUTTAS`, add to `SUTTA_META`, add to every locale in `LOADERS`, drop the MDX file. Adding a new locale = add to `SUPPORTED_LOCALES` and add a full inner `LOADERS` record. Frontmatter is stripped at compile time by `remark-frontmatter` — it does not render — so anything you need on the page must live in `SUTTA_META`.
+This package is **platform-agnostic** — no MDX loaders, no `fs`. Each app loads the raw `.mdx` its own way:
+- **Web** (`src/content/index.ts`) is a thin shim: `export * from "@plain-dharma/content"` plus the Next-only `LOADERS`/`loadSutta` that `import()` the package's `.mdx` through `@next/mdx`. Requires `transpilePackages: ["@plain-dharma/content"]` in `next.config.ts`.
+- **Mobile** (`apps/mobile/src/content/markdown.ts`) inline-imports the same `.mdx` files as raw strings via `babel-plugin-inline-import`.
+
+Adding a new sutta = update `SUTTAS`, add to `SUTTA_META`/`SUTTA_DISPLAY`, drop the MDX in `packages/content/{locale}/`, add it to web `LOADERS` and mobile `markdown.ts`. Adding a new locale = add to `SUPPORTED_LOCALES`, add a full inner display record, add an MDX dir. Frontmatter is stripped at compile time by `remark-frontmatter` (web) / `stripFrontmatter` (mobile) — it does not render — so anything you need on the page must live in `SUTTA_META`.
 
 **Routing.** App Router. English currently served at `/` with no locale prefix. `src/app/[slug]/page.tsx` calls `generateStaticParams` from `SUTTAS` and sets `dynamicParams = false`, so unknown slugs are build-time 404s. Locale routing under `app/[locale]/...` is planned but not implemented — see `docs/sitemap.md`.
 
-**Adjacent content modules** (all under `src/content/`):
+**Adjacent content modules** (canonical copies under `packages/content/`, imported via `@plain-dharma/content/*`):
 - `drops.ts` — editorial one-liners (`<Drop />`) and `PREFACE`/`CLOSING` framing for `/read`
 - `canonical-links.ts` — Pali Nikaya references + scholarly translation links
+- `glossary.ts` — glossary entries
+- `strings.ts` — UI copy via `getStrings(locale)`
+- `audio.ts` — platform-agnostic audio types + the pure `combineManifests` stitcher
+
+**Web-only content modules** (stay under `src/content/`):
 - `illustrations.ts` — `getIllustrationUrl(slug)` returns `/illustrations/{slug}.png?v=<mtime>`; **Server-only** (uses `fs.statSync`), do not import into Client Components or edge code
-- `audio.ts` — audio asset registry
+- `audio.ts` — a shim that re-exports `@plain-dharma/content/audio` and adds the `fs`-based manifest readers (`getAudioManifest`, `getCombinedAudioManifest`)
+- `en_tts/`, `zh_tts/` — TTS narration source text (intentionally distinct from the reading MDX); consumed by `scripts/generate-audio.ts`
 
 **Illustration pipeline.** `scripts/generate-illustrations.ts` calls Gemini's image model (tries several model names — Google's preview endpoints rename often; update `MODEL_CANDIDATES` when they change), writes to `public/illustrations/{slug}.png`, skips slugs whose file already exists (safe re-runs). Then `scripts/transparentize-illustrations.ts` alpha-fades the near-white Gemini background to transparent (luma > 0.86 + low saturation, soft edge) using ImageMagick if available, else `sharp`. Optional `{slug}-dark.png` variants render via `dark:hidden` / `hidden dark:block` in `SuttaIllustration.tsx` (CSS-only, no hydration).
 

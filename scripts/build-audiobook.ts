@@ -22,9 +22,10 @@ import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { getSuttasInOrder, DEFAULT_LOCALE } from "../src/content/index.js";
+import { getSuttasInOrder, DEFAULT_LOCALE } from "@plain-dharma/content";
 import { getAudioManifest } from "../src/content/audio.js";
 import { AUTHOR, BOOK_TITLE, PUBLISHER } from "./lib/book-source.js";
+import { publishToDownloads } from "./lib/publish.js";
 
 const SUTTAS_IN_ORDER = getSuttasInOrder(DEFAULT_LOCALE);
 
@@ -72,7 +73,10 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
     }
     const short = SHORT_TITLES[meta.slug] ?? meta.title;
     for (const section of manifest.sections) {
-      const filePath = join(AUDIO_DIR, meta.slug, section.file);
+      // getAudioManifest appends a `?v=<mtime>` cache-bust query to `file` for
+      // the browser; strip it to get the real on-disk filename.
+      const fileName = section.file.split("?")[0];
+      const filePath = join(AUDIO_DIR, meta.slug, fileName);
       if (!existsSync(filePath)) {
         throw new Error(`Missing audio file: ${filePath}`);
       }
@@ -192,6 +196,9 @@ async function main(): Promise<void> {
   const outPath = runFfmpeg(concatPath, chaptersPath);
   const sizeMb = (statSync(outPath).size / (1024 * 1024)).toFixed(1);
   console.log(`[build-audiobook] wrote ${outPath} (${sizeMb} MB)`);
+
+  // Publishing is tied to generation — push the just-built audiobook to the site.
+  publishToDownloads(outPath, "plain-dharma.m4b");
 }
 
 main().catch((err) => {

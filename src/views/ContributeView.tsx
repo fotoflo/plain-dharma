@@ -1,5 +1,5 @@
 import type { Locale } from "@/content";
-import { getStrings } from "@/content/strings";
+import { getStrings } from "@plain-dharma/content/strings";
 import { Wash } from "@/components/Wash";
 import { ContactForm } from "@/components/ContactForm";
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { getStrings } from "@/content/strings";
+import { getStrings } from "@plain-dharma/content/strings";
 import { getLocaleFromPathname, localizedHref } from "@/lib/locale-href";
 
 export function Footer() {

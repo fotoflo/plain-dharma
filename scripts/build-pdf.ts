@@ -36,6 +36,7 @@ import {
   buildBookMarkdown,
   generateQrCode,
 } from "./lib/book-source.js";
+import { publishToDownloads } from "./lib/publish.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const ROOT = join(dirname(__filename), "..");
@@ -183,6 +184,9 @@ function runPandoc(
   };
   execFileSync("pandoc", args, { stdio: "inherit", env });
   console.log(`\n[build-pdf] wrote ${outPdf}`);
+
+  // Publishing is tied to generation — push the just-built PDF to the site.
+  publishToDownloads(outPdf, "plain-dharma.pdf");
 }
 
 function main(): void {

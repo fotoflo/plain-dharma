@@ -77,6 +77,25 @@ paper (#F5EFE0). This script makes it transparent:
 - Files smaller than 10KB are skipped (placeholder guard).
 - Writes to `{slug}.tmp.png` then renames atomically in place.
 
+## Backups & originals
+
+Because transparentize rewrites in place and Gemini generation is
+non-deterministic (a re-run cannot reproduce a given image), the 12 canonical
+masters (`{slug}.png` + `{slug}-dark.png`) are the irreplaceable source of
+truth. They are protected two ways:
+
+- `public/illustrations/originals.zip` — a flat, git-tracked archive of all 12
+  masters. The single recoverable artifact if the working copies are lost.
+- `public/illustrations/_backup/` — a **gitignored**, local-only net. Holds the
+  raw pre-transparentize Gemini output for the 5 slugs that were snapshotted in
+  time; for `first-talk` and the `-dark` variants the raw was overwritten before
+  a backup existed, so those entries are the transparentized masters instead.
+  See `_backup/README.md` for per-file provenance. `_backup/regen-2026-05-25/`
+  is a separate regeneration batch.
+
+There is no original deeper than these. Treat `originals.zip` as the recovery
+source and refresh it whenever a master is regenerated.
+
 ## Dark-mode variant
 
 `{slug}-dark.png` is a separately post-processed variant where the ink

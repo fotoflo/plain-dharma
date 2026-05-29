@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getSuttasInOrder, type Locale, type SuttaMeta } from "@/content";
-import { getStrings } from "@/content/strings";
+import { getStrings } from "@plain-dharma/content/strings";
 import { localizedHref } from "@/lib/locale-href";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { Wash } from "@/components/Wash";

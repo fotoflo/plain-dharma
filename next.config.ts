@@ -16,6 +16,11 @@ const withMDX = createMDX({
 
 const nextConfig: NextConfig = {
   pageExtensions: ["ts", "tsx", "md", "mdx"],
+  // The canonical sutta content (TS registry + `.mdx`) lives in the shared
+  // `@plain-dharma/content` workspace package. Next won't compile files inside
+  // a package by default, so transpile it — this is what lets the MDX `LOADERS`
+  // in src/content/index.ts `import()` the package's `.mdx` through @next/mdx.
+  transpilePackages: ["@plain-dharma/content"],
   // Allow phone-on-same-wifi and ngrok hosts to load dev resources (HMR, etc).
   // Without this, Next 16 blocks cross-origin requests to /_next/* with a warning.
   allowedDevOrigins: [

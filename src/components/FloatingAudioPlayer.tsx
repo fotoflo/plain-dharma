@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { AudioManifest } from "@/content/audio";
 import type { Locale } from "@/content/index";
-import { getStrings } from "@/content/strings";
+import { getStrings } from "@plain-dharma/content/strings";
 import { AudioPlayer } from "./AudioPlayer";
 
 type Props = {

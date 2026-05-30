@@ -62,6 +62,7 @@ const SLOW_ATEMPO = flags.slow ?? "0.8333"; // ≈1/1.2 → duration ×1.2
 const FAST_ATEMPO = flags.fast ?? "0.925"; // playback 92.5%
 const SKIP_AUDIOBOOK = flags["skip-audiobook"] !== undefined;
 const SECTION = flags.section; // regenerate only this one section id (one slug)
+const SOURCE = flags.source; // override content source (non-sutta, e.g. front matter)
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type Section = {
@@ -123,11 +124,9 @@ function renderSutta(slug: string): void {
 
   // 1. RAW body narration (Theo Silk) → live dir, body-only manifest.
   console.log(`\n━━━ ${slug}: generating raw body narration ━━━`);
-  const gen = spawnSync(
-    process.execPath,
-    ["--import", "tsx", join(ROOT, "scripts", "generate-audio.ts"), slug, LOCALE, "--force"],
-    { stdio: "inherit", env: process.env }
-  );
+  const genArgs = ["--import", "tsx", join(ROOT, "scripts", "generate-audio.ts"), slug, LOCALE, "--force"];
+  if (SOURCE) genArgs.push(`--source=${SOURCE}`);
+  const gen = spawnSync(process.execPath, genArgs, { stdio: "inherit", env: process.env });
   if (gen.status !== 0) throw new Error(`generate-audio failed for ${slug} (exit ${gen.status})`);
 
   const after = readManifest(manifestPath);
@@ -228,13 +227,26 @@ function renderSection(slug: string, sectionId: string): void {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 function main(): void {
-  for (const slug of SLUGS) {
-    if (!SUTTAS.includes(slug as (typeof SUTTAS)[number])) {
-      throw new Error(`Unknown sutta slug: ${slug} (not in SUTTAS)`);
+  if (!SOURCE) {
+    for (const slug of SLUGS) {
+      if (!SUTTAS.includes(slug as (typeof SUTTAS)[number])) {
+        throw new Error(`Unknown sutta slug: ${slug} (not in SUTTAS)`);
+      }
     }
   }
 
-  if (SECTION) {
+  if (SOURCE) {
+    if (SLUGS.length !== 1) {
+      throw new Error(
+        "--source requires exactly one slug (the output dir name, e.g. `_frontmatter`)"
+      );
+    }
+    console.log(
+      `Rendering "${SLUGS[0]}" from ${SOURCE}\n` +
+        `  voice=Theo Silk · slow=${SLOW_ATEMPO} (−20%) · fast=${FAST_ATEMPO} (−7.5%)`
+    );
+    renderSutta(SLUGS[0]);
+  } else if (SECTION) {
     if (SLUGS.length !== 1) {
       throw new Error(
         "--section requires exactly one slug, e.g. `how-to-decide --section=so-what-do-you-go-on`"

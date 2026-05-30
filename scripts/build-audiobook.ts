@@ -18,7 +18,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,6 +31,8 @@ const SUTTAS_IN_ORDER = getSuttasInOrder(DEFAULT_LOCALE);
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const AUDIO_DIR = join(ROOT, "public", "audio", "en");
+// Spoken title/credits intro, prepended as the opening chapter (audiobook-only).
+const FRONTMATTER_DIR = join(AUDIO_DIR, "_frontmatter");
 const OUT_DIR = join(ROOT, "dist", "audiobook");
 const COVER_PATH = join(ROOT, "dist", "ebook", "cover.jpg");
 
@@ -65,6 +67,26 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
   const concat: ConcatEntry[] = [];
   const chapters: Chapter[] = [];
   let cursorMs = 0;
+
+  // Front matter (spoken title/credits) opens the book as chapter 1, titled
+  // with the book title. Skipped gracefully if it hasn't been generated.
+  const fmManifestPath = join(FRONTMATTER_DIR, "manifest.json");
+  if (existsSync(fmManifestPath)) {
+    const fm = JSON.parse(readFileSync(fmManifestPath, "utf8")) as {
+      sections: { file: string; duration_sec: number }[];
+    };
+    for (const section of fm.sections) {
+      const fileName = section.file.split("?")[0];
+      const filePath = join(FRONTMATTER_DIR, fileName);
+      if (!existsSync(filePath)) throw new Error(`Missing front-matter audio: ${filePath}`);
+      const durationMs = Math.round(section.duration_sec * 1000);
+      concat.push({ filePath, durationMs });
+      chapters.push({ title: BOOK_TITLE, startMs: cursorMs, endMs: cursorMs + durationMs });
+      cursorMs += durationMs;
+    }
+  } else {
+    console.warn(`[build-audiobook] no front matter at ${fmManifestPath} — building without an intro.`);
+  }
 
   for (const meta of SUTTAS_IN_ORDER) {
     const manifest = await getAudioManifest("en", meta.slug);

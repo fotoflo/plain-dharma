@@ -23,7 +23,7 @@ import {
   copyFileSync,
 } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -46,6 +46,7 @@ const SLUG = positionals[0] ?? "first-talk";
 const LOCALE = positionals[1] ?? "en";
 const SECTION_FILTER = FLAGS.section; // undefined = all sections
 const FORCE = FLAGS.force !== undefined; // regenerate even if output already exists
+const SOURCE = FLAGS.source; // override content source (e.g. audiobook front matter)
 const PROVIDER = (FLAGS.provider ?? "elevenlabs") as "openai" | "elevenlabs";
 
 // ─── Config ──────────────────────────────────────────────────────────────────
@@ -363,6 +364,12 @@ async function main() {
     outLocaleDir = LOCALE; // public/audio/en/<slug>/
     modelLabel = OPENAI_MODEL;
     voiceLabel = OPENAI_VOICE;
+  }
+
+  // --source=<path> overrides the content source for non-sutta narration (e.g.
+  // the audiobook front matter). Relative paths resolve from the repo root.
+  if (SOURCE) {
+    mdxPath = resolve(ROOT, SOURCE);
   }
 
   console.log(`Provider: ${PROVIDER} · model: ${modelLabel} · voice: ${voiceLabel}`);

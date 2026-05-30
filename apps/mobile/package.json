@@ -47,7 +47,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "eas": "bash -c 'set -a; source ../../.env.local; set +a; export EXPO_TOKEN=\"${EXPO_TOKEN:-$EXPO_ROBOT_TOKEN}\"; exec eas \"$@\"' bash \"$@\""
   },
   "private": true
 }

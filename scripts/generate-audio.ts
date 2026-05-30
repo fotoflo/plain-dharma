@@ -111,12 +111,21 @@ function toKebabCase(str: string): string {
     .replace(/\s+/g, "-");
 }
 
+// Strip inline markdown emphasis (*, **, ***, _). Applied to BOTH body text and
+// section headings so emphasis markers never leak into the spoken audio — an
+// italicized word in a heading ("So What *Do* You Go On?") otherwise reached the
+// TTS verbatim and made it pause awkwardly around the emphasized word.
+function stripEmphasis(text: string): string {
+  return text
+    .replace(/\*\*\*(.+?)\*\*\*/g, "$1")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/_(.+?)_/g, "$1");
+}
+
 function cleanForTTS(text: string): string {
   let out = text.replace(/^---+$/gm, "");
-  out = out.replace(/\*\*\*(.+?)\*\*\*/g, "$1");
-  out = out.replace(/\*\*(.+?)\*\*/g, "$1");
-  out = out.replace(/\*(.+?)\*/g, "$1");
-  out = out.replace(/_(.+?)_/g, "$1");
+  out = stripEmphasis(out);
   out = out.replace(/^>\s*/gm, "");
   out = out.replace(/^\d+\.\s+/gm, "");
   out = out.replace(/^[-*]\s+/gm, "");
@@ -158,8 +167,9 @@ function parseMDX(filePath: string): Section[] {
   for (let i = 1; i < parts.length; i++) {
     const part = parts[i];
     const lineBreak = part.indexOf("\n");
-    const headingText =
+    const rawHeading =
       lineBreak === -1 ? part.trim() : part.slice(0, lineBreak).trim();
+    const headingText = stripEmphasis(rawHeading); // no markup in spoken text/title
     const body = lineBreak === -1 ? "" : part.slice(lineBreak + 1).trim();
     // Speak the section heading before the body. Period+long-pause gives v3
     // a clear pause; v2 ignores the tag and just respects the period.

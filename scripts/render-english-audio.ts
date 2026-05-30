@@ -20,6 +20,9 @@
  * Usage:
  *   pnpm render-english-audio [slug ...] [--skip-audiobook] [--slow=0.8333] [--fast=0.925]
  *   (no slugs → all six suttas)
+ *   pnpm render-english-audio <slug> --section=<id>   # regenerate ONE section only
+ *     (surgical: re-renders + re-slows just that clip, patches its manifest entry,
+ *      leaves every other section's take untouched)
  *
  * Requires: ELEVEN_LABS_KEY in .env.local, ffmpeg + ffprobe in PATH.
  */
@@ -30,6 +33,7 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
+  unlinkSync,
   writeFileSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
@@ -57,6 +61,7 @@ const SLUGS = slugArgs.length > 0 ? slugArgs : [...SUTTAS];
 const SLOW_ATEMPO = flags.slow ?? "0.8333"; // ≈1/1.2 → duration ×1.2
 const FAST_ATEMPO = flags.fast ?? "0.925"; // playback 92.5%
 const SKIP_AUDIOBOOK = flags["skip-audiobook"] !== undefined;
+const SECTION = flags.section; // regenerate only this one section id (one slug)
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type Section = {
@@ -171,18 +176,83 @@ function renderSutta(slug: string): void {
   console.log(`  ${slug}: manifest patched — ${bodySections.length} body section(s)${keptNote}`);
 }
 
+// Regenerate a SINGLE section (heading + body) and re-slow just that clip,
+// patching only its manifest entry. generate-audio --section writes the raw mp3
+// to the live dir and merges the (re-cleaned) section into the main manifest;
+// here we turn that raw clip into the −20% live + −7.5% fast renditions.
+function renderSection(slug: string, sectionId: string): void {
+  const slugDir = join(ROOT, "public", "audio", LOCALE, slug);
+  const candidatesDir = join(slugDir, "candidates");
+  const fastDir = join(slugDir, "fast");
+  const manifestPath = join(slugDir, "manifest.json");
+
+  console.log(`\n━━━ ${slug}: regenerating section "${sectionId}" ━━━`);
+  const gen = spawnSync(
+    process.execPath,
+    [
+      "--import", "tsx", join(ROOT, "scripts", "generate-audio.ts"),
+      slug, LOCALE, "--force", `--section=${sectionId}`,
+    ],
+    { stdio: "inherit", env: process.env }
+  );
+  if (gen.status !== 0) throw new Error(`generate-audio failed for ${slug}/${sectionId} (exit ${gen.status})`);
+
+  const manifest = readManifest(manifestPath);
+  if (!manifest) throw new Error(`no manifest for ${slug}`);
+  const sec = manifest.sections.find((s) => s.id === sectionId);
+  if (!sec) throw new Error(`section "${sectionId}" not found in ${slug} manifest after regen`);
+
+  mkdirSync(candidatesDir, { recursive: true });
+  mkdirSync(fastDir, { recursive: true });
+
+  const livePath = join(slugDir, sec.file); // raw, from generate-audio
+  const origPath = join(candidatesDir, `orig-${sec.file}`);
+  const fastPath = join(fastDir, sec.file);
+  copyFileSync(livePath, origPath);
+  atempo(origPath, livePath, SLOW_ATEMPO);
+  atempo(origPath, fastPath, FAST_ATEMPO);
+  sec.duration_sec = probe(livePath);
+  sec.duration_fast_sec = probe(fastPath);
+
+  manifest.generated_at = new Date().toISOString();
+  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
+
+  // Drop the per-section debug manifest generate-audio leaves behind.
+  const sibling = join(slugDir, `manifest-${sectionId}.json`);
+  if (existsSync(sibling)) unlinkSync(sibling);
+
+  console.log(
+    `  ${slug}/${sectionId}: title="${sec.title}" · live ${sec.duration_sec}s · fast ${sec.duration_fast_sec}s`
+  );
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 function main(): void {
-  console.log(
-    `Rendering ${SLUGS.length} sutta(s): ${SLUGS.join(", ")}\n` +
-      `  voice=Theo Silk (eleven_multilingual_v2) · slow=${SLOW_ATEMPO} (−20%) · fast=${FAST_ATEMPO} (−7.5%)`
-  );
-
   for (const slug of SLUGS) {
     if (!SUTTAS.includes(slug as (typeof SUTTAS)[number])) {
       throw new Error(`Unknown sutta slug: ${slug} (not in SUTTAS)`);
     }
-    renderSutta(slug);
+  }
+
+  if (SECTION) {
+    if (SLUGS.length !== 1) {
+      throw new Error(
+        "--section requires exactly one slug, e.g. `how-to-decide --section=so-what-do-you-go-on`"
+      );
+    }
+    console.log(
+      `Regenerating ${SLUGS[0]} / section "${SECTION}"\n` +
+        `  voice=Theo Silk · slow=${SLOW_ATEMPO} (−20%) · fast=${FAST_ATEMPO} (−7.5%)`
+    );
+    renderSection(SLUGS[0], SECTION);
+  } else {
+    console.log(
+      `Rendering ${SLUGS.length} sutta(s): ${SLUGS.join(", ")}\n` +
+        `  voice=Theo Silk (eleven_multilingual_v2) · slow=${SLOW_ATEMPO} (−20%) · fast=${FAST_ATEMPO} (−7.5%)`
+    );
+    for (const slug of SLUGS) {
+      renderSutta(slug);
+    }
   }
 
   if (SKIP_AUDIOBOOK) {

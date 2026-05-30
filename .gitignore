@@ -26,6 +26,9 @@ coverage/
 # misc
 .DS_Store
 *.pem
+# App Store Connect / Apple signing keys — never commit
+*.p8
+AuthKey_*.p8
 .idea/
 .vscode/
 

@@ -13,7 +13,8 @@
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.plaindharma.app",
       "associatedDomains": [
@@ -78,6 +79,12 @@
       "eas": {
         "projectId": "f54b73b7-d4de-4feb-8d1a-0c050a76499f"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f54b73b7-d4de-4feb-8d1a-0c050a76499f"
     }
   }
 }

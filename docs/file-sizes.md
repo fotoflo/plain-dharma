@@ -1,6 +1,36 @@
 # File Size Snapshots
 
-## 2026-05-29 (current)
+## 2026-05-30 (current)
+
+### Distribution
+
+| Bucket     | Count | Δ vs prev |
+|------------|-------|-----------|
+| <=50       | 135   | -22       |
+| 51-150     | 127   | +1        |
+| 151-300    | 44    | —         |
+| 301-500    | 11    | —         |
+| 501-1000   | 4     | —         |
+| 1001-2000  | 0     | —         |
+| 2000+      | 0     | —         |
+
+Total files: 321 (-21)
+
+### Largest File
+
+`src/components/AudioPlayer.tsx` — 647 lines
+
+### Files Over 500 Lines
+
+4 files exceed the 500-line guideline:
+- `src/components/AudioPlayer.tsx` — 647 lines
+- 3 additional files
+
+### Delta
+
+Significant contraction: 21 fewer files (342 → 321). The <=50 bucket dropped by 22 files; 51-150 gained +1. Net result suggests cleanup/consolidation — likely artifact directories (`.temp/`, build outputs, or similar) were removed. Distribution shape remains healthy; no files crossed thresholds. AudioPlayer.tsx stays stable at 647 lines.
+
+## 2026-05-29 (previous)
 
 ### Distribution
 

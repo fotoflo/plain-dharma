@@ -64,13 +64,17 @@
 % Band mirrors the front cover; stitch sits 0.07in inside the band's inner edge.
 % On print trims the band is widened so it still reads ~0.5in after the bleed is
 % guillotined off the right. current-page node needs two passes.
+%
+% Stitch weight + dash pattern are measured off the front cover so the pair
+% matches: ~1pt stroke, near-even dashes of ~3.5pt on / ~3.2pt off (the InDesign
+% cover stitch is fine and dense, not the long chunky dashes a default gives).
 \newlength{\stripeW}\setlength{\stripeW}{__STRIPE_W__}
 \newlength{\stitchX}\setlength{\stitchX}{__STITCH_X__}
 \AddToShipoutPictureBG{%
   \begin{tikzpicture}[remember picture,overlay]
     \fill[gold]
       ([xshift=-\stripeW]current page.north east) rectangle (current page.south east);
-    \draw[saffron,line width=1.4pt,dash pattern=on 9pt off 6pt]
+    \draw[saffron,line width=1pt,dash pattern=on 3.5pt off 3.2pt]
       ([xshift=-\stitchX]current page.north east) -- ([xshift=-\stitchX]current page.south east);
   \end{tikzpicture}%
 }

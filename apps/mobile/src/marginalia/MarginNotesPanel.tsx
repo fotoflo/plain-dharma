@@ -4,8 +4,9 @@
  *   - per-sutta on the reading screen (pass `marks` already filtered to a slug)
  *   - globally on the More tab (all marks, grouped not required)
  *
- * Each row shows the quote, the note (or a "highlight" label), and Edit /
- * Delete. Optional `onJump` lets the reading screen scroll to a mark.
+ * Each row shows a color dot + quote, the note (or a "highlight" label), and
+ * Edit / Share / Delete. Optional `onJump` lets the reading screen scroll to a
+ * mark; optional `onShare` opens the share sheet.
  */
 
 import {
@@ -19,16 +20,19 @@ import {
 
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
+import { highlightSwatch } from "./colors";
+import { MARGINALIA_STRINGS as t } from "./strings";
 import type { MarginMark } from "./types";
 
 export function MarginNotesPanel({
   visible,
-  title = "Margin Notes",
+  title = t.panelTitle,
   marks,
   showSlug = false,
   onClose,
   onEdit,
   onRemove,
+  onShare,
   onJump,
 }: {
   visible: boolean;
@@ -39,9 +43,10 @@ export function MarginNotesPanel({
   onClose: () => void;
   onEdit: (mark: MarginMark) => void;
   onRemove: (id: string) => void;
+  onShare?: (mark: MarginMark) => void;
   onJump?: (mark: MarginMark) => void;
 }) {
-  const { palette } = useTheme();
+  const { theme, palette } = useTheme();
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -61,12 +66,8 @@ export function MarginNotesPanel({
 
           {marks.length === 0 ? (
             <View style={styles.empty}>
-              <Text style={[styles.emptyText, { color: palette.ink }]}>
-                No margin notes yet.
-              </Text>
-              <Text style={[styles.emptyHint, { color: palette.ink }]}>
-                Long-press a passage to highlight it or add a private note.
-              </Text>
+              <Text style={[styles.emptyText, { color: palette.ink }]}>{t.panelEmpty}</Text>
+              <Text style={[styles.emptyHint, { color: palette.ink }]}>{t.panelEmptyHint}</Text>
             </View>
           ) : (
             <FlatList
@@ -77,7 +78,7 @@ export function MarginNotesPanel({
                 <View style={styles.row}>
                   <Pressable
                     onPress={() => onJump?.(m)}
-                    style={[styles.quoteWrap, { borderColor: palette.accent }]}
+                    style={[styles.quoteWrap, { borderColor: highlightSwatch(m.color, theme) }]}
                   >
                     {showSlug ? (
                       <Text style={[styles.slug, { color: palette.accent, fontFamily: FONTS.serif }]}>
@@ -96,17 +97,26 @@ export function MarginNotesPanel({
                       {m.note}
                     </Text>
                   ) : (
-                    <Text style={[styles.highlightLabel, { color: palette.ink }]}>HIGHLIGHT</Text>
+                    <Text style={[styles.highlightLabel, { color: palette.ink }]}>
+                      {t.noteless.toUpperCase()}
+                    </Text>
                   )}
                   <View style={styles.actions}>
                     <Pressable onPress={() => onEdit(m)} hitSlop={8}>
                       <Text style={{ color: palette.link, fontFamily: FONTS.serif, fontSize: 14 }}>
-                        {m.note ? "Edit note" : "Add note"}
+                        {m.note ? t.editNote : t.addNote}
                       </Text>
                     </Pressable>
+                    {onShare ? (
+                      <Pressable onPress={() => onShare(m)} hitSlop={8}>
+                        <Text style={{ color: palette.link, fontFamily: FONTS.serif, fontSize: 14 }}>
+                          {t.share}
+                        </Text>
+                      </Pressable>
+                    ) : null}
                     <Pressable onPress={() => onRemove(m.id)} hitSlop={8}>
                       <Text style={{ color: "#c0392b", fontFamily: FONTS.serif, fontSize: 14 }}>
-                        Remove
+                        {t.remove}
                       </Text>
                     </Pressable>
                   </View>
@@ -143,7 +153,7 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 16, opacity: 0.6 },
   emptyHint: { fontSize: 13, opacity: 0.45, textAlign: "center" },
   row: { marginBottom: 20 },
-  quoteWrap: { borderLeftWidth: 2, paddingLeft: 12 },
+  quoteWrap: { borderLeftWidth: 3, paddingLeft: 12 },
   slug: { fontSize: 12, textTransform: "uppercase", letterSpacing: 1, marginBottom: 2, opacity: 0.8 },
   quote: { fontSize: 16, lineHeight: 22, opacity: 0.85 },
   noteText: { fontSize: 15, lineHeight: 21, paddingLeft: 12, marginTop: 6, opacity: 0.8 },

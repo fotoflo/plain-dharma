@@ -19,6 +19,10 @@ import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown, splitSections } from "@/content/markdown";
 import { MarginNotesPanel } from "@/marginalia/MarginNotesPanel";
 import { NoteComposer } from "@/marginalia/NoteComposer";
+import { SavePrompt } from "@/marginalia/SavePrompt";
+import { SentencePicker } from "@/marginalia/SentencePicker";
+import { ShareSheet } from "@/marginalia/ShareSheet";
+import { Toast } from "@/marginalia/Toast";
 import { useSuttaMarginalia } from "@/marginalia/useSuttaMarginalia";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme } from "@/theme/ThemeContext";
@@ -112,18 +116,21 @@ export default function SuttaScreen() {
         </View>
 
         {contentSections.map((sec) => {
+          const inline = mn.inlineHighlightsFor(sec);
           const marked = mn.markedAnchors.has(sec.id);
+          // Inline shading is the primary affordance (web parity). The accent
+          // rail is only a fallback for a marked section whose quote couldn't be
+          // resolved into a render leaf (e.g. a cross-style quote — see the
+          // parity note in useSuttaMarginalia).
+          const railFallback = marked && inline.length === 0;
           return (
             <Pressable
               key={sec.id}
               onLayout={recordPos(sec.id)}
               onLongPress={() => mn.beginAdd(sec)}
               delayLongPress={350}
-              // A long-press anchors a highlight/note to this section (see the
-              // parity note in useSuttaMarginalia). Marked sections get an accent
-              // rail since RN can't shade the exact text range like the web.
               style={[
-                marked && {
+                railFallback && {
                   borderLeftWidth: 3,
                   borderLeftColor: palette.accent,
                   paddingLeft: 12,
@@ -132,7 +139,15 @@ export default function SuttaScreen() {
                 },
               ]}
             >
-              <MarkdownRenderer>{sec.markdown}</MarkdownRenderer>
+              <MarkdownRenderer
+                highlights={inline}
+                onPressHighlight={(id) => {
+                  const mark = mn.marksForSlug.find((m) => m.id === id);
+                  if (mark) mn.beginEdit(mark);
+                }}
+              >
+                {sec.markdown}
+              </MarkdownRenderer>
             </Pressable>
           );
         })}
@@ -165,19 +180,42 @@ export default function SuttaScreen() {
           mn.beginEdit(m);
         }}
         onRemove={(id) => mn.remove(id)}
+        onShare={(m) => {
+          mn.setPanelOpen(false);
+          mn.shareMark(m);
+        }}
         onJump={(m) => {
           mn.setPanelOpen(false);
           scrollToAnchor(m.anchor);
         }}
       />
 
+      <SentencePicker
+        visible={mn.pickerVisible}
+        sentences={mn.pickerSentences}
+        wholeLabel={mn.pickerWhole}
+        onPick={mn.pickSentence}
+        onClose={mn.closePicker}
+      />
+
       <NoteComposer
         visible={mn.composerVisible}
         quote={mn.composerQuote}
         initialNote={mn.composerInitialNote}
+        initialColor={mn.composerInitialColor}
         onSave={mn.saveComposer}
         onCancel={mn.closeComposer}
       />
+
+      <ShareSheet visible={mn.share != null} payload={mn.share} onClose={mn.closeShare} />
+
+      <SavePrompt
+        visible={mn.savePromptVisible}
+        onSend={mn.onSavePromptSend}
+        onDismiss={mn.dismissSavePrompt}
+      />
+
+      <Toast message={mn.toast} />
 
       <FloatingControls locale={DEFAULT_LOCALE} slug={slug} />
     </View>

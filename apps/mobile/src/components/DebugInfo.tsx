@@ -1,3 +1,4 @@
+import * as Application from "expo-application";
 import Constants from "expo-constants";
 import * as Updates from "expo-updates";
 import { useState } from "react";
@@ -91,7 +92,12 @@ export function DebugInfo() {
 
       {expanded ? (
         <View style={[styles.card, { borderColor: palette.divider }]}>
-          <Row label="App version" value={Constants.expoConfig?.version ?? "—"} color={palette.ink} />
+          <Row
+            label="App version"
+            value={Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? "—"}
+            color={palette.ink}
+          />
+          <Row label="Build number" value={Application.nativeBuildVersion ?? "—"} color={palette.ink} />
           <Row label="Runtime" value={currentlyRunning.runtimeVersion ?? "—"} color={palette.ink} />
           <Row label="Channel" value={currentlyRunning.channel ?? "—"} color={palette.ink} />
           <Row label="Running update" value={runningLabel} color={palette.ink} />

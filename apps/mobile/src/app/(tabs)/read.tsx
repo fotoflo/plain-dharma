@@ -6,8 +6,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DecorativeBackground } from "@/components/DecorativeBackground";
-import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
-import { FloatingReadingControls } from "@/components/FloatingReadingControls";
+import { FloatingControls } from "@/components/FloatingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown } from "@/content/markdown";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
@@ -101,8 +100,7 @@ export default function ReadScreen() {
           ))}
         </View>
       </ScrollView>
-      <FloatingReadingControls />
-      <FloatingAudioPlayer locale={DEFAULT_LOCALE} combined />
+      <FloatingControls locale={DEFAULT_LOCALE} combined />
     </View>
   );
 }

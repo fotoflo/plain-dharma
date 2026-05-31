@@ -12,8 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
-import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
-import { FloatingReadingControls } from "@/components/FloatingReadingControls";
+import { FloatingControls } from "@/components/FloatingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown, splitSections } from "@/content/markdown";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
@@ -102,8 +101,7 @@ export default function SuttaScreen() {
           </View>
         ))}
       </ScrollView>
-      <FloatingReadingControls />
-      <FloatingAudioPlayer locale={DEFAULT_LOCALE} slug={slug} />
+      <FloatingControls locale={DEFAULT_LOCALE} slug={slug} />
     </View>
   );
 }

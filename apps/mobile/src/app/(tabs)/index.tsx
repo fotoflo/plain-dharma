@@ -37,7 +37,11 @@ export default function HomeScreen() {
 
       <View style={styles.heroArt}>
         {suttas.map((sutta) => (
-          <SuttaIllustration key={sutta.slug} slug={sutta.slug} size={92} />
+          <Link key={sutta.slug} href={`/${sutta.slug}`} asChild>
+            <Pressable accessibilityRole="link" accessibilityLabel={sutta.title}>
+              <SuttaIllustration slug={sutta.slug} size={92} />
+            </Pressable>
+          </Link>
         ))}
       </View>
 

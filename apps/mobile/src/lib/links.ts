@@ -9,6 +9,13 @@ export function openDonate(): Promise<unknown> {
   return WebBrowser.openBrowserAsync(`${SITE_ORIGIN}/download/donate`);
 }
 
+// "Contribute" opens the web contribute page (copy editors / translators / voice
+// artists + the contact form) in an in-app browser — the form lives server-side
+// (Resend), so we link out rather than re-implement it natively.
+export function openContribute(): Promise<unknown> {
+  return WebBrowser.openBrowserAsync(`${SITE_ORIGIN}/contribute`);
+}
+
 export type DownloadFormat = "epub" | "pdf" | "m4b";
 
 // Mirrors the web /download cards (title / size / blurb) so the native picker

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -78,16 +77,23 @@ const THEME_OPTS: Option<ThemeMode>[] = [
 // Floating "Aa" reading controls, mirroring the web ReadingControls panel:
 // size / contrast / font, plus a theme toggle. Wired to ReadingPrefsContext +
 // ThemeContext. Contrast/font behavior matches the committed globals.css.
-export function FloatingReadingControls() {
+// Controlled: the parent (FloatingControls) owns `open` so only one floating
+// panel can be open at a time.
+export function FloatingReadingControls({
+  open,
+  onToggle,
+}: {
+  open: boolean;
+  onToggle: () => void;
+}) {
   const insets = useSafeAreaInsets();
   const { palette, mode, setMode } = useTheme();
   const { size, contrast, font, setSize, setContrast, setFont } = useReadingPrefs();
-  const [open, setOpen] = useState(false);
 
   return (
     <View style={[styles.wrap, { top: insets.top + 8 }]} pointerEvents="box-none">
       <Pressable
-        onPress={() => setOpen((v) => !v)}
+        onPress={onToggle}
         style={[styles.fab, { backgroundColor: palette.bg, borderColor: palette.accent }]}
         accessibilityRole="button"
         accessibilityLabel="Reading settings"

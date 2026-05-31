@@ -1,6 +1,8 @@
 import type { AudioManifest } from "@plain-dharma/content/audio";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
 
+import { bundledManifest } from "./bundled-manifests";
+
 // Mobile streams audio from the deployed site (no bundled mp3s). NOTE: the
 // fast-variant renditions and updated manifests must be deployed to production
 // before fast-mode works on mobile — until then `durationFastSec` is absent and
@@ -19,19 +21,17 @@ export type PlayerSection = {
 };
 
 /**
- * Fetch a sutta's audio manifest from the deployed site and resolve each
- * section to absolute slow/fast URLs. The static manifest carries
- * `duration_fast_sec` but not the fast file path (that's server-injected on
- * web), so the fast URL is derived by the `fast/<file>` convention.
+ * Resolve a manifest's sections to absolute streaming slow/fast URLs. The static
+ * manifest carries `duration_fast_sec` but not the fast file path (that's
+ * server-injected on web), so the fast URL is derived by the `fast/<file>`
+ * convention.
  */
-export async function fetchSuttaSections(
+export function manifestToSections(
+  manifest: AudioManifest,
   locale: Locale,
   slug: SuttaSlug
-): Promise<PlayerSection[]> {
+): PlayerSection[] {
   const base = `${AUDIO_ORIGIN}/audio/${locale}/${slug}`;
-  const res = await fetch(`${base}/manifest.json`);
-  if (!res.ok) throw new Error(`audio manifest ${slug}: HTTP ${res.status}`);
-  const manifest = (await res.json()) as AudioManifest;
   return manifest.sections.map((s) => ({
     id: s.id,
     title: s.title,
@@ -40,6 +40,25 @@ export async function fetchSuttaSections(
     durationSec: s.duration_sec,
     durationFastSec: s.duration_fast_sec,
   }));
+}
+
+/**
+ * A sutta's streaming sections. Uses the OTA-bundled manifest when present (no
+ * network round-trip — the Listen panel renders instantly), falling back to
+ * fetching the manifest off the deployed site for anything not bundled.
+ */
+export async function fetchSuttaSections(
+  locale: Locale,
+  slug: SuttaSlug
+): Promise<PlayerSection[]> {
+  const bundled = bundledManifest(locale, slug);
+  if (bundled) return manifestToSections(bundled, locale, slug);
+
+  const base = `${AUDIO_ORIGIN}/audio/${locale}/${slug}`;
+  const res = await fetch(`${base}/manifest.json`);
+  if (!res.ok) throw new Error(`audio manifest ${slug}: HTTP ${res.status}`);
+  const manifest = (await res.json()) as AudioManifest;
+  return manifestToSections(manifest, locale, slug);
 }
 
 export type Speed = "slow" | "fast";

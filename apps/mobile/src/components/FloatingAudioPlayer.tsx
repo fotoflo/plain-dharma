@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
-import { useState } from "react";
+import { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -10,33 +10,34 @@ import { FONTS } from "@/theme/tokens";
 import { AudioPanel } from "./AudioPanel";
 
 // Floating "Listen" pill + popover panel, mirroring the web FloatingAudioPlayer.
-// Audio is fetched lazily on first open (keeps the screen cheap if you don't
-// listen). i18n labels are hardcoded EN for now — wire to shared strings when
-// the locale switcher (chrome) lands.
+// Audio is loaded lazily on first open (keeps the screen cheap if you don't
+// listen); the manifest is OTA-bundled so opening is instant. i18n labels are
+// hardcoded EN for now — wire to shared strings when the locale switcher
+// (chrome) lands. Controlled: the parent (FloatingControls) owns `open` so only
+// one floating panel can be open at a time.
 export function FloatingAudioPlayer({
   locale,
   slug,
   combined = false,
+  open,
+  onToggle,
 }: {
   locale: Locale;
   slug?: SuttaSlug;
   combined?: boolean;
+  open: boolean;
+  onToggle: () => void;
 }) {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
   const { load, loadCombined } = useAudio();
-  const [open, setOpen] = useState(false);
 
-  const toggle = () => {
-    setOpen((v) => {
-      const nextOpen = !v;
-      if (nextOpen) {
-        if (combined) void loadCombined(locale);
-        else if (slug) void load(locale, slug);
-      }
-      return nextOpen;
-    });
-  };
+  // Kick off the (cheap, manifest-only) load the first time the panel opens.
+  useEffect(() => {
+    if (!open) return;
+    if (combined) void loadCombined(locale);
+    else if (slug) void load(locale, slug);
+  }, [open, combined, locale, slug, load, loadCombined]);
 
   return (
     <View
@@ -54,7 +55,7 @@ export function FloatingAudioPlayer({
         </View>
       ) : null}
       <Pressable
-        onPress={toggle}
+        onPress={onToggle}
         style={[styles.fab, { backgroundColor: palette.bg, borderColor: palette.accent }]}
         accessibilityRole="button"
         accessibilityLabel={open ? "Close audio player" : "Listen"}
@@ -74,6 +75,7 @@ const styles = StyleSheet.create({
     right: 16,
     alignItems: "flex-end",
     gap: 10,
+    zIndex: 10,
   },
   panel: {
     width: 320,

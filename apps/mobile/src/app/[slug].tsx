@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef } from "react";
 import {
+  Dimensions,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -15,18 +16,24 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingControls } from "@/components/FloatingControls";
-import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown, splitSections } from "@/content/markdown";
 import { MarginNotesPanel } from "@/marginalia/MarginNotesPanel";
 import { NoteComposer } from "@/marginalia/NoteComposer";
 import { SavePrompt } from "@/marginalia/SavePrompt";
-import { SentencePicker } from "@/marginalia/SentencePicker";
+import { SelectableSection, type SelectionResult } from "@/marginalia/SelectableSection";
+import {
+  SelectionToolbar,
+  TOOLBAR_HEIGHT,
+  TOOLBAR_WIDTH,
+} from "@/marginalia/SelectionToolbar";
 import { ShareSheet } from "@/marginalia/ShareSheet";
 import { Toast } from "@/marginalia/Toast";
 import { useSuttaMarginalia } from "@/marginalia/useSuttaMarginalia";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme } from "@/theme/ThemeContext";
 import { CONTRAST_BG, FONTS } from "@/theme/tokens";
+
+const PAGE_PADDING = 24;
 
 export default function SuttaScreen() {
   const { theme, palette } = useTheme();
@@ -87,6 +94,24 @@ export default function SuttaScreen() {
   const meta = getMeta(DEFAULT_LOCALE, slug);
   const contentSections = splitSections(getSuttaMarkdown(DEFAULT_LOCALE, slug));
 
+  // Inner content width (screen minus the symmetric page padding) — used to
+  // clamp the floating toolbar so it never runs off either edge.
+  const innerWidth = Dimensions.get("window").width - PAGE_PADDING * 2;
+
+  // Final toolbar geometry: centre over the selection, clamp horizontally,
+  // float above and flip below when it would clip the content top.
+  const toolbarPos = mn.toolbar
+    ? (() => {
+        const left = Math.min(
+          Math.max(mn.toolbar.left - TOOLBAR_WIDTH / 2, 0),
+          Math.max(innerWidth - TOOLBAR_WIDTH, 0),
+        );
+        const above = mn.toolbar.top - TOOLBAR_HEIGHT - 8;
+        const top = above < 0 ? mn.toolbar.top + 32 : above;
+        return { left, top };
+      })()
+    : null;
+
   return (
     <View style={{ flex: 1, backgroundColor: screenBg }}>
       <DecorativeBackground />
@@ -96,7 +121,7 @@ export default function SuttaScreen() {
         contentContainerStyle={{
           paddingTop: insets.top + 24,
           paddingBottom: insets.bottom + 96,
-          paddingHorizontal: 24,
+          paddingHorizontal: PAGE_PADDING,
         }}
       >
         <Link href="/" style={[styles.back, { color: palette.link, fontFamily: FONTS.serif }]}>
@@ -115,6 +140,18 @@ export default function SuttaScreen() {
           </Text>
         </View>
 
+        {/* The selection toolbar lives inside the scroll content so it scrolls
+            with the passage and stays pinned to the dragged words. */}
+        {mn.toolbarVisible && toolbarPos && (
+          <SelectionToolbar
+            anchor={toolbarPos}
+            activeColor={mn.selectionColor}
+            onColor={mn.highlightWithColor}
+            onNote={mn.noteFromSelection}
+            onShare={mn.shareFromSelection}
+          />
+        )}
+
         {contentSections.map((sec) => {
           const inline = mn.inlineHighlightsFor(sec);
           const marked = mn.markedAnchors.has(sec.id);
@@ -124,11 +161,9 @@ export default function SuttaScreen() {
           // parity note in useSuttaMarginalia).
           const railFallback = marked && inline.length === 0;
           return (
-            <Pressable
+            <View
               key={sec.id}
               onLayout={recordPos(sec.id)}
-              onLongPress={() => mn.beginAdd(sec)}
-              delayLongPress={350}
               style={[
                 railFallback && {
                   borderLeftWidth: 3,
@@ -139,16 +174,24 @@ export default function SuttaScreen() {
                 },
               ]}
             >
-              <MarkdownRenderer
+              <SelectableSection
+                section={sec}
                 highlights={inline}
+                selectionColor={mn.selectionColor}
+                cleared={mn.clearToken}
                 onPressHighlight={(id) => {
                   const mark = mn.marksForSlug.find((m) => m.id === id);
                   if (mark) mn.beginEdit(mark);
                 }}
-              >
-                {sec.markdown}
-              </MarkdownRenderer>
-            </Pressable>
+                onSelect={(result: SelectionResult, sectionTop: number) => {
+                  // sectionTop from the section's own onLayout is relative to the
+                  // content container — prefer the reader's recorded value (same
+                  // space) when present, fall back to the reported one.
+                  const top = positions.current[sec.id] ?? sectionTop;
+                  mn.onSelect(result, sec, top);
+                }}
+              />
+            </View>
           );
         })}
       </ScrollView>
@@ -188,14 +231,6 @@ export default function SuttaScreen() {
           mn.setPanelOpen(false);
           scrollToAnchor(m.anchor);
         }}
-      />
-
-      <SentencePicker
-        visible={mn.pickerVisible}
-        sentences={mn.pickerSentences}
-        wholeLabel={mn.pickerWhole}
-        onPick={mn.pickSentence}
-        onClose={mn.closePicker}
       />
 
       <NoteComposer

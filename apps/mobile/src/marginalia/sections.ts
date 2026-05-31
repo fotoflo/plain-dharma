@@ -1,15 +1,17 @@
 /**
- * Turns a section's Markdown into the plain text the reader sees, then into
- * pickable sentences — the data the sentence-level highlight flow needs.
+ * Turns a section's Markdown into the plain text the reader sees, then into the
+ * pieces the word-level drag selection needs.
  *
  * The web anchors to an exact DOM Range. RN's markdown renderer exposes no
- * Range, so mobile lets the reader pick a *sentence* (or the whole passage)
- * within a long-pressed section. We strip the same Markdown markers the renderer
- * drops, split into sentences, and build a W3C-style text-quote selector
- * (`anchor` = section id, `quote` = the sentence, `prefix`/`suffix` = PAD chars
- * of surrounding plain text). Because the quote is plain text, it matches both
- * the mobile inline renderer and the web's `findQuote`, so the mark round-trips:
- * a sentence highlighted on mobile paints inline on the web, and vice-versa.
+ * Range, so mobile recovers a selection by rendering each body word as its own
+ * measurable <Text> (see selection.tsx / SelectableSection) and dragging across
+ * them. We strip the same Markdown markers the renderer drops to get the
+ * section's plain text, then build a W3C-style text-quote selector (`anchor` =
+ * section id, `quote` = the selected words joined by spaces, `prefix`/`suffix` =
+ * PAD chars of surrounding plain text). Because the quote is plain text, it
+ * matches both the mobile inline renderer and the web's `findQuote`, so the mark
+ * round-trips: a passage highlighted on mobile paints inline on the web, and
+ * vice-versa.
  */
 
 import { ANCHOR_PAD, type AnnotationSelector } from "./textAnchor";
@@ -36,20 +38,24 @@ export function sectionPlainText(markdown: string): string {
     .trim();
 }
 
-const QUOTE_MAX = 180;
+/**
+ * Tokenize a leaf string into whitespace-delimited words plus the whitespace
+ * runs between them, so the renderer can wrap each word in its own measurable
+ * <Text> while still emitting the original spacing. Trailing punctuation snaps
+ * to its word (word-level granularity). Whitespace pieces have no word index and
+ * aren't selectable; only `word` pieces are.
+ */
+export type LeafPiece = { kind: "word"; text: string } | { kind: "space"; text: string };
 
-/** A short lead snippet for a section — used when no sentence is picked. */
-export function sectionQuote(markdown: string): string {
-  const text = sectionPlainText(markdown);
-  return text.length > QUOTE_MAX ? `${text.slice(0, QUOTE_MAX).trimEnd()}…` : text;
-}
-
-/** Split plain text into sentences for the picker (keeps terminal punctuation). */
-export function splitSentences(plain: string): string[] {
-  if (!plain) return [];
-  // Split after . ! ? (optionally followed by a closing quote) then trim.
-  const parts = plain.match(/[^.!?]+[.!?]+["'”’)]*\s*|[^.!?]+$/g) ?? [plain];
-  return parts.map((s) => s.trim()).filter(Boolean);
+export function splitLeaf(text: string): LeafPiece[] {
+  const out: LeafPiece[] = [];
+  const re = /(\s+)|(\S+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m[1] != null) out.push({ kind: "space", text: m[1] });
+    else out.push({ kind: "word", text: m[2] });
+  }
+  return out;
 }
 
 /**

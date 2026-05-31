@@ -57,6 +57,7 @@ export default async function OgImage({
   return renderOgCard({
     eyebrow: meta.pali_name,
     title: meta.title,
+    tagline: meta.subtitle,
     illustrationDataUrl,
   });
 }

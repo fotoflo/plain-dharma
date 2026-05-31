@@ -87,6 +87,14 @@ export async function renderOgCard(opts: OgCardOpts) {
     : "Garamond Libre, serif";
   const TEXT_MAX = 640; // keeps headline from running into the art column
 
+  // Size each text zone to its content so long Pali names / titles / subtitles
+  // don't wrap into each other or push the footer off the 630px canvas.
+  const titleLen = opts.title.replace(/\n/g, " ").length;
+  const titleSize = titleLen <= 24 ? 92 : titleLen <= 32 ? 74 : 62;
+  const eyebrowSize = opts.eyebrow.length > 17 ? 28 : 38;
+  const taglineLen = opts.tagline?.length ?? 0;
+  const taglineSize = taglineLen > 70 ? 32 : taglineLen > 50 ? 37 : 42;
+
   return new ImageResponse(
     (
       <div
@@ -126,7 +134,7 @@ export async function renderOgCard(opts: OgCardOpts) {
             style={{
               display: "flex",
               color: ACCENT_STRONG,
-              fontSize: 38,
+              fontSize: eyebrowSize,
               fontWeight: 700,
               letterSpacing: 2,
               textTransform: "uppercase",
@@ -141,7 +149,7 @@ export async function renderOgCard(opts: OgCardOpts) {
               style={{
                 display: "flex",
                 color: INK,
-                fontSize: 92,
+                fontSize: titleSize,
                 fontWeight: 700,
                 lineHeight: 1.0,
                 letterSpacing: "-0.02em",
@@ -157,10 +165,10 @@ export async function renderOgCard(opts: OgCardOpts) {
                   display: "flex",
                   color: INK,
                   opacity: 0.78,
-                  fontSize: 44,
+                  fontSize: taglineSize,
                   fontStyle: "italic",
                   lineHeight: 1.3,
-                  marginTop: 28,
+                  marginTop: 24,
                   maxWidth: TEXT_MAX,
                 }}
               >

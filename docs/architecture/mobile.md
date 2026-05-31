@@ -1,6 +1,6 @@
 # Mobile app (React Native / Expo) — Plain Dharma
 
-*Last updated: 2026-05-29*
+*Last updated: 2026-05-31*
 
 A React Native port of the reading site, sharing the sutta content with the web
 via a pnpm-monorepo workspace. Expo SDK 56 (React 19.2.3 / RN 0.85.3, New
@@ -252,6 +252,35 @@ cd apps/mobile && expo start --dev-client
 
 `scripts/audio-reencode-ab.sh` (repo root, throwaway) A/Bs lighter mp3 encodings
 if download size becomes a concern (files are currently mp3 44.1 kHz mono 64 kbps).
+
+## OTA updates (expo-updates)
+
+The app can receive over-the-air (OTA) JavaScript updates via Expo Updates, without requiring a new App Store / Play Store submission. This is configured in `app.json` and `eas.json`:
+
+- **`runtimeVersion: { policy: "appVersion" }`** in `app.json` pins OTA updates to the app's version (`1.0.0`). Only builds with the same version can receive OTA updates for that channel. Keep version `1.0.0` to push unlimited OTA updates to that build; bumping the version requires a new native rebuild.
+- **Per-profile channels** in `eas.json`: each build profile (development, development-device, preview, production) targets a distinct channel. When you publish an update, you specify which channel receives it (e.g., `eas update --channel production`).
+- **Publish command:** `pnpm eas update --channel production -m "description of JS changes"`
+- **Critical gotcha:** only builds **containing expo-updates** (build #3 onward) can receive OTA updates. The earlier TestFlight builds (#1–#2) do not have the update client and cannot pull new JS. Plan accordingly when shipping updates.
+
+See [Expo Updates docs](https://docs.expo.dev/updates/) for full details.
+
+## Payments & donations
+
+Mobile carries **no Stripe key** (public or secret) and does not call Stripe directly. All payment flows route to the production web endpoint:
+
+- **Book download donations** (`download/donate.tsx`) POSTs to `https://plaindharma.com/api/checkout` (hardcoded in `src/lib/site.ts`), which uses the **live production Stripe keys**. This is true regardless of build profile (development, preview, or production) — there is no test path on the mobile side. Stripe's webhook responses and success/cancel redirects are web-only.
+- **General "Support" donations** open the browser to `/download/donate` on the live site, also using production keys.
+- This design keeps payment secrets out of the app bundle (compliant and simpler) and avoids App Store policies that prohibit in-app payment for digital goods (unless the org is a registered nonprofit, which Plain Dharma is not).
+
+## Build artifacts & deployment
+
+EAS Build uploads a **single code-signed native binary** (.ipa for iOS, .aab for Android). The `.easignore` file controls what gets uploaded (EAS does not read `.gitignore`):
+
+- Excludes: `node_modules/`, `.git/` (~410 MB), `public/` (~232 MB), and web-only dirs (`docs/`, `supabase/`).
+- This reduces the upload archive from ~439 MB to a few MB, speeding up builds.
+- **Maintenance:** new patterns added to `.gitignore` must be mirrored into `.easignore` (they are not auto-synced).
+
+Once a build is submitted to TestFlight or the Play Store, OTA updates become the primary path for rolling out JS changes (reading text, styles, UI tweaks). New native dependencies (navigation, audio, file-system changes) require a full rebuild and re-submission.
 
 ## Gotchas
 

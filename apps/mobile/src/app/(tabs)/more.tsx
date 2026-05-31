@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { OfflineDownload } from "@/components/OfflineDownload";
 import { openContribute, openDonate } from "@/lib/links";
+import { MyNotesSection } from "@/marginalia/MyNotesSection";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -68,6 +69,11 @@ export default function MoreScreen() {
           );
         })}
       </View>
+
+      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+        Highlights & notes
+      </Text>
+      <MyNotesSection />
 
       <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
         Download

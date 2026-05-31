@@ -11,6 +11,8 @@ import { useEffect } from "react";
 
 import { AudioProvider } from "@/audio/AudioProvider";
 import { DownloadsProvider } from "@/audio/DownloadsProvider";
+import { useScreenTracking } from "@/lib/useScreenTracking";
+import { AuthProvider } from "@/marginalia/AuthContext";
 import { ReadingPrefsProvider } from "@/theme/ReadingPrefsContext";
 import { ThemeProvider, useTheme } from "@/theme/ThemeContext";
 
@@ -18,6 +20,8 @@ SplashScreen.preventAutoHideAsync();
 
 function Navigator() {
   const { theme, palette } = useTheme();
+  // Fire GA4 screen_view on every expo-router navigation (prod only).
+  useScreenTracking();
   return (
     <>
       <StatusBar style={theme === "dark" ? "light" : "dark"} />
@@ -51,11 +55,13 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <ReadingPrefsProvider>
-        <DownloadsProvider>
-          <AudioProvider>
-            <Navigator />
-          </AudioProvider>
-        </DownloadsProvider>
+        <AuthProvider>
+          <DownloadsProvider>
+            <AudioProvider>
+              <Navigator />
+            </AudioProvider>
+          </DownloadsProvider>
+        </AuthProvider>
       </ReadingPrefsProvider>
     </ThemeProvider>
   );

@@ -4,6 +4,7 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { DebugInfo } from "@/components/DebugInfo";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { OfflineDownload } from "@/components/OfflineDownload";
 import { openContribute, openDonate } from "@/lib/links";
@@ -159,6 +160,8 @@ export default function MoreScreen() {
       >
         Glossary
       </Link>
+
+      <DebugInfo />
     </ScrollView>
   );
 }

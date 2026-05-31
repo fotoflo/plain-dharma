@@ -26,8 +26,37 @@ export function PrivacyView({ locale }: { locale: Locale }) {
       <article className="prose-dharma">
         <p>{s.privacy.pIntro}</p>
 
-        <h2>{s.privacy.h2WhatWeCollect}</h2>
-        <p>{s.privacy.pWhatWeCollect}</p>
+        <h2>{s.privacy.h2Analytics}</h2>
+        <p>
+          {s.privacy.pAnalyticsPrefix}
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {s.privacy.pAnalyticsLinkText}
+          </a>
+          {s.privacy.pAnalyticsSuffix}
+        </p>
+
+        <h2>{s.privacy.h2Accounts}</h2>
+        <p>
+          {s.privacy.pAccountsPrefix}
+          <a
+            href="https://supabase.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {s.privacy.pAccountsLinkText}
+          </a>
+          {s.privacy.pAccountsSuffix}
+        </p>
+
+        <h2>{s.privacy.h2Notes}</h2>
+        <p>{s.privacy.pNotes}</p>
+
+        <h2>{s.privacy.h2Sharing}</h2>
+        <p>{s.privacy.pSharing}</p>
 
         <h2>{s.privacy.h2Newsletter}</h2>
         <p>{s.privacy.pNewsletter}</p>
@@ -48,8 +77,14 @@ export function PrivacyView({ locale }: { locale: Locale }) {
           {s.privacy.pDonationsSuffix}
         </p>
 
+        <h2>{s.privacy.h2Storage}</h2>
+        <p>{s.privacy.pStorage}</p>
+
         <h2>{s.privacy.h2App}</h2>
         <p>{s.privacy.pApp}</p>
+
+        <h2>{s.privacy.h2Sharing2}</h2>
+        <p>{s.privacy.pShare}</p>
 
         <h2>{s.privacy.h2Children}</h2>
         <p>{s.privacy.pChildren}</p>

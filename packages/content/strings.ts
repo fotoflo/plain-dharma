@@ -128,19 +128,33 @@ const en = {
   privacy: {
     metadataTitle: "Privacy",
     metadataDescription:
-      "What Plain Dharma collects, and what it doesn't. No accounts, no tracking, no analytics, no ads.",
+      "What Plain Dharma collects and why — analytics, optional accounts for syncing your highlights and notes, the newsletter, the contact form, and donations.",
     kicker: "Privacy",
     h1: "Privacy",
     lastUpdatedLabel: "Last updated",
     lastUpdated: "31 May 2026",
     pIntro:
-      "Plain Dharma is a free reading site and app, dedicated to the public domain. It is built to be simple, and that simplicity extends to your privacy: there are no accounts, no logins, no user profiles, no tracking, no analytics, no advertising, and no third-party ad code. We do not sell or share your data. The pages are served as static files.",
-    h2WhatWeCollect: "What we collect",
-    pWhatWeCollect:
-      "Almost nothing. We only receive information when you choose to send it — by subscribing to the newsletter, using the contact form, or making a donation. Each of those is described below.",
+      "Plain Dharma is a free reading site and app, dedicated to the public domain. We try to keep things simple and to ask for as little as possible — but the site does use a few ordinary services to run, and if you choose to, you can create an account to sync your highlights and notes. This page explains, plainly, what we collect, when, and why. We do not sell your data.",
+    h2Analytics: "Analytics",
+    pAnalyticsPrefix:
+      "The website uses Google Analytics to understand, in aggregate, how the site is used — which pages people read, where visitors came from, an approximate location derived from your IP address, and basic device and browser information. To do this, Google Analytics sets cookies and uses identifiers in your browser. This data helps us see what's working and what to improve. It is handled under ",
+    pAnalyticsLinkText: "Google's privacy policy",
+    pAnalyticsSuffix:
+      ". We may add similar product-analytics tools in the future (for example, Mixpanel) for the same purpose; if we do, this page will say so.",
+    h2Accounts: "Accounts and sign-in",
+    pAccountsPrefix:
+      "You can read everything without an account. An account is entirely optional, and only exists to sync your highlights and notes (“Margin Notes”) across your devices. Sign-in is passwordless: you enter your email address and we send you a magic link to click. We store your email address to identify your account. Sign-in and the data below are provided by Supabase, our hosting and authentication provider, under ",
+    pAccountsLinkText: "Supabase's privacy policy",
+    pAccountsSuffix: ".",
+    h2Notes: "Highlights and notes",
+    pNotes:
+      "When you are signed in, the highlights and notes you make while reading are saved to our database (Supabase) and linked to your account so they sync across your devices. What we store for each one: the passage you highlighted and a little surrounding text, the note you wrote (if any), the highlight color, and the times it was created and changed. Your notes are private to you. When you are not signed in, your highlights and notes stay only in your browser (in local storage) and are never sent to us.",
+    h2Sharing: "Sharing",
+    pSharing:
+      "If you share a passage, you share a link to the public reading page along with the quoted passage — by copying the link, copying the passage, or using your device's share sheet. Sharing never publishes your private notes, and the other person needs no account to read what you shared.",
     h2Newsletter: "Newsletter",
     pNewsletter:
-      "If you subscribe on the home page, we use the email address you submit to send you a welcome message and the occasional update — no more than a handful a year. The email is delivered through Resend (resend.com), our email provider. We do not keep a contact list or mailing-list database: your signup simply sends those emails. Your address is used only to write to you, and is never sold or shared.",
+      "If you subscribe on the home page, we use the email address you submit to send you a welcome message and the occasional update — no more than a handful a year. The email is delivered through Resend, our email provider. We do not keep a contact list or mailing-list database: your signup simply sends those emails. Your address is used only to write to you, and is never sold or shared.",
     h2Contact: "Contact form",
     pContact:
       "If you use the form on the Contribute page, the name, email, and message you submit are emailed to the site owner through Resend so they can read it and reply. The message is not stored in any database.",
@@ -149,16 +163,22 @@ const en = {
       "Donations on the download page are handled by Stripe. Your payment details go directly to Stripe and are governed by ",
     pDonationsLinkText: "Stripe's privacy policy",
     pDonationsSuffix:
-      ". Plain Dharma never sees your card number. Stripe creates a record of the donation so we can recognize repeat donors in our dashboard.",
+      ". Plain Dharma never sees your card number. Stripe creates a customer record for the donation so we can recognize repeat donors in our dashboard.",
+    h2Storage: "Cookies and local storage",
+    pStorage:
+      "Besides any highlights and notes you haven't synced, the site uses your browser's local storage to remember your choices — your light/dark theme and reading preferences — so the page looks the way you left it. Google Analytics also sets cookies, as described above. We don't use cookies for advertising.",
     h2App: "The mobile app",
     pApp:
-      "The app reads the same content from plaindharma.com — the text, illustrations, and audio are streamed from the site. If you choose to download readings for offline listening, those files are stored only on your own device and are never uploaded anywhere. The app has no analytics and requires no account.",
+      "The app reads the same content from plaindharma.com — the text, illustrations, and audio are streamed from the site. If you choose to download readings for offline listening, those files are stored only on your own device and are never uploaded anywhere.",
+    h2Sharing2: "Data we share",
+    pShare:
+      "We do not sell your data. To run the service we rely on a few trusted providers, which process data only on our behalf: Google Analytics (usage analytics), Supabase (accounts and the storage of your synced highlights and notes), Resend (sending the newsletter and contact-form emails), and Stripe (donation payments). Each is named, with a policy link, in the relevant section above.",
     h2Children: "Children",
     pChildren:
       "Plain Dharma is suitable for all ages and does not knowingly collect any information from children.",
     h2Choices: "Your choices",
     pChoicesPrefix:
-      "You can unsubscribe from the newsletter at any time using the link in any email. To ask us to delete an email you've sent us, or for any privacy question, reach us through the ",
+      "You can unsubscribe from the newsletter at any time using the link in any email, and you can sign out of your account whenever you like. To delete your account, your synced highlights and notes, an email you've sent us, or for any privacy question, reach us through the ",
     pChoicesLinkText: "Contribute page",
     pChoicesSuffix: ".",
     h2Changes: "Changes",
@@ -378,19 +398,33 @@ const zh: Strings = {
   privacy: {
     metadataTitle: "隐私",
     metadataDescription:
-      "Plain Dharma 收集什么、不收集什么。没有账户，没有追踪，没有分析统计，没有广告。",
+      "Plain Dharma 收集什么、为什么收集——分析统计、用于跨设备同步标注与笔记的可选账户、邮件订阅、联系表单，以及捐赠。",
     kicker: "隐私",
     h1: "隐私",
     lastUpdatedLabel: "最后更新",
     lastUpdated: "2026 年 5 月 31 日",
     pIntro:
-      "Plain Dharma 是一个免费的阅读网站和应用，已奉献给公有领域。它的设计很简单，这份简单也体现在你的隐私上：没有账户，没有登录，没有用户档案，没有追踪，没有分析统计，没有广告，也没有第三方广告代码。我们不出售、也不分享你的数据。页面以静态文件的方式提供。",
-    h2WhatWeCollect: "我们收集什么",
-    pWhatWeCollect:
-      "几乎什么都不收集。只有当你主动发送时，我们才会收到信息——比如订阅邮件、使用联系表单、或进行捐赠。下面分别说明。",
+      "Plain Dharma 是一个免费的阅读网站和应用，已奉献给公有领域。我们尽量保持简单，尽量少向你索取——但网站运行确实用到几项常见的服务；如果你愿意，也可以创建一个账户，用来同步你的标注与笔记。本页面会清楚地说明我们收集什么、何时收集、以及为什么。我们不会出售你的数据。",
+    h2Analytics: "分析统计",
+    pAnalyticsPrefix:
+      "网站使用 Google Analytics 来从整体上了解网站的使用情况——人们读了哪些页面、访客从哪里来、由你的 IP 地址推算出的大致位置，以及基本的设备和浏览器信息。为此，Google Analytics 会在你的浏览器中设置 Cookie 并使用标识符。这些数据帮助我们看清哪些有效、哪里需要改进。它依据 ",
+    pAnalyticsLinkText: "Google 的隐私政策",
+    pAnalyticsSuffix:
+      " 处理。未来我们可能会出于同样的目的，加入类似的产品分析工具（例如 Mixpanel）；如果加入，本页面会予以说明。",
+    h2Accounts: "账户与登录",
+    pAccountsPrefix:
+      "不创建账户也能阅读全部内容。账户完全是可选的，它的唯一作用是在你的各台设备之间同步你的标注与笔记（「页边笔记」）。登录无需密码：你输入邮箱地址，我们给你发一个魔法链接，点击即可登录。我们会保存你的邮箱地址，用以识别你的账户。登录及下文所述的数据，由我们的托管与认证服务商 Supabase 提供，依据 ",
+    pAccountsLinkText: "Supabase 的隐私政策",
+    pAccountsSuffix: " 处理。",
+    h2Notes: "标注与笔记",
+    pNotes:
+      "当你登录后，你在阅读时所做的标注与笔记会保存到我们的数据库（Supabase），并与你的账户关联，从而在你的各台设备间同步。我们为每一条保存的内容包括：你标注的段落及少量上下文文字、你写下的笔记（如果有）、标注的颜色，以及它的创建与修改时间。你的笔记只属于你。当你未登录时，你的标注与笔记只留在你的浏览器里（本地存储），绝不会发送给我们。",
+    h2Sharing: "分享",
+    pSharing:
+      "如果你分享一段文字，你分享的是指向公开阅读页面的链接，以及被引用的段落——通过复制链接、复制段落，或使用设备的分享菜单完成。分享绝不会公开你的私人笔记；对方也无需任何账户即可阅读你分享的内容。",
     h2Newsletter: "邮件订阅",
     pNewsletter:
-      "如果你在首页订阅，我们会用你填写的邮箱地址给你发一封欢迎信，以及偶尔的更新通知——一年最多几封。邮件通过我们的邮件服务商 Resend（resend.com）发送。我们不保留联系人名单，也不保存邮件列表数据库：你的订阅只是触发了这几封邮件。你的地址只用于写信给你，绝不出售或分享。",
+      "如果你在首页订阅，我们会用你填写的邮箱地址给你发一封欢迎信，以及偶尔的更新通知——一年最多几封。邮件通过我们的邮件服务商 Resend 发送。我们不保留联系人名单，也不保存邮件列表数据库：你的订阅只是触发了这几封邮件。你的地址只用于写信给你，绝不出售或分享。",
     h2Contact: "联系表单",
     pContact:
       "如果你使用「参与」页面上的表单，你填写的名字、邮箱和留言会通过 Resend 发送到网站所有者的邮箱，以便阅读和回复。留言不会存入任何数据库。",
@@ -398,15 +432,21 @@ const zh: Strings = {
     pDonationsPrefix: "下载页面上的捐赠由 Stripe 处理。你的付款信息直接交给 Stripe，受 ",
     pDonationsLinkText: "Stripe 的隐私政策",
     pDonationsSuffix:
-      " 约束。Plain Dharma 绝不会看到你的卡号。Stripe 会创建一条捐赠记录，方便我们在后台辨认回头的捐赠者。",
+      " 约束。Plain Dharma 绝不会看到你的卡号。Stripe 会为这笔捐赠创建一条客户记录，方便我们在后台辨认回头的捐赠者。",
+    h2Storage: "Cookie 与本地存储",
+    pStorage:
+      "除了你尚未同步的标注与笔记之外，网站还会用你浏览器的本地存储来记住你的选择——明暗主题与阅读偏好——这样页面会保持你离开时的样子。如上所述，Google Analytics 也会设置 Cookie。我们不会将 Cookie 用于广告。",
     h2App: "手机应用",
     pApp:
-      "应用读取的是 plaindharma.com 上同样的内容——文字、插图和音频都从网站流式获取。如果你选择下载经文以便离线收听，这些文件只保存在你自己的设备上，绝不会上传到任何地方。应用没有分析统计，也不需要账户。",
+      "应用读取的是 plaindharma.com 上同样的内容——文字、插图和音频都从网站流式获取。如果你选择下载经文以便离线收听，这些文件只保存在你自己的设备上，绝不会上传到任何地方。",
+    h2Sharing2: "我们分享的数据",
+    pShare:
+      "我们不会出售你的数据。为了运营本服务，我们依靠几家可信赖的服务商，它们仅代表我们处理数据：Google Analytics（使用情况分析）、Supabase（账户，以及你已同步的标注与笔记的存储）、Resend（发送邮件订阅与联系表单邮件），以及 Stripe（捐赠付款）。上文相关章节中均已列出它们的名称及政策链接。",
     h2Children: "儿童",
     pChildren: "Plain Dharma 适合所有年龄段，且不会有意收集任何来自儿童的信息。",
     h2Choices: "你的选择",
     pChoicesPrefix:
-      "你随时可以通过任意一封邮件中的链接取消订阅。若要请我们删除你发来的某封邮件，或有任何隐私方面的问题，请通过 ",
+      "你随时可以通过任意一封邮件中的链接取消订阅，也可以随时退出登录。若要删除你的账户、你已同步的标注与笔记、你发给我们的某封邮件，或有任何隐私方面的问题，请通过 ",
     pChoicesLinkText: "「参与」页面",
     pChoicesSuffix: " 联系我们。",
     h2Changes: "变更",

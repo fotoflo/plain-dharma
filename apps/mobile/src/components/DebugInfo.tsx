@@ -43,7 +43,7 @@ export function DebugInfo() {
     d ? new Date(d).toLocaleString() : "—";
 
   const runningLabel = currentlyRunning.isEmbeddedLaunch
-    ? "Embedded (built into this build)"
+    ? "none — running this build's bundle"
     : (currentlyRunning.updateId ?? "—");
 
   const checkNow = async () => {
@@ -100,8 +100,8 @@ export function DebugInfo() {
           <Row label="Build number" value={Application.nativeBuildVersion ?? "—"} color={palette.ink} />
           <Row label="Runtime" value={currentlyRunning.runtimeVersion ?? "—"} color={palette.ink} />
           <Row label="Channel" value={currentlyRunning.channel ?? "—"} color={palette.ink} />
-          <Row label="Running update" value={runningLabel} color={palette.ink} />
-          <Row label="Update created" value={fmt(currentlyRunning.createdAt)} color={palette.ink} />
+          <Row label="OTA riding" value={runningLabel} color={palette.ink} />
+          <Row label="OTA published" value={fmt(currentlyRunning.createdAt)} color={palette.ink} />
           <Row
             label="Update available"
             color={palette.ink}

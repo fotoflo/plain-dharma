@@ -1,29 +1,28 @@
 /**
  * Reading-screen glue for Margin Notes on one sutta.
  *
- * Owns the picker / composer / panel / share / save-prompt state and the
- * derived data the reader needs. Creation flow now mirrors the web's intent as
- * closely as RN allows:
+ * Owns the selection / composer / panel / share / save-prompt state and the
+ * derived data the reader needs. The creation flow now mirrors the web's
+ * drag-to-select + floating-toolbar UX:
  *
- *   long-press a section → SentencePicker (pick a sentence or the whole passage)
- *   → NoteComposer (optional note + highlight color) → mark saved.
+ *   long-press a passage, then drag across it → word-level selection
+ *   → floating toolbar: tap a color swatch (highlight now) · Note · Share
  *
- * The saved mark carries a real `quote` + `prefix`/`suffix` text-quote selector
- * anchored to the section id, so it round-trips with the web: a sentence
- * highlighted here resolves to an inline `<mark>` on plaindharma.com, and a
- * web-created mark paints inline here (see `inlineHighlightsFor`).
+ * The selection snaps to whole words (see selection.tsx / SelectableSection).
+ * The settled selection's words are joined into a `quote` and turned into a real
+ * `prefix`/`quote`/`suffix` text-quote selector anchored to the section id, so
+ * it round-trips with the web: a passage highlighted by dragging here resolves
+ * to an inline `<mark>` on plaindharma.com, a `?h=` link opens it on either
+ * surface, and a web-created mark paints inline here (see `inlineHighlightsFor`).
  *
- * ── Parity limitation (documented) ─────────────────────────────────────────
- * The web anchors to an exact DOM text *Range* (arbitrary sub-sentence
- * selection via the browser's Selection API). react-native-markdown-display
- * renders Markdown to native views with no DOM/Range API and RN's text
- * selection can't drive a custom toolbar, so mobile's finest creation grain is
- * a *sentence* (or the whole passage). A reader can't, on mobile, highlight a
- * three-word fragment mid-sentence the way the web can. Inline rendering has a
- * matching limit: a quote that straddles markdown styling (bold/italic/links)
- * lands across multiple render leaves and falls back to the section accent rail
- * instead of inline shading. Everything else — the data model, the table, the
- * share link, sentence-grain highlights — is at parity.
+ * ── Parity notes (documented) ───────────────────────────────────────────────
+ * Granularity is word-level (snap-to-word), not the web's arbitrary character
+ * range — close enough that the same drag gesture and toolbar feel carry over.
+ * Inline rendering keeps the existing limit: a quote that straddles markdown
+ * styling (bold/italic/links) lands across multiple render leaves; if the saved
+ * quote can't be located inside a single leaf it falls back to the section
+ * accent rail instead of inline shading. Everything else — data model, table,
+ * share link, color palette, toolbar ordering — matches the web.
  */
 
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -34,22 +33,42 @@ import type { Locale, SuttaSlug } from "@plain-dharma/content";
 import type { ContentSection } from "@/content/markdown";
 import type { InlineHighlight } from "@/components/MarkdownRenderer";
 import { useMarginalia } from "./AuthContext";
-import { resolveColorKey, type HighlightColorKey } from "./colors";
-import { sectionPlainText, sectionQuote, selectorForQuote, splitSentences } from "./sections";
+import {
+  DEFAULT_HIGHLIGHT_COLOR,
+  resolveColorKey,
+  type HighlightColorKey,
+} from "./colors";
+import { sectionPlainText, selectorForQuote } from "./sections";
+import type { SelectionResult } from "./SelectableSection";
 import { buildSharePayload, type SharePayload } from "./share";
 import { newMark } from "./store";
+import type { AnnotationSelector } from "./textAnchor";
 import type { MarginMark } from "./types";
 
 // Mirrors the web's `pd-mn-prompt` localStorage guard: show the save nudge once.
 const PROMPT_KEY = "pd-mn-prompt";
 
+/** A settled drag selection awaiting a toolbar action (highlight / note / share). */
+interface PendingSelection {
+  sectionId: string;
+  selector: AnnotationSelector;
+  /** Toolbar anchor in scroll-content coordinates. */
+  toolbar: { left: number; top: number };
+}
+
 export function useSuttaMarginalia(slug: string, locale: Locale) {
   const { marks, add, updateMark, remove, signedIn, signInWithEmail } = useMarginalia();
 
-  // Section currently being annotated (sentence picker is open for it).
-  const [picking, setPicking] = useState<ContentSection | null>(null);
+  // The live drag selection (toolbar open) and its chosen color.
+  const [pending, setPending] = useState<PendingSelection | null>(null);
+  const [selectionColor, setSelectionColor] = useState<HighlightColorKey>(
+    DEFAULT_HIGHLIGHT_COLOR,
+  );
+  // Bumped to tell every SelectableSection to drop its live selection.
+  const [clearToken, setClearToken] = useState(0);
+
   const [composer, setComposer] = useState<
-    | { mode: "add"; section: ContentSection; quote: string }
+    | { mode: "add"; sectionId: string; selector: AnnotationSelector }
     | { mode: "edit"; mark: MarginMark }
     | null
   >(null);
@@ -87,24 +106,33 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
     [marksForSlug],
   );
 
-  /* ── creation flow ──────────────────────────────────────────────────────── */
-  const beginAdd = useCallback((section: ContentSection) => setPicking(section), []);
+  /* ── selection → toolbar ─────────────────────────────────────────────────── */
 
-  const pickSentence = useCallback(
-    (quote: string) => {
-      if (!picking) return;
-      setComposer({ mode: "add", section: picking, quote });
-      setPicking(null);
+  // A drag settled in a section. Build a real text-quote selector from the
+  // selected words and open the floating toolbar above the selection.
+  const onSelect = useCallback(
+    (result: SelectionResult, section: ContentSection, sectionTop: number) => {
+      const plain = sectionPlainText(section.markdown);
+      const selector = selectorForQuote(result.sectionId, plain, result.quote);
+      setPending({
+        sectionId: result.sectionId,
+        selector,
+        // Anchor centred over the selection; the reader clamps to the viewport.
+        toolbar: {
+          left: result.bounds.x + result.bounds.width / 2,
+          top: sectionTop + result.bounds.y,
+        },
+      });
     },
-    [picking],
+    [],
   );
 
-  const beginEdit = useCallback((mark: MarginMark) => {
-    setComposer({ mode: "edit", mark });
+  const closeSelection = useCallback(() => {
+    setPending(null);
+    setClearToken((n) => n + 1);
   }, []);
 
-  const closeComposer = useCallback(() => setComposer(null), []);
-  const closePicker = useCallback(() => setPicking(null), []);
+  /* ── creation ────────────────────────────────────────────────────────────── */
 
   // After a first mark while signed out, nudge once (web SavePrompt parity).
   const maybePromptSave = useCallback(async () => {
@@ -119,36 +147,77 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
     setSavePrompt(true);
   }, [signedIn]);
 
+  const createMark = useCallback(
+    (selector: AnnotationSelector, note: string | null, color: HighlightColorKey) => {
+      add(
+        newMark({
+          slug,
+          locale,
+          anchor: selector.anchor,
+          quote: selector.quote,
+          prefix: selector.prefix,
+          suffix: selector.suffix,
+          note,
+          color,
+        }),
+      );
+      showToast(note ? "Note saved" : "Highlighted");
+      void maybePromptSave();
+    },
+    [add, slug, locale, showToast, maybePromptSave],
+  );
+
+  // Toolbar: tap a swatch → highlight immediately in that color (web parity:
+  // the web's Highlight button creates the mark on tap).
+  const highlightWithColor = useCallback(
+    (color: HighlightColorKey) => {
+      if (!pending) return;
+      setSelectionColor(color);
+      createMark(pending.selector, null, color);
+      closeSelection();
+    },
+    [pending, createMark, closeSelection],
+  );
+
+  // Toolbar: Note → open the composer for the live selection.
+  const noteFromSelection = useCallback(() => {
+    if (!pending) return;
+    setComposer({ mode: "add", sectionId: pending.sectionId, selector: pending.selector });
+    setPending(null); // hide the toolbar but keep the section's wash until save
+  }, [pending]);
+
+  // Toolbar: Share → open the share sheet for the live selection.
+  const shareFromSelection = useCallback(() => {
+    if (!pending) return;
+    setShare(buildSharePayload(slug, pending.selector, title));
+    closeSelection();
+  }, [pending, slug, title, closeSelection]);
+
+  const beginEdit = useCallback((mark: MarginMark) => {
+    setComposer({ mode: "edit", mark });
+  }, []);
+
+  const closeComposer = useCallback(() => {
+    setComposer(null);
+    closeSelection();
+  }, [closeSelection]);
+
   const saveComposer = useCallback(
     (note: string | null, color: HighlightColorKey) => {
       if (!composer) return;
       if (composer.mode === "add") {
-        const plain = sectionPlainText(composer.section.markdown);
-        const sel = selectorForQuote(composer.section.id, plain, composer.quote);
-        add(
-          newMark({
-            slug,
-            locale,
-            anchor: sel.anchor,
-            quote: sel.quote,
-            prefix: sel.prefix,
-            suffix: sel.suffix,
-            note,
-            color,
-          }),
-        );
-        showToast(note ? "Note saved" : "Highlighted");
-        void maybePromptSave();
+        createMark(composer.selector, note, color);
       } else {
         updateMark(composer.mark.id, { note, color });
         showToast("Note saved");
       }
       setComposer(null);
+      closeSelection();
     },
-    [composer, add, updateMark, slug, locale, showToast, maybePromptSave],
+    [composer, createMark, updateMark, showToast, closeSelection],
   );
 
-  /* ── share ──────────────────────────────────────────────────────────────── */
+  /* ── share (from a saved mark, e.g. the panel) ─────────────────────────────── */
   const shareMark = useCallback(
     (mark: MarginMark) => {
       setShare(
@@ -189,18 +258,13 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
 
   const composerQuote =
     composer?.mode === "add"
-      ? composer.quote
+      ? composer.selector.quote
       : composer?.mode === "edit"
         ? composer.mark.quote
         : "";
   const composerInitialNote = composer?.mode === "edit" ? composer.mark.note : null;
   const composerInitialColor =
-    composer?.mode === "edit" ? composer.mark.color : undefined;
-
-  // Sentence list + whole-passage snippet for the open picker.
-  const pickerPlain = picking ? sectionPlainText(picking.markdown) : "";
-  const pickerSentences = useMemo(() => splitSentences(pickerPlain), [pickerPlain]);
-  const pickerWhole = picking ? sectionQuote(picking.markdown) : "";
+    composer?.mode === "edit" ? composer.mark.color : selectionColor;
 
   return {
     signedIn,
@@ -209,16 +273,19 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
     inlineHighlightsFor,
     panelOpen,
     setPanelOpen,
-    // creation
-    beginAdd,
+    // selection
+    selectionColor,
+    clearToken,
+    onSelect,
+    closeSelection,
+    toolbar: pending?.toolbar ?? null,
+    toolbarVisible: pending != null,
+    highlightWithColor,
+    noteFromSelection,
+    shareFromSelection,
+    // edit
     beginEdit,
     remove: removeMark,
-    // sentence picker
-    pickerVisible: picking != null,
-    pickerSentences,
-    pickerWhole,
-    pickSentence,
-    closePicker,
     // composer
     composerVisible: composer != null,
     composerQuote,

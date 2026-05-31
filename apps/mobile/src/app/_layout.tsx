@@ -8,6 +8,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { AudioProvider } from "@/audio/AudioProvider";
 import { DownloadsProvider } from "@/audio/DownloadsProvider";
@@ -53,16 +54,18 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <ThemeProvider>
-      <ReadingPrefsProvider>
-        <AuthProvider>
-          <DownloadsProvider>
-            <AudioProvider>
-              <Navigator />
-            </AudioProvider>
-          </DownloadsProvider>
-        </AuthProvider>
-      </ReadingPrefsProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider>
+        <ReadingPrefsProvider>
+          <AuthProvider>
+            <DownloadsProvider>
+              <AudioProvider>
+                <Navigator />
+              </AudioProvider>
+            </DownloadsProvider>
+          </AuthProvider>
+        </ReadingPrefsProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

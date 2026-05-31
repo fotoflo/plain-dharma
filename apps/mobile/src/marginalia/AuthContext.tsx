@@ -43,6 +43,7 @@ import {
   setMarks,
   subscribeMarks,
   syncOnSignIn,
+  updateRemoteFields,
   updateRemoteNote,
 } from "./store";
 import type { MarginMark } from "./types";
@@ -57,6 +58,7 @@ type AuthContextValue = {
   syncAvailable: boolean;
   add: (mark: MarginMark) => void;
   updateNote: (id: string, note: string | null) => void;
+  updateMark: (id: string, fields: Partial<Pick<MarginMark, "note" | "color">>) => void;
   remove: (id: string) => void;
   signInWithEmail: (email: string) => Promise<{ ok: boolean; error?: string }>;
   signOut: () => Promise<void>;
@@ -167,6 +169,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [userId],
   );
 
+  const updateMark = useCallback(
+    (id: string, fields: Partial<Pick<MarginMark, "note" | "color">>) => {
+      setMarks(getMarks().map((m) => (m.id === id ? { ...m, ...fields } : m)));
+      const sb = getSupabase();
+      if (sb && userId) updateRemoteFields(sb, id, fields);
+    },
+    [userId],
+  );
+
   const remove = useCallback(
     (id: string) => {
       setMarks(getMarks().filter((m) => m.id !== id));
@@ -200,11 +211,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       syncAvailable: isSyncConfigured(),
       add,
       updateNote,
+      updateMark,
       remove,
       signInWithEmail,
       signOut,
     }),
-    [marks, userId, email, add, updateNote, remove, signInWithEmail, signOut],
+    [marks, userId, email, add, updateNote, updateMark, remove, signInWithEmail, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

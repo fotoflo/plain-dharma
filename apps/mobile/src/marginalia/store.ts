@@ -87,6 +87,16 @@ export async function updateRemoteNote(
   return !error;
 }
 
+/** Update an arbitrary subset of a mark's editable columns (note, color). */
+export async function updateRemoteFields(
+  sb: SupabaseClient,
+  id: string,
+  fields: Partial<Pick<MarginMark, "note" | "color">>,
+): Promise<boolean> {
+  const { error } = await sb.from("marginalia").update(fields).eq("id", id);
+  return !error;
+}
+
 export async function deleteRemote(sb: SupabaseClient, id: string): Promise<boolean> {
   const { error } = await sb.from("marginalia").delete().eq("id", id);
   return !error;

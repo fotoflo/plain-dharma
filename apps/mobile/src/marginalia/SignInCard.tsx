@@ -11,6 +11,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useMarginalia } from "./AuthContext";
+import { MARGINALIA_STRINGS as t } from "./strings";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -29,7 +30,7 @@ export function SignInCard() {
     const mail = input.trim();
     if (!EMAIL_RE.test(mail)) {
       setStatus("error");
-      setErrorMsg("Enter a valid email address.");
+      setErrorMsg(t.errorEmail);
       return;
     }
     setStatus("sending");
@@ -39,7 +40,7 @@ export function SignInCard() {
       setStatus("sent");
     } else {
       setStatus("error");
-      setErrorMsg(res.error ?? "Something went wrong — try again.");
+      setErrorMsg(res.error ?? t.errorGeneric);
     }
   }
 
@@ -47,11 +48,12 @@ export function SignInCard() {
     return (
       <View style={[styles.card, { borderColor: palette.divider }]}>
         <Text style={[styles.note, { color: palette.ink }]}>
-          Synced{email ? ` · ${email}` : ""}
+          {t.signedInAs}
+          {email ? ` · ${email}` : ""}
         </Text>
         <Pressable onPress={() => signOut()} hitSlop={8}>
           <Text style={{ color: palette.link, fontFamily: FONTS.serif, fontSize: 16 }}>
-            Sign out
+            {t.signOut}
           </Text>
         </Pressable>
       </View>
@@ -62,22 +64,16 @@ export function SignInCard() {
     return (
       <View style={[styles.card, { borderColor: palette.divider }]}>
         <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-          Check your inbox
+          {t.savePromptSentTitle}
         </Text>
-        <Text style={[styles.note, { color: palette.ink }]}>
-          We sent a one-tap link. Open it on this device and your highlights &
-          notes will sync here and on the web.
-        </Text>
+        <Text style={[styles.note, { color: palette.ink }]}>{t.savePromptSentBody}</Text>
       </View>
     );
   }
 
   return (
     <View>
-      <Text style={[styles.note, { color: palette.ink }]}>
-        Sign in to sync your highlights & notes across this app and the web. Only
-        for your notes — no list, no spam.
-      </Text>
+      <Text style={[styles.note, { color: palette.ink }]}>{t.signInPitch}</Text>
       <View style={styles.row}>
         <TextInput
           value={input}
@@ -105,7 +101,7 @@ export function SignInCard() {
           ]}
         >
           <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 15 }}>
-            {status === "sending" ? "Sending…" : "Send magic link"}
+            {status === "sending" ? t.sending : t.sendMagicLink}
           </Text>
         </Pressable>
       </View>

@@ -101,7 +101,7 @@ export function DebugInfo() {
           <Row label="Runtime" value={currentlyRunning.runtimeVersion ?? "—"} color={palette.ink} />
           <Row label="Channel" value={currentlyRunning.channel ?? "—"} color={palette.ink} />
           <Row label="OTA riding" value={runningLabel} color={palette.ink} />
-          <Row label="OTA published" value={fmt(currentlyRunning.createdAt)} color={palette.ink} />
+          <Row label="Bundle date" value={fmt(currentlyRunning.createdAt)} color={palette.ink} />
           <Row
             label="Update available"
             color={palette.ink}

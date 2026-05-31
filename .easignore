@@ -65,12 +65,21 @@ apps/mobile/android/
 # ───────────────────────────────────────────────────────────────────────────
 # EAS-only extras: heavy, web-only content the iOS/Android build never uses.
 # The mobile app bundles apps/mobile/assets and reads suttas from
-# packages/content; it streams audio from plaindharma.com at runtime — so
-# none of public/ is needed. Excluding these + .git drops the upload archive
+# packages/content; it streams audio mp3s + illustrations from plaindharma.com
+# at runtime. Excluding the heavy public/ media + .git drops the upload archive
 # from ~439 MB to a few MB.
+#
+# EXCEPTION: the tiny per-sutta audio manifests (public/audio/**/manifest.json,
+# ~52 KB total) ARE bundled into the JS so the Listen panel has no first-open
+# fetch (see apps/mobile/src/audio/bundled-manifests.ts). gitignore can't
+# re-include children of an excluded dir, so we exclude public/'s heavy subtrees
+# explicitly + all mp3s, which leaves the manifests uploadable.
 # ───────────────────────────────────────────────────────────────────────────
 .git/
-public/
+public/illustrations/
+public/downloads/
+public/logo/
+public/audio/**/*.mp3
 combined-suttas.md
 docs/
 supabase/

@@ -12,8 +12,8 @@ import { NightSky } from "@/components/NightSky";
 import Marginalia from "@/components/marginalia/Marginalia";
 import { SITE_URL, SITE_DESCRIPTION, ogBase } from "@/lib/og-meta";
 
-const GA_ID = "G-FNHT1NCRS5";
-const GA_ENABLED = process.env.NODE_ENV === "production";
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const GA_ENABLED = process.env.NODE_ENV === "production" && Boolean(GA_ID);
 
 const garamond = localFont({
   src: [

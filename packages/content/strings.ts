@@ -125,6 +125,48 @@ const en = {
     pHelpClosing:
       "Nothing here is owned, and nothing you give will be. Your contribution is itself a dharma gift.",
   },
+  privacy: {
+    metadataTitle: "Privacy",
+    metadataDescription:
+      "What Plain Dharma collects, and what it doesn't. No accounts, no tracking, no analytics, no ads.",
+    kicker: "Privacy",
+    h1: "Privacy",
+    lastUpdatedLabel: "Last updated",
+    lastUpdated: "31 May 2026",
+    pIntro:
+      "Plain Dharma is a free reading site and app, dedicated to the public domain. It is built to be simple, and that simplicity extends to your privacy: there are no accounts, no logins, no user profiles, no tracking, no analytics, no advertising, and no third-party ad code. We do not sell or share your data. The pages are served as static files.",
+    h2WhatWeCollect: "What we collect",
+    pWhatWeCollect:
+      "Almost nothing. We only receive information when you choose to send it — by subscribing to the newsletter, using the contact form, or making a donation. Each of those is described below.",
+    h2Newsletter: "Newsletter",
+    pNewsletter:
+      "If you subscribe on the home page, we use the email address you submit to send you a welcome message and the occasional update — no more than a handful a year. The email is delivered through Resend (resend.com), our email provider. We do not keep a contact list or mailing-list database: your signup simply sends those emails. Your address is used only to write to you, and is never sold or shared.",
+    h2Contact: "Contact form",
+    pContact:
+      "If you use the form on the Contribute page, the name, email, and message you submit are emailed to the site owner through Resend so they can read it and reply. The message is not stored in any database.",
+    h2Donations: "Donations",
+    pDonationsPrefix:
+      "Donations on the download page are handled by Stripe. Your payment details go directly to Stripe and are governed by ",
+    pDonationsLinkText: "Stripe's privacy policy",
+    pDonationsSuffix:
+      ". Plain Dharma never sees your card number. Stripe creates a record of the donation so we can recognize repeat donors in our dashboard.",
+    h2App: "The mobile app",
+    pApp:
+      "The app reads the same content from plaindharma.com — the text, illustrations, and audio are streamed from the site. If you choose to download readings for offline listening, those files are stored only on your own device and are never uploaded anywhere. The app has no analytics and requires no account.",
+    h2Children: "Children",
+    pChildren:
+      "Plain Dharma is suitable for all ages and does not knowingly collect any information from children.",
+    h2Choices: "Your choices",
+    pChoicesPrefix:
+      "You can unsubscribe from the newsletter at any time using the link in any email. To ask us to delete an email you've sent us, or for any privacy question, reach us through the ",
+    pChoicesLinkText: "Contribute page",
+    pChoicesSuffix: ".",
+    h2Changes: "Changes",
+    pChanges:
+      "We may update this policy from time to time. When we do, this page will reflect the current version and the date above will change.",
+    pLicense:
+      "Like everything on Plain Dharma, this page is released under CC0 / public domain.",
+  },
   contact: {
     heading: "Get in touch",
     lead: "Tell us how you'd like to help, or just say hello. We read everything.",
@@ -152,6 +194,7 @@ const en = {
     aboutLink: "About",
     glossaryLink: "Glossary",
     contributeLink: "Contribute",
+    privacyLink: "Privacy",
     githubLink: "GitHub",
   },
   newsletter: {
@@ -332,6 +375,46 @@ const zh: Strings = {
     pHelpClosing:
       "这里没有什么是被占有的，你给出的也不会被占有。你的贡献，本身就是一份法布施。",
   },
+  privacy: {
+    metadataTitle: "隐私",
+    metadataDescription:
+      "Plain Dharma 收集什么、不收集什么。没有账户，没有追踪，没有分析统计，没有广告。",
+    kicker: "隐私",
+    h1: "隐私",
+    lastUpdatedLabel: "最后更新",
+    lastUpdated: "2026 年 5 月 31 日",
+    pIntro:
+      "Plain Dharma 是一个免费的阅读网站和应用，已奉献给公有领域。它的设计很简单，这份简单也体现在你的隐私上：没有账户，没有登录，没有用户档案，没有追踪，没有分析统计，没有广告，也没有第三方广告代码。我们不出售、也不分享你的数据。页面以静态文件的方式提供。",
+    h2WhatWeCollect: "我们收集什么",
+    pWhatWeCollect:
+      "几乎什么都不收集。只有当你主动发送时，我们才会收到信息——比如订阅邮件、使用联系表单、或进行捐赠。下面分别说明。",
+    h2Newsletter: "邮件订阅",
+    pNewsletter:
+      "如果你在首页订阅，我们会用你填写的邮箱地址给你发一封欢迎信，以及偶尔的更新通知——一年最多几封。邮件通过我们的邮件服务商 Resend（resend.com）发送。我们不保留联系人名单，也不保存邮件列表数据库：你的订阅只是触发了这几封邮件。你的地址只用于写信给你，绝不出售或分享。",
+    h2Contact: "联系表单",
+    pContact:
+      "如果你使用「参与」页面上的表单，你填写的名字、邮箱和留言会通过 Resend 发送到网站所有者的邮箱，以便阅读和回复。留言不会存入任何数据库。",
+    h2Donations: "捐赠",
+    pDonationsPrefix: "下载页面上的捐赠由 Stripe 处理。你的付款信息直接交给 Stripe，受 ",
+    pDonationsLinkText: "Stripe 的隐私政策",
+    pDonationsSuffix:
+      " 约束。Plain Dharma 绝不会看到你的卡号。Stripe 会创建一条捐赠记录，方便我们在后台辨认回头的捐赠者。",
+    h2App: "手机应用",
+    pApp:
+      "应用读取的是 plaindharma.com 上同样的内容——文字、插图和音频都从网站流式获取。如果你选择下载经文以便离线收听，这些文件只保存在你自己的设备上，绝不会上传到任何地方。应用没有分析统计，也不需要账户。",
+    h2Children: "儿童",
+    pChildren: "Plain Dharma 适合所有年龄段，且不会有意收集任何来自儿童的信息。",
+    h2Choices: "你的选择",
+    pChoicesPrefix:
+      "你随时可以通过任意一封邮件中的链接取消订阅。若要请我们删除你发来的某封邮件，或有任何隐私方面的问题，请通过 ",
+    pChoicesLinkText: "「参与」页面",
+    pChoicesSuffix: " 联系我们。",
+    h2Changes: "变更",
+    pChanges:
+      "我们可能会不时更新本政策。更新时，本页面会反映当前版本，上方的日期也会随之变化。",
+    pLicense:
+      "与 Plain Dharma 上的一切一样，本页面同样以 CC0 / 公有领域 协议发布。",
+  },
   contact: {
     heading: "联系我们",
     lead: "告诉我们你想怎样帮忙，或者只是来打个招呼。每一封我们都会读。",
@@ -359,6 +442,7 @@ const zh: Strings = {
     aboutLink: "关于",
     glossaryLink: "词汇表",
     contributeLink: "参与",
+    privacyLink: "隐私",
     githubLink: "GitHub",
   },
   newsletter: {

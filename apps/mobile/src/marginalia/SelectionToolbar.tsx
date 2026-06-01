@@ -17,11 +17,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
-import {
-  HIGHLIGHT_COLOR_KEYS,
-  HIGHLIGHT_COLORS,
-  type HighlightColorKey,
-} from "./colors";
+import { DEFAULT_HIGHLIGHT_COLOR, HIGHLIGHT_COLORS } from "./colors";
 import { MARGINALIA_STRINGS as t } from "./strings";
 
 /** Absolute position (within the scroll content) + flip direction. */
@@ -34,16 +30,16 @@ export interface ToolbarAnchor {
 
 export function SelectionToolbar({
   anchor,
-  activeColor,
-  onColor,
+  onHighlight,
   onNote,
+  onCopy,
   onShare,
 }: {
   anchor: ToolbarAnchor;
-  activeColor: HighlightColorKey;
-  /** Tap a swatch → create the highlight in that color immediately. */
-  onColor: (color: HighlightColorKey) => void;
+  /** Tap the amber circle → create the highlight (single color, web parity). */
+  onHighlight: () => void;
   onNote: () => void;
+  onCopy: () => void;
   onShare: () => void;
 }) {
   const { theme, palette } = useTheme();
@@ -60,25 +56,24 @@ export function SelectionToolbar({
         },
       ]}
     >
-      {HIGHLIGHT_COLOR_KEYS.map((key) => {
-        const selected = key === activeColor;
-        return (
-          <Pressable
-            key={key}
-            accessibilityLabel={`${t.highlight} ${key}`}
-            hitSlop={6}
-            onPress={() => onColor(key)}
-            style={[
-              styles.swatch,
-              {
-                backgroundColor: HIGHLIGHT_COLORS[key][theme].swatch,
-                borderColor: selected ? palette.ink : "transparent",
-                borderWidth: selected ? 2 : 0,
-              },
-            ]}
-          />
-        );
-      })}
+      {/* Highlight — a labeled action like the rest (web parity: one color),
+          with a filled amber dot as its "icon" so the swatch reads as Highlight. */}
+      <Pressable
+        accessibilityLabel={t.highlight}
+        hitSlop={6}
+        onPress={onHighlight}
+        style={styles.action}
+      >
+        <View
+          style={[
+            styles.dot,
+            { backgroundColor: HIGHLIGHT_COLORS[DEFAULT_HIGHLIGHT_COLOR][theme].swatch },
+          ]}
+        />
+        <Text style={[styles.label, { color: palette.ink, fontFamily: FONTS.serif }]}>
+          {t.highlight}
+        </Text>
+      </Pressable>
 
       <View style={[styles.sep, { backgroundColor: palette.divider }]} />
 
@@ -88,11 +83,27 @@ export function SelectionToolbar({
         onPress={onNote}
         style={styles.action}
       >
-        <Ionicons name="create-outline" size={16} color={palette.ink} />
+        <Ionicons name="pencil-outline" size={17} color={palette.ink} />
         <Text style={[styles.label, { color: palette.ink, fontFamily: FONTS.serif }]}>
           {t.note}
         </Text>
       </Pressable>
+
+      <View style={[styles.sep, { backgroundColor: palette.divider }]} />
+
+      <Pressable
+        accessibilityLabel={t.copy}
+        hitSlop={6}
+        onPress={onCopy}
+        style={styles.action}
+      >
+        <Ionicons name="copy-outline" size={17} color={palette.ink} />
+        <Text style={[styles.label, { color: palette.ink, fontFamily: FONTS.serif }]}>
+          {t.copy}
+        </Text>
+      </Pressable>
+
+      <View style={[styles.sep, { backgroundColor: palette.divider }]} />
 
       <Pressable
         accessibilityLabel={t.share}
@@ -100,7 +111,7 @@ export function SelectionToolbar({
         onPress={onShare}
         style={styles.action}
       >
-        <Ionicons name="share-outline" size={16} color={palette.ink} />
+        <Ionicons name="share-outline" size={18} color={palette.ink} />
         <Text style={[styles.label, { color: palette.ink, fontFamily: FONTS.serif }]}>
           {t.share}
         </Text>
@@ -110,7 +121,7 @@ export function SelectionToolbar({
 }
 
 /** Width estimate used by the reader to clamp the pill within the viewport. */
-export const TOOLBAR_WIDTH = 248;
+export const TOOLBAR_WIDTH = 320;
 /** Height used to flip the pill below the selection near the top of the screen. */
 export const TOOLBAR_HEIGHT = 40;
 
@@ -131,8 +142,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 6,
   },
-  swatch: { width: 20, height: 20, borderRadius: 10 },
-  sep: { width: 1, height: 20, marginHorizontal: 3, opacity: 0.8 },
-  action: { flexDirection: "row", alignItems: "center", gap: 3 },
+  dot: { width: 14, height: 14, borderRadius: 7 },
+  sep: { width: 1, height: 20, opacity: 0.8 },
+  action: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 2 },
   label: { fontSize: 14 },
 });

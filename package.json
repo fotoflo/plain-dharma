@@ -32,9 +32,9 @@
   "dependencies": {
     "@base-ui/react": "^1.5.0",
     "@mdx-js/loader": "^3.1.1",
-    "@plain-dharma/content": "workspace:*",
     "@mdx-js/react": "^3.1.1",
     "@next/mdx": "^16.2.6",
+    "@plain-dharma/content": "workspace:*",
     "@stripe/stripe-js": "^9.7.0",
     "@supabase/supabase-js": "^2.106.2",
     "@tailwindcss/typography": "^0.5.19",
@@ -69,7 +69,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "react-native-track-player@4.1.2": "patches/react-native-track-player@4.1.2.patch"
+      "react-native-track-player@4.1.2": "patches/react-native-track-player@4.1.2.patch",
+      "react-native-uitextview@2.2.0": "patches/react-native-uitextview@2.2.0.patch"
     }
   }
 }

@@ -1,16 +1,19 @@
 import { DEFAULT_LOCALE, getMeta, isSuttaSlug } from "@plain-dharma/content";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Dimensions,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
   type LayoutChangeEvent,
 } from "react-native";
+// gesture-handler's ScrollView coordinates with nested Gesture.Pan recognizers
+// (the plain RN ScrollView swallows the long-press-to-select drag). Same
+// scrollTo ref API, so the audio-follow autoscroll below is unaffected.
+import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAudio } from "@/audio/AudioProvider";
@@ -78,6 +81,35 @@ export default function SuttaScreen() {
     if (y != null) scrollRef.current?.scrollTo({ y: Math.max(0, y - 16), animated: true });
   }, []);
 
+  // Section list + selection callbacks are memoized/stable so opening the
+  // toolbar (a state change) doesn't hand SelectableSection new props and
+  // re-render the UITextView subtree — which would drop the live native
+  // selection mid-gesture. `mn.onSelect`/`beginEdit`/`closeSelection` are
+  // already stable (useCallback in the hook); we resolve the section from the
+  // reported sectionId rather than closing over the mapped `sec`.
+  const { onSelect: mnOnSelect, beginEdit, closeSelection, marksForSlug } = mn;
+
+  const contentSections = useMemo(
+    () => (safeSlug ? splitSections(getSuttaMarkdown(DEFAULT_LOCALE, safeSlug)) : []),
+    [safeSlug],
+  );
+
+  const handlePressHighlight = useCallback(
+    (id: string) => {
+      const mark = marksForSlug.find((m) => m.id === id);
+      if (mark) beginEdit(mark);
+    },
+    [marksForSlug, beginEdit],
+  );
+
+  const handleSelect = useCallback(
+    (result: SelectionResult) => {
+      const sec = contentSections.find((s) => s.id === result.sectionId);
+      if (sec) mnOnSelect(result, sec);
+    },
+    [contentSections, mnOnSelect],
+  );
+
   const screenBg = CONTRAST_BG[theme][contrast] ?? palette.bg;
 
   if (!slug || !isSuttaSlug(slug)) {
@@ -92,22 +124,22 @@ export default function SuttaScreen() {
   }
 
   const meta = getMeta(DEFAULT_LOCALE, slug);
-  const contentSections = splitSections(getSuttaMarkdown(DEFAULT_LOCALE, slug));
 
-  // Inner content width (screen minus the symmetric page padding) — used to
-  // clamp the floating toolbar so it never runs off either edge.
-  const innerWidth = Dimensions.get("window").width - PAGE_PADDING * 2;
-
-  // Final toolbar geometry: centre over the selection, clamp horizontally,
-  // float above and flip below when it would clip the content top.
+  // Toolbar geometry (web parity): the toolbar is a screen-absolute overlay
+  // anchored to the selection's window-coordinate rect — centred over the
+  // selection, clamped to the viewport, floating just above it and flipping
+  // below when it would clip the top (under the safe-area inset).
+  const screen = Dimensions.get("window");
   const toolbarPos = mn.toolbar
     ? (() => {
+        const r = mn.toolbar;
+        const centerX = r.x + r.width / 2;
         const left = Math.min(
-          Math.max(mn.toolbar.left - TOOLBAR_WIDTH / 2, 0),
-          Math.max(innerWidth - TOOLBAR_WIDTH, 0),
+          Math.max(centerX - TOOLBAR_WIDTH / 2, 8),
+          screen.width - TOOLBAR_WIDTH - 8,
         );
-        const above = mn.toolbar.top - TOOLBAR_HEIGHT - 8;
-        const top = above < 0 ? mn.toolbar.top + 32 : above;
+        const above = r.y - TOOLBAR_HEIGHT - 8;
+        const top = above < insets.top + 8 ? r.y + r.height + 8 : above;
         return { left, top };
       })()
     : null;
@@ -140,18 +172,6 @@ export default function SuttaScreen() {
           </Text>
         </View>
 
-        {/* The selection toolbar lives inside the scroll content so it scrolls
-            with the passage and stays pinned to the dragged words. */}
-        {mn.toolbarVisible && toolbarPos && (
-          <SelectionToolbar
-            anchor={toolbarPos}
-            activeColor={mn.selectionColor}
-            onColor={mn.highlightWithColor}
-            onNote={mn.noteFromSelection}
-            onShare={mn.shareFromSelection}
-          />
-        )}
-
         {contentSections.map((sec) => {
           const inline = mn.inlineHighlightsFor(sec);
           const marked = mn.markedAnchors.has(sec.id);
@@ -177,24 +197,27 @@ export default function SuttaScreen() {
               <SelectableSection
                 section={sec}
                 highlights={inline}
-                selectionColor={mn.selectionColor}
-                cleared={mn.clearToken}
-                onPressHighlight={(id) => {
-                  const mark = mn.marksForSlug.find((m) => m.id === id);
-                  if (mark) mn.beginEdit(mark);
-                }}
-                onSelect={(result: SelectionResult, sectionTop: number) => {
-                  // sectionTop from the section's own onLayout is relative to the
-                  // content container — prefer the reader's recorded value (same
-                  // space) when present, fall back to the reported one.
-                  const top = positions.current[sec.id] ?? sectionTop;
-                  mn.onSelect(result, sec, top);
-                }}
+                onPressHighlight={handlePressHighlight}
+                onSelect={handleSelect}
+                onSelectionCleared={closeSelection}
               />
             </View>
           );
         })}
       </ScrollView>
+
+      {/* Selection toolbar — a screen-absolute overlay anchored to the
+          selection's window-coordinate rect (sibling of the ScrollView, not a
+          child, so it positions in window space and stays above the content). */}
+      {mn.toolbarVisible && toolbarPos && (
+        <SelectionToolbar
+          anchor={toolbarPos}
+          onHighlight={mn.highlightSelection}
+          onNote={mn.noteFromSelection}
+          onCopy={mn.copyFromSelection}
+          onShare={mn.shareFromSelection}
+        />
+      )}
 
       {/* "My notes" floating button — count badge, opens the per-sutta list. */}
       <Pressable

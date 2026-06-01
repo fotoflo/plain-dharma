@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { HomeView } from "@/views/HomeView";
-import { ogBase, SITE_NAME, SITE_DESCRIPTION } from "@/lib/og-meta";
+import {
+  ogBase,
+  altLanguages,
+  SITE_NAME,
+  SITE_DESCRIPTION,
+} from "@/lib/og-meta";
 
 export const metadata: Metadata = {
-  alternates: {
-    canonical: "/",
-    languages: { "zh-Hans": "/zh" },
-  },
+  alternates: altLanguages("/"),
   openGraph: {
     ...ogBase("en"),
     type: "website",

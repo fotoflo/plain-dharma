@@ -11,6 +11,8 @@ import { readingPrefsInitScript } from "@/components/ReadingControls";
 import { NightSky } from "@/components/NightSky";
 import Marginalia from "@/components/marginalia/Marginalia";
 import { SITE_URL, SITE_DESCRIPTION, ogBase } from "@/lib/og-meta";
+import { JsonLd } from "@/components/JsonLd";
+import { siteJsonLd } from "@/lib/structured-data";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const GA_ENABLED = process.env.NODE_ENV === "production" && Boolean(GA_ID);
@@ -72,6 +74,9 @@ export default function RootLayout({
             keys (size, contrast, font) and applies all three HTML classes in
             one synchronous pass before React hydrates. */}
         <script dangerouslySetInnerHTML={{ __html: readingPrefsInitScript }} />
+        {/* Site-wide structured data: Organization + WebSite + MobileApplication.
+            EN here; the /zh home emits a zh-inLanguage WebSite on its own page. */}
+        <JsonLd data={siteJsonLd("en")} />
       </head>
       <body suppressHydrationWarning className={`min-h-full flex flex-col ${atkinson.variable}`}>
         <NightSky />

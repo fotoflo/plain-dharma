@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Wash } from "@/components/Wash";
-import { ogBase } from "@/lib/og-meta";
+import { ogBase, altLanguages } from "@/lib/og-meta";
+import { APP_LINKS } from "@/lib/app-links";
 
 const TITLE = "Download";
 const DESCRIPTION =
@@ -10,7 +11,7 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: "/download" },
+  alternates: altLanguages("/download", { zh: false }),
   openGraph: {
     ...ogBase("en"),
     title: TITLE,
@@ -81,6 +82,8 @@ export default function DownloadPage() {
         ))}
       </div>
 
+      {APP_LINKS.published && <AppBadges />}
+
       <article className="prose-dharma mt-16">
         <h2>About the files</h2>
         <p>
@@ -126,6 +129,41 @@ export default function DownloadPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+/**
+ * App store CTAs. Hidden until `APP_LINKS.published` flips true on store
+ * approval. Styled link buttons for now — swap in the official "Download on the
+ * App Store" / "Get it on Google Play" badge SVGs before launch for store
+ * brand-guideline compliance.
+ */
+function AppBadges() {
+  return (
+    <section className="mt-12 rounded-lg border border-divider/80 p-6 text-center">
+      <h2 className="font-serif text-2xl text-ink">Get the app</h2>
+      <p className="mt-2 font-serif text-base text-ink/80">
+        Read and listen offline on iPhone and Android.
+      </p>
+      <div className="mt-5 flex flex-wrap justify-center gap-4">
+        <a
+          href={APP_LINKS.ios}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline shadow-sm transition hover:no-underline hover:opacity-90"
+        >
+          App Store
+        </a>
+        <a
+          href={APP_LINKS.android}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline shadow-sm transition hover:no-underline hover:opacity-90"
+        >
+          Google Play
+        </a>
+      </div>
+    </section>
   );
 }
 

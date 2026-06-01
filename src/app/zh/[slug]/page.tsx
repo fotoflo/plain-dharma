@@ -1,13 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import {
-  SUTTAS,
-  type SuttaSlug,
-  isSuttaSlug,
-  getMeta,
-} from "@/content";
+import { SUTTAS, isSuttaSlug, getMeta } from "@/content";
 import { SuttaView } from "@/views/SuttaView";
-import { ogBase } from "@/lib/og-meta";
+import { ogBase, altLanguages } from "@/lib/og-meta";
+import { JsonLd } from "@/components/JsonLd";
+import { suttaPageJsonLd } from "@/lib/structured-data";
 
 export function generateStaticParams() {
   return SUTTAS.map((slug) => ({ slug }));
@@ -29,10 +26,7 @@ export async function generateMetadata({
   return {
     title: meta.title,
     description: meta.subtitle,
-    alternates: {
-      canonical: url,
-      languages: { en: `/${slug}` },
-    },
+    alternates: altLanguages(`/${slug}`, { current: "zh" }),
     openGraph: {
       ...ogBase("zh"),
       type: "article",
@@ -55,5 +49,10 @@ export default async function ZhSuttaPage({
 }) {
   const { slug } = await params;
   if (!isSuttaSlug(slug)) notFound();
-  return <SuttaView locale="zh" slug={slug as SuttaSlug} />;
+  return (
+    <>
+      <JsonLd data={suttaPageJsonLd("zh", slug)} />
+      <SuttaView locale="zh" slug={slug} />
+    </>
+  );
 }

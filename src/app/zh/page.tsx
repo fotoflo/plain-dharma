@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import { HomeView } from "@/views/HomeView";
 import { getStrings } from "@plain-dharma/content/strings";
-import { ogBase, SITE_NAME } from "@/lib/og-meta";
+import { ogBase, altLanguages, SITE_NAME } from "@/lib/og-meta";
 
 const s = getStrings("zh");
 
 export const metadata: Metadata = {
   description: s.home.heroSubtitle,
-  alternates: {
-    canonical: "/zh",
-    languages: { en: "/" },
-  },
+  alternates: altLanguages("/", { current: "zh" }),
   openGraph: {
     ...ogBase("zh"),
     type: "website",

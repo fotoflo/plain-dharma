@@ -105,7 +105,7 @@ export default function SuttaScreen() {
   const handleSelect = useCallback(
     (result: SelectionResult) => {
       const sec = contentSections.find((s) => s.id === result.sectionId);
-      if (sec) mnOnSelect(result, sec, positions.current[sec.id] ?? 0);
+      if (sec) mnOnSelect(result, sec);
     },
     [contentSections, mnOnSelect],
   );
@@ -125,19 +125,21 @@ export default function SuttaScreen() {
 
   const meta = getMeta(DEFAULT_LOCALE, slug);
 
-  // Inner content width (screen minus the symmetric page padding) — used to
-  // clamp the floating toolbar so it never runs off either edge.
-  const innerWidth = Dimensions.get("window").width - PAGE_PADDING * 2;
-
-  // Final toolbar geometry: centre over the selection, clamp horizontally,
-  // float above and flip below when it would clip the content top.
-  // Native selection reports no rect, so the toolbar is centered horizontally
-  // and floats just above the selected section (flipping below near the top).
+  // Toolbar geometry (web parity): the toolbar is a screen-absolute overlay
+  // anchored to the selection's window-coordinate rect — centred over the
+  // selection, clamped to the viewport, floating just above it and flipping
+  // below when it would clip the top (under the safe-area inset).
+  const screen = Dimensions.get("window");
   const toolbarPos = mn.toolbar
     ? (() => {
-        const left = Math.max((innerWidth - TOOLBAR_WIDTH) / 2, 0);
-        const above = mn.toolbar.top - TOOLBAR_HEIGHT - 8;
-        const top = above < 0 ? mn.toolbar.top + 32 : above;
+        const r = mn.toolbar;
+        const centerX = r.x + r.width / 2;
+        const left = Math.min(
+          Math.max(centerX - TOOLBAR_WIDTH / 2, 8),
+          screen.width - TOOLBAR_WIDTH - 8,
+        );
+        const above = r.y - TOOLBAR_HEIGHT - 8;
+        const top = above < insets.top + 8 ? r.y + r.height + 8 : above;
         return { left, top };
       })()
     : null;
@@ -169,18 +171,6 @@ export default function SuttaScreen() {
             {meta.subtitle}
           </Text>
         </View>
-
-        {/* The selection toolbar lives inside the scroll content so it scrolls
-            with the passage and stays pinned to the dragged words. */}
-        {mn.toolbarVisible && toolbarPos && (
-          <SelectionToolbar
-            anchor={toolbarPos}
-            activeColor={mn.selectionColor}
-            onColor={mn.highlightWithColor}
-            onNote={mn.noteFromSelection}
-            onShare={mn.shareFromSelection}
-          />
-        )}
 
         {contentSections.map((sec) => {
           const inline = mn.inlineHighlightsFor(sec);
@@ -215,6 +205,19 @@ export default function SuttaScreen() {
           );
         })}
       </ScrollView>
+
+      {/* Selection toolbar — a screen-absolute overlay anchored to the
+          selection's window-coordinate rect (sibling of the ScrollView, not a
+          child, so it positions in window space and stays above the content). */}
+      {mn.toolbarVisible && toolbarPos && (
+        <SelectionToolbar
+          anchor={toolbarPos}
+          activeColor={mn.selectionColor}
+          onColor={mn.highlightWithColor}
+          onNote={mn.noteFromSelection}
+          onShare={mn.shareFromSelection}
+        />
+      )}
 
       {/* "My notes" floating button — count badge, opens the per-sutta list. */}
       <Pressable

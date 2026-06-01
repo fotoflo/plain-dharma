@@ -1,8 +1,41 @@
 diff --git a/ios/RNUITextView.mm b/ios/RNUITextView.mm
-index d0c31ed20b4865679ec1397543fc74056e47b978..125b227587c571e621fa6409523bbc19a331e903 100644
+index d0c31ed20b4865679ec1397543fc74056e47b978..aae48fdf02292ab507a8a50b2787aef2a73e2532 100644
 --- a/ios/RNUITextView.mm
 +++ b/ios/RNUITextView.mm
-@@ -330,6 +330,16 @@ using namespace facebook::react;
+@@ -320,6 +320,25 @@ using namespace facebook::react;
+     return;
+   }
+ 
++  // Selection bounding rect in WINDOW coordinates (points) so JS can anchor a
++  // floating toolbar over the selection (web position:fixed parity). The union
++  // of the per-line selection rects, converted from the text view's space to the
++  // window. Empty/zero when nothing is selected.
++  CGRect selectionRect = CGRectZero;
++  UITextRange *textRange = textView.selectedTextRange;
++  if (textRange != nil && !textRange.empty) {
++    NSArray<UITextSelectionRect *> *rects = [textView selectionRectsForRange:textRange];
++    for (UITextSelectionRect *r in rects) {
++      if (r.rect.size.width == 0 && r.rect.size.height == 0) {
++        continue;
++      }
++      selectionRect = CGRectIsEmpty(selectionRect) ? r.rect : CGRectUnion(selectionRect, r.rect);
++    }
++    if (!CGRectIsEmpty(selectionRect)) {
++      selectionRect = [textView convertRect:selectionRect toView:nil];
++    }
++  }
++
+   // Fires on programmatic selection changes too (e.g. the outside-tap clear
+   // in handleOutsideTap:), so JS will see a synthetic empty-range event then.
+   std::dynamic_pointer_cast<const facebook::react::RNUITextViewEventEmitter>(_eventEmitter)
+@@ -327,9 +346,23 @@ using namespace facebook::react;
+       static_cast<int>(self.tag),
+       static_cast<int>(selectedRange.location),
+       static_cast<int>(selectedRange.location + selectedRange.length),
++      static_cast<double>(selectionRect.origin.x),
++      static_cast<double>(selectionRect.origin.y),
++      static_cast<double>(selectionRect.size.width),
++      static_cast<double>(selectionRect.size.height),
      });
  }
  
@@ -19,3 +52,51 @@ index d0c31ed20b4865679ec1397543fc74056e47b978..125b227587c571e621fa6409523bbc19
  Class<RCTComponentViewProtocol> RNUITextViewCls(void)
  {
    return RNUITextView.class;
+diff --git a/src/RNUITextViewNativeComponent.ts b/src/RNUITextViewNativeComponent.ts
+index 1c571b4ac58cf8155769e789d103f99b6146b6dd..d030a7574c80f464e34d2bd785bd20b00caf6389 100644
+--- a/src/RNUITextViewNativeComponent.ts
++++ b/src/RNUITextViewNativeComponent.ts
+@@ -2,6 +2,7 @@ import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNati
+ import type {ViewProps} from 'react-native'
+ import type {
+   BubblingEventHandler,
++  Double,
+   Int32,
+   WithDefault,
+ } from 'react-native/Libraries/Types/CodegenTypes'
+@@ -23,6 +24,13 @@ interface TextLayoutEvent extends TargetedEvent {
+ interface SelectionChangeEvent extends TargetedEvent {
+   start: Int32
+   end: Int32
++  // Selection bounding rect in WINDOW coordinates (points), so JS can anchor a
++  // floating toolbar over the selection like the web's position:fixed. Zero when
++  // the selection is empty/cleared.
++  selectionX: Double
++  selectionY: Double
++  selectionWidth: Double
++  selectionHeight: Double
+ }
+ 
+ type EllipsizeMode = 'head' | 'middle' | 'tail' | 'clip'
+diff --git a/src/Text.tsx b/src/Text.tsx
+index 840d76af5a001021b23fb83de18899f8156e1001..0946f92e1d9d739139835557ba84f41475361c0f 100644
+--- a/src/Text.tsx
++++ b/src/Text.tsx
+@@ -27,7 +27,16 @@ const useTextAncestorContext = () => React.useContext(TextAncestorContext)
+  * into the rendered string. `start === end` means the selection was cleared.
+  */
+ export type SelectionChangeEvent = {
+-  nativeEvent: {target: number; start: number; end: number}
++  nativeEvent: {
++    target: number
++    start: number
++    end: number
++    // Selection bounding rect in window coordinates (points); zero when cleared.
++    selectionX: number
++    selectionY: number
++    selectionWidth: number
++    selectionHeight: number
++  }
+ }
+ 
+ type UITextViewProps = TextProps & {

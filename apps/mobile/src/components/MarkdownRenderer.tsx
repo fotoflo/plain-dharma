@@ -11,6 +11,9 @@ import { BASE_FONT_SIZE, BASE_LINE_HEIGHT, CONTRAST_INK, FONTS } from "../theme/
 /** A resolved highlight to paint inline: a quote string + its mark + color. */
 export type InlineHighlight = { markId: string; quote: string; color: string };
 
+/** Selection bounding box in window coordinates (points), for toolbar anchoring. */
+export type SelectionRect = { x: number; y: number; width: number; height: number };
+
 /**
  * Renders a sutta's plain-Markdown body, mirroring the web `.prose-dharma`
  * styles: Garamond Libre serif, saffron h2 headings, warm hairline rules,
@@ -52,8 +55,11 @@ export function MarkdownRenderer({
   onPressHighlight?: (markId: string) => void;
   /** Enable native (UITextView) text selection on each paragraph. iOS only. */
   selectable?: boolean;
-  /** A settled, non-empty selection — the selected text (whitespace-collapsed). */
-  onSelectQuote?: (quote: string) => void;
+  /**
+   * A settled, non-empty selection: the selected text (whitespace-collapsed) and
+   * its bounding rect in window coordinates (for anchoring a floating toolbar).
+   */
+  onSelectQuote?: (quote: string, rect: SelectionRect) => void;
   /** The native selection collapsed/cleared — close the toolbar (web parity). */
   onSelectionCleared?: () => void;
 }) {
@@ -167,7 +173,15 @@ export function MarkdownRenderer({
             // it, so adding margin here double-spaces and breaks list rows.
             style={styles.body}
             onSelectionChange={(e) => {
-              const { start, end } = e.nativeEvent;
+              // The patched native module adds selectionX/Y/Width/Height (window
+              // coords) to the event; the lib's stock types don't list them yet.
+              const ne = e.nativeEvent as typeof e.nativeEvent & {
+                selectionX?: number;
+                selectionY?: number;
+                selectionWidth?: number;
+                selectionHeight?: number;
+              };
+              const { start, end } = ne;
               if (selTimer.current) clearTimeout(selTimer.current);
               if (start >= end) {
                 // Selection collapsed/cleared (tap-away, or grabbers dragged
@@ -177,11 +191,17 @@ export function MarkdownRenderer({
                 onSelectionCleared?.();
                 return;
               }
+              const rect: SelectionRect = {
+                x: ne.selectionX ?? 0,
+                y: ne.selectionY ?? 0,
+                width: ne.selectionWidth ?? 0,
+                height: ne.selectionHeight ?? 0,
+              };
               selTimer.current = setTimeout(() => {
                 // Collapse whitespace (incl. soft line breaks) so the quote
                 // matches sectionPlainText, which selectorForQuote searches.
                 const quote = groupText.slice(start, end).replace(/\s+/g, " ").trim();
-                if (quote) onSelectQuote?.(quote);
+                if (quote) onSelectQuote?.(quote, rect);
               }, 250);
             }}
           >

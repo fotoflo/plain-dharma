@@ -15,7 +15,11 @@
 
 import { memo } from "react";
 
-import { MarkdownRenderer, type InlineHighlight } from "@/components/MarkdownRenderer";
+import {
+  MarkdownRenderer,
+  type InlineHighlight,
+  type SelectionRect,
+} from "@/components/MarkdownRenderer";
 import type { ContentSection } from "@/content/markdown";
 
 /** A settled selection handed up to the reader to open the toolbar. */
@@ -23,6 +27,8 @@ export interface SelectionResult {
   sectionId: string;
   /** The selected text (whitespace-collapsed) — the selector quote. */
   quote: string;
+  /** Selection bounding rect in window coordinates, for toolbar anchoring. */
+  rect: SelectionRect;
 }
 
 interface SelectableSectionProps {
@@ -56,7 +62,7 @@ function SelectableSectionImpl({
       highlights={highlights}
       onPressHighlight={onPressHighlight}
       selectable
-      onSelectQuote={(quote) => onSelect({ sectionId: section.id, quote })}
+      onSelectQuote={(quote, rect) => onSelect({ sectionId: section.id, quote, rect })}
       onSelectionCleared={onSelectionCleared}
     >
       {section.markdown}

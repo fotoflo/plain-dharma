@@ -31,7 +31,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMeta } from "@plain-dharma/content";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
 import type { ContentSection } from "@/content/markdown";
-import type { InlineHighlight } from "@/components/MarkdownRenderer";
+import type { InlineHighlight, SelectionRect } from "@/components/MarkdownRenderer";
 import { useMarginalia } from "./AuthContext";
 import {
   DEFAULT_HIGHLIGHT_COLOR,
@@ -52,11 +52,8 @@ const PROMPT_KEY = "pd-mn-prompt";
 interface PendingSelection {
   sectionId: string;
   selector: AnnotationSelector;
-  /**
-   * Toolbar anchor: native selection reports no rect, so we anchor to the
-   * section's top (scroll-content space) and horizontally center in the reader.
-   */
-  toolbar: { top: number };
+  /** The selection's bounding rect in window coordinates (toolbar anchor). */
+  toolbar: SelectionRect;
 }
 
 export function useSuttaMarginalia(slug: string, locale: Locale) {
@@ -112,15 +109,16 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
   /* ── selection → toolbar ─────────────────────────────────────────────────── */
 
   // A native selection settled in a section. Build a real text-quote selector
-  // from the selected text and open the floating toolbar above the section.
+  // from the selected text and open the floating toolbar over the selection
+  // (rect is in window coordinates, straight from the native event).
   const onSelect = useCallback(
-    (result: SelectionResult, section: ContentSection, sectionTop: number) => {
+    (result: SelectionResult, section: ContentSection) => {
       const plain = sectionPlainText(section.markdown);
       const selector = selectorForQuote(result.sectionId, plain, result.quote);
       setPending({
         sectionId: result.sectionId,
         selector,
-        toolbar: { top: sectionTop },
+        toolbar: result.rect,
       });
     },
     [],

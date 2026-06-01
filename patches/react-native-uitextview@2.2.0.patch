@@ -1,0 +1,21 @@
+diff --git a/ios/RNUITextView.mm b/ios/RNUITextView.mm
+index d0c31ed20b4865679ec1397543fc74056e47b978..125b227587c571e621fa6409523bbc19a331e903 100644
+--- a/ios/RNUITextView.mm
++++ b/ios/RNUITextView.mm
+@@ -330,6 +330,16 @@ using namespace facebook::react;
+     });
+ }
+ 
++// Suppress the native iOS edit menu (Copy / Look Up / Translate) on selection.
++// Plain Dharma drives its own floating toolbar (Highlight / Note / Copy / Share)
++// off onSelectionChange, so the native callout is a duplicate. Returning a menu
++// with no children hides the callout while keeping the selection, grabbers, and
++// loupe intact. (iOS 16+; earlier versions have no edit-menu delegate hook.)
++- (UIMenu *)textView:(UITextView *)textView editMenuForTextInRange:(NSRange)range suggestedActions:(NSArray<UIMenuElement *> *)suggestedActions API_AVAILABLE(ios(16.0))
++{
++  return [UIMenu menuWithChildren:@[]];
++}
++
+ Class<RCTComponentViewProtocol> RNUITextViewCls(void)
+ {
+   return RNUITextView.class;

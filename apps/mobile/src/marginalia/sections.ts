@@ -1,17 +1,15 @@
 /**
- * Turns a section's Markdown into the plain text the reader sees, then into the
- * pieces the word-level drag selection needs.
+ * Turns a section's Markdown into the plain text the reader sees, then into a
+ * W3C-style text-quote selector for a chosen quote.
  *
- * The web anchors to an exact DOM Range. RN's markdown renderer exposes no
- * Range, so mobile recovers a selection by rendering each body word as its own
- * measurable <Text> (see selection.tsx / SelectableSection) and dragging across
- * them. We strip the same Markdown markers the renderer drops to get the
- * section's plain text, then build a W3C-style text-quote selector (`anchor` =
- * section id, `quote` = the selected words joined by spaces, `prefix`/`suffix` =
- * PAD chars of surrounding plain text). Because the quote is plain text, it
- * matches both the mobile inline renderer and the web's `findQuote`, so the mark
- * round-trips: a passage highlighted on mobile paints inline on the web, and
- * vice-versa.
+ * The web anchors to an exact DOM Range. On mobile the native UITextView
+ * selection (see SelectableSection / MarkdownRenderer) hands back the selected
+ * text; we strip the same Markdown markers the renderer drops to get the
+ * section's plain text, then build a selector (`anchor` = section id, `quote` =
+ * the selected text, `prefix`/`suffix` = PAD chars of surrounding plain text).
+ * Because the quote is plain text, it matches both the mobile inline renderer
+ * and the web's `findQuote`, so the mark round-trips: a passage highlighted on
+ * mobile paints inline on the web, and vice-versa.
  */
 
 import { ANCHOR_PAD, type AnnotationSelector } from "./textAnchor";
@@ -36,26 +34,6 @@ export function sectionPlainText(markdown: string): string {
     .replace(/`([^`]+)`/g, "$1") // inline code
     .replace(/\s+/g, " ")
     .trim();
-}
-
-/**
- * Tokenize a leaf string into whitespace-delimited words plus the whitespace
- * runs between them, so the renderer can wrap each word in its own measurable
- * <Text> while still emitting the original spacing. Trailing punctuation snaps
- * to its word (word-level granularity). Whitespace pieces have no word index and
- * aren't selectable; only `word` pieces are.
- */
-export type LeafPiece = { kind: "word"; text: string } | { kind: "space"; text: string };
-
-export function splitLeaf(text: string): LeafPiece[] {
-  const out: LeafPiece[] = [];
-  const re = /(\s+)|(\S+)/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(text)) !== null) {
-    if (m[1] != null) out.push({ kind: "space", text: m[1] });
-    else out.push({ kind: "word", text: m[2] });
-  }
-  return out;
 }
 
 /**

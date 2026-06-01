@@ -8,7 +8,7 @@
  *   long-press a passage, then drag across it → word-level selection
  *   → floating toolbar: tap a color swatch (highlight now) · Note · Share
  *
- * The selection snaps to whole words (see selection.tsx / SelectableSection).
+ * The selection uses the native iOS UITextView grabbers (see SelectableSection).
  * The settled selection's words are joined into a `quote` and turned into a real
  * `prefix`/`quote`/`suffix` text-quote selector anchored to the section id, so
  * it round-trips with the web: a passage highlighted by dragging here resolves
@@ -48,24 +48,27 @@ import type { MarginMark } from "./types";
 // Mirrors the web's `pd-mn-prompt` localStorage guard: show the save nudge once.
 const PROMPT_KEY = "pd-mn-prompt";
 
-/** A settled drag selection awaiting a toolbar action (highlight / note / share). */
+/** A settled selection awaiting a toolbar action (highlight / note / share). */
 interface PendingSelection {
   sectionId: string;
   selector: AnnotationSelector;
-  /** Toolbar anchor in scroll-content coordinates. */
-  toolbar: { left: number; top: number };
+  /**
+   * Toolbar anchor: native selection reports no rect, so we anchor to the
+   * section's top (scroll-content space) and horizontally center in the reader.
+   */
+  toolbar: { top: number };
 }
 
 export function useSuttaMarginalia(slug: string, locale: Locale) {
   const { marks, add, updateMark, remove, signedIn, signInWithEmail } = useMarginalia();
 
-  // The live drag selection (toolbar open) and its chosen color.
+  // The settled selection (toolbar open) and its chosen color. The native
+  // UITextView owns the on-screen selection highlight, so there's no live
+  // word-wash to clear — closing just drops `pending`.
   const [pending, setPending] = useState<PendingSelection | null>(null);
   const [selectionColor, setSelectionColor] = useState<HighlightColorKey>(
     DEFAULT_HIGHLIGHT_COLOR,
   );
-  // Bumped to tell every SelectableSection to drop its live selection.
-  const [clearToken, setClearToken] = useState(0);
 
   const [composer, setComposer] = useState<
     | { mode: "add"; sectionId: string; selector: AnnotationSelector }
@@ -108,8 +111,8 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
 
   /* ── selection → toolbar ─────────────────────────────────────────────────── */
 
-  // A drag settled in a section. Build a real text-quote selector from the
-  // selected words and open the floating toolbar above the selection.
+  // A native selection settled in a section. Build a real text-quote selector
+  // from the selected text and open the floating toolbar above the section.
   const onSelect = useCallback(
     (result: SelectionResult, section: ContentSection, sectionTop: number) => {
       const plain = sectionPlainText(section.markdown);
@@ -117,11 +120,7 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
       setPending({
         sectionId: result.sectionId,
         selector,
-        // Anchor centred over the selection; the reader clamps to the viewport.
-        toolbar: {
-          left: result.bounds.x + result.bounds.width / 2,
-          top: sectionTop + result.bounds.y,
-        },
+        toolbar: { top: sectionTop },
       });
     },
     [],
@@ -129,7 +128,6 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
 
   const closeSelection = useCallback(() => {
     setPending(null);
-    setClearToken((n) => n + 1);
   }, []);
 
   /* ── creation ────────────────────────────────────────────────────────────── */
@@ -275,7 +273,6 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
     setPanelOpen,
     // selection
     selectionColor,
-    clearToken,
     onSelect,
     closeSelection,
     toolbar: pending?.toolbar ?? null,

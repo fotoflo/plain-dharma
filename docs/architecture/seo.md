@@ -145,7 +145,7 @@ export const APP_LINKS = {
 - [x] `src/components/JsonLd.tsx` — **new**: script-tag renderer.
 - [x] `src/lib/og-meta.ts` — `altLanguages()` helper (canonical + `zh-Hans`/`en` + `x-default`) + CC0 `LICENSE_URL`.
 - [x] `src/app/layout.tsx` — `<JsonLd>` for `Organization` (+ `sameAs` store URLs) + `WebSite` + `MobileApplication`.
-- [x] `/download` page — App Store / Google Play CTAs gated on `APP_LINKS.published` (styled buttons; swap official badge SVGs before launch).
+- [x] `/download` page — App Store / Google Play CTAs gated on `APP_LINKS.published`, using the **official badges** (Apple SVG + Google PNG) in `public/badges/`.
 - [x] `src/app/[slug]/page.tsx` + `zh/[slug]/page.tsx` — `<JsonLd>` `Article` + `BreadcrumbList`; `alternates` → `altLanguages`.
 - [x] Static-page sweep — all 6 EN + 6 ZH pages use `altLanguages` (`x-default` everywhere).
 - [x] `src/app/sitemap.ts` — uses shared `suttaMtime` (also fixes the stale `src/content` path).

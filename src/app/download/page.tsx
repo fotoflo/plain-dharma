@@ -134,9 +134,10 @@ export default function DownloadPage() {
 
 /**
  * App store CTAs. Hidden until `APP_LINKS.published` flips true on store
- * approval. Styled link buttons for now — swap in the official "Download on the
- * App Store" / "Get it on Google Play" badge SVGs before launch for store
- * brand-guideline compliance.
+ * approval. Uses the official store badges (Apple's SVG + Google's PNG, the
+ * only formats each vendor distributes) at a matched ~44px height per brand
+ * guidelines. Plain <img> (not next/image) to avoid optimizing a vector badge
+ * and to sidestep the images.localPatterns config.
  */
 function AppBadges() {
   return (
@@ -145,22 +146,24 @@ function AppBadges() {
       <p className="mt-2 font-serif text-base text-ink/80">
         Read and listen offline on iPhone and Android.
       </p>
-      <div className="mt-5 flex flex-wrap justify-center gap-4">
-        <a
-          href={APP_LINKS.ios}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline shadow-sm transition hover:no-underline hover:opacity-90"
-        >
-          App Store
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-4">
+        <a href={APP_LINKS.ios} target="_blank" rel="noopener noreferrer">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/badges/app-store.svg"
+            alt="Download on the App Store"
+            height={44}
+            className="h-11 w-auto"
+          />
         </a>
-        <a
-          href={APP_LINKS.android}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline shadow-sm transition hover:no-underline hover:opacity-90"
-        >
-          Google Play
+        <a href={APP_LINKS.android} target="_blank" rel="noopener noreferrer">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/badges/google-play.png"
+            alt="Get it on Google Play"
+            height={44}
+            className="h-11 w-auto"
+          />
         </a>
       </div>
     </section>

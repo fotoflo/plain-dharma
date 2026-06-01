@@ -27,6 +27,7 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Clipboard from "expo-clipboard";
 
 import { getMeta } from "@plain-dharma/content";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
@@ -59,13 +60,12 @@ interface PendingSelection {
 export function useSuttaMarginalia(slug: string, locale: Locale) {
   const { marks, add, updateMark, remove, signedIn, signInWithEmail } = useMarginalia();
 
-  // The settled selection (toolbar open) and its chosen color. The native
-  // UITextView owns the on-screen selection highlight, so there's no live
-  // word-wash to clear — closing just drops `pending`.
+  // The settled selection (toolbar open). The native UITextView owns the
+  // on-screen selection highlight, so there's no live word-wash to clear —
+  // closing just drops `pending`.
   const [pending, setPending] = useState<PendingSelection | null>(null);
-  const [selectionColor, setSelectionColor] = useState<HighlightColorKey>(
-    DEFAULT_HIGHLIGHT_COLOR,
-  );
+  // Single highlight color (web parity — no picker); the composer opens on it.
+  const selectionColor = DEFAULT_HIGHLIGHT_COLOR;
 
   const [composer, setComposer] = useState<
     | { mode: "add"; sectionId: string; selector: AnnotationSelector }
@@ -164,16 +164,12 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
   );
 
   // Toolbar: tap a swatch → highlight immediately in that color (web parity:
-  // the web's Highlight button creates the mark on tap).
-  const highlightWithColor = useCallback(
-    (color: HighlightColorKey) => {
-      if (!pending) return;
-      setSelectionColor(color);
-      createMark(pending.selector, null, color);
-      closeSelection();
-    },
-    [pending, createMark, closeSelection],
-  );
+  // the web's single amber Highlight button creates the mark on tap.
+  const highlightSelection = useCallback(() => {
+    if (!pending) return;
+    createMark(pending.selector, null, DEFAULT_HIGHLIGHT_COLOR);
+    closeSelection();
+  }, [pending, createMark, closeSelection]);
 
   // Toolbar: Note → open the composer for the live selection.
   const noteFromSelection = useCallback(() => {
@@ -181,6 +177,18 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
     setComposer({ mode: "add", sectionId: pending.sectionId, selector: pending.selector });
     setPending(null); // hide the toolbar but keep the section's wash until save
   }, [pending]);
+
+  // Toolbar: Copy → copy the selected passage to the clipboard (web parity:
+  // the web toolbar's Copy button copies the quote text).
+  const copyFromSelection = useCallback(() => {
+    if (!pending) return;
+    const quote = pending.selector.quote;
+    void Clipboard.setStringAsync(quote).then(
+      () => showToast("Passage copied"),
+      () => showToast("Something went wrong — try again."),
+    );
+    closeSelection();
+  }, [pending, showToast, closeSelection]);
 
   // Toolbar: Share → open the share sheet for the live selection.
   const shareFromSelection = useCallback(() => {
@@ -270,13 +278,13 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
     panelOpen,
     setPanelOpen,
     // selection
-    selectionColor,
     onSelect,
     closeSelection,
     toolbar: pending?.toolbar ?? null,
     toolbarVisible: pending != null,
-    highlightWithColor,
+    highlightSelection,
     noteFromSelection,
+    copyFromSelection,
     shareFromSelection,
     // edit
     beginEdit,

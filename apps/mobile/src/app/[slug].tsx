@@ -212,9 +212,9 @@ export default function SuttaScreen() {
       {mn.toolbarVisible && toolbarPos && (
         <SelectionToolbar
           anchor={toolbarPos}
-          activeColor={mn.selectionColor}
-          onColor={mn.highlightWithColor}
+          onHighlight={mn.highlightSelection}
           onNote={mn.noteFromSelection}
+          onCopy={mn.copyFromSelection}
           onShare={mn.shareFromSelection}
         />
       )}

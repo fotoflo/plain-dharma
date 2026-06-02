@@ -1,8 +1,8 @@
 # Margin Notes — Plain Dharma
 
-*Last updated: 2026-05-28*
+*Last updated: 2026-06-02*
 
-Reader-owned highlights and private notes on sutta passages, with optional sync to Supabase via magic-link sign-in. A deliberate exception to the site's otherwise static/no-database principle: read-first local-first design keeps annotations available instantly (no server call needed), and unauthenticated readers never touch the database.
+Reader-owned highlights and private notes on sutta passages, with optional sync to Supabase via magic-link sign-in. A deliberate exception to the site's otherwise static/no-database principle: read-first local-first design keeps annotations available instantly (no server call needed), and unauthenticated readers never touch the database. Implemented on web (browsers) and mobile (React Native / Expo).
 
 ## Overview
 
@@ -130,6 +130,65 @@ Row-level security (owner-only):
 | `.dharma-mark-flash` | Used during deep-link recovery; stronger initial opacity, longer duration |
 | `--color-highlight` | Base highlight color (light: `rgba(213, 150, 64, 0.34)`; dark: `rgba(224, 131, 58, 0.30)`) |
 | `--color-highlight-strong` | Hover/flash intensity (light: `rgba(213, 150, 64, 0.55)`; dark: `rgba(224, 131, 58, 0.48)`) |
+
+## Web implementation
+
+Text selection uses the browser's native `getSelection()` API; marking wraps the selected range with `<mark>` elements. The tooling is transparent to Next.js static export (no server action needed).
+
+## Mobile implementation (React Native / Expo)
+
+Mobile Margin Notes share the same backend, auth, and data schema as web; the selection and highlighting mechanism is distinct due to React Native's different text model.
+
+### Native text selection and highlighting
+
+**Problem:** React Native has no built-in per-character text selection (unlike the DOM). Per-word UITextView measurment was complex and fragile.
+
+**Solution:** Native iOS `UITextView` (via `react-native-uitextview`, Fabric/new-arch only):
+1. Each sutta reader `<Section>` renders its content as a **single native UITextView** (`SelectableSectionText.tsx`), enabling paragraph-spanning selection.
+2. `sectionRuns.ts` flattens a section's markdown block AST (via MarkdownIt + tokensToAST) into:
+   - Styled inline runs (font, weight, italic, color)
+   - An exact plain-text string (no markup)
+   - List item prefixes ("N. ", "• ") and blockquote italics applied at the text level
+   - Tradeoff: lists lose hanging indent (acceptable for accessibility)
+3. On selection, the `onSelectionChange` callback receives window-coord `rect` + the selected text.
+4. `selectorFromRange` derives a W3C text-quote anchor (quote, prefix/suffix context) from the text's position in the plain-text string, using **offset-based matching** — no DOM traversal.
+
+### Highlight painting by offset
+
+- Highlights are stored as quote + prefix/suffix (same as web).
+- On render, the quote is located in the plain-text string using the prefix/suffix context.
+- Overlay runs slice across the plain-text offsets; runs are tinted amber where they overlap a highlight.
+- Highlights extend over leading opening quotes/parens; list markers tint with their item.
+
+### Selection toolbar and user actions
+
+`SelectionToolbar.tsx` anchors to the selection rect and offers:
+- **Highlight** (amber tint, no note) — one-tap apply
+- **Note** — open composer (NoteComposer.tsx) to add/edit a note
+- **Copy** — expo-clipboard
+- **Share** — RN Share API (e.g., iMessage, Mail, Notes, etc.)
+
+### Native patch: react-native-uitextview
+
+`patches/react-native-uitextview@2.2.0.patch` (pnpm patch) adds:
+- `editMenuForTextInRange` — empty override to suppress the native iOS edit menu
+- `selectionX/Y/Width/Height` — window coordinates on `onSelectionChange` callback
+- Applied at build time; codegen + native .mm source + JS type definitions
+
+### Account/sign-in surfacing on mobile
+
+- `SignInCard` (already exists in the marginalia folder) moved to a top "Account" section of the More tab (`apps/mobile/src/app/(tabs)/more.tsx`).
+- Signed-in state shows email + "Synced across your devices".
+- Sign-out footer added to the reading-screen notes panel (`MarginNotesPanel.tsx`).
+- `useSuttaMarginalia` hook exposes `email` and `signOut` for UI consumption.
+
+### Env vars for mobile auth
+
+EAS build/preview environments now include:
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+(Previously production-only; now required for development and preview builds.)
 
 ## Commands
 

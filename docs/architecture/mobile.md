@@ -283,6 +283,11 @@ EAS Build uploads a **single code-signed native binary** (.ipa for iOS, .aab for
 
 Once a build is submitted to TestFlight or the Play Store, OTA updates become the primary path for rolling out JS changes (reading text, styles, UI tweaks). New native dependencies (navigation, audio, file-system changes) require a full rebuild and re-submission.
 
+## More tab organization (planned)
+
+See [more-tab-refactor.md](./more-tab-refactor.md) for the drill-down menu redesign
+and relocating reader content (notes, downloads) out of settings. Not yet built.
+
 ## Gotchas
 
 - **Inline-import needs relative paths** to the `.mdx` (not the package export),
@@ -317,12 +322,16 @@ Once a build is submitted to TestFlight or the Play Store, OTA updates become th
   Protocol** over `fetch` (no Firebase/native SDK → OTA-safe), gated to
   production. Reads `EXPO_PUBLIC_GA_MEASUREMENT_ID` (the `G-1Y9P9S2Z8Z` app data
   stream) + `EXPO_PUBLIC_GA_API_SECRET`.
-- **Margin Notes:** magic-link (passwordless) Supabase auth + highlights/notes
-  synced to the same `public.marginalia` table as web; share/copy via
-  `expo-clipboard` + RN `Share`. See [marginalia.md](./marginalia.md). Reads
-  `EXPO_PUBLIC_SUPABASE_URL` + `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; the
-  magic-link deep link (`mobile://auth/callback`) must be allow-listed in
-  Supabase Auth URL config.
+- **Margin Notes** (updated 2026-06): magic-link (passwordless) Supabase auth +
+  highlights/notes synced to the same `public.marginalia` table as web. Native iOS
+  `UITextView` (react-native-uitextview, Fabric-only) enables paragraph-spanning
+  selection. `sectionRuns.ts` flattens markdown AST to styled runs + plain text.
+  Highlights paint by offset-based matching. Toolbar offers Highlight / Note /
+  Copy / Share. `SelectionToolbar.tsx` anchors to the selection rect.
+  `SignInCard` moved to top "Account" section on More tab. See [marginalia.md](./marginalia.md) for full details.
+  Reads `EXPO_PUBLIC_SUPABASE_URL` + `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+  (now in development + preview EAS envs, previously production-only); the
+  magic-link deep link (`mobile://auth/callback`) is allow-listed in Supabase.
 - **Env vars live as EAS environment variables** (`eas env:create --environment
   production …`), not in `eas.json` — they feed both `eas build` and
   `eas update --environment production`.

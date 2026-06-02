@@ -1,5 +1,72 @@
 # File Size Snapshots
 
+## 2026-06-02 (current)
+
+### Distribution
+
+| Bucket     | Count | Δ vs prev |
+|------------|-------|-----------|
+| <=50       | 87    | -48       |
+| 51-150     | 106   | -21       |
+| 151-300    | 46    | +2        |
+| 301-500    | 10    | -1        |
+| 501-1000   | 4     | —         |
+| 1001-2000  | 0     | —         |
+| 2000+      | 0     | —         |
+
+Total files: 253 (-68)
+
+### Largest File
+
+`scripts/generate-audio.ts` — 700 lines
+
+### Files Over 500 Lines
+
+4 files exceed the 500-line guideline:
+- `scripts/generate-audio.ts` — 700 lines
+- `src/components/AudioPlayer.tsx` — 647 lines
+- `packages/content/strings.ts` — 580 lines
+- `src/components/marginalia/Marginalia.tsx` — 529 lines
+
+### Delta
+
+Significant contraction: the analysis scope changed in this snapshot — the previous 321-file count included iOS Pods and `.claude/worktrees/` directories, while this clean count excludes them. Stripping those artifacts reveals the true source size: 253 files, down 68 from the inflated count. Distribution remains healthy; no new files crossed 500-line threshold since 2026-05-30. `generate-audio.ts` has grown 700 lines and is now the largest file, replacing `AudioPlayer.tsx` (which was 647 at last count and remains at 647). Session files noted in this run:
+- `apps/mobile/src/marginalia/SelectableSectionText.tsx` — 242 lines (under 500)
+- `apps/mobile/src/marginalia/sectionRuns.ts` — 191 lines (under 500)
+- `apps/mobile/src/components/MarkdownRenderer.tsx` — 397 lines (under 500)
+
+No session files exceeded the 500-line guideline.
+
+## 2026-05-30 (previous)
+
+### Distribution
+
+| Bucket     | Count | Δ vs prev |
+|------------|-------|-----------|
+| <=50       | 135   | -22       |
+| 51-150     | 127   | +1        |
+| 151-300    | 44    | —         |
+| 301-500    | 11    | —         |
+| 501-1000   | 4     | —         |
+| 1001-2000  | 0     | —         |
+| 2000+      | 0     | —         |
+
+Total files: 321 (-21)
+
+### Largest File
+
+`src/components/AudioPlayer.tsx` — 647 lines
+
+### Files Over 500 Lines
+
+4 files exceed the 500-line guideline:
+- `src/components/AudioPlayer.tsx` — 647 lines
+- 3 additional files
+
+### Delta
+
+Significant contraction: 21 fewer files (342 → 321). The <=50 bucket dropped by 22 files; 51-150 gained +1. Net result suggests cleanup/consolidation — likely artifact directories (`.temp/`, build outputs, or similar) were removed. Distribution shape remains healthy; no files crossed thresholds. AudioPlayer.tsx stays stable at 647 lines.
+
 ## 2026-05-30 (current)
 
 ### Distribution

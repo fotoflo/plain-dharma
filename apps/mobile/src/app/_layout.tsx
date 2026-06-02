@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { AudioProvider } from "@/audio/AudioProvider";
 import { DownloadsProvider } from "@/audio/DownloadsProvider";
+import { LocaleProvider } from "@/i18n/LocaleContext";
 import { useScreenTracking } from "@/lib/useScreenTracking";
 import { AuthProvider } from "@/marginalia/AuthContext";
 import { ReadingPrefsProvider } from "@/theme/ReadingPrefsContext";
@@ -64,7 +65,9 @@ export default function RootLayout() {
           <AuthProvider>
             <DownloadsProvider>
               <AudioProvider>
-                <Navigator />
+                <LocaleProvider>
+                  <Navigator />
+                </LocaleProvider>
               </AudioProvider>
             </DownloadsProvider>
           </AuthProvider>

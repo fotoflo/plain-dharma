@@ -5,6 +5,7 @@ import { localizedHref } from "@/lib/locale-href";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { Wash } from "@/components/Wash";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { StoreBadges } from "@/components/StoreBadges";
 
 // Editorial layout config for the six hero illustrations.
 //
@@ -163,7 +164,56 @@ export function HomeView({ locale }: { locale: Locale }) {
           ))}
         </ul>
       </section>
+
+      {/* DOWNLOAD THE BOOK — cover render + formats + store badges. The book
+          (ebook/audiobook) is EN-only like /download; the section shows on
+          both locales but always points at the EN download route. */}
+      <BookSection locale={locale} />
     </div>
+  );
+}
+
+function BookSection({ locale }: { locale: Locale }) {
+  const s = getStrings(locale);
+  return (
+    <section className="relative mt-24 overflow-hidden rounded-2xl border border-divider/70 px-6 py-14 sm:py-16">
+      <Wash size="md" position="top-right" intensity={0.07} />
+      <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-10 md:flex-row md:gap-14">
+        {/* Book cover with a thin page-edge + layered shadow to read as a book */}
+        <div className="relative shrink-0">
+          <div
+            aria-hidden
+            className="absolute -right-1.5 top-2 bottom-2 w-2 rounded-r-sm bg-gradient-to-r from-ink/15 to-transparent"
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/downloads/plain-dharma-cover.jpg"
+            alt="Plain Dharma — book cover"
+            width={260}
+            height={390}
+            className="relative w-[220px] rounded-l-sm rounded-r-md shadow-[0_18px_44px_-12px_rgba(31,24,18,0.45)] ring-1 ring-ink/5 sm:w-[260px]"
+          />
+        </div>
+
+        <div className="text-center md:text-left">
+          <h2 className="font-serif text-4xl leading-tight text-ink sm:text-5xl">
+            {s.home.bookTitle}
+          </h2>
+          <p className="mt-4 font-sans text-lg text-ink/70">
+            {s.home.bookFormats}
+          </p>
+          <div className="mt-7 flex flex-col items-center gap-5 md:items-start">
+            <Link
+              href="/download"
+              className="inline-flex items-center justify-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline hover:no-underline hover:opacity-90"
+            >
+              {s.home.bookCta}
+            </Link>
+            <StoreBadges className="justify-center md:justify-start" />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

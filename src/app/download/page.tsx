@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Wash } from "@/components/Wash";
 import { ogBase, altLanguages } from "@/lib/og-meta";
 import { APP_LINKS } from "@/lib/app-links";
+import { StoreBadges } from "@/components/StoreBadges";
 
 const TITLE = "Download";
 const DESCRIPTION =
@@ -133,11 +134,8 @@ export default function DownloadPage() {
 }
 
 /**
- * App store CTAs. Hidden until `APP_LINKS.published` flips true on store
- * approval. Uses the official store badges (Apple's SVG + Google's PNG, the
- * only formats each vendor distributes) at a matched ~44px height per brand
- * guidelines. Plain <img> (not next/image) to avoid optimizing a vector badge
- * and to sidestep the images.localPatterns config.
+ * "Get the app" panel. Hidden until `APP_LINKS.published` (StoreBadges renders
+ * null until then, so gate the surrounding chrome too).
  */
 function AppBadges() {
   return (
@@ -146,26 +144,7 @@ function AppBadges() {
       <p className="mt-2 font-serif text-base text-ink/80">
         Read and listen offline on iPhone and Android.
       </p>
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-4">
-        <a href={APP_LINKS.ios} target="_blank" rel="noopener noreferrer">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/badges/app-store.svg"
-            alt="Download on the App Store"
-            height={44}
-            className="h-11 w-auto"
-          />
-        </a>
-        <a href={APP_LINKS.android} target="_blank" rel="noopener noreferrer">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/badges/google-play.png"
-            alt="Get it on Google Play"
-            height={44}
-            className="h-11 w-auto"
-          />
-        </a>
-      </div>
+      <StoreBadges className="mt-5" />
     </section>
   );
 }

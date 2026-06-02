@@ -1,6 +1,6 @@
 # Margin Notes — Plain Dharma
 
-*Last updated: 2026-06-02*
+*Last updated: 2026-06-03*
 
 Reader-owned highlights and private notes on sutta passages, with optional sync to Supabase via magic-link sign-in. A deliberate exception to the site's otherwise static/no-database principle: read-first local-first design keeps annotations available instantly (no server call needed), and unauthenticated readers never touch the database. Implemented on web (browsers) and mobile (React Native / Expo).
 
@@ -144,14 +144,23 @@ Mobile Margin Notes share the same backend, auth, and data schema as web; the se
 **Problem:** React Native has no built-in per-character text selection (unlike the DOM). Per-word UITextView measurment was complex and fragile.
 
 **Solution:** Native iOS `UITextView` (via `react-native-uitextview`, Fabric/new-arch only):
-1. Each sutta reader `<Section>` renders its content as a **single native UITextView** (`SelectableSectionText.tsx`), enabling paragraph-spanning selection.
+1. Both reader content and the title block render as a **single native UITextView**, enabling paragraph-spanning selection.
 2. `sectionRuns.ts` flattens a section's markdown block AST (via MarkdownIt + tokensToAST) into:
-   - Styled inline runs (font, weight, italic, color)
+   - Styled inline runs (font, weight, italic, color, plus title-only styles: kicker, h1, subtitle)
    - An exact plain-text string (no markup)
    - List item prefixes ("N. ", "• ") and blockquote italics applied at the text level
    - Tradeoff: lists lose hanging indent (acceptable for accessibility)
 3. On selection, the `onSelectionChange` callback receives window-coord `rect` + the selected text.
 4. `selectorFromRange` derives a W3C text-quote anchor (quote, prefix/suffix context) from the text's position in the plain-text string, using **offset-based matching** — no DOM traversal.
+
+### Shared rendering core (SelectableRuns)
+
+`SelectableRuns.tsx` is the shared rendering engine for all selectable text on the reader. It accepts:
+- A sequence of styled inline `runs` + the corresponding `plainText` string.
+- A resolver function mapping each run's style to its `TextStyle` override.
+- A list of saved `highlights` (quote + markup offset map).
+
+Both `SelectableSectionText` (reader prose sections) and `SelectableTitle` (the header block) feed SelectableRuns the same interface — the only difference is how they build their runs and style resolvers. This re-use ensures consistent selection behavior and highlight painting across all surfaces.
 
 ### Highlight painting by offset
 
@@ -159,6 +168,10 @@ Mobile Margin Notes share the same backend, auth, and data schema as web; the se
 - On render, the quote is located in the plain-text string using the prefix/suffix context.
 - Overlay runs slice across the plain-text offsets; runs are tinted amber where they overlap a highlight.
 - Highlights extend over leading opening quotes/parens; list markers tint with their item.
+
+### Title block (SelectableTitle)
+
+The reader's title block (Pali-name kicker + title + subtitle) is now a selectable surface, rendered as a single native UITextView via `SelectableTitle.tsx`. The three lines (sourced from frontmatter in `SUTTA_META`, not section markdown) are built into styled runs (kicker, h1, subtitle) and anchored to a synthetic section with `id=TITLE_SECTION_ID="title"`. This allows the same drag-select highlighting that works on prose to work on the header and subheader, with marks round-tripping through the marginalia engine as if the title were a content section.
 
 ### Selection toolbar and user actions
 

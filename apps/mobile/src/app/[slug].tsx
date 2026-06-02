@@ -19,13 +19,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingControls } from "@/components/FloatingControls";
-import { getSuttaMarkdown, splitSections } from "@/content/markdown";
+import { getSuttaMarkdown, splitSections, type ContentSection } from "@/content/markdown";
 import { useLocale } from "@/i18n/LocaleContext";
 import { GlobalNotesPanel } from "@/marginalia/GlobalNotesPanel";
 import { MarginNotesPanel } from "@/marginalia/MarginNotesPanel";
 import { NoteComposer } from "@/marginalia/NoteComposer";
 import { SavePrompt } from "@/marginalia/SavePrompt";
 import { SelectableSection, type SelectionResult } from "@/marginalia/SelectableSection";
+import {
+  SelectableTitle,
+  TITLE_SECTION_ID,
+  titleSectionMarkdown,
+} from "@/marginalia/SelectableTitle";
 import {
   SelectionToolbar,
   TOOLBAR_HEIGHT,
@@ -102,6 +107,18 @@ export default function SuttaScreen() {
     [safeSlug, locale],
   );
 
+  // The title block (kicker + title + subtitle) is selectable too, as a
+  // synthetic section anchored to TITLE_SECTION_ID so its highlights round-trip
+  // through the same marginalia engine as the prose.
+  const titleSection = useMemo<ContentSection | null>(() => {
+    if (!safeSlug) return null;
+    const m = getMeta(locale, safeSlug);
+    return {
+      id: TITLE_SECTION_ID,
+      markdown: titleSectionMarkdown(m.kicker_override ?? m.pali_name, m.title, m.subtitle),
+    };
+  }, [safeSlug, locale]);
+
   const handlePressHighlight = useCallback(
     (id: string) => {
       const mark = marksForSlug.find((m) => m.id === id);
@@ -112,10 +129,13 @@ export default function SuttaScreen() {
 
   const handleSelect = useCallback(
     (result: SelectionResult) => {
-      const sec = contentSections.find((s) => s.id === result.sectionId);
+      const sec =
+        result.sectionId === TITLE_SECTION_ID
+          ? titleSection
+          : contentSections.find((s) => s.id === result.sectionId);
       if (sec) mnOnSelect(result, sec);
     },
-    [contentSections, mnOnSelect],
+    [contentSections, titleSection, mnOnSelect],
   );
 
   const screenBg = CONTRAST_BG[theme][contrast] ?? palette.bg;
@@ -168,16 +188,16 @@ export default function SuttaScreen() {
           ← All talks
         </Link>
 
-        <View onLayout={recordPos("title")} style={{ marginBottom: 8 }}>
-          <Text style={[styles.kicker, { color: palette.accent, fontFamily: FONTS.serif }]}>
-            {meta.kicker_override ?? meta.pali_name}
-          </Text>
-          <Text style={[styles.h1, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-            {meta.title}
-          </Text>
-          <Text style={[styles.subtitle, { color: palette.ink, fontFamily: FONTS.serifItalic }]}>
-            {meta.subtitle}
-          </Text>
+        <View onLayout={recordPos(TITLE_SECTION_ID)} style={{ marginBottom: 8 }}>
+          <SelectableTitle
+            kicker={meta.kicker_override ?? meta.pali_name}
+            title={meta.title}
+            subtitle={meta.subtitle}
+            highlights={titleSection ? mn.inlineHighlightsFor(titleSection) : []}
+            onPressHighlight={handlePressHighlight}
+            onSelect={handleSelect}
+            onSelectionCleared={closeSelection}
+          />
         </View>
 
         {contentSections.map((sec) => {
@@ -303,14 +323,6 @@ export default function SuttaScreen() {
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24 },
   back: { fontSize: 16, marginBottom: 20 },
-  kicker: {
-    fontSize: 14,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 6,
-  },
-  h1: { fontSize: 30, lineHeight: 36, marginBottom: 10 },
-  subtitle: { fontSize: 18, lineHeight: 26 },
   notesFab: {
     position: "absolute",
     left: 20,

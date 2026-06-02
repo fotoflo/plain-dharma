@@ -23,7 +23,18 @@
 
 import { MarkdownIt } from "react-native-markdown-display";
 
-export type RunStyle = "normal" | "bold" | "italic" | "link" | "heading" | "marker";
+export type RunStyle =
+  | "normal"
+  | "bold"
+  | "italic"
+  | "link"
+  | "heading"
+  | "marker"
+  // Title-block styles — only produced by SelectableTitle, never by
+  // sectionToRuns; the body renderer's runStyle ignores them.
+  | "kicker"
+  | "h1"
+  | "subtitle";
 
 /** One inline run: a slice of text with a single style. */
 export interface Run {

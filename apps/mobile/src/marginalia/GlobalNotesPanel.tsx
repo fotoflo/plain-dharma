@@ -1,16 +1,16 @@
 /**
- * "Highlights & notes" block for the More tab: a "My notes" button that opens
- * the GLOBAL list of every mark across all suttas,
- * with edit (note + color), share, and delete. Self-contained — owns its own
- * panel / composer / share state so more.tsx stays a simple layout.
+ * The GLOBAL "My notes & highlights" list — every mark across all suttas, with
+ * edit (note + color), share, and delete. Self-contained: owns its own composer
+ * and share-sheet state. Controlled visibility so it can be opened from
+ * anywhere (currently the reader's per-talk panel footer, via `onShowAll`).
+ *
+ * Was previously a "More" tab section (MyNotesSection); the reader is now the
+ * home for the reader's own content (see docs/architecture/more-tab-refactor.md).
  */
 
-import { useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
-
 import { getMeta, isSuttaSlug, DEFAULT_LOCALE } from "@plain-dharma/content";
-import { useTheme } from "@/theme/ThemeContext";
-import { FONTS } from "@/theme/tokens";
+import { useMemo, useState } from "react";
+
 import { useMarginalia } from "./AuthContext";
 import { MarginNotesPanel } from "./MarginNotesPanel";
 import { NoteComposer } from "./NoteComposer";
@@ -18,10 +18,14 @@ import { buildSharePayload, type SharePayload } from "./share";
 import { ShareSheet } from "./ShareSheet";
 import type { MarginMark } from "./types";
 
-export function MyNotesSection() {
-  const { palette } = useTheme();
+export function GlobalNotesPanel({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose: () => void;
+}) {
   const { marks, updateMark, remove } = useMarginalia();
-  const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState<MarginMark | null>(null);
   const [share, setShare] = useState<SharePayload | null>(null);
 
@@ -35,7 +39,7 @@ export function MyNotesSection() {
       isSuttaSlug(m.slug) && getMeta(DEFAULT_LOCALE, m.slug)?.title
         ? `${getMeta(DEFAULT_LOCALE, m.slug).title} · Plain Dharma`
         : "Plain Dharma";
-    setPanelOpen(false);
+    onClose();
     setShare(
       buildSharePayload(
         m.slug,
@@ -47,23 +51,14 @@ export function MyNotesSection() {
 
   return (
     <>
-      <Pressable
-        onPress={() => setPanelOpen(true)}
-        style={[styles.linkRow, { borderColor: palette.divider }]}
-      >
-        <Text style={{ color: palette.link, fontFamily: FONTS.serif, fontSize: 17 }}>
-          My notes & highlights{marks.length ? ` (${marks.length})` : ""} →
-        </Text>
-      </Pressable>
-
       <MarginNotesPanel
-        visible={panelOpen}
+        visible={visible}
         title="My notes & highlights"
         marks={sorted}
         showSlug
-        onClose={() => setPanelOpen(false)}
+        onClose={onClose}
         onEdit={(m) => {
-          setPanelOpen(false);
+          onClose();
           setEditing(m);
         }}
         onShare={shareMark}
@@ -86,7 +81,3 @@ export function MyNotesSection() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  linkRow: { paddingVertical: 14, borderBottomWidth: 1, marginTop: 8 },
-});

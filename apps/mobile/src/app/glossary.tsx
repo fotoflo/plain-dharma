@@ -5,6 +5,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { BackLink } from "@/components/BackLink";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -26,9 +27,7 @@ export default function GlossaryScreen() {
           paddingHorizontal: 24,
         }}
       >
-        <Link href="/more" style={[styles.back, { color: palette.link, fontFamily: FONTS.serif }]}>
-          ← More
-        </Link>
+        <BackLink />
 
         <Text style={[styles.kicker, { color: palette.link }]}>
           {s.nav.glossary.toUpperCase()}
@@ -67,7 +66,6 @@ export default function GlossaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  back: { fontSize: 16, marginBottom: 20 },
   kicker: { fontSize: 12, letterSpacing: 2 },
   h1: { fontSize: 32, lineHeight: 38, marginTop: 10 },
   subtitle: { fontSize: 17, lineHeight: 25, opacity: 0.75, marginTop: 10 },

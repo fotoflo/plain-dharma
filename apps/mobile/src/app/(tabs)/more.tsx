@@ -1,16 +1,11 @@
-import { DEFAULT_LOCALE } from "@plain-dharma/content";
-import { getStrings } from "@plain-dharma/content/strings";
+import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DebugInfo } from "@/components/DebugInfo";
-import { NewsletterSignup } from "@/components/NewsletterSignup";
-import { OfflineDownload } from "@/components/OfflineDownload";
-import { openContribute, openDonate } from "@/lib/links";
+import { MenuGroup, MenuRow, SectionLabel } from "@/components/MenuRow";
 import { useMarginalia } from "@/marginalia/AuthContext";
-import { MyNotesSection } from "@/marginalia/MyNotesSection";
-import { SignInCard } from "@/marginalia/SignInCard";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -20,161 +15,106 @@ const THEME_OPTS: { value: ThemeMode; label: string }[] = [
   { value: "system", label: "Auto" },
 ];
 
-// Placeholder screen surfacing the parity features (appearance / downloads /
-// contribute / donate / newsletter) for verification. Final placement/chrome is
-// gated.
+// "More" tab — a calm iOS-Settings drill-down menu. Each row pushes to a focused
+// sub-screen (Account / Donate / Contribute / Newsletter / About / Glossary);
+// Appearance stays inline because it's a single toggle. The reader's own content
+// (notes, offline audio) lives with reading/listening, not here — see
+// docs/architecture/more-tab-refactor.md.
 export default function MoreScreen() {
   const { palette, mode, setMode } = useTheme();
-  const { syncAvailable } = useMarginalia();
+  const { syncAvailable, signedIn, email } = useMarginalia();
   const insets = useSafeAreaInsets();
-  const c = getStrings(DEFAULT_LOCALE).contribute;
 
   return (
     <ScrollView
       style={{ backgroundColor: palette.bg }}
       contentContainerStyle={{
         paddingTop: insets.top + 24,
-        paddingBottom: insets.bottom + 48,
-        paddingHorizontal: 24,
+        paddingBottom: insets.bottom + 40,
+        paddingHorizontal: 20,
       }}
     >
       <Text style={[styles.title, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
         Plain Dharma
       </Text>
 
-      {syncAvailable && (
-        <>
-          <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-            Account
-          </Text>
-          <Text style={[styles.note, { color: palette.ink }]}>
-            Sign in to sync your highlights and notes across devices.
-          </Text>
-          <SignInCard />
-        </>
-      )}
-
-      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        Appearance
-      </Text>
-      <Text style={[styles.note, { color: palette.ink }]}>
-        Light, dark, or follow your device.
-      </Text>
-      <View style={[styles.segRow, { borderColor: palette.divider }]}>
-        {THEME_OPTS.map((opt) => {
-          const active = opt.value === mode;
-          return (
-            <Pressable
-              key={opt.value}
-              onPress={() => setMode(opt.value)}
-              style={[styles.seg, active && { backgroundColor: palette.accentStrong }]}
-              accessibilityRole="button"
-              accessibilityState={{ selected: active }}
-            >
-              <Text
-                style={{
-                  color: active ? palette.onAccent : palette.ink,
-                  opacity: active ? 1 : 0.7,
-                  fontFamily: FONTS.serif,
-                  fontSize: 15,
-                }}
-              >
-                {opt.label}
+      {/* Account card — live status; hidden entirely when sync isn't configured. */}
+      {syncAvailable ? (
+        <Link href="/account" asChild>
+          <Pressable
+            style={[styles.account, { borderColor: palette.divider }]}
+            accessibilityRole="button"
+            accessibilityLabel="Account"
+          >
+            <Ionicons
+              name={signedIn ? "checkmark-circle" : "person-circle-outline"}
+              size={36}
+              color={palette.accent}
+            />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.accountTitle, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+                {signedIn ? "Signed in" : "Sign in to sync"}
               </Text>
-            </Pressable>
-          );
-        })}
+              <Text
+                numberOfLines={1}
+                style={[styles.accountSub, { color: palette.ink, fontFamily: FONTS.serif }]}
+              >
+                {signedIn
+                  ? (email ?? "Synced across your devices")
+                  : "Highlights & notes across your devices"}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={palette.ink} style={{ opacity: 0.3 }} />
+          </Pressable>
+        </Link>
+      ) : null}
+
+      {/* Settings — Appearance kept inline (single toggle, no screen needed). */}
+      <SectionLabel>Settings</SectionLabel>
+      <View style={[styles.card, { borderColor: palette.divider }]}>
+        <Text style={[styles.cardLabel, { color: palette.ink, fontFamily: FONTS.serif }]}>
+          Appearance
+        </Text>
+        <View style={[styles.segRow, { borderColor: palette.divider }]}>
+          {THEME_OPTS.map((opt) => {
+            const active = opt.value === mode;
+            return (
+              <Pressable
+                key={opt.value}
+                onPress={() => setMode(opt.value)}
+                style={[styles.seg, active && { backgroundColor: palette.accentStrong }]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+              >
+                <Text
+                  style={{
+                    color: active ? palette.onAccent : palette.ink,
+                    opacity: active ? 1 : 0.7,
+                    fontFamily: FONTS.serif,
+                    fontSize: 15,
+                  }}
+                >
+                  {opt.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
-      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        Highlights & notes
-      </Text>
-      <MyNotesSection />
+      <SectionLabel>Support the project</SectionLabel>
+      <MenuGroup>
+        <MenuRow icon="heart-outline" label="Donate" href="/donate" />
+        <MenuRow icon="create-outline" label="Contribute" href="/contribute" />
+        <MenuRow icon="mail-outline" label="Newsletter" href="/newsletter" />
+      </MenuGroup>
 
-      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        Download
-      </Text>
-      <Text style={[styles.note, { color: palette.ink }]}>
-        Free, CC0 — the whole book in three formats.
-      </Text>
-      <Link
-        href="/download"
-        style={[styles.linkRow, { color: palette.link, borderColor: palette.divider, fontFamily: FONTS.serif }]}
-      >
-        Download the book →
-      </Link>
-
-      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        Listen offline
-      </Text>
-      <Text style={[styles.note, { color: palette.ink }]}>
-        Save all narration to this device for plane / no-signal listening.
-      </Text>
-      <OfflineDownload locale={DEFAULT_LOCALE} />
-
-      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        {c.h1}
-      </Text>
-      <Text style={[styles.note, { color: palette.ink }]}>{c.pHelpIntro}</Text>
-      <View style={styles.bullets}>
-        <Text style={[styles.bullet, { color: palette.ink, fontFamily: FONTS.serif }]}>
-          <Text style={{ fontFamily: FONTS.serifBold }}>{c.liCopyEditorsLabel}</Text>
-          {c.liCopyEditorsBody}
-        </Text>
-        <Text style={[styles.bullet, { color: palette.ink, fontFamily: FONTS.serif }]}>
-          <Text style={{ fontFamily: FONTS.serifBold }}>{c.liTranslatorsLabel}</Text>
-          {c.liTranslatorsBody}
-        </Text>
-        <Text style={[styles.bullet, { color: palette.ink, fontFamily: FONTS.serif }]}>
-          <Text style={{ fontFamily: FONTS.serifBold }}>{c.liVoiceArtistsLabel}</Text>
-          {c.liVoiceArtistsBody}
-        </Text>
-      </View>
-      <Text style={[styles.note, { color: palette.ink, marginTop: 4 }]}>{c.pHelpClosing}</Text>
-      <Pressable
-        onPress={() => openContribute()}
-        style={[styles.outlineBtn, { borderColor: palette.accent }]}
-      >
-        <Text style={{ color: palette.accent, fontFamily: FONTS.serif, fontSize: 16 }}>
-          Get in touch →
-        </Text>
-      </Pressable>
-
-      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        Support
-      </Text>
-      <Pressable
-        onPress={() => openDonate()}
-        style={[styles.donate, { backgroundColor: palette.accentStrong }]}
-      >
-        <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 16 }}>
-          Donate
-        </Text>
-      </Pressable>
-
-      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        Newsletter
-      </Text>
-      <Text style={[styles.note, { color: palette.ink }]}>
-        Occasional notes when a new talk is added.
-      </Text>
-      <NewsletterSignup />
-
-      <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        About
-      </Text>
-      <Link
-        href="/about"
-        style={[styles.linkRow, { color: palette.link, borderColor: palette.divider, fontFamily: FONTS.serif }]}
-      >
-        About Plain Dharma
-      </Link>
-      <Link
-        href="/glossary"
-        style={[styles.linkRow, { color: palette.link, borderColor: palette.divider, fontFamily: FONTS.serif }]}
-      >
-        Glossary
-      </Link>
+      <SectionLabel>About</SectionLabel>
+      <MenuGroup>
+        <MenuRow icon="information-circle-outline" label="About Plain Dharma" href="/about" />
+        <MenuRow icon="list-outline" label="Glossary" href="/glossary" />
+        <MenuRow icon="download-outline" label="Download the book" href="/download" />
+      </MenuGroup>
 
       <DebugInfo />
     </ScrollView>
@@ -182,18 +122,32 @@ export default function MoreScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 34, marginBottom: 8 },
-  h: { fontSize: 24, marginTop: 28, marginBottom: 6 },
-  note: { fontSize: 15, opacity: 0.6, marginBottom: 10 },
-  linkRow: { fontSize: 17, paddingVertical: 14, borderBottomWidth: 1 },
-  donate: { borderRadius: 8, paddingVertical: 14, alignItems: "center", marginTop: 4 },
+  title: { fontSize: 34, marginBottom: 20 },
+  account: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  accountTitle: { fontSize: 18 },
+  accountSub: { fontSize: 14, opacity: 0.6, marginTop: 1 },
+  card: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    gap: 10,
+  },
+  cardLabel: { fontSize: 17 },
   segRow: {
     flexDirection: "row",
     borderWidth: 1,
     borderRadius: 999,
     padding: 2,
     gap: 2,
-    marginTop: 2,
   },
   seg: {
     flex: 1,
@@ -201,14 +155,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 9,
     borderRadius: 999,
-  },
-  bullets: { gap: 10, marginTop: 4 },
-  bullet: { fontSize: 16, lineHeight: 24 },
-  outlineBtn: {
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingVertical: 13,
-    alignItems: "center",
-    marginTop: 14,
   },
 });

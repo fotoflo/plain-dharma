@@ -30,6 +30,10 @@ function Navigator() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: palette.bg },
+          // Consistent push direction on both platforms: detail screens slide in
+          // from the right, and BackLink's router.back() pops them off the same
+          // way. (Back is a real pop — see components/BackLink.tsx.)
+          animation: "slide_from_right",
         }}
       />
     </>

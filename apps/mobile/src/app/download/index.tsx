@@ -1,7 +1,8 @@
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { BackLink } from "@/components/BackLink";
 import { DOWNLOADS } from "@/lib/links";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -22,9 +23,7 @@ export default function DownloadScreen() {
         paddingHorizontal: 24,
       }}
     >
-      <Link href="/more" style={[styles.back, { color: palette.link, fontFamily: FONTS.serif }]}>
-        ← More
-      </Link>
+      <BackLink />
 
       <Text style={[styles.kicker, { color: palette.link }]}>DOWNLOAD</Text>
       <Text style={[styles.h1, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
@@ -62,7 +61,6 @@ export default function DownloadScreen() {
 }
 
 const styles = StyleSheet.create({
-  back: { fontSize: 16, marginBottom: 20 },
   kicker: { fontSize: 12, letterSpacing: 2 },
   h1: { fontSize: 32, lineHeight: 38, marginTop: 10, marginBottom: 8 },
   sub: { fontSize: 17, lineHeight: 26, opacity: 0.8 },

@@ -1,7 +1,33 @@
 # More-tab refactor — drill-down menu (Option C) + relocate reader content
 
-**Status:** planned, not implemented. Build in a fresh session.
+**Status:** implemented on `feat/mobile-more-drilldown` (see "What shipped" below).
 **Scope:** mobile only (`apps/mobile`). Web is untouched.
+
+## What shipped
+
+- `src/components/MenuRow.tsx` — reusable `MenuRow` (icon · label · optional value
+  · chevron, `href` or `onPress`), plus `MenuGroup` (rounded card that hides the
+  last divider) and `SectionLabel`.
+- `src/components/SubScreen.tsx` — shared push-screen scaffold (decorative bg,
+  `‹ More` back, kicker, h1) mirroring `about.tsx`/`glossary.tsx`.
+- New pushed routes (outside `(tabs)`, auto-registered by the root `<Stack>`):
+  `app/account.tsx`, `app/donate.tsx`, `app/contribute.tsx`, `app/newsletter.tsx`.
+  About/Glossary reuse the existing `app/about.tsx`/`app/glossary.tsx`.
+- `more.tsx` rewritten as the menu: Account card (hidden when `!syncAvailable`) →
+  Settings (Appearance kept **inline**) → Support (Donate/Contribute/Newsletter) →
+  About (About/Glossary/**Download the book**). Notes + offline-audio removed.
+- Notes relocated: `MyNotesSection` deleted; its global-list behavior extracted to
+  a controlled `src/marginalia/GlobalNotesPanel.tsx`, reached from the reader's
+  per-talk `MarginNotesPanel` via a new `onShowAll` footer link (wired in
+  `[slug].tsx`).
+- Offline-audio download: no move needed — `AudioPanel`'s existing `DownloadControl`
+  already surfaces it. `OfflineDownload.tsx` is now unused (kept, not deleted).
+- `DebugInfo` demoted from an `<h>` section to a quiet tappable `Build N · vX`
+  footer line that expands the diagnostics card.
+
+**Judgment calls resolved:** (1) Appearance inline. (2) Downloads — audio already
+in `AudioPanel`; book download is a single row under About. (3) "All notes" =
+footer link in the per-talk panel. (4) Tab count stayed 3.
 
 ## Why
 

@@ -37,6 +37,7 @@ export function MarginNotesPanel({
   onShare,
   onJump,
   onSignOut,
+  onShowAll,
 }: {
   visible: boolean;
   title?: string;
@@ -52,6 +53,8 @@ export function MarginNotesPanel({
   onShare?: (mark: MarginMark) => void;
   onJump?: (mark: MarginMark) => void;
   onSignOut?: () => void;
+  /** When set (per-talk panel), shows an "All my notes & highlights →" link. */
+  onShowAll?: () => void;
 }) {
   const { theme, palette } = useTheme();
 
@@ -132,6 +135,18 @@ export function MarginNotesPanel({
             />
           )}
 
+          {onShowAll ? (
+            <Pressable
+              onPress={onShowAll}
+              style={[styles.showAll, { borderColor: palette.divider }]}
+              hitSlop={6}
+            >
+              <Text style={{ color: palette.link, fontFamily: FONTS.serif, fontSize: 16 }}>
+                All my notes & highlights →
+              </Text>
+            </Pressable>
+          ) : null}
+
           {signedIn && onSignOut ? (
             <View style={[styles.footer, { borderColor: palette.divider }]}>
               <Text
@@ -194,4 +209,9 @@ const styles = StyleSheet.create({
   },
   footerText: { flex: 1, fontSize: 14, opacity: 0.6 },
   signOut: { fontSize: 14 },
+  showAll: {
+    borderTopWidth: 1,
+    paddingTop: 14,
+    paddingBottom: 18,
+  },
 });

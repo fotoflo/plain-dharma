@@ -1,7 +1,7 @@
 import { DEFAULT_LOCALE, getMeta, isSuttaSlug } from "@plain-dharma/content";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   Pressable,
@@ -20,6 +20,7 @@ import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingControls } from "@/components/FloatingControls";
 import { getSuttaMarkdown, splitSections } from "@/content/markdown";
+import { GlobalNotesPanel } from "@/marginalia/GlobalNotesPanel";
 import { MarginNotesPanel } from "@/marginalia/MarginNotesPanel";
 import { NoteComposer } from "@/marginalia/NoteComposer";
 import { SavePrompt } from "@/marginalia/SavePrompt";
@@ -48,6 +49,11 @@ export default function SuttaScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const positions = useRef<Record<string, number>>({});
   const didMount = useRef(false);
+
+  // Global "all notes" list (every mark across all suttas), reachable from the
+  // per-talk panel's footer — the reader is the home for the reader's own
+  // content (see docs/architecture/more-tab-refactor.md).
+  const [showAllNotes, setShowAllNotes] = useState(false);
 
   // Margin Notes for this sutta. `slug` may be invalid (handled below) — pass a
   // safe fallback so the hook order stays stable; we only render its UI when the
@@ -260,7 +266,13 @@ export default function SuttaScreen() {
           mn.setPanelOpen(false);
           void mn.signOut();
         }}
+        onShowAll={() => {
+          mn.setPanelOpen(false);
+          setShowAllNotes(true);
+        }}
       />
+
+      <GlobalNotesPanel visible={showAllNotes} onClose={() => setShowAllNotes(false)} />
 
       <NoteComposer
         visible={mn.composerVisible}

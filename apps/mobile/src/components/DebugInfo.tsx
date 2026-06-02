@@ -82,11 +82,15 @@ export function DebugInfo() {
     }
   };
 
+  const version =
+    Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? "—";
+  const build = Application.nativeBuildVersion;
+
   return (
-    <View style={{ marginTop: 28 }}>
-      <Pressable onPress={() => setExpanded((v) => !v)}>
-        <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-          Build & updates {expanded ? "▾" : "▸"}
+    <View style={{ marginTop: 36 }}>
+      <Pressable onPress={() => setExpanded((v) => !v)} hitSlop={8}>
+        <Text style={[styles.footerLine, { color: palette.ink }]}>
+          {build ? `Build ${build} · ` : ""}v{version} {expanded ? "▾" : "▸"}
         </Text>
       </Pressable>
 
@@ -157,8 +161,8 @@ export function DebugInfo() {
 }
 
 const styles = StyleSheet.create({
-  h: { fontSize: 24, marginBottom: 6 },
-  card: { borderWidth: 1, borderRadius: 10, padding: 14, marginTop: 4, gap: 8 },
+  footerLine: { fontSize: 12, opacity: 0.4, fontVariant: ["tabular-nums"] },
+  card: { borderWidth: 1, borderRadius: 10, padding: 14, marginTop: 10, gap: 8 },
   row: { flexDirection: "row", justifyContent: "space-between", gap: 16 },
   rowLabel: { fontSize: 13, opacity: 0.6 },
   rowValue: { fontSize: 13, flexShrink: 1, textAlign: "right" },

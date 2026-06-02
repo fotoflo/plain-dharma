@@ -166,7 +166,7 @@ function FileCard({ file }: { file: FileOption }) {
           href={`/download/donate?file=${file.slug}`}
           className="inline-flex items-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline shadow-sm transition hover:no-underline hover:opacity-90"
         >
-          Download
+          Free Download
         </Link>
       </div>
     </div>

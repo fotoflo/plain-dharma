@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getStrings } from "@plain-dharma/content/strings";
 import { GlossaryView } from "@/views/GlossaryView";
-import { ogBase } from "@/lib/og-meta";
+import { ogBase, altLanguages } from "@/lib/og-meta";
 
 const s = getStrings("en");
 const TITLE = s.nav.glossary;
@@ -10,10 +10,7 @@ const DESCRIPTION = s.glossary.metadataDescription;
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: {
-    canonical: "/glossary",
-    languages: { "zh-Hans": "/zh/glossary" },
-  },
+  alternates: altLanguages("/glossary"),
   openGraph: {
     ...ogBase("en"),
     title: TITLE,

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getStrings } from "@plain-dharma/content/strings";
 import { ContributeView } from "@/views/ContributeView";
-import { ogBase } from "@/lib/og-meta";
+import { ogBase, altLanguages } from "@/lib/og-meta";
 
 const s = getStrings("en");
 const TITLE = s.contribute.metadataTitle;
@@ -10,10 +10,7 @@ const DESCRIPTION = s.contribute.metadataDescription;
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: {
-    canonical: "/contribute",
-    languages: { "zh-Hans": "/zh/contribute" },
-  },
+  alternates: altLanguages("/contribute"),
   openGraph: {
     ...ogBase("en"),
     title: TITLE,

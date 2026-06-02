@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Wash } from "@/components/Wash";
-import { ogBase } from "@/lib/og-meta";
+import { ogBase, altLanguages } from "@/lib/og-meta";
+import { APP_LINKS } from "@/lib/app-links";
+import { StoreBadges } from "@/components/StoreBadges";
 
 const TITLE = "Download";
 const DESCRIPTION =
@@ -10,7 +12,7 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: "/download" },
+  alternates: altLanguages("/download", { zh: false }),
   openGraph: {
     ...ogBase("en"),
     title: TITLE,
@@ -81,6 +83,8 @@ export default function DownloadPage() {
         ))}
       </div>
 
+      {APP_LINKS.published && <AppBadges />}
+
       <article className="prose-dharma mt-16">
         <h2>About the files</h2>
         <p>
@@ -126,6 +130,22 @@ export default function DownloadPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+/**
+ * "Get the app" panel. Hidden until `APP_LINKS.published` (StoreBadges renders
+ * null until then, so gate the surrounding chrome too).
+ */
+function AppBadges() {
+  return (
+    <section className="mt-12 rounded-lg border border-divider/80 p-6 text-center">
+      <h2 className="font-serif text-2xl text-ink">Get the app</h2>
+      <p className="mt-2 font-serif text-base text-ink/80">
+        Read and listen offline on iPhone and Android.
+      </p>
+      <StoreBadges className="mt-5" />
+    </section>
   );
 }
 

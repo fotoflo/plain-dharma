@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getStrings } from "@plain-dharma/content/strings";
 import { ReadView } from "@/views/ReadView";
-import { ogBase } from "@/lib/og-meta";
+import { ogBase, altLanguages } from "@/lib/og-meta";
 
 const s = getStrings("zh");
 const TITLE = s.read.metadataTitle;
@@ -10,10 +10,7 @@ const DESCRIPTION = s.read.metadataDescription;
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: {
-    canonical: "/zh/read",
-    languages: { en: "/read" },
-  },
+  alternates: altLanguages("/read", { current: "zh" }),
   openGraph: {
     ...ogBase("zh"),
     title: TITLE,

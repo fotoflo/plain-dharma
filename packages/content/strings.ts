@@ -39,6 +39,10 @@ const en = {
     heroBlurb:
       "Six short sutras — the ones at the root of the whole tradition — rendered for a first-time reader who'd rather understand than wade through footnotes. Free to read, free to copy, free to print, free to listen.",
     sixTeachingsLabel: "The six teachings",
+    bookTitle: "Download the Book",
+    bookFormats: "Available in ebook, audiobook, and app form.",
+    bookCta: "Download the Book",
+    getTheApp: "Get the app",
   },
   sutta: {
     previous: "Previous",
@@ -313,6 +317,10 @@ const zh: Strings = {
     heroBlurb:
       "六篇短短的开示——整个传承的根基——为第一次接触的读者而做，与其在脚注里钻来钻去，不如直接读懂。可以自由阅读、自由复制、自由打印、自由聆听。",
     sixTeachingsLabel: "这六篇开示",
+    bookTitle: "下载这本书",
+    bookFormats: "提供电子书、有声书和应用三种形式。",
+    bookCta: "下载这本书",
+    getTheApp: "下载应用",
   },
   sutta: {
     previous: "上一篇",

@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
-import { statSync } from "node:fs";
-import { join } from "node:path";
 import { SUTTAS } from "@/content";
+import { suttaMtime } from "@/lib/sutta-dates";
 
 const SITE_URL = "https://plaindharma.com";
 
 /**
- * Sutta pages get their lastModified from the MDX source file mtime so search
+ * Sutta pages get their lastModified from the MDX source file mtime (via the
+ * shared `suttaMtime` helper, also used by Article structured data) so search
  * engines see real change dates. Static pages use build time — they update
  * whenever the codebase rebuilds, which is close enough.
  *
@@ -15,16 +15,6 @@ const SITE_URL = "https://plaindharma.com";
  * ZH counterparts are included for every EN page except /download (Stripe
  * carve-out, EN-only). ZH priorities are nudged 0.1 below their EN twin.
  */
-function suttaMtime(slug: string, locale: "en" | "zh" = "en"): Date {
-  try {
-    return statSync(
-      join(process.cwd(), "src", "content", locale, `${slug}.mdx`)
-    ).mtime;
-  } catch {
-    return new Date();
-  }
-}
-
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 

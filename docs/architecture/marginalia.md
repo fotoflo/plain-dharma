@@ -175,12 +175,13 @@ Mobile Margin Notes share the same backend, auth, and data schema as web; the se
 - `selectionX/Y/Width/Height` — window coordinates on `onSelectionChange` callback
 - Applied at build time; codegen + native .mm source + JS type definitions
 
-### Account/sign-in surfacing on mobile
+### Account/sign-in surfacing on mobile (updated 2026-06)
 
-- `SignInCard` (already exists in the marginalia folder) moved to a top "Account" section of the More tab (`apps/mobile/src/app/(tabs)/more.tsx`).
-- Signed-in state shows email + "Synced across your devices".
-- Sign-out footer added to the reading-screen notes panel (`MarginNotesPanel.tsx`).
-- `useSuttaMarginalia` hook exposes `email` and `signOut` for UI consumption.
+- Account card on the More tab (`apps/mobile/src/app/(tabs)/more.tsx`): hidden entirely when sync is unavailable.
+  - **Signed in:** shows email + "Synced across your devices" + an inline **"Sign out" button** (no chevron / drill-down).
+  - **Signed out:** "Sign in to sync" card with chevron; tap → `/account` screen (magic-link sign-in).
+- "All my notes & highlights →" footer link on per-talk `MarginNotesPanel` opens the global `GlobalNotesPanel.tsx` (all marks, searchable).
+- `useMarginalia` hook exposes `email`, `signOut`, `syncAvailable`, `signedIn` for UI consumption.
 
 ### Env vars for mobile auth
 

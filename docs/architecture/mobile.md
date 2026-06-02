@@ -283,10 +283,29 @@ EAS Build uploads a **single code-signed native binary** (.ipa for iOS, .aab for
 
 Once a build is submitted to TestFlight or the Play Store, OTA updates become the primary path for rolling out JS changes (reading text, styles, UI tweaks). New native dependencies (navigation, audio, file-system changes) require a full rebuild and re-submission.
 
-## More tab organization (planned)
+## More tab organization (completed 2026-06)
 
-See [more-tab-refactor.md](./more-tab-refactor.md) for the drill-down menu redesign
-and relocating reader content (notes, downloads) out of settings. Not yet built.
+The **drill-down menu refactor (Option C)** shipped on main: `more.tsx` is now a
+calm iOS-Settings-style menu with Account card (hidden when sync unavailable),
+inline Settings (Appearance only), and drill-down rows for Support (Donate /
+Contribute / Newsletter) and About (About / Glossary / Download the book).
+
+New sub-screens (each with a "‹ More" back header via `SubScreen.tsx`):
+`app/account.tsx`, `app/donate.tsx`, `app/contribute.tsx`, `app/newsletter.tsx`.
+
+Relocated content:
+- **Highlights & notes** → live with reading: per-talk `MarginNotesPanel` now
+  shows an "All my notes & highlights →" footer link (wired in `[slug].tsx` via
+  `onShowAll` prop) that opens the global `GlobalNotesPanel.tsx` (was
+  `MyNotesSection`).
+- **Offline audio download** → lives in the `AudioPanel` (FloatingAudioPlayer);
+  `OfflineDownload.tsx` on the More tab still works but is unused.
+
+Account/sign-out: the signed-in Account card shows status + an **inline "Sign out"
+button** (no drill-down, no chevron). Signed-out card taps to `/account` and shows
+a chevron. MenuRow chevron softened (opacity .45, size 16).
+
+See [more-tab-refactor.md](./more-tab-refactor.md) for details.
 
 ## Gotchas
 

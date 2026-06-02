@@ -1,6 +1,6 @@
 # More-tab refactor — drill-down menu (Option C) + relocate reader content
 
-**Status:** implemented on `feat/mobile-more-drilldown` (see "What shipped" below).
+**Status:** SHIPPED (landed on main 2026-06-03).
 **Scope:** mobile only (`apps/mobile`). Web is untouched.
 
 ## What shipped

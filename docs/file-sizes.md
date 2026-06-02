@@ -1,6 +1,44 @@
 # File Size Snapshots
 
-## 2026-06-02 (current)
+## 2026-06-03 (current)
+
+### Distribution
+
+| Bucket     | Count | Δ vs prev |
+|------------|-------|-----------|
+| <=50       | 374   | +287      |
+| 51-150     | 430   | +324      |
+| 151-300    | 180   | +134      |
+| 301-500    | 34    | +24       |
+| 501-1000   | 16    | +12       |
+| 1001-2000  | 0     | —         |
+| 2000+      | 0     | —         |
+
+Total files: 1034 (+781)
+
+### Largest File
+
+`src/components/AudioPlayer.tsx` — 661 lines
+
+### Files Over 500 Lines
+
+16 files exceed the 500-line guideline. Notable ones include:
+- `src/components/AudioPlayer.tsx` — 661 lines
+- `scripts/generate-audio.ts` — 700 lines (per previous snapshot)
+- `packages/content/strings.ts` — 580 lines
+- `src/components/marginalia/Marginalia.tsx` — 529 lines
+
+### Session Files of Interest
+
+- `apps/mobile/src/app/(tabs)/more.tsx` — 214 lines (under 500)
+- `apps/mobile/src/components/MenuRow.tsx` — 128 lines (under 500)
+- `apps/mobile/src/marginalia/GlobalNotesPanel.tsx` — 83 lines (under 500)
+
+### Delta
+
+Massive expansion: 1034 files vs 253 in the previous snapshot (+781, +309%). This snapshot includes the mobile app (`apps/mobile/`) which was not in the previous clean analysis. The distribution shows healthy growth across all brackets with no files in the 1001+ range. Session files checked remain well under the 500-line threshold. AudioPlayer.tsx has grown to 661 lines (up 14 from 647 in 2026-06-02), making it the largest file in the web codebase.
+
+## 2026-06-02 (previous)
 
 ### Distribution
 

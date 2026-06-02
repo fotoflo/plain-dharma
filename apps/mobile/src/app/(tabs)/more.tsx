@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { SUPPORTED_LOCALES } from "@plain-dharma/content";
+import { getStrings } from "@plain-dharma/content/strings";
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,10 +12,10 @@ import { useMarginalia } from "@/marginalia/AuthContext";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
-const THEME_OPTS: { value: ThemeMode; label: string }[] = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "Auto" },
+const THEME_OPTS: { value: ThemeMode; key: "themeLight" | "themeDark" | "themeAuto" }[] = [
+  { value: "light", key: "themeLight" },
+  { value: "dark", key: "themeDark" },
+  { value: "system", key: "themeAuto" },
 ];
 
 // "More" tab — a calm iOS-Settings drill-down menu. Each row pushes to a focused
@@ -25,6 +26,7 @@ const THEME_OPTS: { value: ThemeMode; label: string }[] = [
 export default function MoreScreen() {
   const { palette, mode, setMode } = useTheme();
   const { locale, setLocale } = useLocale();
+  const { more: s, nav } = getStrings(locale);
   const { syncAvailable, signedIn, email, signOut } = useMarginalia();
   const insets = useSafeAreaInsets();
 
@@ -38,7 +40,7 @@ export default function MoreScreen() {
       }}
     >
       <Text style={[styles.title, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-        Plain Dharma
+        {s.brand}
       </Text>
 
       {/* Account — hidden entirely when sync isn't configured. Signed in: a
@@ -51,18 +53,18 @@ export default function MoreScreen() {
             <Ionicons name="checkmark-circle" size={36} color={palette.accent} />
             <View style={{ flex: 1 }}>
               <Text style={[styles.accountTitle, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-                Signed in
+                {s.signedIn}
               </Text>
               <Text
                 numberOfLines={1}
                 style={[styles.accountSub, { color: palette.ink, fontFamily: FONTS.serif }]}
               >
-                {email ?? "Synced across your devices"}
+                {email ?? s.syncedSub}
               </Text>
             </View>
             <Pressable onPress={() => signOut()} hitSlop={10} accessibilityRole="button">
               <Text style={[styles.signOut, { color: palette.link, fontFamily: FONTS.serif }]}>
-                Sign out
+                {s.signOut}
               </Text>
             </Pressable>
           </View>
@@ -76,13 +78,13 @@ export default function MoreScreen() {
               <Ionicons name="person-circle-outline" size={36} color={palette.accent} />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.accountTitle, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-                  Sign in to sync
+                  {s.signInTitle}
                 </Text>
                 <Text
                   numberOfLines={1}
                   style={[styles.accountSub, { color: palette.ink, fontFamily: FONTS.serif }]}
                 >
-                  Highlights & notes across your devices
+                  {s.signInSub}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color={palette.ink} style={{ opacity: 0.3 }} />
@@ -92,10 +94,10 @@ export default function MoreScreen() {
       ) : null}
 
       {/* Settings — Appearance kept inline (single toggle, no screen needed). */}
-      <SectionLabel>Settings</SectionLabel>
+      <SectionLabel>{s.settings}</SectionLabel>
       <View style={[styles.card, { borderColor: palette.divider }]}>
         <Text style={[styles.cardLabel, { color: palette.ink, fontFamily: FONTS.serif }]}>
-          Appearance
+          {s.appearance}
         </Text>
         <View style={[styles.segRow, { borderColor: palette.divider }]}>
           {THEME_OPTS.map((opt) => {
@@ -116,7 +118,7 @@ export default function MoreScreen() {
                     fontSize: 15,
                   }}
                 >
-                  {opt.label}
+                  {s[opt.key]}
                 </Text>
               </Pressable>
             );
@@ -126,7 +128,7 @@ export default function MoreScreen() {
         <View style={[styles.cardDivider, { borderColor: palette.divider }]} />
 
         <Text style={[styles.cardLabel, { color: palette.ink, fontFamily: FONTS.serif }]}>
-          Language
+          {s.language}
         </Text>
         <View style={[styles.segRow, { borderColor: palette.divider }]}>
           {SUPPORTED_LOCALES.map((loc) => {
@@ -155,18 +157,18 @@ export default function MoreScreen() {
         </View>
       </View>
 
-      <SectionLabel>Support the project</SectionLabel>
+      <SectionLabel>{s.support}</SectionLabel>
       <MenuGroup>
-        <MenuRow icon="heart-outline" label="Donate" href="/donate" />
-        <MenuRow icon="create-outline" label="Contribute" href="/contribute" />
-        <MenuRow icon="mail-outline" label="Newsletter" href="/newsletter" />
+        <MenuRow icon="heart-outline" label={s.donate} href="/donate" />
+        <MenuRow icon="create-outline" label={nav.contribute} href="/contribute" />
+        <MenuRow icon="mail-outline" label={s.newsletter} href="/newsletter" />
       </MenuGroup>
 
-      <SectionLabel>About</SectionLabel>
+      <SectionLabel>{s.aboutSection}</SectionLabel>
       <MenuGroup>
-        <MenuRow icon="information-circle-outline" label="About Plain Dharma" href="/about" />
-        <MenuRow icon="list-outline" label="Glossary" href="/glossary" />
-        <MenuRow icon="download-outline" label="Download the book" href="/download" />
+        <MenuRow icon="information-circle-outline" label={s.aboutApp} href="/about" />
+        <MenuRow icon="list-outline" label={nav.glossary} href="/glossary" />
+        <MenuRow icon="download-outline" label={s.downloadBook} href="/download" />
       </MenuGroup>
 
       <DebugInfo />

@@ -1,11 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
+import { getStrings } from "@plain-dharma/content/strings";
 import { Tabs } from "expo-router";
 
+import { useLocale } from "@/i18n/LocaleContext";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
 export default function TabsLayout() {
   const { palette } = useTheme();
+  const { locale } = useLocale();
+  const nav = getStrings(locale).nav;
   return (
     <Tabs
       screenOptions={{
@@ -23,7 +27,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: nav.home,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
@@ -32,7 +36,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="read"
         options={{
-          title: "Read",
+          title: nav.read,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book-outline" size={size} color={color} />
           ),
@@ -41,7 +45,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="more"
         options={{
-          title: "More",
+          title: nav.more,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="ellipsis-horizontal" size={size} color={color} />
           ),

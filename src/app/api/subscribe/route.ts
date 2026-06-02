@@ -13,6 +13,7 @@
 
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { assetUrl } from "@plain-dharma/content/assets";
 
 // Defensive bounds — short enough to fit a real email, long enough for edge
 // cases (e.g. corporate addresses with long local parts).
@@ -51,7 +52,7 @@ const WELCOME_HTML = `<table role="presentation" width="100%" cellpadding="0" ce
             <h1 style="font-size:24px;font-weight:normal;text-align:center;line-height:1.3;margin:0 0 22px;">Welcome to Plain Dharma</h1>
             <div style="text-align:center;margin:0 0 26px;">
               <a href="https://plaindharma.com/read" style="text-decoration:none;">
-                <img src="https://plaindharma.com/illustrations/first-talk.png" width="280" height="280" alt="Plain Dharma illustration" style="display:inline-block;width:280px;max-width:100%;height:auto;border:0;border-radius:12px;" />
+                <img src="${assetUrl("illustrations/first-talk.png")}" width="280" height="280" alt="Plain Dharma illustration" style="display:inline-block;width:280px;max-width:100%;height:auto;border:0;border-radius:12px;" />
               </a>
             </div>
             <p style="font-size:16px;line-height:1.65;margin:0 0 16px;">Thank you for subscribing. Plain Dharma offers six foundational Buddhist suttas in plain modern English — free, and dedicated to the public domain.</p>

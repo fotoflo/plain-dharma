@@ -1,13 +1,14 @@
 import { localizeSectionTitle, type AudioManifest } from "@plain-dharma/content/audio";
+import { assetUrl } from "@plain-dharma/content/assets";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
 
 import { bundledManifest } from "./bundled-manifests";
 
-// Mobile streams audio from the deployed site (no bundled mp3s). NOTE: the
-// fast-variant renditions and updated manifests must be deployed to production
-// before fast-mode works on mobile — until then `durationFastSec` is absent and
-// the player hides its speed control (graceful).
-export const AUDIO_ORIGIN = "https://plaindharma.com";
+// Mobile streams audio (and fetches the per-sutta manifest) from the public
+// Supabase CDN via assetUrl — the same source the web uses. NOTE: the
+// fast-variant renditions and updated manifests must be uploaded before
+// fast-mode works on mobile — until then `durationFastSec` is absent and the
+// player hides its speed control (graceful).
 
 export type PlayerSection = {
   id: string;
@@ -31,12 +32,15 @@ export function manifestToSections(
   locale: Locale,
   slug: SuttaSlug
 ): PlayerSection[] {
-  const base = `${AUDIO_ORIGIN}/audio/${locale}/${slug}`;
+  const dir = `audio/${locale}/${slug}`;
   return manifest.sections.map((s) => ({
     id: s.id,
     title: localizeSectionTitle(locale, s.id, s.title),
-    slowUrl: `${base}/${s.file}`,
-    fastUrl: s.duration_fast_sec != null ? `${base}/fast/${s.file}` : undefined,
+    slowUrl: assetUrl(`${dir}/${s.file}`),
+    fastUrl:
+      s.duration_fast_sec != null
+        ? assetUrl(`${dir}/fast/${s.file}`)
+        : undefined,
     durationSec: s.duration_sec,
     durationFastSec: s.duration_fast_sec,
   }));
@@ -54,8 +58,7 @@ export async function fetchSuttaSections(
   const bundled = bundledManifest(locale, slug);
   if (bundled) return manifestToSections(bundled, locale, slug);
 
-  const base = `${AUDIO_ORIGIN}/audio/${locale}/${slug}`;
-  const res = await fetch(`${base}/manifest.json`);
+  const res = await fetch(assetUrl(`audio/${locale}/${slug}/manifest.json`));
   if (!res.ok) throw new Error(`audio manifest ${slug}: HTTP ${res.status}`);
   const manifest = (await res.json()) as AudioManifest;
   return manifestToSections(manifest, locale, slug);

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { assetUrl } from "@plain-dharma/content/assets";
 import { getSuttasInOrder, type Locale, type SuttaMeta } from "@/content";
 import { getStrings } from "@plain-dharma/content/strings";
 import { localizedHref } from "@/lib/locale-href";
@@ -187,7 +188,7 @@ function BookSection({ locale }: { locale: Locale }) {
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/downloads/plain-dharma-cover.jpg"
+            src={assetUrl("downloads/plain-dharma-cover.jpg")}
             alt="Plain Dharma — book cover"
             width={260}
             height={390}

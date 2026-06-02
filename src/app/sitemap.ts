@@ -13,7 +13,8 @@ const SITE_URL = "https://plaindharma.com";
  * Donation/thank-you routes are intentionally omitted (noindex anyway).
  *
  * ZH counterparts are included for every EN page except /download (Stripe
- * carve-out, EN-only). ZH priorities are nudged 0.1 below their EN twin.
+ * carve-out, EN-only) and /remix (asset hub, EN-only — the assets it links
+ * cover both locales). ZH priorities are nudged 0.1 below their EN twin.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -25,6 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/about`,    lastModified: now, changeFrequency: "yearly",  priority: 0.6 },
     { url: `${SITE_URL}/glossary`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/download`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE_URL}/remix`,    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/contribute`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     { url: `${SITE_URL}/privacy`,  lastModified: now, changeFrequency: "yearly",  priority: 0.3 },
     // ZH (no /zh/download — EN-only Stripe flow)

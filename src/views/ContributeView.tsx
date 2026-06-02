@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Locale } from "@/content";
 import { getStrings } from "@plain-dharma/content/strings";
 import { Wash } from "@/components/Wash";
@@ -36,6 +37,10 @@ export function ContributeView({ locale }: { locale: Locale }) {
           </li>
         </ul>
         <p>{s.contribute.pHelpClosing}</p>
+        <p>
+          {s.contribute.remixCrosslinkPrefix}
+          <Link href="/remix">{s.contribute.remixCrosslinkLink}</Link>
+        </p>
       </article>
 
       <div className="mt-12">

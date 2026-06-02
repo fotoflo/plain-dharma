@@ -14,13 +14,15 @@ export function Header() {
   const locale = getLocaleFromPathname(pathname);
   const s = getStrings(locale);
 
-  // Download is EN-only — we keep it pointing at /download regardless of
-  // the current locale so ZH readers can still find the download page.
+  // Download and Remix are EN-only — we keep them pointing at /download and
+  // /remix regardless of the current locale so ZH readers can still find them
+  // (the remix assets cover both locales).
   const LINKS = [
     { href: localizedHref(locale, "read"), label: s.nav.read },
     { href: localizedHref(locale, "about"), label: s.nav.about },
     { href: localizedHref(locale, "glossary"), label: s.nav.glossary },
     { href: localizedHref(locale, "contribute"), label: s.nav.contribute },
+    { href: "/remix", label: s.nav.remix },
     { href: "/download", label: s.nav.download },
   ];
 

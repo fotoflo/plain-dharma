@@ -24,8 +24,12 @@ Everything else should remain compatible with `output: 'export'`. Don't add more
 | `pnpm generate-illustrations` | Run Gemini image generation (needs `GOOGLE_GENERATIVE_AI_KEY` in `.env.local`) |
 | `pnpm transparentize-illustrations` | Alpha-fade backgrounds in-place |
 | `pnpm generate-audio` | TTS pipeline (run via `node --env-file=.env.local --import tsx`) |
+| `pnpm build-remix-assets` | Copy MDX source + build the text/audio zips into `public/downloads` for `/remix` |
+| `pnpm upload-assets` | Publish the heavy binaries (audio, illustrations, downloads) to the public Supabase bucket + write `asset-version.json` |
 
 No test runner is configured.
+
+**Heavy assets are offsite.** The audio mp3s, illustrations, and download bundles are **not** committed — they live in a public Supabase Storage bucket (`assets`) + CDN, resolved at runtime through `assetUrl()` in `packages/content/assets.ts`. Only the small per-sutta audio `manifest.json` stays in git (the web build reads it via `fs`). After regenerating audio/illustrations or rebuilding the zips, run `pnpm build-remix-assets` (zips) then **`pnpm upload-assets`** — until you upload, the new media won't appear on the live site (dev pulls from the CDN too). The version map (`packages/content/asset-version.json`) is committed and provides cache-busting hashes + sizes. See `docs/architecture/asset-hosting.md`.
 
 ## Architecture (big picture)
 
@@ -50,11 +54,12 @@ Adding a new sutta = update `SUTTAS`, add to `SUTTA_META`/`SUTTA_DISPLAY`, drop 
 - `canonical-links.ts` — Pali Nikaya references + scholarly translation links
 - `glossary.ts` — glossary entries
 - `strings.ts` — UI copy via `getStrings(locale)`
-- `audio.ts` — platform-agnostic audio types + the pure `combineManifests` stitcher
+- `audio.ts` — platform-agnostic audio types + the pure `combineManifests` stitcher; `getAudioFileUrl` resolves a track to its CDN URL via `assets.ts`
+- `assets.ts` — `assetUrl`/`assetDownloadUrl`/`assetSize`/`hasAsset`: resolve a bucket-relative path to its public Supabase CDN URL (cache-busted from `asset-version.json`). The one place that knows where the heavy binaries live; used by both web and mobile
 
 **Web-only content modules** (stay under `src/content/`):
-- `illustrations.ts` — `getIllustrationUrl(slug)` returns `/illustrations/{slug}.png?v=<mtime>`; **Server-only** (uses `fs.statSync`), do not import into Client Components or edge code
-- `audio.ts` — a shim that re-exports `@plain-dharma/content/audio` and adds the `fs`-based manifest readers (`getAudioManifest`, `getCombinedAudioManifest`)
+- `illustrations.ts` — `getIllustrationUrl(slug)` returns the CDN URL via `assetUrl` (no `fs` — safe anywhere)
+- `audio.ts` — a shim that re-exports `@plain-dharma/content/audio` and adds the `fs`-based manifest reader (`getAudioManifest`/`getCombinedAudioManifest`): reads the local `manifest.json` for metadata, resolves track URLs to the CDN
 - `en_tts/`, `zh_tts/` — TTS narration source text (intentionally distinct from the reading MDX); consumed by `scripts/generate-audio.ts`
 
 **Illustration pipeline.** `scripts/generate-illustrations.ts` calls Gemini's image model (tries several model names — Google's preview endpoints rename often; update `MODEL_CANDIDATES` when they change), writes to `public/illustrations/{slug}.png`, skips slugs whose file already exists (safe re-runs). Then `scripts/transparentize-illustrations.ts` alpha-fades the near-white Gemini background to transparent (luma > 0.86 + low saturation, soft edge) using ImageMagick if available, else `sharp`. Optional `{slug}-dark.png` variants render via `dark:hidden` / `hidden dark:block` in `SuttaIllustration.tsx` (CSS-only, no hydration).
@@ -64,8 +69,9 @@ Adding a new sutta = update `SUTTAS`, add to `SUTTA_META`/`SUTTA_DISPLAY`, drop 
 ## Gotchas
 
 - **Turbopack remark plugins must be string names**, not imported functions, in `next.config.ts` — Rust can't cross the JS boundary with function refs. Use `[["remark-frontmatter", ["yaml"]]]`.
-- **`images.localPatterns` is load-bearing in production.** Without the `/illustrations/**` and `/logo/**` entries, Next.js `<Image>` refuses any local path with a `?v=` query string, breaking cache-busting.
-- **`fs.statSync` in `illustrations.ts`** runs at build time on Vercel and is fine for SSG/RSC, but it is incompatible with edge runtime — do not move illustration URL generation into middleware or edge functions.
+- **`images.remotePatterns` is load-bearing in production.** `<Image>` loads illustrations from the Supabase CDN, so the `ffoiltrarbdbibmymlqm.supabase.co` `/storage/v1/object/public/assets/**` remote pattern in `next.config.ts` must stay — without it Next refuses to optimize the remote image. `/logo/**` is still a `localPattern`.
+- **Legacy asset URLs redirect (308) to the CDN.** `next.config.ts` `redirects()` sends `/audio`, `/illustrations`, `/downloads` to the bucket so already-shipped mobile builds and old shared links don't 404. Because of this, *everything* under `public/downloads/` must exist in the bucket (the upload script uploads the whole tree, including `text/`) — don't leave a path served only locally, or the redirect will 404 it.
+- **Don't reintroduce `?v=<mtime>` / `fs` for asset URLs.** Cache-busting now comes from the content hashes in `asset-version.json` (written by `pnpm upload-assets`). `assetUrl` is pure and safe in client/edge code.
 - **`dynamicParams = false`** in `src/app/[slug]/page.tsx` means slugs outside `SUTTAS` 404 at build time with no server fallback.
 - **ngrok versions split.** `scripts/shell/ngrok-dev.sh` prefers the system `ngrok` (v3 config: `~/.config/ngrok/ngrok.yml`) and falls back to `node_modules/.bin/ngrok` (v2 — different YAML format). `pnpm dev:tunnel` sets `NGROK=1`; the `dev` script forks ngrok only if that env var is set.
 - **`allowedDevOrigins` in `next.config.ts`** allowlists the dev LAN IP (`192.168.1.140`) and ngrok hostnames so phones/HMR can load `/_next/*`. Update the LAN IP if your network changes. Dev-only — has no production effect.
@@ -79,6 +85,7 @@ Adding a new sutta = update `SUTTAS`, add to `SUTTA_META`/`SUTTA_DISPLAY`, drop 
 - `content-pipeline.md` — MDX + registry data flow
 - `design-system.md` — palette, typography, `Wash`/`NightSky`/`ThemeToggle` internals
 - `illustrations.md` — Gemini generation + transparency pipeline
+- `asset-hosting.md` — heavy media offsite on the Supabase CDN (`assetUrl`, upload flow, redirects)
 - `dev-workflow.md` — ngrok, MDX authoring, phone-on-LAN
 - `deployment.md` — Vercel project `fastmonitor/plain-dharma`, DNS, static-export compatibility
 - `mobile.md` — React Native (Expo) app, pnpm monorepo (`apps/mobile` + `packages/content`), shared content, audio/offline

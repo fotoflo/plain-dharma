@@ -44,6 +44,8 @@ export function Footer() {
           <Link href={localizedHref(locale, "glossary")}>
             {s.footer.glossaryLink}
           </Link>
+          {/* Remix is EN-only (like /download), so it always points at /remix. */}
+          <Link href="/remix">{s.footer.remixLink}</Link>
           <Link href={localizedHref(locale, "contribute")}>
             {s.footer.contributeLink}
           </Link>

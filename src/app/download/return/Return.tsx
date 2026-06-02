@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { assetDownloadUrl } from "@plain-dharma/content/assets";
 
 function fileSlug(raw: string | null): "epub" | "pdf" | "m4b" {
   return raw === "pdf" || raw === "m4b" ? raw : "epub";
@@ -17,7 +18,7 @@ export function Return() {
   const to = params.get("to") === "cancel" ? "cancel" : "thankyou";
   const file = fileSlug(params.get("file"));
   const appLink = `mobile://download/donate?to=${to}&file=${file}`;
-  const fileHref = `/downloads/plain-dharma.${file}`;
+  const fileHref = assetDownloadUrl(`downloads/plain-dharma.${file}`);
   const [stuck, setStuck] = useState(false);
 
   useEffect(() => {

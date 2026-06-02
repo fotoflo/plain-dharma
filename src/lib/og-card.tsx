@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { assetUrl } from "@plain-dharma/content/assets";
 
 // Shared Open Graph card renderer. Mirrors site palette (parchment + saffron)
 // and ships Garamond Libre to Satori so the cards read in the same typeface
@@ -65,10 +66,20 @@ async function loadFonts(cjk: boolean): Promise<FontEntry[]> {
 }
 
 export async function publicImageDataUrl(publicPath: string): Promise<string> {
-  const abs = path.join(process.cwd(), "public", publicPath.replace(/^\//, ""));
-  const buf = await readFile(abs);
   const ext = path.extname(publicPath).slice(1).toLowerCase();
   const mime = ext === "jpg" ? "image/jpeg" : `image/${ext}`;
+  // Prefer a local copy (present in dev / before assets go offsite); otherwise
+  // pull from the Supabase CDN at build time. Illustrations no longer ship in
+  // the repo, so on Vercel the fetch path is the live one.
+  const buf = await readFile(
+    path.join(process.cwd(), "public", publicPath.replace(/^\//, ""))
+  ).catch(async () => {
+    const res = await fetch(assetUrl(publicPath));
+    if (!res.ok) {
+      throw new Error(`OG asset fetch ${publicPath}: HTTP ${res.status}`);
+    }
+    return Buffer.from(await res.arrayBuffer());
+  });
   return `data:${mime};base64,${buf.toString("base64")}`;
 }
 

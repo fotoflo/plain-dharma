@@ -8,7 +8,9 @@ import { DebugInfo } from "@/components/DebugInfo";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { OfflineDownload } from "@/components/OfflineDownload";
 import { openContribute, openDonate } from "@/lib/links";
+import { useMarginalia } from "@/marginalia/AuthContext";
 import { MyNotesSection } from "@/marginalia/MyNotesSection";
+import { SignInCard } from "@/marginalia/SignInCard";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -23,6 +25,7 @@ const THEME_OPTS: { value: ThemeMode; label: string }[] = [
 // gated.
 export default function MoreScreen() {
   const { palette, mode, setMode } = useTheme();
+  const { syncAvailable } = useMarginalia();
   const insets = useSafeAreaInsets();
   const c = getStrings(DEFAULT_LOCALE).contribute;
 
@@ -38,6 +41,18 @@ export default function MoreScreen() {
       <Text style={[styles.title, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
         Plain Dharma
       </Text>
+
+      {syncAvailable && (
+        <>
+          <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+            Account
+          </Text>
+          <Text style={[styles.note, { color: palette.ink }]}>
+            Sign in to sync your highlights and notes across devices.
+          </Text>
+          <SignInCard />
+        </>
+      )}
 
       <Text style={[styles.h, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
         Appearance

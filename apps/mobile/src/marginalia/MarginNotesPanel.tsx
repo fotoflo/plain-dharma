@@ -29,22 +29,29 @@ export function MarginNotesPanel({
   title = t.panelTitle,
   marks,
   showSlug = false,
+  signedIn = false,
+  email = null,
   onClose,
   onEdit,
   onRemove,
   onShare,
   onJump,
+  onSignOut,
 }: {
   visible: boolean;
   title?: string;
   marks: MarginMark[];
   /** Show the sutta slug on each row (useful in the global list). */
   showSlug?: boolean;
+  /** Account state — shows a "Synced · email · Sign out" footer when signed in. */
+  signedIn?: boolean;
+  email?: string | null;
   onClose: () => void;
   onEdit: (mark: MarginMark) => void;
   onRemove: (id: string) => void;
   onShare?: (mark: MarginMark) => void;
   onJump?: (mark: MarginMark) => void;
+  onSignOut?: () => void;
 }) {
   const { theme, palette } = useTheme();
 
@@ -124,6 +131,23 @@ export function MarginNotesPanel({
               )}
             />
           )}
+
+          {signedIn && onSignOut ? (
+            <View style={[styles.footer, { borderColor: palette.divider }]}>
+              <Text
+                numberOfLines={1}
+                style={[styles.footerText, { color: palette.ink, fontFamily: FONTS.serif }]}
+              >
+                {t.signedInAs}
+                {email ? ` · ${email}` : ""}
+              </Text>
+              <Pressable onPress={onSignOut} hitSlop={8}>
+                <Text style={[styles.signOut, { color: palette.link, fontFamily: FONTS.serif }]}>
+                  {t.signOut}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
         </Pressable>
       </Pressable>
     </Modal>
@@ -159,4 +183,15 @@ const styles = StyleSheet.create({
   noteText: { fontSize: 15, lineHeight: 21, paddingLeft: 12, marginTop: 6, opacity: 0.8 },
   highlightLabel: { fontSize: 11, letterSpacing: 1, paddingLeft: 12, marginTop: 6, opacity: 0.4 },
   actions: { flexDirection: "row", gap: 18, paddingLeft: 12, marginTop: 8 },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderTopWidth: 1,
+    paddingTop: 14,
+    paddingBottom: 20,
+    gap: 12,
+  },
+  footerText: { flex: 1, fontSize: 14, opacity: 0.6 },
+  signOut: { fontSize: 14 },
 });

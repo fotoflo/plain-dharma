@@ -240,6 +240,8 @@ export default function SuttaScreen() {
         visible={mn.panelOpen}
         title="Notes on this talk"
         marks={mn.marksForSlug}
+        signedIn={mn.signedIn}
+        email={mn.email}
         onClose={() => mn.setPanelOpen(false)}
         onEdit={(m) => {
           mn.setPanelOpen(false);
@@ -253,6 +255,10 @@ export default function SuttaScreen() {
         onJump={(m) => {
           mn.setPanelOpen(false);
           scrollToAnchor(m.anchor);
+        }}
+        onSignOut={() => {
+          mn.setPanelOpen(false);
+          void mn.signOut();
         }}
       />
 

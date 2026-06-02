@@ -58,7 +58,8 @@ interface PendingSelection {
 }
 
 export function useSuttaMarginalia(slug: string, locale: Locale) {
-  const { marks, add, updateMark, remove, signedIn, signInWithEmail } = useMarginalia();
+  const { marks, add, updateMark, remove, signedIn, email, signInWithEmail, signOut } =
+    useMarginalia();
 
   // The settled selection (toolbar open). The native UITextView owns the
   // on-screen selection highlight, so there's no live word-wash to clear —
@@ -272,6 +273,8 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
 
   return {
     signedIn,
+    email,
+    signOut,
     marksForSlug,
     markedAnchors,
     inlineHighlightsFor,

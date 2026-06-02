@@ -1,6 +1,6 @@
 /**
- * "Highlights & notes" block for the More tab: the sign-in/account card plus a
- * "My notes" button that opens the GLOBAL list of every mark across all suttas,
+ * "Highlights & notes" block for the More tab: a "My notes" button that opens
+ * the GLOBAL list of every mark across all suttas,
  * with edit (note + color), share, and delete. Self-contained — owns its own
  * panel / composer / share state so more.tsx stays a simple layout.
  */
@@ -16,7 +16,6 @@ import { MarginNotesPanel } from "./MarginNotesPanel";
 import { NoteComposer } from "./NoteComposer";
 import { buildSharePayload, type SharePayload } from "./share";
 import { ShareSheet } from "./ShareSheet";
-import { SignInCard } from "./SignInCard";
 import type { MarginMark } from "./types";
 
 export function MyNotesSection() {
@@ -48,8 +47,6 @@ export function MyNotesSection() {
 
   return (
     <>
-      <SignInCard />
-
       <Pressable
         onPress={() => setPanelOpen(true)}
         style={[styles.linkRow, { borderColor: palette.divider }]}

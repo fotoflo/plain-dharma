@@ -203,12 +203,20 @@ function BookSection({ locale }: { locale: Locale }) {
             {s.home.bookFormats}
           </p>
           <div className="mt-7 flex flex-col items-center gap-5 md:items-start">
-            <Link
-              href="/download"
-              className="inline-flex items-center justify-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline hover:no-underline hover:opacity-90"
-            >
-              {s.home.bookCta}
-            </Link>
+            <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
+              <Link
+                href="/download"
+                className="inline-flex items-center justify-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline hover:no-underline hover:opacity-90"
+              >
+                {s.home.bookCta}
+              </Link>
+              <Link
+                href={localizedHref(locale, "read")}
+                className="inline-flex items-center justify-center rounded-full border border-divider px-6 py-2.5 font-sans text-sm font-medium text-ink no-underline hover:no-underline hover:border-accent"
+              >
+                {s.home.bookCtaListen}
+              </Link>
+            </div>
             <StoreBadges className="justify-center md:justify-start" />
           </div>
         </div>

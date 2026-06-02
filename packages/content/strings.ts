@@ -35,13 +35,14 @@ const en = {
     heroSubtitle:
       "The Buddha's foundational teachings, in plain modern English.",
     ctaReadAll: "Read all six",
-    ctaDownload: "Download",
+    ctaDownload: "Free Download",
     heroBlurb:
       "Six short sutras — the ones at the root of the whole tradition — rendered for a first-time reader who'd rather understand than wade through footnotes. Free to read, free to copy, free to print, free to listen.",
     sixTeachingsLabel: "The six teachings",
     bookTitle: "Download the Book",
     bookFormats: "Available in ebook, audiobook, and app form.",
-    bookCta: "Download the Book",
+    bookCta: "Free Download",
+    bookCtaListen: "Listen to the Audiobook",
     getTheApp: "Get the app",
   },
   sutta: {
@@ -313,13 +314,14 @@ const zh: Strings = {
     heroLine2: "平实的语言。",
     heroSubtitle: "佛陀最早的几篇开示，用平实的现代汉语呈现。",
     ctaReadAll: "六篇一起读",
-    ctaDownload: "下载",
+    ctaDownload: "免费下载",
     heroBlurb:
       "六篇短短的开示——整个传承的根基——为第一次接触的读者而做，与其在脚注里钻来钻去，不如直接读懂。可以自由阅读、自由复制、自由打印、自由聆听。",
     sixTeachingsLabel: "这六篇开示",
     bookTitle: "下载这本书",
     bookFormats: "提供电子书、有声书和应用三种形式。",
-    bookCta: "下载这本书",
+    bookCta: "免费下载",
+    bookCtaListen: "收听有声书",
     getTheApp: "下载应用",
   },
   sutta: {

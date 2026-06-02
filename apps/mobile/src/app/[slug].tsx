@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE, getMeta, isSuttaSlug } from "@plain-dharma/content";
+import { getMeta, isSuttaSlug } from "@plain-dharma/content";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -20,6 +20,7 @@ import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingControls } from "@/components/FloatingControls";
 import { getSuttaMarkdown, splitSections } from "@/content/markdown";
+import { useLocale } from "@/i18n/LocaleContext";
 import { GlobalNotesPanel } from "@/marginalia/GlobalNotesPanel";
 import { MarginNotesPanel } from "@/marginalia/MarginNotesPanel";
 import { NoteComposer } from "@/marginalia/NoteComposer";
@@ -43,6 +44,7 @@ export default function SuttaScreen() {
   const { theme, palette } = useTheme();
   const { contrast } = useReadingPrefs();
   const insets = useSafeAreaInsets();
+  const { locale } = useLocale();
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const { sections: audioSections, index } = useAudio();
 
@@ -59,7 +61,7 @@ export default function SuttaScreen() {
   // safe fallback so the hook order stays stable; we only render its UI when the
   // slug is valid.
   const safeSlug = slug && isSuttaSlug(slug) ? slug : "";
-  const mn = useSuttaMarginalia(safeSlug, DEFAULT_LOCALE);
+  const mn = useSuttaMarginalia(safeSlug, locale);
 
   // Active audio section, with the combined "slug--section" prefix stripped.
   const activeId = audioSections[index]?.id?.split("--").pop();
@@ -96,8 +98,8 @@ export default function SuttaScreen() {
   const { onSelect: mnOnSelect, beginEdit, closeSelection, marksForSlug } = mn;
 
   const contentSections = useMemo(
-    () => (safeSlug ? splitSections(getSuttaMarkdown(DEFAULT_LOCALE, safeSlug)) : []),
-    [safeSlug],
+    () => (safeSlug ? splitSections(getSuttaMarkdown(locale, safeSlug)) : []),
+    [safeSlug, locale],
   );
 
   const handlePressHighlight = useCallback(
@@ -129,7 +131,7 @@ export default function SuttaScreen() {
     );
   }
 
-  const meta = getMeta(DEFAULT_LOCALE, slug);
+  const meta = getMeta(locale, slug);
 
   // Toolbar geometry (web parity): the toolbar is a screen-absolute overlay
   // anchored to the selection's window-coordinate rect — centred over the
@@ -293,7 +295,7 @@ export default function SuttaScreen() {
 
       <Toast message={mn.toast} />
 
-      <FloatingControls locale={DEFAULT_LOCALE} slug={slug} />
+      <FloatingControls locale={locale} slug={slug} />
     </View>
   );
 }

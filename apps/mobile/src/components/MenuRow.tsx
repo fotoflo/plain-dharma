@@ -80,7 +80,7 @@ export function MenuRow({
           {value}
         </Text>
       ) : null}
-      <Ionicons name="chevron-forward" size={18} color={palette.ink} style={styles.chevron} />
+      <Ionicons name="chevron-forward" size={16} color={palette.ink} style={styles.chevron} />
     </View>
   );
 
@@ -124,5 +124,5 @@ const styles = StyleSheet.create({
   icon: { width: 24, textAlign: "center" },
   label: { fontSize: 17, flex: 1 },
   value: { fontSize: 16, opacity: 0.5 },
-  chevron: { opacity: 0.3 },
+  chevron: { opacity: 0.45 },
 });

@@ -1,10 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
+import { SUPPORTED_LOCALES } from "@plain-dharma/content";
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { DebugInfo } from "@/components/DebugInfo";
 import { MenuGroup, MenuRow, SectionLabel } from "@/components/MenuRow";
+import { LOCALE_LABELS, useLocale } from "@/i18n/LocaleContext";
 import { useMarginalia } from "@/marginalia/AuthContext";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -22,7 +24,8 @@ const THEME_OPTS: { value: ThemeMode; label: string }[] = [
 // docs/architecture/more-tab-refactor.md.
 export default function MoreScreen() {
   const { palette, mode, setMode } = useTheme();
-  const { syncAvailable, signedIn, email } = useMarginalia();
+  const { locale, setLocale } = useLocale();
+  const { syncAvailable, signedIn, email, signOut } = useMarginalia();
   const insets = useSafeAreaInsets();
 
   return (
@@ -38,35 +41,54 @@ export default function MoreScreen() {
         Plain Dharma
       </Text>
 
-      {/* Account card — live status; hidden entirely when sync isn't configured. */}
+      {/* Account — hidden entirely when sync isn't configured. Signed in: a
+          static status row with an inline "Sign out" (no drill-down — the only
+          action lives right here). Signed out: a tappable card → the magic-link
+          sign-in screen. */}
       {syncAvailable ? (
-        <Link href="/account" asChild>
-          <Pressable
-            style={[styles.account, { borderColor: palette.divider }]}
-            accessibilityRole="button"
-            accessibilityLabel="Account"
-          >
-            <Ionicons
-              name={signedIn ? "checkmark-circle" : "person-circle-outline"}
-              size={36}
-              color={palette.accent}
-            />
+        signedIn ? (
+          <View style={StyleSheet.flatten([styles.account, { borderColor: palette.divider }])}>
+            <Ionicons name="checkmark-circle" size={36} color={palette.accent} />
             <View style={{ flex: 1 }}>
               <Text style={[styles.accountTitle, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-                {signedIn ? "Signed in" : "Sign in to sync"}
+                Signed in
               </Text>
               <Text
                 numberOfLines={1}
                 style={[styles.accountSub, { color: palette.ink, fontFamily: FONTS.serif }]}
               >
-                {signedIn
-                  ? (email ?? "Synced across your devices")
-                  : "Highlights & notes across your devices"}
+                {email ?? "Synced across your devices"}
               </Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={palette.ink} style={{ opacity: 0.3 }} />
-          </Pressable>
-        </Link>
+            <Pressable onPress={() => signOut()} hitSlop={10} accessibilityRole="button">
+              <Text style={[styles.signOut, { color: palette.link, fontFamily: FONTS.serif }]}>
+                Sign out
+              </Text>
+            </Pressable>
+          </View>
+        ) : (
+          <Link href="/account" asChild>
+            <Pressable
+              style={StyleSheet.flatten([styles.account, { borderColor: palette.divider }])}
+              accessibilityRole="button"
+              accessibilityLabel="Sign in"
+            >
+              <Ionicons name="person-circle-outline" size={36} color={palette.accent} />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.accountTitle, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+                  Sign in to sync
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.accountSub, { color: palette.ink, fontFamily: FONTS.serif }]}
+                >
+                  Highlights & notes across your devices
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={palette.ink} style={{ opacity: 0.3 }} />
+            </Pressable>
+          </Link>
+        )
       ) : null}
 
       {/* Settings — Appearance kept inline (single toggle, no screen needed). */}
@@ -95,6 +117,37 @@ export default function MoreScreen() {
                   }}
                 >
                   {opt.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <View style={[styles.cardDivider, { borderColor: palette.divider }]} />
+
+        <Text style={[styles.cardLabel, { color: palette.ink, fontFamily: FONTS.serif }]}>
+          Language
+        </Text>
+        <View style={[styles.segRow, { borderColor: palette.divider }]}>
+          {SUPPORTED_LOCALES.map((loc) => {
+            const active = loc === locale;
+            return (
+              <Pressable
+                key={loc}
+                onPress={() => setLocale(loc)}
+                style={[styles.seg, active && { backgroundColor: palette.accentStrong }]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+              >
+                <Text
+                  style={{
+                    color: active ? palette.onAccent : palette.ink,
+                    opacity: active ? 1 : 0.7,
+                    fontFamily: FONTS.serif,
+                    fontSize: 15,
+                  }}
+                >
+                  {LOCALE_LABELS[loc]}
                 </Text>
               </Pressable>
             );
@@ -134,6 +187,7 @@ const styles = StyleSheet.create({
   },
   accountTitle: { fontSize: 18 },
   accountSub: { fontSize: 14, opacity: 0.6, marginTop: 1 },
+  signOut: { fontSize: 15 },
   card: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 12,
@@ -142,6 +196,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   cardLabel: { fontSize: 17 },
+  cardDivider: { borderTopWidth: StyleSheet.hairlineWidth, marginVertical: 4 },
   segRow: {
     flexDirection: "row",
     borderWidth: 1,

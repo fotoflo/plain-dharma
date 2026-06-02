@@ -10,6 +10,8 @@ type Props = {
   /** Base URL prefix, e.g. "/audio/en/first-talk" — the component appends "/filename.mp3" */
   audioBaseUrl: string;
   locale: Locale;
+  /** When it flips true, start playing the first section once (deep-link "?play"). */
+  autoPlay?: boolean;
 };
 
 function formatTime(sec: number): string {
@@ -31,7 +33,7 @@ const FADE_SEC = FADE_MS / 1000;
 // control only appears when a fast variant exists for the manifest.
 type Speed = "slow" | "fast";
 
-export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
+export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay }: Props) {
   const s = getStrings(locale).audio;
   // Resolve a section to its mp3 URL for the given pace. A section's `file`
   // (slow) is usually a bare filename ("01-opening.mp3"), but the combined
@@ -282,6 +284,18 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
       audio.removeEventListener("ended", handleEnded);
     };
   }, [handleEnded, sectionUrl, speed, sections, fadeVolume]);
+
+  // Deep-link autoplay (e.g. /read?play=1): once `autoPlay` flips true, start
+  // the first section. Best-effort — if the browser blocks playback after the
+  // navigation (no carried-over user gesture), loadSection's .catch leaves the
+  // player open and paused with the play button ready. Guarded so it fires once.
+  const autoPlayedRef = useRef(false);
+  useEffect(() => {
+    if (autoPlay && !autoPlayedRef.current && audioRef.current) {
+      autoPlayedRef.current = true;
+      loadSection(currentIdx, true);
+    }
+  }, [autoPlay, loadSection, currentIdx]);
 
   // Keep the active section visible in the (possibly scrolled) section list.
   useEffect(() => {

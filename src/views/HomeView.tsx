@@ -211,7 +211,7 @@ function BookSection({ locale }: { locale: Locale }) {
                 {s.home.bookCta}
               </Link>
               <Link
-                href={localizedHref(locale, "read")}
+                href={`${localizedHref(locale, "read")}?play=1`}
                 className="inline-flex items-center justify-center rounded-full border border-divider px-6 py-2.5 font-sans text-sm font-medium text-ink no-underline hover:no-underline hover:border-accent"
               >
                 {s.home.bookCtaListen}

@@ -14,8 +14,30 @@ type Props = {
 
 export function FloatingAudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
   const [open, setOpen] = useState(false);
+  const [autoStart, setAutoStart] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const s = getStrings(locale).audio;
+
+  // Deep link: /read?play=1 (from the "Listen to the Audiobook" CTA) opens the
+  // player and starts playback. Read on the client only, then strip the param
+  // so a refresh or share doesn't re-trigger. Runs once on mount.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("play")) {
+      // Intentional one-time, client-only state sync from the URL. A lazy
+      // useState initializer would read window during render and mismatch the
+      // (closed) prerendered HTML, so the effect is the correct place.
+      /* eslint-disable react-hooks/set-state-in-effect */
+      setOpen(true);
+      setAutoStart(true);
+      /* eslint-enable react-hooks/set-state-in-effect */
+      window.history.replaceState(
+        {},
+        "",
+        window.location.pathname + window.location.hash,
+      );
+    }
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -48,6 +70,7 @@ export function FloatingAudioPlayer({ manifest, audioBaseUrl, locale }: Props) {
           manifest={manifest}
           audioBaseUrl={audioBaseUrl}
           locale={locale}
+          autoPlay={autoStart}
         />
       </div>
       <button

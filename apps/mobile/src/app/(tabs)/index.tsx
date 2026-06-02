@@ -1,12 +1,15 @@
 import { DEFAULT_LOCALE, getSuttasInOrder } from "@plain-dharma/content";
 import { getStrings } from "@plain-dharma/content/strings";
-import { Link } from "expo-router";
+import { Image } from "expo-image";
+import { Link, useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
+import { SITE_ORIGIN } from "@/lib/site";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -16,6 +19,8 @@ import { FONTS } from "@/theme/tokens";
 export default function HomeScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { loadCombined, play } = useAudio();
   const s = getStrings(DEFAULT_LOCALE).home;
   const suttas = getSuttasInOrder(DEFAULT_LOCALE);
 
@@ -62,7 +67,7 @@ export default function HomeScreen() {
             </Text>
           </Pressable>
         </Link>
-        <Link href="/more" asChild>
+        <Link href="/download" asChild>
           <Pressable
             style={StyleSheet.flatten([styles.ctaSecondary, { borderColor: palette.divider }])}
           >
@@ -76,6 +81,54 @@ export default function HomeScreen() {
       <Text style={[styles.blurb, { color: palette.ink, fontFamily: FONTS.serif }]}>
         {s.heroBlurb}
       </Text>
+
+      {/* DOWNLOAD THE BOOK — mirrors the web home section: cover + formats +
+          Free Download / Listen CTAs. Store badges omitted (already in-app).
+          Listen loads the combined audiobook, starts playback (native, no
+          autoplay restriction), then lands on the read tab where the player
+          lives. */}
+      <View style={[styles.bookCard, { borderColor: palette.divider }]}>
+        <View style={styles.coverWrap}>
+          <Image
+            source={`${SITE_ORIGIN}/downloads/plain-dharma-cover.jpg`}
+            style={styles.cover}
+            contentFit="cover"
+            transition={200}
+            alt={s.bookTitle}
+          />
+        </View>
+        <Text style={[styles.bookTitle, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+          {s.bookTitle}
+        </Text>
+        <Text style={[styles.bookFormats, { color: palette.ink }]}>
+          {s.bookFormats}
+        </Text>
+        <View style={styles.ctaRow}>
+          <Link href="/download" asChild>
+            <Pressable
+              style={StyleSheet.flatten([styles.ctaPrimary, { backgroundColor: palette.accentStrong }])}
+            >
+              <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 15 }}>
+                {s.bookCta}
+              </Text>
+            </Pressable>
+          </Link>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={s.bookCtaListen}
+            onPress={async () => {
+              await loadCombined(DEFAULT_LOCALE);
+              play();
+              router.push("/read");
+            }}
+            style={StyleSheet.flatten([styles.ctaSecondary, { borderColor: palette.divider }])}
+          >
+            <Text style={{ color: palette.ink, fontFamily: FONTS.serif, fontSize: 15 }}>
+              {s.bookCtaListen}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
 
       {/* NEWSLETTER */}
       <View style={styles.section}>
@@ -188,6 +241,31 @@ const styles = StyleSheet.create({
     marginTop: 28,
   },
   section: { marginTop: 40 },
+  bookCard: {
+    marginTop: 40,
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 28,
+    alignItems: "center",
+  },
+  coverWrap: {
+    borderRadius: 6,
+    shadowColor: "#1f1812",
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
+  },
+  cover: { width: 168, height: 252, borderRadius: 6 },
+  bookTitle: { textAlign: "center", fontSize: 30, lineHeight: 34, marginTop: 24 },
+  bookFormats: {
+    textAlign: "center",
+    fontSize: 16,
+    lineHeight: 23,
+    opacity: 0.7,
+    marginTop: 10,
+  },
   listLabel: { fontSize: 12, letterSpacing: 2, opacity: 0.6, marginTop: 48 },
   row: {
     flexDirection: "row",

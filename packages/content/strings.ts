@@ -263,6 +263,7 @@ const en = {
     sectionSize: "Size",
     sectionContrast: "Contrast",
     sectionFont: "Font",
+    sectionTheme: "Theme",
     a11ySize: "Text size",
     a11yContrast: "Contrast level",
     a11yFont: "Font choice",
@@ -303,6 +304,14 @@ const en = {
     pace: "Pace",
     slower: "Slower",
     faster: "Faster",
+    close: "Close",
+    downloadForOffline: "Download for offline",
+    downloading: "Downloading",
+    // Framing tracks are baked into manifests in English; these localize them
+    // by section id at render time. `trackDrop` is the per-sutta distilled line.
+    trackOpening: "Opening",
+    trackPreface: "Preface",
+    trackDrop: "The heart of it",
   },
   canonicalLinks: {
     paliSourcePrefix: "Pali source —",
@@ -557,6 +566,7 @@ const zh: Strings = {
     sectionSize: "字号",
     sectionContrast: "对比度",
     sectionFont: "字体",
+    sectionTheme: "主题",
     a11ySize: "文字大小",
     a11yContrast: "对比度",
     a11yFont: "字体选择",
@@ -595,6 +605,12 @@ const zh: Strings = {
     pace: "语速",
     slower: "较慢",
     faster: "较快",
+    close: "关闭",
+    downloadForOffline: "下载以离线收听",
+    downloading: "下载中",
+    trackOpening: "开篇",
+    trackPreface: "前言",
+    trackDrop: "心要",
   },
   canonicalLinks: {
     paliSourcePrefix: "巴利原典 ——",

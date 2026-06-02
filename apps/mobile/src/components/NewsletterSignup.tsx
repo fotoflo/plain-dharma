@@ -8,6 +8,9 @@ import {
   View,
 } from "react-native";
 
+import { getStrings } from "@plain-dharma/content/strings";
+
+import { useLocale } from "@/i18n/LocaleContext";
 import { subscribe } from "@/lib/newsletter";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -16,6 +19,8 @@ type Status = "idle" | "loading" | "done" | "error";
 
 export function NewsletterSignup() {
   const { palette } = useTheme();
+  const { locale } = useLocale();
+  const s = getStrings(locale).newsletter;
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
@@ -28,9 +33,7 @@ export function NewsletterSignup() {
     if (res.ok) {
       setStatus("done");
       setMessage(
-        res.alreadySubscribed
-          ? "You're already subscribed."
-          : "Thanks — you're on the list."
+        res.alreadySubscribed ? s.successAlreadySubscribed : s.successNew
       );
       if (!res.alreadySubscribed) setEmail("");
     } else {
@@ -47,7 +50,7 @@ export function NewsletterSignup() {
           setEmail(t);
           if (status !== "idle") setStatus("idle");
         }}
-        placeholder="you@example.com"
+        placeholder={s.emailPlaceholder}
         placeholderTextColor={`${palette.ink}80`}
         autoCapitalize="none"
         autoCorrect={false}
@@ -63,7 +66,7 @@ export function NewsletterSignup() {
           <ActivityIndicator color={palette.onAccent} />
         ) : (
           <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 16 }}>
-            Subscribe
+            {s.submit}
           </Text>
         )}
       </Pressable>

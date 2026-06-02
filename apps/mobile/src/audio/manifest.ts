@@ -1,4 +1,4 @@
-import type { AudioManifest } from "@plain-dharma/content/audio";
+import { localizeSectionTitle, type AudioManifest } from "@plain-dharma/content/audio";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
 
 import { bundledManifest } from "./bundled-manifests";
@@ -34,7 +34,7 @@ export function manifestToSections(
   const base = `${AUDIO_ORIGIN}/audio/${locale}/${slug}`;
   return manifest.sections.map((s) => ({
     id: s.id,
-    title: s.title,
+    title: localizeSectionTitle(locale, s.id, s.title),
     slowUrl: `${base}/${s.file}`,
     fastUrl: s.duration_fast_sec != null ? `${base}/fast/${s.file}` : undefined,
     durationSec: s.duration_sec,

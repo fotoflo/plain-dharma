@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 import { type Locale } from "@plain-dharma/content";
+import { getStrings } from "@plain-dharma/content/strings";
 
 import { useAudio } from "@/audio/AudioProvider";
 import { useDownloads } from "@/audio/DownloadsProvider";
@@ -62,6 +63,7 @@ function ProgressBar({
 function DownloadControl({ locale }: { locale: Locale }) {
   const { palette } = useTheme();
   const { downloaded, busyLocale, progress, download } = useDownloads();
+  const s = getStrings(locale).audio;
   if (downloaded[locale]) return null;
   const busy = busyLocale === locale;
   return (
@@ -79,8 +81,8 @@ function DownloadControl({ locale }: { locale: Locale }) {
       )}
       <Text style={[styles.dlText, { color: busy ? palette.ink : palette.accent }]}>
         {busy
-          ? `Downloading${progress ? ` ${progress.done}/${progress.total}` : "…"}`
-          : "Download for offline"}
+          ? `${s.downloading}${progress ? ` ${progress.done}/${progress.total}` : "…"}`
+          : s.downloadForOffline}
       </Text>
     </Pressable>
   );
@@ -88,6 +90,7 @@ function DownloadControl({ locale }: { locale: Locale }) {
 
 export function AudioPanel({ locale }: { locale: Locale }) {
   const { palette } = useTheme();
+  const s = getStrings(locale).audio;
   const {
     sections,
     index,
@@ -131,8 +134,8 @@ export function AudioPanel({ locale }: { locale: Locale }) {
     <View style={[styles.pace, { borderColor: palette.divider }]}>
       {(
         [
-          ["slow", "Slower"],
-          ["fast", "Faster"],
+          ["slow", s.slower],
+          ["fast", s.faster],
         ] as const
       ).map(([val, label]) => {
         const active = speed === val;
@@ -160,7 +163,7 @@ export function AudioPanel({ locale }: { locale: Locale }) {
   if (isPlaying) {
     return (
       <View>
-        <Text style={[styles.label, { color: palette.ink }]}>NOW PLAYING</Text>
+        <Text style={[styles.label, { color: palette.ink }]}>{s.nowPlaying.toUpperCase()}</Text>
         <Text style={[styles.currentTitle, { color: palette.ink, fontFamily: FONTS.serif }]}>
           {current.title}
         </Text>
@@ -227,7 +230,7 @@ export function AudioPanel({ locale }: { locale: Locale }) {
   const total = sections.reduce((n, s) => n + sectionDuration(s, speed), 0);
   return (
     <View>
-      <Text style={[styles.label, { color: palette.ink }]}>LISTEN</Text>
+      <Text style={[styles.label, { color: palette.ink }]}>{s.listen.toUpperCase()}</Text>
       <ScrollView style={styles.toc}>
         {sections.map((s, i) => {
           const active = i === index;
@@ -264,7 +267,9 @@ export function AudioPanel({ locale }: { locale: Locale }) {
       <View style={[styles.tocFooter, { borderColor: palette.divider }]}>
         {PaceControl}
         <Text style={{ marginLeft: "auto", color: palette.ink, opacity: 0.35, fontSize: 12 }}>
-          {sections.length} sections · {formatTime(total)}
+          {s.sectionsTotalLine
+            .replace("{n}", String(sections.length))
+            .replace("{time}", formatTime(total))}
         </Text>
       </View>
       <DownloadControl locale={locale} />

@@ -5,7 +5,8 @@
 // manifests over HTTP from plaindharma.com. Both share these types, the URL
 // helper, and the pure combine logic for the /read playlist.
 
-import { SUTTAS, type SuttaSlug } from "./index";
+import { SUTTAS, type Locale, type SuttaSlug } from "./index";
+import { getStrings } from "./strings";
 
 export type AudioSection = {
   id: string;
@@ -35,6 +36,33 @@ export function getAudioFileUrl(
   file: string
 ): string {
   return `/audio/${locale}/${slug}/${file}`;
+}
+
+/**
+ * Localize a section's display title. The framing tracks (`preface`, `opening`,
+ * `drop`) are baked into manifests in English at generation time; everything
+ * else (the sutta name on the `title` track, the heading-derived sections) is
+ * already in the locale's language, so it passes through unchanged. Section ids
+ * may be slug-prefixed (`loving-kindness--opening`) in the combined playlist —
+ * we match the bare id.
+ */
+export function localizeSectionTitle(
+  locale: string,
+  id: string,
+  fallbackTitle: string
+): string {
+  const a = getStrings(locale as Locale).audio;
+  const bare = id.includes("--") ? id.slice(id.indexOf("--") + 2) : id;
+  switch (bare) {
+    case "preface":
+      return a.trackPreface;
+    case "opening":
+      return a.trackOpening;
+    case "drop":
+      return a.trackDrop;
+    default:
+      return fallbackTitle;
+  }
 }
 
 export type ManifestEntry = { slug: SuttaSlug; manifest: AudioManifest };

@@ -1,5 +1,5 @@
 import { SUTTAS, type Locale, type SuttaSlug } from "@plain-dharma/content";
-import type { AudioManifest } from "@plain-dharma/content/audio";
+import { localizeSectionTitle, type AudioManifest } from "@plain-dharma/content/audio";
 import { Directory, File, Paths } from "expo-file-system";
 
 import {
@@ -110,7 +110,7 @@ export async function resolveSuttaSections(
   if (local) {
     return local.sections.map((s) => ({
       id: s.id,
-      title: s.title,
+      title: localizeSectionTitle(locale, s.id, s.title),
       slowUrl: new File(suttaDir(locale, slug), s.file).uri,
       // Fast variants aren't downloaded in v1 — offline plays the slow pace.
       fastUrl: undefined,

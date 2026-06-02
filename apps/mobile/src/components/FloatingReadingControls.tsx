@@ -1,6 +1,8 @@
+import { getStrings } from "@plain-dharma/content/strings";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useLocale } from "@/i18n/LocaleContext";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import type { Palette } from "@/theme/tokens";
@@ -53,25 +55,13 @@ function Segmented<T extends string>({
   );
 }
 
+// Size options use "A" glyphs (locale-agnostic), so they stay module-level.
+// The other option labels are localized per-render inside the component.
 const SIZE_OPTS: Option<ReadingSize>[] = [
   { value: "sm", label: "A", glyph: 13 },
   { value: "md", label: "A", glyph: 16 },
   { value: "lg", label: "A", glyph: 19 },
   { value: "xl", label: "A", glyph: 23 },
-];
-const CONTRAST_OPTS: Option<Contrast>[] = [
-  { value: "low", label: "Low" },
-  { value: "med", label: "Med" },
-  { value: "high", label: "High" },
-];
-const FONT_OPTS: Option<ReadingFont>[] = [
-  { value: "serif", label: "Serif" },
-  { value: "accessible", label: "Accessible" },
-];
-const THEME_OPTS: Option<ThemeMode>[] = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "Auto" },
 ];
 
 // Floating "Aa" reading controls, mirroring the web ReadingControls panel:
@@ -87,8 +77,27 @@ export function FloatingReadingControls({
   onToggle: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  const { locale } = useLocale();
   const { palette, mode, setMode } = useTheme();
   const { size, contrast, font, setSize, setContrast, setFont } = useReadingPrefs();
+
+  const strings = getStrings(locale);
+  const s = strings.readingControls;
+  const more = strings.more;
+  const CONTRAST_OPTS: Option<Contrast>[] = [
+    { value: "low", label: s.contrastLow },
+    { value: "med", label: s.contrastMed },
+    { value: "high", label: s.contrastHigh },
+  ];
+  const FONT_OPTS: Option<ReadingFont>[] = [
+    { value: "serif", label: s.fontSerif },
+    { value: "accessible", label: s.fontAccessible },
+  ];
+  const THEME_OPTS: Option<ThemeMode>[] = [
+    { value: "light", label: more.themeLight },
+    { value: "dark", label: more.themeDark },
+    { value: "system", label: more.themeAuto },
+  ];
 
   return (
     <View style={[styles.wrap, { top: insets.top + 8 }]} pointerEvents="box-none">
@@ -96,7 +105,7 @@ export function FloatingReadingControls({
         onPress={onToggle}
         style={[styles.fab, { backgroundColor: palette.bg, borderColor: palette.accent }]}
         accessibilityRole="button"
-        accessibilityLabel="Reading settings"
+        accessibilityLabel={s.a11yTrigger}
       >
         <Text style={{ color: palette.accent, fontFamily: FONTS.serif, fontSize: 18 }}>
           Aa
@@ -107,7 +116,7 @@ export function FloatingReadingControls({
           style={[styles.panel, { backgroundColor: palette.bg, borderColor: palette.divider }]}
         >
           <Segmented
-            label="SIZE"
+            label={s.sectionSize.toUpperCase()}
             value={size}
             options={SIZE_OPTS}
             onChange={setSize}
@@ -115,21 +124,21 @@ export function FloatingReadingControls({
             serifGlyph
           />
           <Segmented
-            label="CONTRAST"
+            label={s.sectionContrast.toUpperCase()}
             value={contrast}
             options={CONTRAST_OPTS}
             onChange={setContrast}
             palette={palette}
           />
           <Segmented
-            label="FONT"
+            label={s.sectionFont.toUpperCase()}
             value={font}
             options={FONT_OPTS}
             onChange={setFont}
             palette={palette}
           />
           <Segmented
-            label="THEME"
+            label={s.sectionTheme.toUpperCase()}
             value={mode}
             options={THEME_OPTS}
             onChange={setMode}

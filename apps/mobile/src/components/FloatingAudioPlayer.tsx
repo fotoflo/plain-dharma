@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
+import { getStrings } from "@plain-dharma/content/strings";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -11,10 +12,9 @@ import { AudioPanel } from "./AudioPanel";
 
 // Floating "Listen" pill + popover panel, mirroring the web FloatingAudioPlayer.
 // Audio is loaded lazily on first open (keeps the screen cheap if you don't
-// listen); the manifest is OTA-bundled so opening is instant. i18n labels are
-// hardcoded EN for now — wire to shared strings when the locale switcher
-// (chrome) lands. Controlled: the parent (FloatingControls) owns `open` so only
-// one floating panel can be open at a time.
+// listen); the manifest is OTA-bundled so opening is instant. Labels come from
+// the shared strings dict via `locale`. Controlled: the parent
+// (FloatingControls) owns `open` so only one floating panel can be open at a time.
 export function FloatingAudioPlayer({
   locale,
   slug,
@@ -31,6 +31,7 @@ export function FloatingAudioPlayer({
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
   const { load, loadCombined } = useAudio();
+  const s = getStrings(locale).audio;
 
   // Kick off the (cheap, manifest-only) load the first time the panel opens.
   useEffect(() => {
@@ -58,11 +59,11 @@ export function FloatingAudioPlayer({
         onPress={onToggle}
         style={[styles.fab, { backgroundColor: palette.bg, borderColor: palette.accent }]}
         accessibilityRole="button"
-        accessibilityLabel={open ? "Close audio player" : "Listen"}
+        accessibilityLabel={open ? s.closeAudioPlayer : s.listen}
       >
         <Ionicons name={open ? "chevron-down" : "play"} size={15} color={palette.accent} />
         <Text style={{ color: palette.accent, fontFamily: FONTS.serif, fontSize: 15 }}>
-          {open ? "Close" : "Listen"}
+          {open ? s.close : s.listen}
         </Text>
       </Pressable>
     </View>

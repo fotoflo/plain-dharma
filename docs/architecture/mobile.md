@@ -1,6 +1,6 @@
 # Mobile app (React Native / Expo) — Plain Dharma
 
-*Last updated: 2026-05-31*
+*Last updated: 2026-06-02*
 
 A React Native port of the reading site, sharing the sutta content with the web
 via a pnpm-monorepo workspace. Expo SDK 56 (React 19.2.3 / RN 0.85.3, New
@@ -276,7 +276,8 @@ Mobile carries **no Stripe key** (public or secret) and does not call Stripe dir
 
 EAS Build uploads a **single code-signed native binary** (.ipa for iOS, .aab for Android). The `.easignore` file controls what gets uploaded (EAS does not read `.gitignore`):
 
-- Excludes: `node_modules/`, `.git/` (~410 MB), `public/` (~232 MB), and web-only dirs (`docs/`, `supabase/`).
+- Excludes: `node_modules/`, `.git/` (~410 MB), the heavy `public/` media (`public/illustrations/`, `public/downloads/`, `public/logo/`, and **`public/audio/**/*.mp3`**), and web-only dirs (`docs/`, `supabase/`).
+- **Keeps `public/audio/**/manifest.json`** (~52 KB): `src/audio/bundled-manifests.ts` inline-imports these so the Listen panel has no first-open fetch. The blanket `public/` exclusion was replaced with targeted excludes because gitignore can't re-include children of an excluded dir. If you re-broaden it, the native build fails at the *Bundle JavaScript* phase — the OTA path hides this, since `expo export` runs locally where `public/` exists.
 - This reduces the upload archive from ~439 MB to a few MB, speeding up builds.
 - **Maintenance:** new patterns added to `.gitignore` must be mirrored into `.easignore` (they are not auto-synced).
 
@@ -298,3 +299,43 @@ Once a build is submitted to TestFlight or the Play Store, OTA updates become th
   `StyleSheet.flatten([...])` (e.g., `apps/mobile/src/app/(tabs)/index.tsx`).
 - **Nothing native is runtime-verified by typecheck/bundle** — playback,
   downloads, and the tab bar need a device/simulator run.
+- **EAS Build bundles UNCOMMITTED working-tree changes by default** — so a
+  concurrent edit (e.g. a stray dep added to the root `package.json`) leaks into
+  a build and can fail the *Install dependencies* phase with
+  `ERR_PNPM_OUTDATED_LOCKFILE`. Build from a clean tree, or set
+  `cli.requireCommit: true` in `eas.json` to force committed-only builds.
+- **Native deps fragment the OTA channel.** All production builds share
+  `channel: production` + `runtimeVersion: 1.0.0`, so one `eas update` reaches
+  them all. Once a build adds a native module (`expo-clipboard`,
+  `expo-application`, …), JS that imports it will **crash older builds that lack
+  it** if OTA'd. Rule: OTA only pure-JS changes that every live build can run;
+  ship anything touching a new native module via a **rebuild**.
+
+## Analytics, accounts & notes (added 2026-05)
+
+- **Analytics:** `src/lib/analytics.ts` posts GA4 events via the **Measurement
+  Protocol** over `fetch` (no Firebase/native SDK → OTA-safe), gated to
+  production. Reads `EXPO_PUBLIC_GA_MEASUREMENT_ID` (the `G-1Y9P9S2Z8Z` app data
+  stream) + `EXPO_PUBLIC_GA_API_SECRET`.
+- **Margin Notes:** magic-link (passwordless) Supabase auth + highlights/notes
+  synced to the same `public.marginalia` table as web; share/copy via
+  `expo-clipboard` + RN `Share`. See [marginalia.md](./marginalia.md). Reads
+  `EXPO_PUBLIC_SUPABASE_URL` + `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; the
+  magic-link deep link (`mobile://auth/callback`) must be allow-listed in
+  Supabase Auth URL config.
+- **Env vars live as EAS environment variables** (`eas env:create --environment
+  production …`), not in `eas.json` — they feed both `eas build` and
+  `eas update --environment production`.
+- **Build & updates panel** (`src/components/DebugInfo.tsx`, in the More tab):
+  reports app/build version, channel, the riding OTA (id or "embedded") + bundle
+  date, and Check/Download buttons via `expo-updates` `useUpdates()`.
+
+## TestFlight distribution (App Store Connect API)
+
+`scripts/asc-distribute.mjs` distributes a build via the ASC API (key already
+wired for `eas submit`): waits for the build to go `VALID`, sets the "What to
+Test" notes, adds it to the internal + external beta groups (creating the
+internal group if needed), and submits the external build for Beta App Review.
+`node --env-file=.env.local scripts/asc-distribute.mjs latest --whatsnew "…"`.
+Note the external group needs Beta App Review per build; internal testers (ASC
+users) get builds instantly.

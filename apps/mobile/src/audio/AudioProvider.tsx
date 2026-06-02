@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { Image } from "react-native";
 import TrackPlayer, {
   Event,
   useActiveTrack,
@@ -57,6 +58,15 @@ type AudioContextValue = {
 
 const AudioContext = createContext<AudioContextValue | null>(null);
 
+// Bundled lock-screen / Now Playing artwork. A local require() (not a remote
+// URL) so the icon renders offline too — downloaded audio plays without a
+// network round-trip, and a URL artwork would silently show nothing there.
+// Resolved to a URI string (what RNTP does internally) to satisfy its
+// `artwork?: string` type cleanly in both dev and production bundles.
+const ARTWORK = Image.resolveAssetSource(
+  require("../../assets/images/icon.png")
+).uri;
+
 function toTracks(
   sections: PlayerSection[],
   speed: Speed,
@@ -68,6 +78,7 @@ function toTracks(
     title: s.title,
     artist: "Plain Dharma",
     album,
+    artwork: ARTWORK,
     duration: sectionDuration(s, speed),
   }));
 }

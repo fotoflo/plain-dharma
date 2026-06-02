@@ -1,4 +1,5 @@
 import * as WebBrowser from "expo-web-browser";
+import { assetUrl } from "@plain-dharma/content/assets";
 
 import { SITE_ORIGIN } from "./site";
 
@@ -48,7 +49,7 @@ export const DOWNLOADS: {
 ];
 
 export function downloadUrl(format: DownloadFormat): string {
-  return `${SITE_ORIGIN}/downloads/plain-dharma.${format}`;
+  return assetUrl(`downloads/plain-dharma.${format}`);
 }
 
 /** Coerce a route param to a valid format, defaulting to epub. */

@@ -55,5 +55,16 @@ next-env.d.ts
 public/illustrations/_backup/
 .vercel
 
+# Offsite assets (served from the public Supabase Storage bucket — see
+# scripts/upload-assets-to-supabase.ts + packages/content/assets.ts). The heavy
+# binaries are no longer committed; only the small per-sutta audio manifest.json
+# stays tracked (the web build reads it via fs). Regenerate locally, then run
+# `pnpm upload-assets` to publish.
+public/audio/**/*.mp3
+public/audio/**/candidates/
+public/illustrations/*.png
+public/illustrations/originals.zip
+public/downloads/
+
 # claude code agent worktrees (isolated branches, not part of this tree)
 .claude/worktrees/

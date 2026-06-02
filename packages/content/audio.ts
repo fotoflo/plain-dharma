@@ -2,11 +2,13 @@
 //
 // No fs/network here. Web reads per-sutta manifests from disk at build time
 // (apps' src/content/audio.ts keeps those fs readers); mobile fetches the same
-// manifests over HTTP from plaindharma.com. Both share these types, the URL
-// helper, and the pure combine logic for the /read playlist.
+// manifests over HTTP. The mp3s themselves live in the public Supabase bucket,
+// so file URLs resolve through assetUrl (see ./assets). Both platforms share
+// these types, the URL helper, and the pure combine logic for the /read playlist.
 
 import { SUTTAS, type Locale, type SuttaSlug } from "./index";
 import { getStrings } from "./strings";
+import { assetUrl } from "./assets";
 
 export type AudioSection = {
   id: string;
@@ -29,13 +31,19 @@ export type AudioManifest = {
   sections: AudioSection[];
 };
 
-/** Site-relative path to a per-sutta audio file. */
+/**
+ * Absolute CDN URL for a per-sutta audio file. `file` is a bucket-relative
+ * filename ("01-opening.mp3") or `fast/<file>`; the result is the cache-busted
+ * Supabase public URL. Returns the input unchanged if it's already absolute
+ * (callers that pass an already-resolved manifest URL stay idempotent).
+ */
 export function getAudioFileUrl(
   locale: string,
   slug: string,
   file: string
 ): string {
-  return `/audio/${locale}/${slug}/${file}`;
+  if (file.startsWith("http")) return file;
+  return assetUrl(`audio/${locale}/${slug}/${file}`);
 }
 
 /**
@@ -70,9 +78,11 @@ export type ManifestEntry = { slug: SuttaSlug; manifest: AudioManifest };
 /**
  * Stitch per-sutta manifests into a single `/read` playlist. Section ids are
  * prefixed with the slug to avoid collisions ("opening" etc. exist in every
- * sutta); each `file` becomes an absolute `/audio/...` path so a player can
- * resolve files across per-sutta dirs without per-section base URLs. Returns
- * null when there are no manifests. Pure — callers supply the manifests
+ * sutta); each `file` is resolved to an absolute CDN URL via getAudioFileUrl so
+ * a player can resolve files across per-sutta dirs without per-section base
+ * URLs. getAudioFileUrl is idempotent on already-absolute URLs, so this works
+ * whether the caller's manifest carries bare filenames or resolved URLs.
+ * Returns null when there are no manifests. Pure — callers supply the manifests
  * (web from disk, mobile from fetch).
  */
 export function combineManifests(
@@ -87,11 +97,11 @@ export function combineManifests(
       sections.push({
         id: `${slug}--${s.id}`,
         title: s.title,
-        file: `/audio/${locale}/${slug}/${s.file}`,
+        file: getAudioFileUrl(locale, slug, s.file),
         duration_sec: s.duration_sec,
         ...(s.fileFast
           ? {
-              fileFast: `/audio/${locale}/${slug}/${s.fileFast}`,
+              fileFast: getAudioFileUrl(locale, slug, s.fileFast),
               duration_fast_sec: s.duration_fast_sec,
             }
           : {}),

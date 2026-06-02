@@ -30,31 +30,20 @@ const nextConfig: NextConfig = {
     "*.ngrok-free.app",
   ],
   images: {
-    // Allow cache-busting `?v=<mtime>` query strings on local illustration URLs.
-    // Omitting `search` means any query string is permitted for this pathname.
-    localPatterns: [
+    // Illustrations now live in the public Supabase Storage bucket (see
+    // packages/content/assets.ts), so <Image> loads them cross-origin. /logo
+    // stays a local asset.
+    localPatterns: [{ pathname: "/logo/**" }],
+    remotePatterns: [
       {
-        pathname: "/illustrations/**",
-      },
-      {
-        pathname: "/logo/**",
+        protocol: "https",
+        hostname: "ffoiltrarbdbibmymlqm.supabase.co",
+        pathname: "/storage/v1/object/public/assets/**",
       },
     ],
   },
   async headers() {
     return [
-      {
-        // Audio mp3s are large and rarely change between deploys. One week fresh
-        // + one day stale-while-revalidate keeps repeat visits cheap without
-        // pinning forever (we still update audio occasionally).
-        source: "/audio/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=604800, stale-while-revalidate=86400",
-          },
-        ],
-      },
       {
         // The Apple App Site Association file is extensionless; iOS expects it
         // served as JSON over HTTPS with no redirect. Enables Universal Links
@@ -63,6 +52,20 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Content-Type", value: "application/json" }],
       },
     ];
+  },
+  // Back-compat: the heavy assets moved to the Supabase CDN, but already-shipped
+  // mobile builds (and old shared/email links) still request them from
+  // plaindharma.com. Permanently redirect those legacy paths to the bucket so
+  // nothing 404s and the bandwidth lands on the CDN, not Vercel. New web/mobile
+  // code links the CDN directly via assetUrl, so these only fire for old URLs.
+  async redirects() {
+    const CDN =
+      "https://ffoiltrarbdbibmymlqm.supabase.co/storage/v1/object/public/assets";
+    return ["audio", "illustrations", "downloads"].map((dir) => ({
+      source: `/${dir}/:path*`,
+      destination: `${CDN}/${dir}/:path*`,
+      permanent: true,
+    }));
   },
 };
 

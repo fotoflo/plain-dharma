@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { assetUrl } from "@plain-dharma/content/assets";
 import { Wash } from "@/components/Wash";
 import { ogBase, altLanguages } from "@/lib/og-meta";
 import { APP_LINKS } from "@/lib/app-links";
@@ -41,14 +42,14 @@ const FILES: FileOption[] = [
     title: "EPUB",
     description: "For Kindle, Apple Books, Kobo, and other e-readers.",
     size: "451 KB",
-    href: "/downloads/plain-dharma.epub",
+    href: assetUrl("downloads/plain-dharma.epub"),
   },
   {
     slug: "pdf",
     title: "PDF",
     description: "For tablet or laptop reading, 6×9 typeset.",
     size: "725 KB",
-    href: "/downloads/plain-dharma.pdf",
+    href: assetUrl("downloads/plain-dharma.pdf"),
   },
   {
     slug: "m4b",
@@ -56,7 +57,7 @@ const FILES: FileOption[] = [
     description:
       "Narrated edition with chapter markers. ~38 minutes. M4B opens in Apple Books, VLC, or any audiobook player.",
     size: "18 MB",
-    href: "/downloads/plain-dharma.m4b",
+    href: assetUrl("downloads/plain-dharma.m4b"),
   },
 ];
 
@@ -110,6 +111,12 @@ export default function DownloadPage() {
           </a>
           . If you want to print booklets for free distribution at a temple or
           retreat, copy whatever you need.
+        </p>
+        <p>
+          Want the raw materials instead of the finished book — the audio track
+          by track, the illustrations, the plain-text source? Take them all on
+          the <Link href="/remix">remix &amp; reuse page</Link>. DJs, artists,
+          and translators welcome.
         </p>
 
         <h2>Coming soon</h2>

@@ -27,6 +27,8 @@
     "generate-cover": "node --env-file=.env.local --import tsx scripts/generate-cover.ts",
     "generate-back-cover": "tsx scripts/generate-back-cover.ts",
     "publish-downloads": "tsx scripts/publish-downloads.ts",
+    "build-remix-assets": "tsx scripts/build-remix-assets.ts",
+    "upload-assets": "node --env-file=.env.local --import tsx scripts/upload-assets-to-supabase.ts",
     "backup-audio": "node --env-file=.env.local --import tsx scripts/backup-audio-to-supabase.ts"
   },
   "dependencies": {

@@ -1,5 +1,6 @@
 import { getSuttasInOrder } from "@plain-dharma/content";
 import { getStrings } from "@plain-dharma/content/strings";
+import { assetUrl } from "@plain-dharma/content/assets";
 import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -10,7 +11,6 @@ import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { useLocale } from "@/i18n/LocaleContext";
-import { SITE_ORIGIN } from "@/lib/site";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -92,7 +92,7 @@ export default function HomeScreen() {
       <View style={[styles.bookCard, { borderColor: palette.divider }]}>
         <View style={styles.coverWrap}>
           <Image
-            source={`${SITE_ORIGIN}/downloads/plain-dharma-cover.jpg`}
+            source={assetUrl("downloads/plain-dharma-cover.jpg")}
             style={styles.cover}
             contentFit="cover"
             transition={200}

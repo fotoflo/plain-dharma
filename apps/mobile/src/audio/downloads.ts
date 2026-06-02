@@ -1,12 +1,9 @@
 import { SUTTAS, type Locale, type SuttaSlug } from "@plain-dharma/content";
 import { localizeSectionTitle, type AudioManifest } from "@plain-dharma/content/audio";
+import { assetUrl } from "@plain-dharma/content/assets";
 import { Directory, File, Paths } from "expo-file-system";
 
-import {
-  AUDIO_ORIGIN,
-  fetchSuttaSections,
-  type PlayerSection,
-} from "./manifest";
+import { fetchSuttaSections, type PlayerSection } from "./manifest";
 
 // Offline storage layout (persistent — Paths.document survives low-storage):
 //   <document>/audio/<locale>/<slug>/manifest.json
@@ -61,13 +58,13 @@ export async function downloadLocale(
   const jobs: { slug: SuttaSlug; file: string; url: string }[] = [];
 
   for (const slug of SUTTAS) {
-    const base = `${AUDIO_ORIGIN}/audio/${locale}/${slug}`;
-    const res = await fetch(`${base}/manifest.json`);
+    const dir = `audio/${locale}/${slug}`;
+    const res = await fetch(assetUrl(`${dir}/manifest.json`));
     if (!res.ok) throw new Error(`manifest ${slug}: HTTP ${res.status}`);
     const m = (await res.json()) as AudioManifest;
     manifests[slug] = m;
     for (const s of m.sections) {
-      jobs.push({ slug, file: s.file, url: `${base}/${s.file}` });
+      jobs.push({ slug, file: s.file, url: assetUrl(`${dir}/${s.file}`) });
     }
   }
 

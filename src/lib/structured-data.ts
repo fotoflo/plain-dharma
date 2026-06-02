@@ -1,4 +1,5 @@
 import { getMeta, type Locale, type SuttaSlug } from "@/content";
+import { getIllustrationUrl } from "@/content/illustrations";
 import { CANONICAL_LINKS } from "@plain-dharma/content/canonical-links";
 import {
   SITE_NAME,
@@ -96,7 +97,7 @@ export function suttaJsonLd(locale: Locale, slug: SuttaSlug): JsonLdNode {
     inLanguage: BCP47[locale],
     url,
     mainEntityOfPage: url,
-    image: `${SITE_URL}/illustrations/${slug}.png`,
+    image: getIllustrationUrl(slug),
     dateModified: suttaMtime(slug, locale).toISOString(),
     author: { "@id": ORG_ID },
     publisher: { "@id": ORG_ID },

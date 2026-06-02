@@ -24,6 +24,7 @@ const en = {
     about: "About",
     glossary: "Glossary",
     download: "Download",
+    remix: "Remix",
     contribute: "Contribute",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -151,6 +152,8 @@ const en = {
       " — to lend a real human reading in place of the synthetic one. We know the irony of asking this on a page narrated by a machine; if you'd offer your voice as a gift, we'd be honored to let it replace ours.",
     pHelpClosing:
       "Nothing here is owned, and nothing you give will be. Your contribution is itself a dharma gift.",
+    remixCrosslinkPrefix: "Just want to use the material? ",
+    remixCrosslinkLink: "Download everything to remix and reuse →",
   },
   privacy: {
     metadataTitle: "Privacy",
@@ -240,6 +243,7 @@ const en = {
     byLineLinkText: "Alex Miller",
     aboutLink: "About",
     glossaryLink: "Glossary",
+    remixLink: "Remix",
     contributeLink: "Contribute",
     privacyLink: "Privacy",
     githubLink: "GitHub",
@@ -335,6 +339,7 @@ const zh: Strings = {
     about: "关于",
     glossary: "词汇表",
     download: "下载",
+    remix: "再创作",
     contribute: "参与",
     openMenu: "打开菜单",
     closeMenu: "关闭菜单",
@@ -457,6 +462,8 @@ const zh: Strings = {
       "——用真实的人声，来替下这把合成的声音。我们清楚，在一个用机器朗读的页面上提这个请求有多讽刺；如果你愿意把自己的声音作为礼物献出来，我们会很荣幸地让它取代我们现在这把。",
     pHelpClosing:
       "这里没有什么是被占有的，你给出的也不会被占有。你的贡献，本身就是一份法布施。",
+    remixCrosslinkPrefix: "只是想拿来用？",
+    remixCrosslinkLink: "把全部素材下载下来，自由地再创作、再使用 →",
   },
   privacy: {
     metadataTitle: "隐私",
@@ -544,6 +551,7 @@ const zh: Strings = {
     byLineLinkText: "Alex Miller",
     aboutLink: "关于",
     glossaryLink: "词汇表",
+    remixLink: "再创作",
     contributeLink: "参与",
     privacyLink: "隐私",
     githubLink: "GitHub",

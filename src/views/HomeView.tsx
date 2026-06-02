@@ -113,7 +113,12 @@ export function HomeView({ locale }: { locale: Locale }) {
         </p>
       </section>
 
-      {/* Newsletter signup — placed between the hero and the list so it's
+      {/* DOWNLOAD THE BOOK — cover render + formats + store badges, placed
+          directly under the hero so it reads above the fold. Shows on both
+          locales but always points at the EN download route. */}
+      <BookSection locale={locale} />
+
+      {/* Newsletter signup — placed between the book CTA and the list so it's
           visible above the fold on most desktops but doesn't interrupt the
           editorial composition above. */}
       <section className="mt-20">
@@ -164,11 +169,6 @@ export function HomeView({ locale }: { locale: Locale }) {
           ))}
         </ul>
       </section>
-
-      {/* DOWNLOAD THE BOOK — cover render + formats + store badges. The book
-          (ebook/audiobook) is EN-only like /download; the section shows on
-          both locales but always points at the EN download route. */}
-      <BookSection locale={locale} />
     </div>
   );
 }

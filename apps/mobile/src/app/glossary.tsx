@@ -1,4 +1,3 @@
-import { DEFAULT_LOCALE } from "@plain-dharma/content";
 import { GLOSSARY } from "@plain-dharma/content/glossary";
 import { getStrings } from "@plain-dharma/content/strings";
 import { Link } from "expo-router";
@@ -7,14 +6,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BackLink } from "@/components/BackLink";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
+import { useLocale } from "@/i18n/LocaleContext";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
 export default function GlossaryScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
-  const s = getStrings(DEFAULT_LOCALE);
-  const entries = GLOSSARY[DEFAULT_LOCALE];
+  const { locale } = useLocale();
+  const s = getStrings(locale);
+  const entries = GLOSSARY[locale];
 
   return (
     <View style={{ flex: 1, backgroundColor: palette.bg }}>

@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE, getSuttasInOrder } from "@plain-dharma/content";
+import { getSuttasInOrder } from "@plain-dharma/content";
 import { getStrings } from "@plain-dharma/content/strings";
 import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
@@ -9,6 +9,7 @@ import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
+import { useLocale } from "@/i18n/LocaleContext";
 import { SITE_ORIGIN } from "@/lib/site";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -21,8 +22,9 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { loadCombined, play } = useAudio();
-  const s = getStrings(DEFAULT_LOCALE).home;
-  const suttas = getSuttasInOrder(DEFAULT_LOCALE);
+  const { locale } = useLocale();
+  const s = getStrings(locale).home;
+  const suttas = getSuttasInOrder(locale);
 
   return (
     <View style={{ flex: 1, backgroundColor: palette.bg }}>
@@ -117,7 +119,7 @@ export default function HomeScreen() {
             accessibilityRole="button"
             accessibilityLabel={s.bookCtaListen}
             onPress={async () => {
-              await loadCombined(DEFAULT_LOCALE);
+              await loadCombined(locale);
               play();
               router.push("/read");
             }}

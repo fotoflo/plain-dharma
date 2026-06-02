@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE, getSuttasInOrder } from "@plain-dharma/content";
+import { getSuttasInOrder } from "@plain-dharma/content";
 import { CLOSING, DROPS, PREFACE } from "@plain-dharma/content/drops";
 import { getStrings } from "@plain-dharma/content/strings";
 import { Link } from "expo-router";
@@ -9,6 +9,7 @@ import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingControls } from "@/components/FloatingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown } from "@/content/markdown";
+import { useLocale } from "@/i18n/LocaleContext";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme } from "@/theme/ThemeContext";
 import { CONTRAST_BG, CONTRAST_INK, FONTS } from "@/theme/tokens";
@@ -27,8 +28,9 @@ export default function ReadScreen() {
   const { theme, palette } = useTheme();
   const { contrast, font } = useReadingPrefs();
   const insets = useSafeAreaInsets();
-  const s = getStrings(DEFAULT_LOCALE).read;
-  const suttas = getSuttasInOrder(DEFAULT_LOCALE);
+  const { locale } = useLocale();
+  const s = getStrings(locale).read;
+  const suttas = getSuttasInOrder(locale);
 
   const screenBg = CONTRAST_BG[theme][contrast] ?? palette.bg;
   const ink = CONTRAST_INK[theme][contrast];
@@ -65,7 +67,7 @@ export default function ReadScreen() {
             </View>
 
             {meta.slug === "first-talk"
-              ? paragraphs(PREFACE[DEFAULT_LOCALE]).map((p, i) => (
+              ? paragraphs(PREFACE[locale]).map((p, i) => (
                   <Text
                     key={i}
                     style={[styles.editorial, { color: ink, fontFamily: editorialFont }]}
@@ -76,13 +78,13 @@ export default function ReadScreen() {
               : null}
 
             <View style={{ marginTop: 12 }}>
-              <MarkdownRenderer>{getSuttaMarkdown(DEFAULT_LOCALE, meta.slug)}</MarkdownRenderer>
+              <MarkdownRenderer>{getSuttaMarkdown(locale, meta.slug)}</MarkdownRenderer>
             </View>
 
             <View style={styles.drop}>
               <View style={[styles.dropRule, { backgroundColor: palette.accent }]} />
               <Text style={[styles.dropText, { color: ink, fontFamily: editorialFont }]}>
-                {DROPS[DEFAULT_LOCALE][meta.slug]}
+                {DROPS[locale][meta.slug]}
               </Text>
             </View>
 
@@ -93,14 +95,14 @@ export default function ReadScreen() {
         ))}
 
         <View style={styles.closing}>
-          {paragraphs(CLOSING[DEFAULT_LOCALE]).map((p, i) => (
+          {paragraphs(CLOSING[locale]).map((p, i) => (
             <Text key={i} style={[styles.editorial, { color: ink, fontFamily: editorialFont }]}>
               {p}
             </Text>
           ))}
         </View>
       </ScrollView>
-      <FloatingControls locale={DEFAULT_LOCALE} combined />
+      <FloatingControls locale={locale} combined />
     </View>
   );
 }

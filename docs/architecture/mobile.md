@@ -93,6 +93,8 @@ perms).
 `AudioPanel` (TOC + transport + tap-to-seek + pace) and `FloatingAudioPlayer`
 (the "Listen" pill, with `DownloadControl` in-player download button, `combined` prop for /read) are the UI.
 
+**Lock-screen artwork:** `toTracks()` in `AudioProvider.tsx` attaches the bundled app icon (`assets/images/icon.png`) as lock-screen / Now Playing artwork on every track. The icon is resolved to a URI string via `Image.resolveAssetSource()` to render offline — a local `require()` (not a remote URL) ensures downloaded audio shows artwork without a network round-trip.
+
 ### Offline download: detection and playback
 
 **Detection** (`src/audio/downloads.ts` `isLocaleDownloaded()`) is **file/disk-based**:

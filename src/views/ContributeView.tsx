@@ -35,7 +35,24 @@ export function ContributeView({ locale }: { locale: Locale }) {
             <strong>{s.contribute.liVoiceArtistsLabel}</strong>
             {s.contribute.liVoiceArtistsBody}
           </li>
+          <li>
+            <strong>{s.contribute.liArtistsLabel}</strong>
+            {s.contribute.liArtistsBody}
+          </li>
+          <li>
+            <strong>{s.contribute.liSourceMaterialsLabel}</strong>
+            {s.contribute.liSourceMaterialsBody}
+          </li>
         </ul>
+        <p>
+          {s.contribute.pReachPrefix}
+          <a href="mailto:contribute@plaindharma.com">
+            contribute@plaindharma.com
+          </a>
+          {s.contribute.pReachMid}
+          <a href="https://github.com/fotoflo/plain-dharma">GitHub</a>
+          {s.contribute.pReachSuffix}
+        </p>
         <p>{s.contribute.pHelpClosing}</p>
         <p>
           {s.contribute.remixCrosslinkPrefix}

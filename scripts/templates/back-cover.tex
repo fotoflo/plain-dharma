@@ -116,7 +116,8 @@
 % Short saffron divider rule, matching the editorial drops' hairline.
 \newcommand{\dividerrule}{\par\vspace{0.85em}{\color{saffron}\rule{3.2em}{1.1pt}}\par\vspace{0.85em}}
 
-% One entry in the numbered list: bold English title, italic muted Pali below.
+% One entry in the numbered list: bold English title, italic muted one-line
+% description below.
 \newcommand{\suttaentry}[2]{%
   {\large\bfseries #1}\par
   \vspace{0.1em}
@@ -145,13 +146,10 @@ Six teachings, rendered in plain modern English — not a scholarly translation,
 
 \dividerrule
 
-% ── The six (numbered, Pali title italic underneath each) ────────────────────
-\suttaentry{1.\quad The Buddha's First Talk}{Dhammacakkappavattana Sutra}
-\suttaentry{2.\quad The Buddha's Second Talk}{Anattalakkhana Sutra}
-\suttaentry{3.\quad The Fire Sermon}{Adittapariyaya Sutra}
-\suttaentry{4.\quad On Loving-Kindness}{Metta Sutra}
-\suttaentry{5.\quad The Foundations of Mindfulness}{Satipatthana Sutra}
-\suttaentry{6.\quad How to Decide What to Believe}{Kalama Sutra}
+% ── The six (numbered, one-line English description italic underneath each) ──
+% generate-back-cover.ts injects the \suttaentry lines here, pairing the
+% hardcoded titles below with the registry `teaser` descriptions.
+__SUTTA_ENTRIES__
 
 \dividerrule
 

@@ -21,6 +21,8 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { DEFAULT_LOCALE, getSuttasInOrder } from "@plain-dharma/content";
+
 import { publishToDownloads } from "./lib/publish.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -39,6 +41,48 @@ const RENDER_DPI = 320;
 // new shell session — mirror build-pdf.ts and resolve it explicitly.
 const TEX_BIN_DIR = "/Library/TeX/texbin";
 const XELATEX_BIN = join(TEX_BIN_DIR, "xelatex");
+
+// The numbered back-cover titles, in canonical order. Kept HERE (not pulled from
+// the registry) on purpose: the back cover uses the SHORT "The Fire Sermon" for
+// #3 — not the registry's longer "The Buddha's Third Talk: The Fire Sermon" —
+// and the editorial title list is a layout decision local to this cover. The
+// one-line descriptions UNDER each, however, are the single source of truth:
+// the `teaser` fields from @plain-dharma/content, paired by canonical order.
+const BACK_COVER_TITLES = [
+  "The Buddha's First Talk",
+  "The Buddha's Second Talk",
+  "The Fire Sermon",
+  "On Loving-Kindness",
+  "The Foundations of Mindfulness",
+  "How to Decide What to Believe",
+] as const;
+
+// Escape the LaTeX specials that can appear in a teaser. Em dash "—" and
+// apostrophes render fine as literals (Ligatures=TeX maps "'"), so they're left
+// alone; backslash is escaped first so it doesn't double-escape the others.
+function escapeLatex(s: string): string {
+  return s
+    .replace(/\\/g, "\\textbackslash{}")
+    .replace(/([&%#_{}])/g, "\\$1")
+    .replace(/~/g, "\\textasciitilde{}")
+    .replace(/\^/g, "\\textasciicircum{}");
+}
+
+// Build the \suttaentry block injected at __SUTTA_ENTRIES__: each hardcoded
+// title numbered, paired with the registry teaser for the same canonical slot.
+function buildSuttaEntries(): string {
+  const teasers = getSuttasInOrder(DEFAULT_LOCALE).map((m) => m.teaser);
+  if (teasers.length !== BACK_COVER_TITLES.length) {
+    console.error(
+      `ERROR: ${BACK_COVER_TITLES.length} back-cover titles but ${teasers.length} registry teasers`
+    );
+    process.exit(1);
+  }
+  return BACK_COVER_TITLES.map(
+    (title, i) =>
+      `\\suttaentry{${i + 1}.\\quad ${escapeLatex(title)}}{${escapeLatex(teasers[i])}}`
+  ).join("\n");
+}
 
 type Output = { file: string; grayscale: boolean; publishAs?: string };
 type Target = {
@@ -90,8 +134,11 @@ function findXelatex(): string {
 }
 
 function buildTarget(target: Target): void {
-  // Substitute fonts dir (all targets) + this target's geometry/stripe tokens.
-  let tex = readFileSync(TEMPLATE, "utf8").replace(/__FONTS_DIR__/g, FONTS_DIR);
+  // Substitute fonts dir + the numbered sutta entries (both target-independent),
+  // then this target's geometry/stripe tokens.
+  let tex = readFileSync(TEMPLATE, "utf8")
+    .replace(/__FONTS_DIR__/g, FONTS_DIR)
+    .replace(/__SUTTA_ENTRIES__/g, buildSuttaEntries());
   for (const [token, value] of Object.entries(target.tokens)) {
     tex = tex.replace(new RegExp(`__${token}__`, "g"), value);
   }

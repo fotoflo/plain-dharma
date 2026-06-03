@@ -86,40 +86,40 @@ const SUTTA_DISPLAY: Record<Locale, Record<SuttaSlug, SuttaDisplay>> = {
       subtitle:
         "His first teaching after waking up, given to five former companions in a deer park near Varanasi.",
       teaser:
-        "The middle path, the four truths, and the eightfold way to live.",
+        "The four noble truths, taught for the first time.",
     },
     "not-self": {
       title: "The Buddha's Second Talk",
       subtitle:
         "The Discourse on Not-Self, given to the same five seekers a few days after the first one.",
       teaser:
-        "Why the body, feelings, perceptions, and even awareness aren't you.",
+        "Why your mind and body are not really you.",
     },
     "fire-sermon": {
       title: "The Buddha's Third Talk: The Fire Sermon",
       subtitle:
         "Given on a hilltop near Gaya to a thousand former fire-worshipping ascetics.",
       teaser:
-        "Everything is on fire. What is burning, and how to cool down.",
+        "We burn with wanting, anger, confusion. Let go.",
     },
     "loving-kindness": {
       title: "On Loving-Kindness",
       subtitle: "The Buddha's teaching on goodwill. Short, almost a poem.",
       teaser:
-        "Hold the wish that every living thing, without exception, be at ease.",
+        "Goodwill for all beings — almost a poem.",
     },
     mindfulness: {
       title: "The Foundations of Mindfulness",
       subtitle:
         "The Buddha's step-by-step guide to mindfulness, with its full original refrain.",
       teaser:
-        "Watch the body, feelings, mind, and contents of experience clearly.",
+        "A guided meditation by the Buddha himself.",
     },
     "how-to-decide": {
       title: "How to Decide What to Believe",
       subtitle: "The Buddha's talk on thinking for yourself.",
       teaser:
-        "Don't take anything on authority. Test it for yourself, against what you can actually see.",
+        "The Buddha's case for thinking for yourself.",
     },
   },
   zh: {

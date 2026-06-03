@@ -33,6 +33,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const AUDIO_DIR = join(ROOT, "public", "audio", "en");
 // Spoken title/credits intro, prepended as the opening chapter (audiobook-only).
 const FRONTMATTER_DIR = join(AUDIO_DIR, "_frontmatter");
+// Spoken "how this was made" + contribute colophon, appended as the closing
+// chapter (audiobook-only). Source: src/content/en_tts/colophon.mdx.
+const COLOPHON_DIR = join(AUDIO_DIR, "_colophon");
 const OUT_DIR = join(ROOT, "dist", "audiobook");
 const COVER_PATH = join(ROOT, "dist", "ebook", "cover.jpg");
 
@@ -112,6 +115,27 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
       cursorMs += durationMs;
     }
   }
+
+  // Colophon (spoken "how this was made" + contribute) closes the book as the
+  // final chapter. Skipped gracefully if it hasn't been generated.
+  const colManifestPath = join(COLOPHON_DIR, "manifest.json");
+  if (existsSync(colManifestPath)) {
+    const col = JSON.parse(readFileSync(colManifestPath, "utf8")) as {
+      sections: { file: string; duration_sec: number }[];
+    };
+    for (const section of col.sections) {
+      const fileName = section.file.split("?")[0];
+      const filePath = join(COLOPHON_DIR, fileName);
+      if (!existsSync(filePath)) throw new Error(`Missing colophon audio: ${filePath}`);
+      const durationMs = Math.round(section.duration_sec * 1000);
+      concat.push({ filePath, durationMs });
+      chapters.push({ title: "How This Book Was Made", startMs: cursorMs, endMs: cursorMs + durationMs });
+      cursorMs += durationMs;
+    }
+  } else {
+    console.warn(`[build-audiobook] no colophon at ${colManifestPath} — building without a closing chapter.`);
+  }
+
   return { concat, chapters };
 }
 

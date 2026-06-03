@@ -66,7 +66,7 @@ Ordered, structured launch plan. Phases run roughly sequentially but Phases 3–
 
 - [ ] **Cover design + listing metadata**
   - Cover: typographic, no Buddha imagery (avoid kitsch), title + tagline, calm palette.
-  - Title: *Plain Dharma: The Buddha's Foundational Teachings in Plain Modern English*.
+  - Title: *Plain Dharma: The Buddha's Foundational Teachings in Modern English*.
   - Subtitle / keyword density on first 60 chars matters for KDP search.
 - [ ] **Keywords + categories**
   - Primary categories: Religion & Spirituality > Buddhism > Theravada; Religion & Spirituality > Buddhism > Rituals & Practice.

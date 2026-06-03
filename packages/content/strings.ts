@@ -123,7 +123,7 @@ const en = {
     pGlossaryRefSuffix: ".",
     h2HowMade: "How this was made",
     pHowMade1:
-      "The English was translated from the original Pali by Claude (Anthropic's AI), then edited line by line by Alex Miller. The Chinese was translated from the Pali by Claude too, and edited by Yan Zhang. The audio is an ElevenLabs voice; the art and logos are Gemini, edited by hand.",
+      "The English was translated from the original Pali by Claude (Anthropic's AI), then edited line by line by Alex Miller. The Chinese was translated from the Pali by Claude too, and edited by Yan Zhang. The audio is an ElevenLabs voice; the art and logos are Gemini, recolored and partially reworked by hand.",
     pHowMadeSoftware:
       "The site, the mobile app, and the scripts that build the ebooks and generated the narration were all written by Claude too.",
     pHowMade2:
@@ -150,6 +150,16 @@ const en = {
     liVoiceArtistsLabel: "Voice artists",
     liVoiceArtistsBody:
       " — to lend a real human reading in place of the synthetic one. We know the irony of asking this on a page narrated by a machine; if you'd offer your voice as a gift, we'd be honored to let it replace ours.",
+    liArtistsLabel: "Artists",
+    liArtistsBody:
+      " — to offer handmade artwork in place of the machine-generated illustrations.",
+    liSourceMaterialsLabel: "Source materials",
+    liSourceMaterialsBody:
+      " — recordings, scans, alternate renderings, anything that helps.",
+    pReachPrefix: "Found something to offer? Write to ",
+    pReachMid: ", open a pull request on ",
+    pReachSuffix:
+      ", or use the form below. Appropriate contributions will be gathered and published here, with credit — making the work more human, in the open.",
     pHelpClosing:
       "Nothing here is owned, and nothing you give will be. Your contribution is itself a dharma gift.",
     remixCrosslinkPrefix: "Just want to use the material? ",
@@ -434,7 +444,7 @@ const zh: Strings = {
     pGlossaryRefSuffix: "。",
     h2HowMade: "这是怎么做出来的",
     pHowMade1:
-      "英文由 Claude（Anthropic 的 AI）从巴利原文译出，再由 Alex Miller 一行一行地修订；中文同样由 Claude 从巴利原文译出，由 Yan Zhang 修订。音频是 ElevenLabs 的合成语音；画作与标志出自 Gemini，再手工修整。",
+      "英文由 Claude（Anthropic 的 AI）从巴利原文译出，再由 Alex Miller 一行一行地修订；中文同样由 Claude 从巴利原文译出，由 Yan Zhang 修订。音频是 ElevenLabs 的合成语音；画作与标志出自 Gemini，再经人手重新上色、局部重绘。",
     pHowMadeSoftware:
       "网站、手机应用，连同那些用来生成电子书、制作朗读音频的脚本，也都是 Claude 写的。",
     pHowMade2:
@@ -460,6 +470,14 @@ const zh: Strings = {
     liVoiceArtistsLabel: "配音者",
     liVoiceArtistsBody:
       "——用真实的人声，来替下这把合成的声音。我们清楚，在一个用机器朗读的页面上提这个请求有多讽刺；如果你愿意把自己的声音作为礼物献出来，我们会很荣幸地让它取代我们现在这把。",
+    liArtistsLabel: "画师",
+    liArtistsBody: "——用手绘的作品，来替下机器生成的插画。",
+    liSourceMaterialsLabel: "原始素材",
+    liSourceMaterialsBody: "——录音、扫描件、不同的译法，任何有帮助的东西。",
+    pReachPrefix: "有什么想要奉献的？写信到 ",
+    pReachMid: "，或在 ",
+    pReachSuffix:
+      " 上提交一个 pull request，也可以用下面的表单。合适的贡献会被收集、署名，并公开发布在这里——让这部作品更有人味。",
     pHelpClosing:
       "这里没有什么是被占有的，你给出的也不会被占有。你的贡献，本身就是一份法布施。",
     remixCrosslinkPrefix: "只是想拿来用？",

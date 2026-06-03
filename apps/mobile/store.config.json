@@ -1,0 +1,65 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "version": "1.0",
+    "copyright": "Dedicated to the public domain (CC0 1.0)",
+    "categories": ["BOOKS", "REFERENCE"],
+    "release": {
+      "automaticRelease": true
+    },
+    "info": {
+      "en-US": {
+        "title": "Plain Dharma",
+        "subtitle": "Old wisdom. Plain English.",
+        "privacyPolicyUrl": "https://plaindharma.com/privacy",
+        "marketingUrl": "https://plaindharma.com",
+        "supportUrl": "https://plaindharma.com",
+        "keywords": [
+          "buddhism",
+          "buddhist",
+          "sutta",
+          "sutra",
+          "dharma",
+          "meditation",
+          "mindfulness",
+          "pali",
+          "zen",
+          "nikaya",
+          "calm",
+          "wisdom"
+        ],
+        "promoText": "The six foundational teachings of the Buddha, in plain modern English. Free, ad-free, and dedicated to the public domain. Read and listen.",
+        "description": "Plain Dharma offers the six foundational teachings of the Buddha in plain modern English — free, and dedicated to the public domain.\n\nThese are the discourses at the root of the whole tradition: the first talk in the deer park, the teaching on not-self, the fire sermon, loving-kindness, the foundations of mindfulness, and how to decide what to believe. They're rendered for a first-time reader who'd rather understand than wade through footnotes — the structure, the repetitions, and the key images are kept; the archaic English is stripped away.\n\n• Read all six in about an hour\n• Listen to the narrated audiobook\n• Highlight passages and keep private notes — with an optional account to sync across your devices\n• Also available in Simplified Chinese\n• No ads, no tracking, nothing to buy\n\nEverything here — the text, the audio, and the art — is CC0 / public domain. Copy it, print it, translate it, remix it, share it freely. A small gift, offered in the spirit of the dharma."
+      }
+    },
+    "advisory": {
+      "ageRatingOverride": "NONE",
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "contests": "NONE",
+      "gambling": false,
+      "gamblingSimulated": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "kidsAgeBand": null,
+      "koreaAgeRatingOverride": "NONE",
+      "lootBox": false,
+      "matureOrSuggestiveThemes": "NONE",
+      "medicalOrTreatmentInformation": "NONE",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "unrestrictedWebAccess": false,
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "advertising": false,
+      "ageAssurance": false,
+      "ageRatingOverrideV2": "NONE",
+      "developerAgeRatingInfoUrl": null,
+      "gunsOrOtherWeapons": "NONE",
+      "healthOrWellnessTopics": false,
+      "messagingAndChat": false,
+      "parentalControls": false,
+      "userGeneratedContent": false
+    }
+  }
+}

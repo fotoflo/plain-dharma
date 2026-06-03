@@ -1,6 +1,6 @@
 # Downloads & Distribution — Plain Dharma
 
-*Last updated: 2026-05-30*
+*Last updated: 2026-06-03*
 
 ## Overview
 
@@ -56,10 +56,10 @@ Non-published artifacts (print, KDP, storyboard) remain in `dist/` for proofing 
 | File | Role |
 |---|---|
 | `scripts/lib/publish.ts` | The `publishToDownloads(srcAbs, destName)` helper that copies a built artifact into `public/downloads/` and logs the size. No-ops with a warning if the source is missing (safe for optional artifacts). |
-| `scripts/lib/book-source.ts` | Shared book markdown builder, called by all PDF/EPUB/KDP variants. Contains `buildBookMarkdown`, `buildMetadataYaml`, `generateQrCode`. |
+| `scripts/lib/book-source.ts` | Shared book markdown builder, called by all PDF/EPUB/KDP variants. Contains `buildBookMarkdown`, `buildMetadataYaml`, `generateQrCode`. Builds the book structure: title/license → preface → six suttas (each with drop, illustration, body) → closing → **"How This Book Was Made" colophon** (AI-provenance section + contribution invite to contribute@plaindharma.com, GitHub, /contribute) → "Read it Online" (QR, formats list) → "Sources & Further Reading" appendix. |
 | `scripts/generate-cover.ts` | Rasterize InDesign cover PDF (6×9", CMYK) to 1600×2400 JPEG (sRGB) via pdftoppm + ImageMagick; publish as final step. |
-| `scripts/generate-back-cover.ts` | Generate back cover(s) from parameterized XeLaTeX template. Two trims: screen 6×9 (published), print 5.25×8.25 + grayscale variant (internal only). Outputs shared with front cover file for dimension consistency. |
-| `scripts/templates/back-cover.tex` | Parameterized back cover source (Garamond Libre, brand palette, gold stitched stripe on spine). Tokens: `__FONTSIZE__`, `__PAPER_W__`, `__PAPER_H__`, `__STRIPE_W__`, `__STITCH_X__`, etc. Two runs per target for TikZ current-page node. |
+| `scripts/generate-back-cover.ts` | Generate back cover(s) from parameterized XeLaTeX template. Two trims: screen 6×9 (published), print 5.25×8.25 + grayscale variant (internal only). Back cover title layout: six sutta titles numbered, each paired with a **one-line teaser from the registry** (`SUTTA_META` `teaser` field) injected via `__SUTTA_ENTRIES__` token. Dimensions shared with front cover for consistency. |
+| `scripts/templates/back-cover.tex` | Parameterized back cover source (Garamond Libre, brand palette, gold stitched stripe on spine). Tokens: `__FONTSIZE__`, `__PAPER_W__`, `__PAPER_H__`, `__STRIPE_W__`, `__STITCH_X__`, `__SUTTA_ENTRIES__` (injected list of numbered titles + teasers). Two runs per target for TikZ current-page node. |
 | `scripts/templates/pdf-back-cover.tex` | Appends back cover to screen PDF via `\AtEndDocument` — xelatex only. |
 | `scripts/build-pdf.ts` | Build screen PDF (6×9" + 0.125" bleed, xelatex, cream background) from book markdown; append back cover as final page; publish as final step. |
 | `scripts/build-ebook.ts` | Build EPUB from MDX sources via pandoc; append back cover image as full-width final page; publish as final step. |
@@ -114,12 +114,22 @@ pnpm build-manifest
 
 **Front and back covers are shared** — `generate-cover.ts` rasterizes the designer's InDesign cover PDF to 1600×2400 JPEG (6×9"). `generate-back-cover.ts` generates the back cover at the same resolution using a parameterized XeLaTeX template. Both are read by all downstream formats (screen PDF, EPUB, audiobook) and print packages (print PDFs, KDP). This ensures dimensional consistency across all outputs.
 
+**Back cover titles + teasers** — the six sutta titles are hardcoded in `generate-back-cover.ts` as a layout/style decision local to the cover (short titles, e.g. "The Fire Sermon" instead of "The Buddha's Third Talk: The Fire Sermon"). The one-line *descriptions* under each title, however, are sourced from `SUTTA_META` `teaser` fields via `__SUTTA_ENTRIES__` token injection, so a registry update updates the back cover automatically.
+
 **Back cover stitch dash pattern is measured to match the front cover** — the gold stitched stripe on the back cover uses the same 1pt stroke with 3.5pt-on / 3.2pt-off dashes as the front cover (generated cover PDF). This is critical for a seamless wraparound appearance on the KDP covers.
 
 **Cover design credit** — "Cover design by Alex Miller and Ellen Shapiro" appears in three places:
 - **Book colophon** (`scripts/lib/book-source.ts` buildBookMarkdown, "About This Book" section) — in all formats (EPUB, PDF, KDP).
 - **EPUB metadata** (`scripts/build-ebook.ts` buildMetadataYaml) — dc:contributor with role `cov` (Dublin Core standard for cover contributors).
 - **Website About page** (`packages/content/strings.ts` about.pCoverCredit, rendered in `src/views/AboutView.tsx`) — visible in en and zh locales.
+
+**Book colophon ("How This Book Was Made")** — `buildBookMarkdown` in `book-source.ts` injects a multi-part colophon into every EPUB, screen PDF, and KDP interior:
+1. Narration of AI tools used (Claude for translation, Gemini for illustrations, ElevenLabs for audiobook), plus hand-editing acknowledgment.
+2. Call to contribute: email, GitHub PR link, site `/contribute` page.
+3. (Optional) QR code + "Read it Online" formats list (browser, PDF, EPUB, audiobook, paperback, ebook, print booklets).
+4. CC0 license restatement.
+
+This mirrors the audiobook's spoken colophon (`src/content/en_tts/colophon.mdx`, appended as the final chapter by `build-audiobook.ts`).
 
 **Illustrations are format-specific** — each builder resizes + recompresses the source PNGs differently:
 - **EPUB** → 800px JPEG, q=85 on cream (Kindle target, ~50 KB per image).

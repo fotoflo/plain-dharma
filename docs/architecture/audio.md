@@ -1,6 +1,6 @@
 # Audio Playback — Plain Dharma
 
-*Last updated: 2026-05-28*
+*Last updated: 2026-06-03*
 
 Synthesized narration for all six suttas. Audio is generated via OpenAI's TTS API or
 ElevenLabs' API, mirrored into MDX files with inline pause/emphasis tags (for ElevenLabs),
@@ -45,7 +45,7 @@ src/components/FloatingAudioPlayer.tsx
 | File | Role |
 |---|---|
 | `scripts/generate-audio.ts` | TTS pipeline: reads MDX, calls OpenAI/ElevenLabs API, writes mp3s + manifests |
-| `src/content/en_tts/` | ElevenLabs-specific MDX mirrors with inline pause/emphasis tags |
+| `src/content/en_tts/` | ElevenLabs-specific MDX mirrors with inline pause/emphasis tags. Includes `frontmatter.mdx` (audiobook-only intro, spoken chapter 1) and `colophon.mdx` (audiobook-only closing, spoken final chapter with AI-provenance + contribution invite). |
 | `src/content/audio.ts` | `getAudioManifest` / `getCombinedAudioManifest` — loads JSON playlists; `versionSuffix()` appends cache-bust query string; exposes optional `fileFast`/`duration_fast_sec` per section |
 | `scripts/make-audio-variant.ts` | Renders an alternate-speed set (`fast/`, −7.5%) from `candidates/orig-*` and patches `duration_fast_sec` into manifests |
 | `packages/content/strings.ts` | `getStrings(locale).audio` — UI labels (listen, pause, play, prev, next, back5, forward5, seek, close, section templates) |
@@ -313,6 +313,8 @@ render all metadata — this is expected and graceful.
 **`audioBaseUrl` must end without `/`** — the player appends `/${file}` to the base URL.
 Pass `/audio/en/first-talk` not `/audio/en/first-talk/`. Combined manifests pass `""` as
 base since file paths are absolute.
+
+**Audiobook front/back matter** — `build-audiobook.ts` prepends a spoken title/credits intro (`_frontmatter/manifest.json`, generated from `src/content/en_tts/frontmatter.mdx`) and appends a spoken colophon (`_colophon/manifest.json`, from `colophon.mdx`) as the first and final chapters. These are audiobook-only — they don't appear in per-sutta or combined web playlists. If either manifest is missing, `gather()` gracefully skips it.
 
 **Partial manifests (locale-specific in-progress recording)** — `getCombinedAudioManifest()`
 skips missing per-sutta manifests instead of failing. This allows recording audio for one sutta

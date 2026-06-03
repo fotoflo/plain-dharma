@@ -1,6 +1,6 @@
 # Content Pipeline — Plain Dharma
 
-*Last updated: 2026-05-29*
+*Last updated: 2026-06-03*
 
 Single source of truth: one MDX file per teaching, living in the
 **`@plain-dharma/content` workspace package (`packages/content/`)** and shared
@@ -23,6 +23,7 @@ packages/content/                 ← @plain-dharma/content (platform-agnostic; 
      ├── index.ts  ─── SUTTAS array (canonical order)
      │              ── SUTTA_BASE (slug, ordinal, pali_name)
      │              ── SUTTA_DISPLAY[locale] (title, subtitle, teaser, kicker_override)
+     │                 `teaser` = one-liner used on home page (web + mobile) AND back cover
      │              ── getMeta(locale, slug) / getSuttasInOrder(locale)
      │              ── getNeighbors / getAvailableLocales (derived from SUTTA_DISPLAY)
      │
@@ -94,7 +95,8 @@ LOADERS[locale][slug]()       →  dynamic import of compiled .mdx module (web)
 getSuttaMarkdown(locale, slug) → raw inlined string, frontmatter stripped (mobile)
 
 getMeta(locale, slug)         →  title / subtitle / pali_name / teaser
-  └── used by: [slug]/page, read/page, home/page, generateMetadata(), mobile screens
+  └── used by: [slug]/page, read/page, home/page, generateMetadata(), mobile screens,
+              back-cover generation, book colophon
 
 getStrings(locale)            →  all UI strings including canonicalLinks, glossary labels
 DROPS[locale][slug]           →  <Drop text={...} /> after each article

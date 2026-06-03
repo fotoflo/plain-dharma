@@ -6,15 +6,15 @@
 
 | Bucket     | Count | Δ vs prev |
 |------------|-------|-----------|
-| <=50       | 374   | —         |
-| 51-150     | 430   | —         |
-| 151-300    | 180   | —         |
-| 301-500    | 34    | —         |
+| <=50       | 373   | -1        |
+| 51-150     | 432   | +2        |
+| 151-300    | 181   | +1        |
+| 301-500    | 35    | +1        |
 | 501-1000   | 16    | —         |
 | 1001-2000  | 0     | —         |
 | 2000+      | 0     | —         |
 
-Total files: 1034 (no change)
+Total files: 1037 (+3)
 
 ### Largest File
 
@@ -22,24 +22,11 @@ Total files: 1034 (no change)
 
 ### Files Over 500 Lines
 
-4 files exceed the 500-line guideline:
-- `src/components/AudioPlayer.tsx` — 661 lines
-- `scripts/generate-audio.ts` — 601 lines (down 99 from inflated 700 count in 2026-06-02)
-- `packages/content/strings.ts` — 590 lines (up 10)
-- `src/components/marginalia/Marginalia.tsx` — 529 lines
-
-### Session Files of Interest
-
-All session files remain well under 500 lines:
-- `apps/mobile/src/marginalia/SelectableRuns.tsx` — 213 lines
-- `apps/mobile/src/marginalia/SelectableTitle.tsx` — 125 lines
-- `apps/mobile/src/marginalia/SelectableSectionText.tsx` — 89 lines
-- `apps/mobile/src/marginalia/sectionRuns.ts` — 202 lines
-- `apps/mobile/src/app/[slug].tsx` — 343 lines
+16 files exceed the 500-line guideline (up from 4 in 2026-06-02's main branch). The main branch now reports 16 files in the 501-1000 bucket.
 
 ### Delta
 
-No file count changes from 2026-06-02. The 16-file "501-1000" count from the previous snapshot was inflated by worktree copies; the true main-branch count is 4 files over 500 lines. `generate-audio.ts` corrected from 700 to 601 lines (previous snapshot had incorrect data), and `strings.ts` verified at 590 lines (+10 vs 2026-06-02's claimed 580). All session files remain healthy—no threshold-crossing files in the mobile layer.
+Modest growth: +3 files overall (1034 → 1037). Distribution shifted slightly upward—one file moved from <=50 to 51-150, net +2 in 51-150 bracket, +1 in 151-300, +1 in 301-500. The 501-1000 bucket remains at 16 files. No files crossed into the 1001+ range. AudioPlayer.tsx continues as the largest at 661 lines.
 
 ## 2026-06-02 (previous)
 

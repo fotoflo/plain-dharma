@@ -79,7 +79,7 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
       sections: { file: string; duration_sec: number }[];
     };
     for (const section of fm.sections) {
-      const fileName = section.file.split("?")[0];
+      const fileName = section.file.split("?")[0].split("/").pop()!;
       const filePath = join(FRONTMATTER_DIR, fileName);
       if (!existsSync(filePath)) throw new Error(`Missing front-matter audio: ${filePath}`);
       const durationMs = Math.round(section.duration_sec * 1000);
@@ -98,9 +98,10 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
     }
     const short = SHORT_TITLES[meta.slug] ?? meta.title;
     for (const section of manifest.sections) {
-      // getAudioManifest appends a `?v=<mtime>` cache-bust query to `file` for
-      // the browser; strip it to get the real on-disk filename.
-      const fileName = section.file.split("?")[0];
+      // Since the offsite-asset migration, getAudioManifest resolves `file` to a
+      // full Supabase CDN URL (with a `?v=` cache-bust). The audiobook stitches
+      // the LOCAL mp3s, so take the basename — works for a URL or a bare name.
+      const fileName = section.file.split("?")[0].split("/").pop()!;
       const filePath = join(AUDIO_DIR, meta.slug, fileName);
       if (!existsSync(filePath)) {
         throw new Error(`Missing audio file: ${filePath}`);
@@ -124,7 +125,7 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
       sections: { file: string; duration_sec: number }[];
     };
     for (const section of col.sections) {
-      const fileName = section.file.split("?")[0];
+      const fileName = section.file.split("?")[0].split("/").pop()!;
       const filePath = join(COLOPHON_DIR, fileName);
       if (!existsSync(filePath)) throw new Error(`Missing colophon audio: ${filePath}`);
       const durationMs = Math.round(section.duration_sec * 1000);

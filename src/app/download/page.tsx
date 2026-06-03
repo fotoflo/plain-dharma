@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { assetUrl } from "@plain-dharma/content/assets";
+import { assetUrl, assetDownloadUrl } from "@plain-dharma/content/assets";
 import { Wash } from "@/components/Wash";
 import { ogBase, altLanguages } from "@/lib/og-meta";
 import { APP_LINKS } from "@/lib/app-links";
@@ -34,6 +34,9 @@ type FileOption = {
   description: string;
   size: string;
   href: string;
+  // Optional second CTA: a print-friendly black-and-white variant, downloaded
+  // directly (no donation nudge — it's for free print distribution).
+  bwHref?: string;
 };
 
 const FILES: FileOption[] = [
@@ -47,9 +50,11 @@ const FILES: FileOption[] = [
   {
     slug: "pdf",
     title: "PDF",
-    description: "For tablet or laptop reading, 6×9 typeset.",
+    description:
+      "For tablet or laptop reading, or printing. 6×9 typeset — color, with a black-and-white version for plain printers.",
     size: "725 KB",
     href: assetUrl("downloads/plain-dharma.pdf"),
+    bwHref: assetDownloadUrl("downloads/plain-dharma-print-bw.pdf"),
   },
   {
     slug: "m4b",
@@ -168,13 +173,22 @@ function FileCard({ file }: { file: FileOption }) {
       <p className="mt-2 font-serif text-base text-ink/80">
         {file.description}
       </p>
-      <div className="mt-5">
+      <div className="mt-5 flex flex-wrap items-center gap-3">
         <Link
           href={`/download/donate?file=${file.slug}`}
           className="inline-flex items-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline shadow-sm transition hover:no-underline hover:opacity-90"
         >
           Free Download
         </Link>
+        {file.bwHref && (
+          <a
+            href={file.bwHref}
+            download
+            className="inline-flex items-center rounded-full border border-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-accent-strong no-underline transition hover:bg-accent-strong/5 hover:no-underline"
+          >
+            B&amp;W for printing
+          </a>
+        )}
       </div>
     </div>
   );

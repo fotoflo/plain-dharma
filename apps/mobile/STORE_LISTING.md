@@ -343,6 +343,37 @@ Suppress the iOS export-compliance prompt (recommended) by adding to `app.json`:
 > to the public store you still attach the build to a version and submit for
 > review in App Store Connect / Play Console.
 
+### Android Play submit (service account)
+
+`eas.json` `submit.production.android` is wired to a Google Play service account:
+`serviceAccountKeyPath` reads `$EXPO_GOOGLE_SERVICE_ACCOUNT_KEY_PATH`, `track: internal`,
+`releaseStatus: draft`. The `eas` npm wrapper base64-**decodes** an inline
+`EXPO_GOOGLE_SERVICE_ACCOUNT_JSON_B64` secret to a temp file and exports the path
+(raw JSON can't live in `.env.local` — its double-quotes break `source`; base64 is
+dotenv-safe). Same secrets-in-Vercel-env pattern as the iOS `.p8`.
+
+**One-time setup:**
+1. **Play Console → Settings → API access** → link/create a Google Cloud project →
+   create a **service account** in GCP → **Create key → JSON** → download.
+2. Back in **API access**, grant that SA: *Release to testing tracks*, *Manage testing
+   tracks* (add *Release to production* when ready).
+3. Store the key (matches the Vercel-env convention):
+   ```bash
+   base64 -i ~/Downloads/eas-submit-xxxx.json | tr -d '\n' | vercel env add EXPO_GOOGLE_SERVICE_ACCOUNT_JSON_B64
+   vercel env pull        # at repo root
+   ```
+4. **First Play upload is still manual** — create the app in Play Console, upload the
+   first `.aab` to **Internal testing**, enroll **Play App Signing**. Only after that
+   does the API allow submissions.
+
+Then every later Android release is one command (builds + auto-submits to the
+internal track as a draft):
+```bash
+pnpm eas build --profile production --platform android --auto-submit --non-interactive
+```
+Bump `track`→`production` and `releaseStatus`→`completed` in `eas.json` to ship to
+everyone instead of internal testers.
+
 ### `.easignore` gotcha (learned the hard way)
 
 `.easignore` excludes the heavy `public/` media from the build upload, **but** the

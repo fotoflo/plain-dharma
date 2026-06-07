@@ -9,14 +9,14 @@
 //   --no-external         skip the external "friends and fam" group + Beta Review
 //   --expire-old          expire all other (non-selected) VALID builds
 //
-// Env (already in .env.local): EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, EXPO_ASC_API_KEY_PATH
+// Env (already in .env.local): EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, and the key
+// itself as EXPO_ASC_API_KEY_P8 (the .p8 contents, synced from Vercel).
 //
 // What it does: waits for the target build to finish Apple processing (VALID),
 // sets the "What to Test" notes, adds it to the internal group (instant, no
 // review) and the external group, and submits the build for Beta App Review
 // (required for external testers). Idempotent: safe to re-run.
 
-import fs from "node:fs";
 import crypto from "node:crypto";
 
 const APP_ID = "6774981366";
@@ -36,7 +36,11 @@ const whatsNew = valArg("whatsnew") ?? "Latest build — bug fixes and improveme
 function token() {
   const keyId = process.env.EXPO_ASC_KEY_ID;
   const iss = process.env.EXPO_ASC_ISSUER_ID;
-  const key = fs.readFileSync(process.env.EXPO_ASC_API_KEY_PATH, "utf8");
+  // The .p8 key contents come from EXPO_ASC_API_KEY_P8 (synced from Vercel; the
+  // env stores newlines as literal "\n").
+  const p8 = process.env.EXPO_ASC_API_KEY_P8;
+  if (!p8) throw new Error("EXPO_ASC_API_KEY_P8 not set — run `vercel env pull`");
+  const key = p8.replace(/\\n/g, "\n");
   const b64u = (b) =>
     Buffer.from(b).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   const now = Math.floor(Date.now() / 1000);

@@ -46,8 +46,8 @@ export function SignInCard() {
 
   if (signedIn) {
     return (
-      <View style={[styles.card, { borderColor: palette.divider }]}>
-        <Text style={[styles.note, { color: palette.ink }]}>
+      <View style={[styles.card, styles.cardRow, { borderColor: palette.divider }]}>
+        <Text style={[styles.note, { color: palette.ink, flex: 1, marginBottom: 0 }]}>
           {t.signedInAs}
           {email ? ` · ${email}` : ""}
         </Text>
@@ -119,9 +119,15 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 8,
     marginTop: 4,
+  },
+  // Signed-in state only: email note + "Sign out" side by side. The "sent"
+  // confirmation keeps the default column so its body paragraph wraps instead
+  // of overflowing off the right edge.
+  cardRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 12,
   },
   h: { fontSize: 18 },
   note: { fontSize: 15, opacity: 0.7, marginBottom: 10, lineHeight: 22 },

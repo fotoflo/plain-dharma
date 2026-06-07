@@ -3,8 +3,9 @@
  *
  * The token exchange itself happens in AuthProvider's `Linking.useURL`
  * listener (it sees this same URL). This screen just shows a brief "signing
- * you in" state and bounces to More once a session exists, so the reader lands
- * somewhere sensible instead of on a raw callback URL.
+ * you in" state and bounces to More promptly (without waiting on the session),
+ * so the reader lands somewhere sensible instead of on a raw callback URL — and
+ * never strands on the spinner if the link is stale.
  */
 
 import { useRouter } from "expo-router";
@@ -20,8 +21,13 @@ export default function AuthCallbackScreen() {
   const router = useRouter();
   const { signedIn } = useMarginalia();
 
+  // The token exchange runs in the background in AuthProvider. Land the reader on
+  // More right away rather than gating forever on `signedIn` — a stale or
+  // already-used link (e.g. a deleted user) would otherwise leave this spinner
+  // stuck. The More tab reactively reflects the session once it resolves.
   useEffect(() => {
-    if (signedIn) router.replace("/more");
+    const t = setTimeout(() => router.replace("/more"), signedIn ? 0 : 1500);
+    return () => clearTimeout(t);
   }, [signedIn, router]);
 
   return (

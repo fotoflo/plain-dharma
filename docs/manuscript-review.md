@@ -238,15 +238,28 @@ slowdown needed** (the periods carry the spacing; −23% felt too slow). Applied
   "How This Book Was Made" but not the spoken colophon (`colophon.mdx` phrases it
   differently). Align or leave — decide.
 
-### B. Translation / zh propagation batch
-Any English edit above (preface, foot-washing, title order) must propagate to the
-Mandarin MDX + zh audio via the `translate-sutta` pipeline. Hold until the EN
-edits are locked.
+### B. Translation / zh propagation  — CONTENT DONE (2026-06-07)
+zh is Yan Zhang's human translation. Most EN edits were **English-specific** and
+do NOT propagate (pause markers, capitalized-imperative restructure, Oxford "and",
+typographic title flip). The substantive content changes were propagated:
+- ✅ **Foot-washing preface** (`drops.ts` zh): added "三个星期" (three weeks) + the
+  broke-ranks/foot-washing beat; kept the foot-washing ambiguity (打来洗脚的水，摆上脚凳).
+- ✅ **Three-poisons consistency** (`zh/how-to-decide.mdx:58`): 推开 → 愤怒 (the
+  set-listing now matches 想要/愤怒/糊涂 used elsewhere; zh already avoids the
+  traditional 贪/嗔/痴, so it matched the plain-triad decision).
+- ✅ **First-Talk opening** (`zh/first-talk.mdx:9`): 他 → 佛陀 (parallels "the Buddha
+  addressed").
 
-- [ ] Propagate preface + foot-washing edits to `packages/content/zh/…` / drops.
-- [ ] Propagate the First-Talk text edits ("the Buddha addressed…", Oxford "and"
-  before Right Concentration) to zh + re-run affected zh narration.
-- [ ] Re-run zh narration for affected tracks.
+**Flag for Yan Zhang's review (nuance / his call):**
+- `zh/how-to-decide.mdx:26` #6 — current zh ("和你已经喜欢的某套道理刚好对得上") reads more
+  like EN #8; EN #6 is takka/naya ("argue your way to it"). Revisit.
+- `zh/loving-kindness.mdx:39` "里面" mirrors the cut "in it" (optional tightening).
+- `zh/mindfulness.mdx` body-parts — check for a doubled 皮 like the EN "skin".
+
+**zh AUDIO — not done.** zh narration is partial/offsite (voice bU2VfAdiOb2Gv2eZWlFq);
+re-recording needs a zh-specific pacing pass (pause markers at Mandarin phrase
+boundaries) + the zh voice. The re-recorded preface especially needs a zh re-record.
+Separate lane.
 
 #### Word-choice / against-the-Pali review — RESOLVED
 **Kept as faithful (no change):**

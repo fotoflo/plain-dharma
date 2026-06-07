@@ -46,9 +46,17 @@ export function stripFrontmatter(src: string): string {
   return (match ? text.slice(match[0].length) : text).replace(/^\s+/, "");
 }
 
+// Remove audio-only pause cues authored in the canonical MDX as MDX comments
+// (e.g. the "pause" / "pause:1.5" comment forms). They're invisible on the web,
+// and converted to <break> tags for the narration; strip them here so they don't
+// render in the app.
+export function stripPauseMarkers(src: string): string {
+  return src.replace(/\s*\{\/\*\s*pause(?::\s*[\d.]+)?\s*\*\/\}\s*/gi, " ");
+}
+
 /** The plain-Markdown body of a sutta for the given locale, frontmatter removed. */
 export function getSuttaMarkdown(locale: Locale, slug: SuttaSlug): string {
-  return stripFrontmatter(RAW[locale][slug]);
+  return stripPauseMarkers(stripFrontmatter(RAW[locale][slug]));
 }
 
 // Slugify a heading to match the audio manifest's section ids (rehype-slug

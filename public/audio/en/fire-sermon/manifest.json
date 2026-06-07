@@ -3,49 +3,49 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-05-29T22:15:14.541Z",
+  "generated_at": "2026-06-07T09:39:53.135Z",
   "sections": [
     {
       "id": "title",
       "title": "Adittapariyaya Sutta",
       "file": "00-title.mp3",
-      "duration_sec": 17,
-      "duration_fast_sec": 15.3
+      "duration_sec": 16.2,
+      "duration_fast_sec": 14.6
     },
     {
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 73.7,
-      "duration_fast_sec": 66.4
+      "duration_sec": 78.8,
+      "duration_fast_sec": 71
     },
     {
       "id": "the-same-fire-everywhere",
       "title": "The Same Fire, Everywhere",
       "file": "02-the-same-fire-everywhere.mp3",
-      "duration_sec": 90.3,
-      "duration_fast_sec": 81.4
+      "duration_sec": 99.9,
+      "duration_fast_sec": 86.4
     },
     {
       "id": "what-to-do-about-it",
       "title": "What to Do About It",
       "file": "03-what-to-do-about-it.mp3",
-      "duration_sec": 55,
-      "duration_fast_sec": 49.6
+      "duration_sec": 56.3,
+      "duration_fast_sec": 50.7
     },
     {
       "id": "how-they-heard-it",
       "title": "How They Heard It",
       "file": "04-how-they-heard-it.mp3",
-      "duration_sec": 21.4,
-      "duration_fast_sec": 19.3
+      "duration_sec": 24,
+      "duration_fast_sec": 21.6
     },
     {
       "id": "drop",
       "title": "Drop",
       "file": "99-drop.mp3",
-      "duration_sec": 13.9,
-      "duration_fast_sec": 12.5
+      "duration_sec": 11.2,
+      "duration_fast_sec": 10.1
     }
   ]
 }

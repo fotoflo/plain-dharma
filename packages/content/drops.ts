@@ -33,7 +33,7 @@ export const DROPS: Record<Locale, Record<SuttaSlug, string>> = {
 export const PREFACE: Record<Locale, string> = {
   en: `After waking under the Bodhi tree, the Buddha sat for a while figuring out what to do. He'd seen something. But could it be said? At first he thought no one would understand. Then he changed his mind, got up, and walked three weeks west to find the five old friends he'd left behind when their shared path of harsh self-denial had taken him as far as it could.
 
-He found them in the deer park near Varanasi. They'd resolved not to greet him — he'd quit, after all. But there was something about the way he walked, and by the time he arrived they were preparing him a seat.`,
+He found them in the deer park near Varanasi. They saw him coming and agreed among themselves: don't get up, don't take his bowl, don't show him the old respect — he'd quit, after all. But there was something about the way he walked. One of them broke and went to meet him, taking his bowl and robe. Another laid out a seat. Another set out water and a footstool to wash his feet. Their resolve melted before he said a word.`,
   zh: `在菩提树下觉醒之后，佛陀坐了一会儿，想着接下来该做什么。他看到了一样东西。但这东西讲得出来吗？一开始他想，没有人会听懂。然后他改变了主意，起身往西走，去找从前的五位老朋友——当年他们一起苦修自虐，那条路走到了尽头，他离开了他们。
 
 他在瓦拉纳西附近的鹿野苑找到了他们。他们本来商量好不理他——毕竟他半路退出了。但他走路的样子有点不一样，等他走到的时候，他们已经在给他备座位了。`,

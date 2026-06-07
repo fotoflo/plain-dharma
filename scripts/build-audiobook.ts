@@ -36,12 +36,20 @@ const FRONTMATTER_DIR = join(AUDIO_DIR, "_frontmatter");
 // Spoken "how this was made" + contribute colophon, appended as the closing
 // chapter (audiobook-only). Source: src/content/en_tts/colophon.mdx.
 const COLOPHON_DIR = join(AUDIO_DIR, "_colophon");
+// Spoken reading send-off ("Closing"), played after the last sutta and before the
+// colophon. Source: src/content/en_tts/closing.mdx.
+const CLOSING_DIR = join(AUDIO_DIR, "_closing");
 const OUT_DIR = join(ROOT, "dist", "audiobook");
 const COVER_PATH = join(ROOT, "dist", "ebook", "cover.jpg");
 
 // AAC bitrate. 64k mono is the speech-podcast sweet spot — clear, ~half the
 // MP3 source size. Audiobook listening doesn't benefit from higher bitrates.
 const AAC_BITRATE = "64k";
+
+// Silent breath inserted between top-level units (front matter, preface, each
+// sutta, colophon) so chapters don't run together. Folded into the *trailing*
+// edge of the preceding chapter so the chapter timeline stays contiguous.
+const GAP_MS = 1500;
 
 // Short labels for chapter prefixes — the sutta titles in SUTTA_META include
 // "The Buddha's First Talk" etc. which gets long when prefixed with the
@@ -71,6 +79,15 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
   const chapters: Chapter[] = [];
   let cursorMs = 0;
 
+  // A 1.5s silent breath between top-level units. Folded into the trailing edge
+  // of the preceding chapter so the timeline stays gap-free for players.
+  const silencePath = ensureSilence(GAP_MS);
+  const pushGap = (): void => {
+    concat.push({ filePath: silencePath, durationMs: GAP_MS });
+    cursorMs += GAP_MS;
+    if (chapters.length) chapters[chapters.length - 1]!.endMs = cursorMs;
+  };
+
   // Front matter (spoken title/credits) opens the book as chapter 1, titled
   // with the book title. Skipped gracefully if it hasn't been generated.
   const fmManifestPath = join(FRONTMATTER_DIR, "manifest.json");
@@ -91,13 +108,34 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
     console.warn(`[build-audiobook] no front matter at ${fmManifestPath} — building without an intro.`);
   }
 
+  // Preface (the narrative — "After waking under the Bodhi tree…") plays as its
+  // own chapter BEFORE chapter one. It physically lives in the first-talk
+  // manifest as a "preface" section, so we hoist it here and skip it in the
+  // suttas loop below.
+  const firstTalk = await getAudioManifest("en", "first-talk");
+  const prefaceSection = firstTalk?.sections.find((s) => s.id === "preface");
+  if (prefaceSection) {
+    const fileName = prefaceSection.file.split("?")[0].split("/").pop()!;
+    const filePath = join(AUDIO_DIR, "first-talk", fileName);
+    if (!existsSync(filePath)) throw new Error(`Missing preface audio: ${filePath}`);
+    const durationMs = Math.round(prefaceSection.duration_sec * 1000);
+    pushGap();
+    concat.push({ filePath, durationMs });
+    chapters.push({ title: "Preface", startMs: cursorMs, endMs: cursorMs + durationMs });
+    cursorMs += durationMs;
+  }
+
   for (const meta of SUTTAS_IN_ORDER) {
     const manifest = await getAudioManifest("en", meta.slug);
     if (!manifest) {
       throw new Error(`No manifest for ${meta.slug} — run \`pnpm generate-audio\` first.`);
     }
     const short = SHORT_TITLES[meta.slug] ?? meta.title;
+    pushGap();
     for (const section of manifest.sections) {
+      // The preface is hoisted to play before chapter one (see above) — don't
+      // also emit it inline as first-talk's second track.
+      if (meta.slug === "first-talk" && section.id === "preface") continue;
       // Since the offsite-asset migration, getAudioManifest resolves `file` to a
       // full Supabase CDN URL (with a `?v=` cache-bust). The audiobook stitches
       // the LOCAL mp3s, so take the basename — works for a URL or a bare name.
@@ -117,6 +155,27 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
     }
   }
 
+  // Closing (the spoken reading send-off) plays after the last sutta, before the
+  // colophon. Skipped gracefully if it hasn't been generated.
+  const closingManifestPath = join(CLOSING_DIR, "manifest.json");
+  if (existsSync(closingManifestPath)) {
+    const cl = JSON.parse(readFileSync(closingManifestPath, "utf8")) as {
+      sections: { file: string; duration_sec: number }[];
+    };
+    pushGap();
+    for (const section of cl.sections) {
+      const fileName = section.file.split("?")[0].split("/").pop()!;
+      const filePath = join(CLOSING_DIR, fileName);
+      if (!existsSync(filePath)) throw new Error(`Missing closing audio: ${filePath}`);
+      const durationMs = Math.round(section.duration_sec * 1000);
+      concat.push({ filePath, durationMs });
+      chapters.push({ title: "Closing", startMs: cursorMs, endMs: cursorMs + durationMs });
+      cursorMs += durationMs;
+    }
+  } else {
+    console.warn(`[build-audiobook] no closing at ${closingManifestPath} — building without a send-off.`);
+  }
+
   // Colophon (spoken "how this was made" + contribute) closes the book as the
   // final chapter. Skipped gracefully if it hasn't been generated.
   const colManifestPath = join(COLOPHON_DIR, "manifest.json");
@@ -124,6 +183,7 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
     const col = JSON.parse(readFileSync(colManifestPath, "utf8")) as {
       sections: { file: string; duration_sec: number }[];
     };
+    pushGap();
     for (const section of col.sections) {
       const fileName = section.file.split("?")[0].split("/").pop()!;
       const filePath = join(COLOPHON_DIR, fileName);
@@ -138,6 +198,29 @@ async function gather(): Promise<{ concat: ConcatEntry[]; chapters: Chapter[] }>
   }
 
   return { concat, chapters };
+}
+
+// Generate (and cache) a silent MP3 of `ms` milliseconds for inter-chapter
+// gaps. The concat step re-encodes to AAC, so a mono lavfi-sourced clip mixes
+// fine with the Theo Silk takes. No-op if already generated this build.
+function ensureSilence(ms: number): string {
+  if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
+  const out = join(OUT_DIR, `silence-${ms}ms.mp3`);
+  if (!existsSync(out)) {
+    execFileSync(
+      "ffmpeg",
+      [
+        "-y",
+        "-f", "lavfi",
+        "-i", "anullsrc=r=44100:cl=mono",
+        "-t", (ms / 1000).toString(),
+        "-q:a", "9",
+        out,
+      ],
+      { stdio: ["ignore", "ignore", "inherit"] }
+    );
+  }
+  return out;
 }
 
 function writeConcatList(entries: ConcatEntry[]): string {

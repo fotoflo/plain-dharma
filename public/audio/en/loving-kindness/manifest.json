@@ -3,28 +3,28 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-05-29T22:15:38.225Z",
+  "generated_at": "2026-06-07T10:57:17.392Z",
   "sections": [
     {
       "id": "title",
       "title": "Metta Sutta",
       "file": "00-title.mp3",
-      "duration_sec": 11.8,
-      "duration_fast_sec": 10.7
+      "duration_sec": 12.3,
+      "duration_fast_sec": 11.1
     },
     {
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 170,
-      "duration_fast_sec": 153.1
+      "duration_sec": 172.1,
+      "duration_fast_sec": 155.1
     },
     {
       "id": "drop",
       "title": "Drop",
       "file": "99-drop.mp3",
-      "duration_sec": 12.2,
-      "duration_fast_sec": 11
+      "duration_sec": 11.9,
+      "duration_fast_sec": 10.7
     }
   ]
 }

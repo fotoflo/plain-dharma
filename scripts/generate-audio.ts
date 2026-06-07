@@ -125,7 +125,10 @@ function stripEmphasis(text: string): string {
 }
 
 function cleanForTTS(text: string): string {
-  let out = text.replace(/^---+$/gm, "");
+  // Convert pause cues to <break> tags FIRST — the {/* pause */} marker contains
+  // asterisks, so stripEmphasis below would otherwise mangle it.
+  let out = pausesToBreaks(text);
+  out = out.replace(/^---+$/gm, "");
   out = stripEmphasis(out);
   out = out.replace(/^>\s*/gm, "");
   out = out.replace(/^\d+\.\s+/gm, "");
@@ -151,7 +154,9 @@ function parseMDX(filePath: string): Section[] {
   }
 
   content = content.replace(/^#\s+.+\n?/, "");
-  content = content.replace(/^\*[^*\n]+\*\s*\n?/, "");
+  // NOTE: do NOT strip a leading *italic* line. For first-talk that line is the
+  // scene-setting "At Varanasi, in the deer park at Isipatana, the Buddha
+  // addressed the five monks:" and must be narrated (stripEmphasis drops the *s).
 
   const parts = content.split(/^## /m);
   const sections: Section[] = [];
@@ -266,6 +271,26 @@ async function callOpenAITTS(
 
 // ─── ElevenLabs TTS ──────────────────────────────────────────────────────────
 
+// Turn pause cues into ElevenLabs <break> tags so the voice renders a real,
+// breathing pause — flat inserted silence sounds like dead air, but a <break>
+// is filled with the model's own breath/room tone. Honored by v2 and v3 alike.
+// Cue sources:
+//   • {/* pause */} or {/* pause:1.5 */} — authored in the canonical MDX as an
+//     MDX comment (invisible on the web, stripped from PDF/mobile).
+//   • [long pause] / [pause] — the cue parseMDX injects before section bodies.
+function pausesToBreaks(text: string): string {
+  return text
+    .replace(
+      /\{\/\*\s*pause(?::\s*([\d.]+))?\s*\*\/\}/gi,
+      (_m, s) => `<break time="${s ?? "1.0"}s" />`
+    )
+    .replace(/\[long pause\]/gi, '<break time="1.2s" />')
+    .replace(
+      /\[pause(?::\s*([\d.]+))?\]/gi,
+      (_m, s) => `<break time="${s ?? "1.0"}s" />`
+    );
+}
+
 async function callElevenLabsTTS(
   text: string,
   apiKey: string,
@@ -273,11 +298,12 @@ async function callElevenLabsTTS(
 ): Promise<TTSSuccess | { error: string }> {
   const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
 
-  // Only v3 understands inline audio tags. For v2 (or any non-v3), strip the
-  // bracketed tags so they aren't read aloud literally.
+  // Convert pause cues to <break> first; then for non-v3, strip any remaining
+  // bracketed audio tags so they aren't read aloud literally.
+  const withBreaks = pausesToBreaks(text);
   const cleanedText = ELEVEN_MODEL === "eleven_v3"
-    ? text
-    : text.replace(/\[[^\]]+\]/g, "").replace(/\s+/g, " ").trim();
+    ? withBreaks
+    : withBreaks.replace(/\[[^\]]+\]/g, "").replace(/\s+/g, " ").trim();
 
   const body = {
     text: cleanedText,

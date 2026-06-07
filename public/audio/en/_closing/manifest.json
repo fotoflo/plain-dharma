@@ -1,16 +1,16 @@
 {
-  "slug": "_frontmatter",
+  "slug": "_closing",
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-06-07T11:32:05.784Z",
+  "generated_at": "2026-06-07T11:34:37.084Z",
   "sections": [
     {
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 96.6,
-      "duration_fast_sec": 87
+      "duration_sec": 25.2,
+      "duration_fast_sec": 22.7
     }
   ]
 }

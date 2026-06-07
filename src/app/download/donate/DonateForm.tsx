@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { assetDownloadUrl } from "@plain-dharma/content/assets";
+import { assetDownloadUrl, assetSize } from "@plain-dharma/content/assets";
+import { FreeDownloadButton } from "./FreeDownloadButton";
 
 const FILE_LABELS: Record<string, { label: string; href: string }> = {
   epub: { label: "EPUB",      href: assetDownloadUrl("downloads/plain-dharma.epub") },
@@ -36,6 +37,41 @@ export function DonateForm() {
   const slug = getFileSlug(searchParams.get("file"));
   const file = FILE_LABELS[slug];
   const cancelled = searchParams.get("cancelled") === "1";
+
+  // Funnel tagging via ?ref (web player → "player", download page → "download",
+  // mobile app → "app_*"). When the mobile app opens this in an in-app browser it
+  // also passes an anonymous install id (?cid) and ?hide_nav=true so the page
+  // reads as a native sheet. We fire one donate_view GA event for every source
+  // (anonymous; no PII), matching the native event.
+  const ref = searchParams.get("ref");
+  const cid = searchParams.get("cid");
+  const hideNav = searchParams.get("hide_nav") === "true";
+
+  useEffect(() => {
+    if (hideNav) document.documentElement.classList.add("app-embed");
+    if (ref) {
+      const w = window as Window & {
+        gtag?: (...args: unknown[]) => void;
+        dataLayer?: unknown[];
+      };
+      // Define the gtag stub if GA's script hasn't loaded yet — queued events
+      // are flushed once it does (same contract as the inline GA init).
+      if (!w.gtag) {
+        w.dataLayer = w.dataLayer ?? [];
+        w.gtag = (...args: unknown[]) => w.dataLayer!.push(args);
+      }
+      // Same event name + param shape as the mobile native donate_view, so the
+      // app, web player, and download-page funnels all land in one GA4 event.
+      w.gtag("event", "donate_view", {
+        ref,
+        cid: cid ?? undefined,
+        file: slug,
+      });
+    }
+    return () => {
+      if (hideNav) document.documentElement.classList.remove("app-embed");
+    };
+  }, [hideNav, ref, cid, slug]);
 
   const [selectedCents, setSelectedCents] = useState<number>(700);
   const [customDollars, setCustomDollars] = useState<string>("");
@@ -153,13 +189,11 @@ export function DonateForm() {
         >
           {submitting ? "Opening Stripe…" : donateAmountLabel}
         </button>
-        <a
+        <FreeDownloadButton
           href={file.href}
-          download
-          className="font-sans text-sm text-link underline-offset-4 hover:text-accent hover:underline"
-        >
-          or skip and download for free
-        </a>
+          label="Download free"
+          fallbackBytes={assetSize(`downloads/plain-dharma.${slug}`)}
+        />
       </div>
 
       <p className="font-serif text-xs text-ink/50">

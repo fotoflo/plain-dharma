@@ -39,7 +39,7 @@ export function Header() {
 
   return (
     <>
-      <header className="relative z-40 w-full border-b border-divider/80 bg-paper">
+      <header data-site-chrome className="relative z-40 w-full border-b border-divider/80 bg-paper">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-8 px-6 py-5">
           <Logo size={36} />
 

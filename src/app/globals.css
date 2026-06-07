@@ -144,6 +144,11 @@ html {
      reading-controls panel). */
   --reading-ink: var(--color-text);
 }
+/* App-embed mode (?hide_nav=true): the mobile app opens this page inside an
+   in-app browser and wants it to read as a native sheet, so hide the site's
+   nav + footer chrome. Toggled by <HideChrome /> on the donate page. */
+html.app-embed [data-site-chrome] { display: none !important; }
+
 html.reading-size-sm { --reading-scale: 0.9; }
 html.reading-size-md { --reading-scale: 1; }
 html.reading-size-lg { --reading-scale: 1.15; }

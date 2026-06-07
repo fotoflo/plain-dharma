@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, useEffect, useCallback } from "react";
 import type { AudioManifest, AudioSection } from "@/content/audio";
 import type { Locale } from "@/content/index";
@@ -656,6 +657,29 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay }: Props)
           </div>
         </>
       )}
+
+      {/* Download for offline — funnels to the donate page (free or donate),
+          mirroring the mobile listen → donate flow. Web has no in-app audio
+          cache, so "offline" here means the downloadable M4B audiobook file. */}
+      <Link
+        href="/download/donate?file=m4b&ref=player"
+        className="flex items-center justify-center gap-2 border-t border-divider px-4 py-2.5 font-sans text-[13px] text-link no-underline transition-colors hover:bg-accent/5 hover:text-accent"
+      >
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" />
+        </svg>
+        {s.downloadForOffline}
+      </Link>
     </div>
   );
 }

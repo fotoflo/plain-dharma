@@ -175,7 +175,7 @@ function FileCard({ file }: { file: FileOption }) {
       </p>
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <Link
-          href={`/download/donate?file=${file.slug}`}
+          href={`/download/donate?file=${file.slug}&ref=download`}
           className="inline-flex items-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline shadow-sm transition hover:no-underline hover:opacity-90"
         >
           Free Download

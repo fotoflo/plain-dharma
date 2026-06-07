@@ -11,7 +11,7 @@ export function Footer() {
   const s = getStrings(locale);
 
   return (
-    <footer className="mt-24 border-t border-divider/80">
+    <footer data-site-chrome className="mt-24 border-t border-divider/80">
       <div className="font-sans mx-auto flex w-full max-w-5xl flex-col gap-3 px-6 py-10 text-sm text-ink/70 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="font-serif italic">{s.footer.tagline}</p>

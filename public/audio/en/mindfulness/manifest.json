@@ -3,7 +3,7 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-06-07T11:00:39.967Z",
+  "generated_at": "2026-06-07T14:55:34.959Z",
   "sections": [
     {
       "id": "title",
@@ -23,8 +23,8 @@
       "id": "1-watching-the-body",
       "title": "1. Watching the Body",
       "file": "02-1-watching-the-body.mp3",
-      "duration_sec": 403.4,
-      "duration_fast_sec": 363.4
+      "duration_sec": 401,
+      "duration_fast_sec": 361.3
     },
     {
       "id": "2-watching-your-feelings",

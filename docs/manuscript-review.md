@@ -276,10 +276,30 @@ edits are locked.
 - **Mindfulness "skin" twice** (`mindfulness.mdx:41`) — trimmed the framing "skin";
   canonical list keeps its single "skin".
 
-### C. PDF / print batch  ⛔ BLOCKED LOCALLY
-`xelatex` is **not installed** on this machine (pandoc, magick, ffmpeg, qrencode
-are). Per global pref, install via TinyTeX **usermode, no sudo**
-(`tlmgr --usermode`) before running `pnpm build-pdf` / `build-print-pdf`.
+### C. PDF / print + EPUB batch  ✅ BUILT (2026-06-07)
+- **TinyTeX installed** at `~/Library/TinyTeX` (usermode, no sudo). xelatex +
+  packages (enumitem eso-pic fontspec geometry graphics newunicodechar pgf
+  titlesec xcolor + deps) in place. **For future builds, prepend
+  `~/Library/TinyTeX/bin/universal-darwin` to PATH** (not symlinked into /usr/local).
+  Fonts (Garamond Libre via repo OTFs, STIX Two Text) were already present.
+- **Illustrations** pulled local from the CDN (`public/illustrations/*.png`) — both
+  EPUB and PDF need them.
+- ✅ **EPUB** (`dist/ebook/plain-dharma.epub`, 794 KB — auto-published to downloads).
+- ✅ **Screen PDF** (`dist/pdf/plain-dharma.pdf`, 1.1 MB — auto-published).
+- ✅ **Print PDFs** (`dist/print/plain-dharma-print-{bw,color}.pdf`) — NOT auto-published
+  to `public/downloads` (KDP interiors).
+- ✅ **Verified by rendering**: drop epigraphs DO render (the "missing drops" was a
+  stale printout, confirmed); foot-washing preface renders; "the Buddha addressed…"
+  edit present; illustration centered.
+- **Remaining refinements (optional):**
+  - Proper front matter / "contact sheet" (half-title → title → CC0 page) — current
+    uses Pandoc title page + "About This Book" (has subtitle + CC0); decent but not
+    the full half-title sequence. Needs `book-source.ts` work.
+  - Subtitle glosses still not in the PDF chapter heads (e.g. "The Discourse on
+    Not-Self").
+  - Minor: blank verso pages show a "CONTENTS" running header.
+- **To go live:** `pnpm upload-assets` publishes audio + downloads (M4B, EPUB, PDFs)
+  to the CDN.
 
 - [ ] **Proper front matter for the print interior** *(approved)* — replace the
   bare Pandoc title page with **half-title → title page → CC0 copyright page**.

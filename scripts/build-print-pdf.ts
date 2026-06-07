@@ -101,26 +101,30 @@ function prepareIllustration(
   const src = join(ILLUSTRATIONS_DIR, `${slug}.png`);
   if (!existsSync(src)) return null;
 
-  const dst = join(imagesDir, `${slug}.jpg`);
+  const dst = join(imagesDir, `${slug}.png`);
   const srcMtime = statSync(src).mtimeMs;
   const dstMtime = existsSync(dst) ? statSync(dst).mtimeMs : 0;
   if (dstMtime > srcMtime) return dst;
 
+  // The transparentize pass leaves a faint semi-transparent background on some
+  // sources (corner alpha ~0.12). Flattened onto cream and saved as JPEG, that
+  // residue + JPEG's color shift showed as a visible rectangle behind the art.
+  // Fix: level the alpha so the background goes fully transparent, flatten onto
+  // the EXACT page color, and save LOSSLESS PNG — invisible against \pagecolor.
+  // Color variant also gets a slight desaturation on the ink drops.
   const args = [
     src,
     "-resize", `${ILLUSTRATION_TARGET_WIDTH}x`,
-    "-background", cfg.illustrationBg,
-    "-flatten",
+    "-channel", "A", "-level", "15%,100%", "+channel",
   ];
+  if (!cfg.grayscale) {
+    args.push("-modulate", "100,88,100"); // ~12% less saturation
+  }
+  args.push("-background", cfg.illustrationBg, "-flatten");
   if (cfg.grayscale) {
     args.push("-colorspace", "Gray");
   }
-  args.push(
-    "-quality", String(ILLUSTRATION_JPEG_QUALITY),
-    "-strip",
-    "-interlace", "Plane",
-    dst
-  );
+  args.push("-strip", dst);
   execFileSync("magick", args, { stdio: "inherit" });
   return dst;
 }

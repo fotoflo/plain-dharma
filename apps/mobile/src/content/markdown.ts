@@ -51,7 +51,9 @@ export function stripFrontmatter(src: string): string {
 // and converted to <break> tags for the narration; strip them here so they don't
 // render in the app.
 export function stripPauseMarkers(src: string): string {
-  return src.replace(/\s*\{\/\*\s*pause(?::\s*[\d.]+)?\s*\*\/\}\s*/gi, " ");
+  // Horizontal whitespace around the marker only (not newlines) — so removing a
+  // trailing/leading marker doesn't collapse list items / paragraphs.
+  return src.replace(/[^\S\r\n]*\{\/\*\s*pause(?::\s*[\d.]+)?\s*\*\/\}[^\S\r\n]*/gi, " ");
 }
 
 /** The plain-Markdown body of a sutta for the given locale, frontmatter removed. */

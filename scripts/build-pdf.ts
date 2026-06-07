@@ -73,21 +73,25 @@ function prepareIllustration(slug: string): string | null {
   const src = join(ILLUSTRATIONS_DIR, `${slug}.png`);
   if (!existsSync(src)) return null;
 
-  const dst = join(IMAGES_DIR, `${slug}.jpg`);
+  const dst = join(IMAGES_DIR, `${slug}.png`);
   const srcMtime = statSync(src).mtimeMs;
   const dstMtime = existsSync(dst) ? statSync(dst).mtimeMs : 0;
   if (dstMtime > srcMtime) return dst;
 
+  // Level the alpha so the transparentize residue goes fully transparent, then
+  // flatten onto the EXACT page cream and save LOSSLESS PNG (JPEG shifted the
+  // cream just enough to leave a visible rectangle behind the art). Also
+  // desaturate the ink drops ~12%.
   execFileSync(
     "magick",
     [
       src,
       "-resize", `${ILLUSTRATION_TARGET_WIDTH}x`,
+      "-channel", "A", "-level", "15%,100%", "+channel",
+      "-modulate", "100,88,100",
       "-background", ILLUSTRATION_BG,
       "-flatten",
-      "-quality", String(ILLUSTRATION_JPEG_QUALITY),
       "-strip",
-      "-interlace", "Plane",
       dst,
     ],
     { stdio: "inherit" }

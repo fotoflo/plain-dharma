@@ -40,8 +40,11 @@ function stripFrontmatter(src: string): string {
 // print in the book. They're authored in the canonical MDX as MDX comments
 // (invisible on the web) and converted to <break> tags for the narration.
 function stripPauseMarkers(src: string): string {
+  // Match horizontal whitespace around the marker but NOT newlines — otherwise
+  // removing a trailing/leading marker collapses list items and paragraphs onto
+  // one line.
   return src.replace(
-    /\s*\{\/\*\s*pause(?::\s*[\d.]+)?\s*\*\/\}\s*/gi,
+    /[^\S\r\n]*\{\/\*\s*pause(?::\s*[\d.]+)?\s*\*\/\}[^\S\r\n]*/gi,
     " "
   );
 }

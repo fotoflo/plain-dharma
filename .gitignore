@@ -66,5 +66,8 @@ public/illustrations/*.png
 public/illustrations/originals.zip
 public/downloads/
 
+# Supabase CLI local scratch (temp state, not part of this tree)
+supabase/.temp/
+
 # claude code agent worktrees (isolated branches, not part of this tree)
 .claude/worktrees/

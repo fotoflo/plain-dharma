@@ -10,6 +10,7 @@ import { FloatingControls } from "@/components/FloatingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown } from "@/content/markdown";
 import { useLocale } from "@/i18n/LocaleContext";
+import { useTabBarInset, useTabBarScroll } from "@/navigation/TabBar";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme } from "@/theme/ThemeContext";
 import { CONTRAST_BG, CONTRAST_INK, FONTS } from "@/theme/tokens";
@@ -28,6 +29,8 @@ export default function ReadScreen() {
   const { theme, palette } = useTheme();
   const { contrast, font } = useReadingPrefs();
   const insets = useSafeAreaInsets();
+  const onScroll = useTabBarScroll();
+  const tabBarInset = useTabBarInset();
   const { locale } = useLocale();
   const s = getStrings(locale).read;
   const suttas = getSuttasInOrder(locale);
@@ -41,9 +44,11 @@ export default function ReadScreen() {
       <DecorativeBackground />
       <ScrollView
         style={{ backgroundColor: "transparent" }}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
         contentContainerStyle={{
           paddingTop: insets.top + 24,
-          paddingBottom: insets.bottom + 56,
+          paddingBottom: tabBarInset + 24,
           paddingHorizontal: 24,
         }}
       >

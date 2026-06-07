@@ -1,7 +1,7 @@
 import * as Linking from "expo-linking";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -12,6 +12,10 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useAudioPanel } from "@/audio/AudioPanelContext";
+import { useDownloads } from "@/audio/DownloadsProvider";
+import { useLocale } from "@/i18n/LocaleContext";
+import { logEvent } from "@/lib/analytics";
 import { deliverBookFile } from "@/lib/download-file";
 import { asDownloadFormat, DOWNLOADS } from "@/lib/links";
 import { SITE_ORIGIN } from "@/lib/site";
@@ -34,16 +38,39 @@ export default function DonateScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { locale } = useLocale();
+  const { download } = useDownloads();
+  const { setAudioOpen } = useAudioPanel();
 
-  const { file } = useLocalSearchParams<{ file?: string }>();
+  const { file, ref } = useLocalSearchParams<{ file?: string; ref?: string }>();
   const slug = asDownloadFormat(file);
   const label = DOWNLOADS.find((d) => d.format === slug)?.title ?? "EPUB";
+  // Arrived from the listen modal: the pay/free choice gates *offline listening*
+  // (in-app audio caching), and a separate CTA downloads the audiobook file.
+  const fromListen = ref === "listen";
 
   const [selectedCents, setSelectedCents] = useState(700);
   const [customDollars, setCustomDollars] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [cancelled, setCancelled] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [dlProgress, setDlProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Funnel analytics: who arrived here and for which edition (anonymous,
+  // production-only; no-op in dev). Mirrors the web donate-page event.
+  useEffect(() => {
+    void logEvent("donate_view", { ref: ref ?? "direct", file: slug });
+  }, [ref, slug]);
+
+  // Kick off the in-app offline-audio download (runs globally in
+  // DownloadsProvider), ask the listen panel to reopen, and bounce back to the
+  // Read tab — so the reader lands on the player with the download in progress.
+  const startOfflineListen = useCallback(() => {
+    void download(locale);
+    setAudioOpen(true);
+    router.replace("/read");
+  }, [download, locale, setAudioOpen, router]);
 
   // The in-app browser (openBrowserAsync) doesn't intercept the return itself,
   // so we listen for the link the OS hands back once Stripe finishes — either
@@ -59,13 +86,16 @@ export default function DonateScreen() {
         setCancelled(true);
       } else if (url.includes("to=thankyou")) {
         WebBrowser.dismissBrowser().catch(() => {});
-        router.replace({ pathname: "/download/thank-you", params: { file: slug } });
+        // Paid for offline listening → start the cache + return to the player;
+        // otherwise it's a file purchase → the thank-you auto-download screen.
+        if (fromListen) startOfflineListen();
+        else router.replace({ pathname: "/download/thank-you", params: { file: slug } });
       }
     };
     const sub = Linking.addEventListener("url", (e) => handle(e.url));
     Linking.getInitialURL().then((u) => u && handle(u));
     return () => sub.remove();
-  }, [slug, router]);
+  }, [slug, router, fromListen, startOfflineListen]);
 
   function effectiveCents(): number {
     if (customDollars.trim() !== "") {
@@ -76,8 +106,13 @@ export default function DonateScreen() {
   }
 
   const cents = effectiveCents();
+  const money = (cents / 100).toFixed(cents % 100 === 0 ? 0 : 2);
   const donateLabel =
-    cents < 100 ? "Donate" : `Donate $${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)} & download`;
+    cents < 100
+      ? "Donate"
+      : fromListen
+        ? `Donate $${money} & listen offline`
+        : `Donate $${money} & download`;
 
   async function handleDonate() {
     if (cents < 100) {
@@ -107,14 +142,32 @@ export default function DonateScreen() {
     }
   }
 
-  async function handleSkip() {
+  // Downloads the actual book/audiobook FILE (to the share sheet) with a
+  // progress bar. Used for the non-listen free download and the listen screen's
+  // separate "Download the audiobook" CTA.
+  async function downloadFile() {
+    if (downloading) return;
     setError(null);
+    setDownloading(true);
+    setDlProgress(0);
     try {
-      await deliverBookFile(slug);
+      await deliverBookFile(slug, setDlProgress);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Download failed.");
+    } finally {
+      setDownloading(false);
+      setDlProgress(null);
     }
   }
+
+  const dlPct =
+    downloading && dlProgress != null ? ` ${Math.round(dlProgress * 100)}%` : "";
+  const skipLabel = downloading
+    ? `Downloading…${dlPct}`
+    : "or skip and download for free";
+  const audiobookLabel = downloading
+    ? `Downloading…${dlPct}`
+    : "Download the audiobook";
 
   return (
     <ScrollView
@@ -134,9 +187,9 @@ export default function DonateScreen() {
         Read it. Pay what feels right.
       </Text>
       <Text style={[styles.sub, { color: palette.ink, fontFamily: FONTS.serif }]}>
-        Downloading the {label} edition. Plain Dharma is free under CC0 — if you
-        do donate, it supports more translations, printed copies, and keeping the
-        site online.
+        {fromListen
+          ? "Save the narration to listen offline. Plain Dharma is free under CC0 — paying is a nudge, not a gate; it funds more translations, printed copies, and hosting."
+          : `Downloading the ${label} edition. Plain Dharma is free under CC0 — if you do donate, it supports more translations, printed copies, and keeping the site online.`}
       </Text>
 
       {cancelled && (
@@ -196,21 +249,88 @@ export default function DonateScreen() {
         </View>
       )}
 
-      <Pressable
-        onPress={handleDonate}
-        disabled={submitting}
-        style={[styles.donate, { backgroundColor: palette.accentStrong, opacity: submitting ? 0.6 : 1 }]}
-      >
-        <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 16 }}>
-          {submitting ? "Opening Stripe…" : donateLabel}
-        </Text>
-      </Pressable>
+      {fromListen ? (
+        <>
+          {/* Group 1 — cache the narration to play in the app's own player. */}
+          <Text style={[styles.groupLabel, { color: palette.link }]}>
+            LISTEN OFFLINE IN THE APP
+          </Text>
+          <Pressable
+            onPress={handleDonate}
+            disabled={submitting}
+            style={[
+              styles.donate,
+              { backgroundColor: palette.accentStrong, marginTop: 8, opacity: submitting ? 0.6 : 1 },
+            ]}
+          >
+            <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 16 }}>
+              {submitting ? "Opening Stripe…" : donateLabel}
+            </Text>
+          </Pressable>
+          <Pressable onPress={startOfflineListen} hitSlop={8} style={styles.skip}>
+            <Text style={{ color: palette.link, fontFamily: FONTS.serif }}>
+              or listen offline for free
+            </Text>
+          </Pressable>
+          <Text style={[styles.caption, { color: palette.ink }]}>
+            Saves the narration in the app so you can play it without a connection.
+          </Text>
 
-      <Pressable onPress={handleSkip} hitSlop={8} style={styles.skip}>
-        <Text style={{ color: palette.link, fontFamily: FONTS.serif }}>
-          or skip and download for free
-        </Text>
-      </Pressable>
+          <View style={styles.orRow}>
+            <View style={[styles.orLine, { backgroundColor: palette.divider }]} />
+            <Text style={[styles.orText, { color: palette.ink, fontFamily: FONTS.serif }]}>
+              or
+            </Text>
+            <View style={[styles.orLine, { backgroundColor: palette.divider }]} />
+          </View>
+
+          {/* Group 2 — download the M4B *file* to use in another player. */}
+          <Text style={[styles.groupLabel, { color: palette.link, marginTop: 0 }]}>
+            GET THE AUDIOBOOK FILE
+          </Text>
+          <Pressable
+            onPress={downloadFile}
+            disabled={downloading}
+            style={[styles.audiobook, { borderColor: palette.accent }]}
+            accessibilityRole="button"
+          >
+            <Text style={{ color: palette.accent, fontFamily: FONTS.serif, fontSize: 16 }}>
+              {audiobookLabel}
+            </Text>
+          </Pressable>
+          <Text style={[styles.caption, { color: palette.ink }]}>
+            M4B for Apple Books, Files, or any audiobook player.
+          </Text>
+        </>
+      ) : (
+        <>
+          <Pressable
+            onPress={handleDonate}
+            disabled={submitting}
+            style={[styles.donate, { backgroundColor: palette.accentStrong, opacity: submitting ? 0.6 : 1 }]}
+          >
+            <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 16 }}>
+              {submitting ? "Opening Stripe…" : donateLabel}
+            </Text>
+          </Pressable>
+          <Pressable onPress={downloadFile} hitSlop={8} disabled={downloading} style={styles.skip}>
+            <Text style={{ color: palette.link, fontFamily: FONTS.serif }}>{skipLabel}</Text>
+          </Pressable>
+        </>
+      )}
+
+      {downloading && dlProgress != null ? (
+        <View style={[styles.progressTrack, { backgroundColor: palette.divider }]}>
+          <View
+            style={{
+              height: 4,
+              borderRadius: 2,
+              width: `${Math.round(dlProgress * 100)}%`,
+              backgroundColor: palette.accent,
+            }}
+          />
+        </View>
+      ) : null}
 
       <Text style={[styles.fine, { color: palette.ink, fontFamily: FONTS.serif }]}>
         Payment is processed by Stripe. We don&rsquo;t store your card. The
@@ -241,6 +361,38 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   donate: { borderRadius: 999, paddingVertical: 14, alignItems: "center", marginTop: 24 },
-  skip: { alignItems: "center", paddingVertical: 14 },
+  skip: { alignItems: "center", paddingVertical: 16, marginTop: 4 },
+  groupLabel: {
+    fontSize: 11,
+    letterSpacing: 1.5,
+    fontWeight: "600",
+    opacity: 0.8,
+    marginTop: 28,
+  },
+  caption: {
+    fontSize: 13,
+    lineHeight: 18,
+    opacity: 0.55,
+    textAlign: "center",
+    marginTop: 6,
+    paddingHorizontal: 8,
+  },
+  orRow: { flexDirection: "row", alignItems: "center", gap: 12, marginTop: 26 },
+  orLine: { flex: 1, height: StyleSheet.hairlineWidth, opacity: 0.7 },
+  orText: { fontSize: 13, opacity: 0.5 },
+  audiobook: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingVertical: 13,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  progressTrack: {
+    height: 4,
+    borderRadius: 2,
+    overflow: "hidden",
+    marginTop: -4,
+    marginBottom: 6,
+  },
   fine: { fontSize: 12, opacity: 0.5, lineHeight: 18, marginTop: 10 },
 });

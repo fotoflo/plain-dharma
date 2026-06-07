@@ -44,8 +44,13 @@ function randomId(): string {
   return `${rand}.${Math.floor(Date.now() / 1000)}`;
 }
 
-/** A stable per-install client id, persisted to AsyncStorage. */
-function getClientId(): Promise<string> {
+/**
+ * A stable per-install **anonymous** client id, persisted to AsyncStorage.
+ * Exported so funnels that leave the app (e.g. the web donate page opened in an
+ * in-app browser) can stitch the session back to the same analytics identity
+ * without ever sending PII or the real account id.
+ */
+export function getClientId(): Promise<string> {
   if (clientIdPromise) return clientIdPromise;
   clientIdPromise = (async () => {
     try {

@@ -475,24 +475,48 @@
     "v": "57615e12",
     "bytes": 1226999
   },
+  "illustrations/fire-sermon-dark.png": {
+    "v": "223d14e7",
+    "bytes": 1313719
+  },
   "illustrations/first-talk.png": {
     "v": "3c4724cb",
     "bytes": 1337080
+  },
+  "illustrations/first-talk-dark.png": {
+    "v": "f7ed1533",
+    "bytes": 1241287
   },
   "illustrations/how-to-decide.png": {
     "v": "f4c407b6",
     "bytes": 1357599
   },
+  "illustrations/how-to-decide-dark.png": {
+    "v": "ce0af819",
+    "bytes": 1229525
+  },
   "illustrations/loving-kindness.png": {
     "v": "c2f4f7f0",
     "bytes": 1393551
+  },
+  "illustrations/loving-kindness-dark.png": {
+    "v": "7f390c56",
+    "bytes": 1326483
   },
   "illustrations/mindfulness.png": {
     "v": "73d32073",
     "bytes": 1366899
   },
+  "illustrations/mindfulness-dark.png": {
+    "v": "bae8c616",
+    "bytes": 1281964
+  },
   "illustrations/not-self.png": {
     "v": "2640a6b6",
     "bytes": 1331452
+  },
+  "illustrations/not-self-dark.png": {
+    "v": "37a1a767",
+    "bytes": 1225487
   }
 }

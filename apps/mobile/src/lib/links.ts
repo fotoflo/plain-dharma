@@ -1,13 +1,29 @@
 import * as WebBrowser from "expo-web-browser";
 import { assetUrl } from "@plain-dharma/content/assets";
 
+import { getClientId } from "./analytics";
 import { SITE_ORIGIN } from "./site";
 
-// General "Support" donation (no file attached) opens the web Stripe Checkout in
-// an in-app browser — content is CC0/free, so this stays App-Store-compliant
-// (no in-app purchase). The file-download donate flow lives in app/download/.
-export function openDonate(): Promise<unknown> {
-  return WebBrowser.openBrowserAsync(`${SITE_ORIGIN}/download/donate`);
+// Opens the web donate page ("pay what feels right") in an in-app browser — used
+// for the general Support CTA (no file attached). Content is CC0/free, so this
+// stays App-Store-compliant (no in-app purchase; any payment happens off-app on
+// the website). When `ref` is given we hide the site nav (so it reads as an
+// embedded sheet) and tag the referrer; `cid` is the anonymous GA install id so
+// the web funnel stitches to the same identity without any PII. The file
+// download + "listen free" funnel uses the native /download/donate screen.
+export async function openDonate(opts: { ref?: string } = {}): Promise<unknown> {
+  const parts: string[] = [];
+  if (opts.ref) {
+    parts.push(`ref=app_${encodeURIComponent(opts.ref)}`);
+    parts.push("hide_nav=true");
+  }
+  try {
+    parts.push(`cid=${encodeURIComponent(await getClientId())}`);
+  } catch {
+    // No id available — proceed without stitching.
+  }
+  const qs = parts.length ? `?${parts.join("&")}` : "";
+  return WebBrowser.openBrowserAsync(`${SITE_ORIGIN}/download/donate${qs}`);
 }
 
 // "Contribute" opens the web contribute page (copy editors / translators / voice

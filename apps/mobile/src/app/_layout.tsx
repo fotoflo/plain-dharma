@@ -10,6 +10,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+import { AudioPanelProvider } from "@/audio/AudioPanelContext";
 import { AudioProvider } from "@/audio/AudioProvider";
 import { DownloadsProvider } from "@/audio/DownloadsProvider";
 import { LocaleProvider } from "@/i18n/LocaleContext";
@@ -65,9 +66,11 @@ export default function RootLayout() {
           <AuthProvider>
             <DownloadsProvider>
               <AudioProvider>
-                <LocaleProvider>
-                  <Navigator />
-                </LocaleProvider>
+                <AudioPanelProvider>
+                  <LocaleProvider>
+                    <Navigator />
+                  </LocaleProvider>
+                </AudioPanelProvider>
               </AudioProvider>
             </DownloadsProvider>
           </AuthProvider>

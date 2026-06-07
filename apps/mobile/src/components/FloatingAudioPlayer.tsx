@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAudio } from "@/audio/AudioProvider";
+import { useTabBarOverlap } from "@/navigation/TabBar";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 import { AudioPanel } from "./AudioPanel";
@@ -30,6 +31,7 @@ export function FloatingAudioPlayer({
 }) {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
+  const tabBarOverlap = useTabBarOverlap();
   const { load, loadCombined } = useAudio();
   const s = getStrings(locale).audio;
 
@@ -42,7 +44,7 @@ export function FloatingAudioPlayer({
 
   return (
     <View
-      style={[styles.wrap, { bottom: insets.bottom + 16 }]}
+      style={[styles.wrap, { bottom: insets.bottom + 16 + tabBarOverlap }]}
       pointerEvents="box-none"
     >
       {open ? (

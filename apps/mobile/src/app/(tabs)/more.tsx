@@ -2,13 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { SUPPORTED_LOCALES } from "@plain-dharma/content";
 import { getStrings } from "@plain-dharma/content/strings";
 import { Link } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useDownloads } from "@/audio/DownloadsProvider";
 import { DebugInfo } from "@/components/DebugInfo";
 import { MenuGroup, MenuRow, SectionLabel } from "@/components/MenuRow";
 import { LOCALE_LABELS, useLocale } from "@/i18n/LocaleContext";
 import { useMarginalia } from "@/marginalia/AuthContext";
+import { useTabBarInset, useTabBarScroll } from "@/navigation/TabBar";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -28,14 +30,29 @@ export default function MoreScreen() {
   const { locale, setLocale } = useLocale();
   const { more: s, nav } = getStrings(locale);
   const { syncAvailable, signedIn, email, signOut } = useMarginalia();
+  const { downloaded, remove } = useDownloads();
   const insets = useSafeAreaInsets();
+  const onScroll = useTabBarScroll();
+  const tabBarInset = useTabBarInset();
+
+  const confirmClearOffline = () =>
+    Alert.alert(s.clearOffline, s.clearOfflineConfirm, [
+      { text: s.clearOfflineCancel, style: "cancel" },
+      {
+        text: s.clearOfflineConfirmCta,
+        style: "destructive",
+        onPress: () => void remove(locale),
+      },
+    ]);
 
   return (
     <ScrollView
       style={{ backgroundColor: palette.bg }}
+      onScroll={onScroll}
+      scrollEventThrottle={16}
       contentContainerStyle={{
         paddingTop: insets.top + 24,
-        paddingBottom: insets.bottom + 40,
+        paddingBottom: tabBarInset + 24,
         paddingHorizontal: 20,
       }}
     >
@@ -162,6 +179,15 @@ export default function MoreScreen() {
         <MenuRow icon="heart-outline" label={s.donate} href="/donate" />
         <MenuRow icon="create-outline" label={nav.contribute} href="/contribute" />
         <MenuRow icon="mail-outline" label={s.newsletter} href="/newsletter" />
+        <MenuRow
+          icon="chatbubble-ellipses-outline"
+          label={s.feedback}
+          onPress={() =>
+            void Linking.openURL(
+              "mailto:hello@plaindharma.com?subject=Plain%20Dharma%20feedback",
+            )
+          }
+        />
       </MenuGroup>
 
       <SectionLabel>{s.aboutSection}</SectionLabel>
@@ -170,6 +196,20 @@ export default function MoreScreen() {
         <MenuRow icon="list-outline" label={nav.glossary} href="/glossary" />
         <MenuRow icon="download-outline" label={s.downloadBook} href="/download" />
       </MenuGroup>
+
+      {/* Offline management — only shown once this language's audio is cached. */}
+      {downloaded[locale] ? (
+        <>
+          <SectionLabel>{s.offlineSection}</SectionLabel>
+          <MenuGroup>
+            <MenuRow
+              icon="trash-outline"
+              label={s.clearOffline}
+              onPress={confirmClearOffline}
+            />
+          </MenuGroup>
+        </>
+      ) : null}
 
       <DebugInfo />
     </ScrollView>

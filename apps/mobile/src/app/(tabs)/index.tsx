@@ -11,6 +11,7 @@ import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { useLocale } from "@/i18n/LocaleContext";
+import { useTabBarInset, useTabBarScroll } from "@/navigation/TabBar";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -20,6 +21,8 @@ import { FONTS } from "@/theme/tokens";
 export default function HomeScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
+  const onScroll = useTabBarScroll();
+  const tabBarInset = useTabBarInset();
   const router = useRouter();
   const { loadCombined, play } = useAudio();
   const { locale } = useLocale();
@@ -31,9 +34,11 @@ export default function HomeScreen() {
       <DecorativeBackground />
       <ScrollView
         style={{ backgroundColor: "transparent" }}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
         contentContainerStyle={{
           paddingTop: insets.top + 24,
-          paddingBottom: insets.bottom + 56,
+          paddingBottom: tabBarInset + 24,
           paddingHorizontal: 24,
         }}
       >

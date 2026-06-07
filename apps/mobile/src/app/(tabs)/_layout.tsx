@@ -3,27 +3,25 @@ import { getStrings } from "@plain-dharma/content/strings";
 import { Tabs } from "expo-router";
 
 import { useLocale } from "@/i18n/LocaleContext";
+import {
+  AnimatedTabBar,
+  TabBarVisibilityProvider,
+} from "@/navigation/TabBar";
 import { useTheme } from "@/theme/ThemeContext";
-import { FONTS } from "@/theme/tokens";
 
 export default function TabsLayout() {
   const { palette } = useTheme();
   const { locale } = useLocale();
   const nav = getStrings(locale).nav;
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: palette.accent,
-        tabBarInactiveTintColor: `${palette.ink}99`,
-        tabBarStyle: {
-          backgroundColor: palette.bg,
-          borderTopColor: palette.divider,
-        },
-        tabBarLabelStyle: { fontFamily: FONTS.serif },
-        sceneStyle: { backgroundColor: palette.bg },
-      }}
-    >
+    <TabBarVisibilityProvider>
+      <Tabs
+        tabBar={(props) => <AnimatedTabBar {...props} />}
+        screenOptions={{
+          headerShown: false,
+          sceneStyle: { backgroundColor: palette.bg },
+        }}
+      >
       <Tabs.Screen
         name="index"
         options={{
@@ -51,6 +49,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-    </Tabs>
+      </Tabs>
+    </TabBarVisibilityProvider>
   );
 }

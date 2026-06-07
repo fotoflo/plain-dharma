@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useRef } from "react";
 import {
   ActivityIndicator,
@@ -58,21 +59,40 @@ function ProgressBar({
   );
 }
 
-// "Download all for offline" — shown only when this locale isn't downloaded yet
-// (per-language download; the audios are short). Hidden once downloaded.
+// "Download for offline" → the donate gate (pay-or-free) for offline listening.
+// The actual in-app audio caching is kicked off from that screen and runs here
+// in DownloadsProvider, so this control shows live progress on return and hides
+// once the locale is cached. App-Store-safe: any payment happens off-app, and
+// the free path is always offered.
 function DownloadControl({ locale }: { locale: Locale }) {
   const { palette } = useTheme();
-  const { downloaded, busyLocale, progress, download } = useDownloads();
+  const router = useRouter();
+  const { downloaded, busyLocale, progress } = useDownloads();
   const s = getStrings(locale).audio;
-  if (downloaded[locale]) return null;
+  // Once cached, show a clear confirmation (not a tappable button, and don't
+  // just vanish — that left readers unsure whether it had downloaded).
+  if (downloaded[locale]) {
+    return (
+      <View style={[styles.dlBtn, { borderColor: palette.divider, opacity: 0.9 }]}>
+        <Ionicons name="checkmark-circle" size={16} color={palette.accent} />
+        <Text style={[styles.dlText, { color: palette.ink }]}>{s.savedOffline}</Text>
+      </View>
+    );
+  }
   const busy = busyLocale === locale;
   return (
     <Pressable
       onPress={() => {
-        if (!busy) void download(locale);
+        if (!busy)
+          router.push({
+            pathname: "/download/donate",
+            params: { file: "m4b", ref: "listen" },
+          });
       }}
       disabled={busy}
       style={[styles.dlBtn, { borderColor: palette.divider }]}
+      accessibilityRole="button"
+      accessibilityLabel={s.downloadForOffline}
     >
       {busy ? (
         <ActivityIndicator size="small" color={palette.accent} />

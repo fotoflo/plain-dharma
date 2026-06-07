@@ -2,10 +2,10 @@ import type { Locale, SuttaSlug } from "@plain-dharma/content";
 import { useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
+import { useAudioPanel } from "@/audio/AudioPanelContext";
+
 import { FloatingAudioPlayer } from "./FloatingAudioPlayer";
 import { FloatingReadingControls } from "./FloatingReadingControls";
-
-type Panel = "reading" | "audio" | null;
 
 // Owns the open-state shared by the two floating popovers (reading settings,
 // audio player) so only ONE can be open at a time, and renders a full-screen
@@ -21,29 +21,44 @@ export function FloatingControls({
   slug?: SuttaSlug;
   combined?: boolean;
 }) {
-  const [panel, setPanel] = useState<Panel>(null);
-  const toggle = (which: Exclude<Panel, null>) =>
-    setPanel((cur) => (cur === which ? null : which));
+  // Audio-panel open state lives in the shared context (so the donate screen can
+  // open it and it survives the bounce back to Read); the reading panel is local.
+  const { audioOpen, setAudioOpen } = useAudioPanel();
+  const [readingOpen, setReadingOpen] = useState(false);
+  const open = audioOpen ? "audio" : readingOpen ? "reading" : null;
+
+  const closeAll = () => {
+    setAudioOpen(false);
+    setReadingOpen(false);
+  };
+  const toggleReading = () => {
+    setAudioOpen(false);
+    setReadingOpen((v) => !v);
+  };
+  const toggleAudio = () => {
+    setReadingOpen(false);
+    setAudioOpen(!audioOpen);
+  };
 
   return (
     <>
-      {panel ? (
+      {open ? (
         <Pressable
           style={styles.backdrop}
-          onPress={() => setPanel(null)}
+          onPress={closeAll}
           accessibilityLabel="Close"
         />
       ) : null}
       <FloatingReadingControls
-        open={panel === "reading"}
-        onToggle={() => toggle("reading")}
+        open={open === "reading"}
+        onToggle={toggleReading}
       />
       <FloatingAudioPlayer
         locale={locale}
         slug={slug}
         combined={combined}
-        open={panel === "audio"}
-        onToggle={() => toggle("audio")}
+        open={open === "audio"}
+        onToggle={toggleAudio}
       />
     </>
   );

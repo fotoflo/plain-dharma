@@ -21,7 +21,7 @@ export default function DonateScreen() {
       </Text>
 
       <Pressable
-        onPress={() => openDonate()}
+        onPress={() => openDonate({ ref: "more_donate" })}
         style={[styles.donate, { backgroundColor: palette.accentStrong }]}
         accessibilityRole="button"
       >

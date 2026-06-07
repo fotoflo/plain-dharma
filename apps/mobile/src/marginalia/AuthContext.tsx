@@ -62,6 +62,7 @@ type AuthContextValue = {
   remove: (id: string) => void;
   signInWithEmail: (email: string) => Promise<{ ok: boolean; error?: string }>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<{ ok: boolean; error?: string }>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -203,6 +204,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     syncedRef.current = false;
   }, []);
 
+  // Permanently delete the account (App Store 5.1.1(v)). The Edge Function
+  // deletes the auth user with the service role, which cascades to the user's
+  // synced marginalia rows; we then clear the local session + notes.
+  const deleteAccount = useCallback(async () => {
+    const sb = getSupabase();
+    if (!sb) return { ok: false, error: "Sync isn’t available right now." };
+    const { error } = await sb.functions.invoke("delete-account", { method: "POST" });
+    if (error) return { ok: false, error: error.message };
+    await sb.auth.signOut().catch(() => {});
+    setMarks([]);
+    syncedRef.current = false;
+    return { ok: true };
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       marks,
@@ -215,8 +230,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       remove,
       signInWithEmail,
       signOut,
+      deleteAccount,
     }),
-    [marks, userId, email, add, updateNote, updateMark, remove, signInWithEmail, signOut],
+    [marks, userId, email, add, updateNote, updateMark, remove, signInWithEmail, signOut, deleteAccount],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

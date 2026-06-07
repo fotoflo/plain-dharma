@@ -29,11 +29,24 @@ export default function MoreScreen() {
   const { palette, mode, setMode } = useTheme();
   const { locale, setLocale } = useLocale();
   const { more: s, nav } = getStrings(locale);
-  const { syncAvailable, signedIn, email, signOut } = useMarginalia();
+  const { syncAvailable, signedIn, email, signOut, deleteAccount } = useMarginalia();
   const { downloaded, remove } = useDownloads();
   const insets = useSafeAreaInsets();
   const onScroll = useTabBarScroll();
   const tabBarInset = useTabBarInset();
+
+  const confirmDeleteAccount = () =>
+    Alert.alert(s.deleteAccount, s.deleteAccountConfirm, [
+      { text: s.clearOfflineCancel, style: "cancel" },
+      {
+        text: s.deleteAccountCta,
+        style: "destructive",
+        onPress: async () => {
+          const res = await deleteAccount();
+          if (!res.ok) Alert.alert(s.deleteAccount, res.error ?? s.deleteAccountError);
+        },
+      },
+    ]);
 
   const confirmClearOffline = () =>
     Alert.alert(s.clearOffline, s.clearOfflineConfirm, [
@@ -66,25 +79,37 @@ export default function MoreScreen() {
           sign-in screen. */}
       {syncAvailable ? (
         signedIn ? (
-          <View style={StyleSheet.flatten([styles.account, { borderColor: palette.divider }])}>
-            <Ionicons name="checkmark-circle" size={36} color={palette.accent} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.accountTitle, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-                {s.signedIn}
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={[styles.accountSub, { color: palette.ink, fontFamily: FONTS.serif }]}
-              >
-                {email ?? s.syncedSub}
-              </Text>
+          <>
+            <View style={StyleSheet.flatten([styles.account, { borderColor: palette.divider }])}>
+              <Ionicons name="checkmark-circle" size={36} color={palette.accent} />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.accountTitle, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
+                  {s.signedIn}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.accountSub, { color: palette.ink, fontFamily: FONTS.serif }]}
+                >
+                  {email ?? s.syncedSub}
+                </Text>
+              </View>
+              <Pressable onPress={() => signOut()} hitSlop={10} accessibilityRole="button">
+                <Text style={[styles.signOut, { color: palette.link, fontFamily: FONTS.serif }]}>
+                  {s.signOut}
+                </Text>
+              </Pressable>
             </View>
-            <Pressable onPress={() => signOut()} hitSlop={10} accessibilityRole="button">
-              <Text style={[styles.signOut, { color: palette.link, fontFamily: FONTS.serif }]}>
-                {s.signOut}
+            <Pressable
+              onPress={confirmDeleteAccount}
+              hitSlop={8}
+              style={styles.deleteAccount}
+              accessibilityRole="button"
+            >
+              <Text style={[styles.deleteAccountText, { fontFamily: FONTS.serif }]}>
+                {s.deleteAccount}
               </Text>
             </Pressable>
-          </View>
+          </>
         ) : (
           <Link href="/account" asChild>
             <Pressable
@@ -230,6 +255,8 @@ const styles = StyleSheet.create({
   accountTitle: { fontSize: 18 },
   accountSub: { fontSize: 14, opacity: 0.6, marginTop: 1 },
   signOut: { fontSize: 15 },
+  deleteAccount: { alignSelf: "flex-start", paddingVertical: 10, paddingHorizontal: 4, marginTop: 2 },
+  deleteAccountText: { fontSize: 14, color: "#c0392b" },
   card: {
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 12,

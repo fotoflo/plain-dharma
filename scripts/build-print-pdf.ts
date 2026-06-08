@@ -51,7 +51,6 @@ const OUT_DIR = join(ROOT, "dist", "print");
 const EBOOK_DIR = join(ROOT, "dist", "ebook");
 
 const ILLUSTRATION_TARGET_WIDTH = 1200; // 300 PPI at 4" displayed width
-const ILLUSTRATION_JPEG_QUALITY = 88;
 
 const XELATEX_BIN = "/Library/TeX/texbin/xelatex";
 

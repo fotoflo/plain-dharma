@@ -1,6 +1,6 @@
 # Asset hosting (offsite media on Supabase Storage) — Plain Dharma
 
-*Last updated: 2026-06-03*
+*Last updated: 2026-06-08*
 
 The heavy binary assets — audio mp3s, illustrations, and download bundles — are
 **not committed to git** and **not served from Vercel `/public`**. They live in
@@ -18,7 +18,7 @@ The split is **metadata in git, binaries on the CDN**:
 | Stays in git (small) | Offsite on the CDN (heavy) |
 |---|---|
 | per-sutta `manifest.json` (the web build reads it via `fs`) | `audio/**/*.mp3` (slow + `fast/`) |
-| `packages/content/asset-version.json` (hashes + sizes) | `illustrations/*.png` + `originals.zip` |
+| `packages/content/asset-version.json` (hashes + sizes, including `-dark.png` variants) | `illustrations/<slug>.png` + `-dark.png` variants + `originals.zip` |
 | the MDX source under `packages/content/` | `downloads/*` (m4b, pdf, epub, covers, zips, `text/`) |
 
 ## Where things are
@@ -27,7 +27,7 @@ The split is **metadata in git, binaries on the CDN**:
   `assets`. Public base URL:
   `https://ffoiltrarbdbibmymlqm.supabase.co/storage/v1/object/public/assets`
 - **Bucket layout mirrors the old `/public` paths 1:1:** `audio/<locale>/<slug>/<file>.mp3`,
-  `illustrations/<slug>.png`, `downloads/<file>`.
+  `illustrations/<slug>.png` + `<slug>-dark.png` (dark-mode variant), `downloads/<file>`.
 - (A separate **private** bucket `audio-archive` still holds pre-regen audio
   backups — see `scripts/backup-audio-to-supabase.ts`. Unrelated to serving.)
 
@@ -51,6 +51,8 @@ Platform-agnostic (web + mobile both use it):
 
 ## Publishing workflow
 
+### Full asset upload (media + version map)
+
 ```
 # after regenerating audio / illustrations, or editing remix bundles:
 pnpm build-remix-assets     # rebuilds public/downloads zips + text copies
@@ -62,6 +64,26 @@ pnpm upload-assets          # uploads everything to the bucket, writes asset-ver
 **`SUPABASE_SECRET_KEY`** (`sb_secret_…`) in `.env.local` — only for uploading;
 reading the public bucket needs no key. Get one at
 `https://supabase.com/dashboard/project/ffoiltrarbdbibmymlqm/settings/api-keys`.
+
+### Surgical manifest-only upload (when relabeling chapters, etc.)
+
+For manifest-only changes (e.g., chapter title edits) that don't need a full 143MB re-upload:
+
+```
+node --env-file=.env.local --import tsx scripts/upload-manifests.ts
+```
+
+`scripts/upload-manifests.ts` uploads only the per-sutta `manifest.json` files and surgically refreshes their entries in `asset-version.json` (appending fresh hashes for cache-busting), while leaving all other version-map entries untouched. This is **safe for concurrent agents** — it never rebuilds the version map from local files, which could drop entries for assets created by other agents.
+
+### Audio master backups (preserve raw ElevenLabs output)
+
+The render pipeline keeps un-stretched raw ElevenLabs output at `public/audio/{locale}/{slug}/candidates/orig-*.mp3` (gitignored, local only, overwritten on re-record). To preserve these as durable backups:
+
+```
+node --env-file=.env.local --import tsx scripts/backup-audio-masters.ts
+```
+
+`scripts/backup-audio-masters.ts` copies all masters to a separate `audio-masters/` prefix in the same public bucket (never visible on the live site, used only for recovery). Uses the same auth and bucket as `upload-assets`.
 
 > **Until you upload, new media won't appear** — not on the live site and not in
 > local dev (dev resolves to the CDN too). The upload is the publish step.

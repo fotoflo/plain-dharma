@@ -1,6 +1,6 @@
 # Audio Playback — Plain Dharma
 
-*Last updated: 2026-06-03*
+*Last updated: 2026-06-08*
 
 Synthesized narration for all six suttas. Audio is generated via OpenAI's TTS API or
 ElevenLabs' API, mirrored into MDX files with inline pause/emphasis tags (for ElevenLabs),
@@ -59,7 +59,7 @@ src/components/FloatingAudioPlayer.tsx
 ## Generation pipeline
 
 ```
-pnpm generate-audio [slug] [locale] [--provider=openai|elevenlabs] [--model=eleven_v3] [--voiceId=...] [--stability=N] [--style=N] [--similarity=N] [--section=...]
+pnpm generate-audio [slug] [locale] [--force] [--provider=openai|elevenlabs] [--model=eleven_v3] [--voiceId=...] [--stability=N] [--style=N] [--similarity=N] [--section=...]
 ```
 
 Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
@@ -67,10 +67,12 @@ Reads `OPENAI_API_KEY` or `ELEVEN_LABS_API_KEY` from `.env.local` (passed via
 
 **MDX parsing:**
 - Strips YAML frontmatter
+- Converts pause markers to ElevenLabs `<break>` tags (see **Pause markers** below)
 - Splits on `^## ` to extract sections (heading + body)
 - Each section becomes a separate audio file: `{section-id}.mp3`
 - Synthetic sections: `title` (H1), `preface` (first-talk only), `opening` (preamble),
   `drop` (final wisdom line)
+- `--force` regenerates even when output already exists (safe for MDX edits where the skip check only compares model/voice, not source text)
 
 **Provider selection:**
 
@@ -206,6 +208,31 @@ Combined manifest (for `/read`) has:
 3. `<FloatingAudioPlayer manifest={combinedAudio} audioBaseUrl="" />`
 4. Player seamlessly streams across all six suttas without reload
 
+## Pause markers
+
+Audio pauses are authored in the canonical MDX as **invisible MDX comments**:
+
+```mdx
+{/* pause */}        ← 1.0 second break (default)
+{/* pause:2.5 */}    ← 2.5 second break (custom duration)
+```
+
+The script `pausesToBreaks()` converts them **at generation time** to ElevenLabs `<break time="Ns" />` tags, which are understood by both `eleven_v3` and `eleven_multilingual_v2`. The conversion happens **before** `stripEmphasis`, because the pause marker contains asterisks that would otherwise be mangled.
+
+**Conversion rules:**
+- `{/* pause */}` → `<break time="1.0s" />`
+- `{/* pause:1.5 */}` → `<break time="1.5s" />`
+- `[long pause]` → `<break time="1.2s" />` (auto-injected before section bodies by `parseMDX`)
+- `[pause]` or `[pause:N]` → `<break time="1.0s" />` or `<break time="Ns" />` (alternative bracket syntax, same behavior)
+
+**Stripping from other surfaces:**
+
+- **Web:** MDX comments are invisible in rendered output (no action needed).
+- **PDF/print:** `scripts/lib/book-source.ts` `stripPauseMarkers()` removes them so they don't print. Regex matches **horizontal whitespace only** (`[^\S\r\n]*`), not newlines — removing a marker preserves paragraph/list structure.
+- **Mobile:** `apps/mobile/src/content/markdown.ts` `stripPauseMarkers()` removes them (same regex) so they don't render in the app text.
+
+Pause markers are an **audio-only** annotation — they never render on any surface except the narration.
+
 ## AudioPlayer — two-mode UI
 
 AudioPlayer switches between TOC (section list) and Player (transport controls) modes based on playback state:
@@ -314,7 +341,13 @@ render all metadata — this is expected and graceful.
 Pass `/audio/en/first-talk` not `/audio/en/first-talk/`. Combined manifests pass `""` as
 base since file paths are absolute.
 
-**Audiobook front/back matter** — `build-audiobook.ts` prepends a spoken title/credits intro (`_frontmatter/manifest.json`, generated from `src/content/en_tts/frontmatter.mdx`) and appends a spoken colophon (`_colophon/manifest.json`, from `colophon.mdx`) as the first and final chapters. These are audiobook-only — they don't appear in per-sutta or combined web playlists. If either manifest is missing, `gather()` gracefully skips it.
+**Audiobook structure** — `scripts/build-audiobook.ts` assembles the m4b in this order:
+1. **Frontmatter** (`_frontmatter/`) — spoken title/credits intro (audiobook-only, source: `src/content/en_tts/frontmatter.mdx`)
+2. **Six suttas** in canonical order (each with all its sections)
+3. **Closing** (`_closing/`) — final send-off narration (audiobook-only, source: `src/content/en_tts/closing.mdx`)
+4. **Colophon** (`_colophon/`) — how-this-was-made + contribution invite (audiobook-only, source: `src/content/en_tts/colophon.mdx`)
+
+**Silent breath between chapters** — 1500ms (1.5s) gaps are inserted between top-level units (front matter, each sutta, colophon) so chapters don't run together. Gaps are folded into the trailing edge of the preceding chapter so the chapter timeline stays contiguous. Missing frontmatter, closing, or colophon manifests are gracefully skipped.
 
 **Partial manifests (locale-specific in-progress recording)** — `getCombinedAudioManifest()`
 skips missing per-sutta manifests instead of failing. This allows recording audio for one sutta

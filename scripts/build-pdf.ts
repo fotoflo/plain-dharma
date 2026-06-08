@@ -54,7 +54,6 @@ const BACK_COVER_PATH = join(ROOT, "dist", "ebook", "back-cover.jpg");
 // each from ~1.5 MB raw-PNG-with-smask down to ~50 KB. Flattening color
 // must match `\pagecolor{cream}` in pdf-preamble.tex (#F5EFE0).
 const ILLUSTRATION_TARGET_WIDTH = 1000;
-const ILLUSTRATION_JPEG_QUALITY = 85;
 const ILLUSTRATION_BG = "#F5EFE0"; // matches \pagecolor{cream} in preamble
 
 // xelatex from BasicTeX is installed at /Library/TeX/texbin/. It's not on

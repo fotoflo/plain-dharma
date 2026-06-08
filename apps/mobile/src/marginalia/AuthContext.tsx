@@ -63,7 +63,29 @@ type AuthContextValue = {
   signInWithEmail: (email: string) => Promise<{ ok: boolean; error?: string }>;
   signOut: () => Promise<void>;
   deleteAccount: () => Promise<{ ok: boolean; error?: string }>;
+  /** Set when a returned magic link carried an error (expired / already used). */
+  authError: string | null;
 };
+
+/** Pull a Supabase auth error out of a returned deep link (fragment or query). */
+function authErrorFromUrl(url: string | null): string | null {
+  if (!url || !url.includes("auth/callback")) return null;
+  const hashIndex = url.indexOf("#");
+  const fragment = hashIndex >= 0 ? url.slice(hashIndex + 1) : "";
+  const fp = new URLSearchParams(fragment);
+  const q = Linking.parse(url).queryParams ?? {};
+  const pick = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+  const code = fp.get("error_code") ?? pick(q.error_code) ?? "";
+  const err = fp.get("error") ?? pick(q.error) ?? "";
+  const desc = String(fp.get("error_description") ?? pick(q.error_description) ?? "");
+  if (!err && !code) return null;
+  if (code === "otp_expired" || /expired|invalid|already/i.test(desc)) {
+    return "That sign-in link has expired or was already used. Request a fresh one below.";
+  }
+  return desc
+    ? decodeURIComponent(desc.replace(/\+/g, " "))
+    : "Sign-in didn’t complete. Please try again.";
+}
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -99,6 +121,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [email, setEmail] = useState<string | null>(null);
   const syncedRef = useRef(false);
   const incomingUrl = Linking.useURL();
+  // Derived (not stateful) so it's reliable: this provider's useURL is mounted
+  // at app start and catches the deep-link event that the late-mounted callback
+  // screen misses. Naturally clears when a new (successful) link arrives.
+  const authError = useMemo(() => authErrorFromUrl(incomingUrl), [incomingUrl]);
 
   // Apply a session to local state and run the one-time merge on sign-in.
   const onSession = useCallback(async (session: Session | null) => {
@@ -231,8 +257,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithEmail,
       signOut,
       deleteAccount,
+      authError,
     }),
-    [marks, userId, email, add, updateNote, updateMark, remove, signInWithEmail, signOut, deleteAccount],
+    [marks, userId, email, add, updateNote, updateMark, remove, signInWithEmail, signOut, deleteAccount, authError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

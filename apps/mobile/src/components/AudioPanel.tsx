@@ -254,6 +254,10 @@ export function AudioPanel({ locale }: { locale: Locale }) {
       <ScrollView style={styles.toc}>
         {sections.map((s, i) => {
           const active = i === index;
+          // A sutta's title track (id "title", or "<slug>--title" in the
+          // combined /read playlist) is bold so it reads as a section header;
+          // the chapter rows under it stay regular weight.
+          const isTitle = s.id === "title" || s.id.endsWith("--title");
           return (
             <Pressable
               key={s.id}
@@ -269,6 +273,7 @@ export function AudioPanel({ locale }: { locale: Locale }) {
               <Text
                 style={[
                   styles.rowTitle,
+                  isTitle && styles.rowTitleStrong,
                   { color: palette.ink, opacity: active ? 1 : 0.85 },
                 ]}
                 numberOfLines={1}
@@ -334,9 +339,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
   },
-  // Every chapter title is bold (title tracks included); active state is shown
-  // via opacity + the accent play icon, not weight, so no row renders lighter.
-  rowTitle: { flex: 1, fontWeight: "700" },
+  // Chapter rows are regular weight; only a sutta's title track is bolded (see
+  // rowTitleStrong) so it reads as a section header in the combined playlist.
+  rowTitle: { flex: 1, fontWeight: "400" },
+  rowTitleStrong: { fontWeight: "700" },
   tocFooter: {
     flexDirection: "row",
     alignItems: "center",

@@ -364,28 +364,28 @@
     "bytes": 1172
   },
   "audio/zh/fire-sermon/manifest.json": {
-    "v": "9c3a0086",
-    "bytes": 947
+    "v": "0ddd9fdc",
+    "bytes": 990
   },
   "audio/zh/first-talk/manifest.json": {
     "v": "1963c133",
     "bytes": 1199
   },
   "audio/zh/how-to-decide/manifest.json": {
-    "v": "8113d00b",
-    "bytes": 1196
+    "v": "5353830b",
+    "bytes": 1234
   },
   "audio/zh/loving-kindness/manifest.json": {
-    "v": "32b523b4",
-    "bytes": 466
+    "v": "f6a4f8b9",
+    "bytes": 482
   },
   "audio/zh/mindfulness/manifest.json": {
-    "v": "61dab406",
-    "bytes": 1056
+    "v": "e3693ac2",
+    "bytes": 1081
   },
   "audio/zh/not-self/manifest.json": {
-    "v": "d0dadeda",
-    "bytes": 822
+    "v": "7c91da7b",
+    "bytes": 850
   },
   "downloads/.DS_Store": {
     "v": "d241a1bb",

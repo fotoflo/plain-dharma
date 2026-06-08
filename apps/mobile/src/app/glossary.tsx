@@ -1,12 +1,12 @@
 import { GLOSSARY } from "@plain-dharma/content/glossary";
-import { getStrings } from "@plain-dharma/content/strings";
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BackLink } from "@/components/BackLink";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
-import { useLocale } from "@/i18n/LocaleContext";
+import { useLocale, useZhConvert } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -14,7 +14,8 @@ export default function GlossaryScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
   const { locale } = useLocale();
-  const s = getStrings(locale);
+  const { toDisplay } = useZhConvert();
+  const s = useStrings();
   const entries = GLOSSARY[locale];
 
   return (
@@ -44,7 +45,7 @@ export default function GlossaryScreen() {
           {entries.map((entry) => (
             <View key={entry.term} style={[styles.entry, { borderColor: palette.divider }]}>
               <Text style={[styles.term, { color: palette.ink, fontFamily: FONTS.serifBold }]}>
-                {entry.term}
+                {toDisplay(entry.term)}
               </Text>
               {entry.pali ? (
                 <Text style={[styles.pali, { color: palette.ink, fontFamily: FONTS.serifItalic }]}>
@@ -52,7 +53,7 @@ export default function GlossaryScreen() {
                 </Text>
               ) : null}
               <Text style={[styles.def, { color: palette.ink, fontFamily: FONTS.serif }]}>
-                {entry.definition}
+                {toDisplay(entry.definition)}
               </Text>
             </View>
           ))}

@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
-import { getStrings } from "@plain-dharma/content/strings";
 import { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAudio } from "@/audio/AudioProvider";
+import { useStrings } from "@/i18n/strings";
 import { useTabBarOverlap } from "@/navigation/TabBar";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -33,7 +33,7 @@ export function FloatingAudioPlayer({
   const insets = useSafeAreaInsets();
   const tabBarOverlap = useTabBarOverlap();
   const { load, loadCombined } = useAudio();
-  const s = getStrings(locale).audio;
+  const s = useStrings().audio;
 
   // Kick off the (cheap, manifest-only) load the first time the panel opens.
   useEffect(() => {

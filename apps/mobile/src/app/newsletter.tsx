@@ -1,9 +1,8 @@
-import { getStrings } from "@plain-dharma/content/strings";
 import { StyleSheet, Text } from "react-native";
 
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { SubScreen } from "@/components/SubScreen";
-import { useLocale } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -11,8 +10,7 @@ import { FONTS } from "@/theme/tokens";
 // owner gets a notification, the subscriber a welcome).
 export default function NewsletterScreen() {
   const { palette } = useTheme();
-  const { locale } = useLocale();
-  const n = getStrings(locale).newsletter;
+  const n = useStrings().newsletter;
 
   return (
     <SubScreen kicker="Newsletter" title={n.heading}>

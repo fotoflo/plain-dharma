@@ -1,8 +1,7 @@
-import { getStrings } from "@plain-dharma/content/strings";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { SubScreen } from "@/components/SubScreen";
-import { useLocale } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import { openContribute } from "@/lib/links";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -12,8 +11,7 @@ import { FONTS } from "@/theme/tokens";
 // secure in-app browser (the form lives server-side via Resend).
 export default function ContributeScreen() {
   const { palette } = useTheme();
-  const { locale } = useLocale();
-  const c = getStrings(locale).contribute;
+  const c = useStrings().contribute;
 
   return (
     <SubScreen kicker={c.kicker} title={c.h1}>

@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { SUPPORTED_LOCALES } from "@plain-dharma/content";
-import { getStrings } from "@plain-dharma/content/strings";
 import { Link } from "expo-router";
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,6 +8,7 @@ import { useDownloads } from "@/audio/DownloadsProvider";
 import { DebugInfo } from "@/components/DebugInfo";
 import { MenuGroup, MenuRow, SectionLabel } from "@/components/MenuRow";
 import { LOCALE_LABELS, useLocale } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import type { ChineseScript } from "@/i18n/zhScript";
 import { useMarginalia } from "@/marginalia/AuthContext";
 import { useTabBarInset, useTabBarScroll } from "@/navigation/TabBar";
@@ -29,7 +29,7 @@ const THEME_OPTS: { value: ThemeMode; key: "themeLight" | "themeDark" | "themeAu
 export default function MoreScreen() {
   const { palette, mode, setMode } = useTheme();
   const { locale, setLocale, script, setScript } = useLocale();
-  const { more: s, nav } = getStrings(locale);
+  const { more: s, nav } = useStrings();
   const { syncAvailable, signedIn, email, signOut, deleteAccount } = useMarginalia();
   const { downloaded, remove } = useDownloads();
   const insets = useSafeAreaInsets();

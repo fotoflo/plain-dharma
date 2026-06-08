@@ -8,9 +8,7 @@ import {
   View,
 } from "react-native";
 
-import { getStrings } from "@plain-dharma/content/strings";
-
-import { useLocale } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import { subscribe } from "@/lib/newsletter";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -19,8 +17,7 @@ type Status = "idle" | "loading" | "done" | "error";
 
 export function NewsletterSignup() {
   const { palette } = useTheme();
-  const { locale } = useLocale();
-  const s = getStrings(locale).newsletter;
+  const s = useStrings().newsletter;
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");

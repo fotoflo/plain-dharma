@@ -1,5 +1,4 @@
 import { getSuttasInOrder } from "@plain-dharma/content";
-import { getStrings } from "@plain-dharma/content/strings";
 import { assetUrl } from "@plain-dharma/content/assets";
 import { Image } from "expo-image";
 import { Link, useRouter } from "expo-router";
@@ -10,7 +9,8 @@ import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
-import { useLocale } from "@/i18n/LocaleContext";
+import { useLocale, useZhConvert } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import { useTabBarInset, useTabBarScroll } from "@/navigation/TabBar";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -26,7 +26,8 @@ export default function HomeScreen() {
   const router = useRouter();
   const { loadCombined, play } = useAudio();
   const { locale } = useLocale();
-  const s = getStrings(locale).home;
+  const { toDisplay } = useZhConvert();
+  const s = useStrings().home;
   const suttas = getSuttasInOrder(locale);
 
   return (
@@ -166,7 +167,7 @@ export default function HomeScreen() {
                       fontSize: 21,
                     }}
                   >
-                    {sutta.title}
+                    {toDisplay(sutta.title)}
                   </Text>
                 </View>
                 <Text
@@ -178,7 +179,7 @@ export default function HomeScreen() {
                     marginTop: 4,
                   }}
                 >
-                  {sutta.teaser}
+                  {toDisplay(sutta.teaser)}
                 </Text>
                 <Text
                   style={{
@@ -188,7 +189,7 @@ export default function HomeScreen() {
                     marginTop: 6,
                   }}
                 >
-                  {(sutta.kicker_override ?? sutta.pali_name).toUpperCase()}
+                  {toDisplay(sutta.kicker_override ?? sutta.pali_name).toUpperCase()}
                 </Text>
               </View>
             </Pressable>

@@ -1,8 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { getStrings } from "@plain-dharma/content/strings";
 import { Tabs } from "expo-router";
 
-import { useLocale } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import {
   AnimatedTabBar,
   TabBarVisibilityProvider,
@@ -11,8 +10,7 @@ import { useTheme } from "@/theme/ThemeContext";
 
 export default function TabsLayout() {
   const { palette } = useTheme();
-  const { locale } = useLocale();
-  const nav = getStrings(locale).nav;
+  const nav = useStrings().nav;
   return (
     <TabBarVisibilityProvider>
       <Tabs

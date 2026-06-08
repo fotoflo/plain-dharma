@@ -1,11 +1,10 @@
-import { getStrings } from "@plain-dharma/content/strings";
 import { Link } from "expo-router";
 import { Linking, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BackLink } from "@/components/BackLink";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
-import { useLocale } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -14,8 +13,7 @@ const CC0_URL = "https://creativecommons.org/publicdomain/zero/1.0/";
 export default function AboutScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
-  const { locale } = useLocale();
-  const s = getStrings(locale).about;
+  const s = useStrings().about;
 
   const para = [styles.p, { color: palette.ink, fontFamily: FONTS.serif }];
   const h2 = [styles.h2, { color: palette.accent, fontFamily: FONTS.serifBold }];

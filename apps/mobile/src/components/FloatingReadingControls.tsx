@@ -1,8 +1,7 @@
-import { getStrings } from "@plain-dharma/content/strings";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useLocale } from "@/i18n/LocaleContext";
+import { useStrings } from "@/i18n/strings";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import type { Palette } from "@/theme/tokens";
@@ -77,11 +76,10 @@ export function FloatingReadingControls({
   onToggle: () => void;
 }) {
   const insets = useSafeAreaInsets();
-  const { locale } = useLocale();
   const { palette, mode, setMode } = useTheme();
   const { size, contrast, font, setSize, setContrast, setFont } = useReadingPrefs();
 
-  const strings = getStrings(locale);
+  const strings = useStrings();
   const s = strings.readingControls;
   const more = strings.more;
   const CONTRAST_OPTS: Option<Contrast>[] = [

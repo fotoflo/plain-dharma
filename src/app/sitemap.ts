@@ -24,6 +24,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/`,         lastModified: now, changeFrequency: "monthly", priority: 1.0 },
     { url: `${SITE_URL}/read`,     lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/about`,    lastModified: now, changeFrequency: "yearly",  priority: 0.6 },
+    // EN-only narrative page (screenshots + manuscript photos are of the English work)
+    { url: `${SITE_URL}/how-it-was-made`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/glossary`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/download`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/remix`,    lastModified: now, changeFrequency: "monthly", priority: 0.6 },

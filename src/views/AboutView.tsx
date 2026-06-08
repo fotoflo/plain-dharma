@@ -89,6 +89,13 @@ export function AboutView({ locale }: { locale: Locale }) {
         <p>{s.about.pHowMade3}</p>
         <p>{s.about.pHowMade4}</p>
         <p>{s.about.pCoverCredit}</p>
+        {locale === "en" && (
+          <p>
+            There’s a longer, more personal account — the 3 a.m. start, the
+            back-and-forth with the Pāli, the flight — on{" "}
+            <Link href="/how-it-was-made">its own page</Link>.
+          </p>
+        )}
       </article>
 
       <div className="mt-16 text-center">

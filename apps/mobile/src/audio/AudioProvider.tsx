@@ -67,6 +67,25 @@ const ARTWORK = Image.resolveAssetSource(
   require("../../assets/images/icon.png")
 ).uri;
 
+// Metadata-only equality: SWR revalidation can only change titles/durations
+// (URLs are derived deterministically from the slug), so a deep compare of the
+// display-relevant fields tells us whether an update is worth applying.
+function sectionsEqual(a: PlayerSection[], b: PlayerSection[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (
+      a[i].id !== b[i].id ||
+      a[i].title !== b[i].title ||
+      a[i].durationSec !== b[i].durationSec ||
+      a[i].durationFastSec !== b[i].durationFastSec ||
+      a[i].fastUrl !== b[i].fastUrl
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function toTracks(
   sections: PlayerSection[],
   speed: Speed,
@@ -176,28 +195,69 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     [installQueue]
   );
 
+  // SWR applier: swap freshly-revalidated sections into the visible TOC and the
+  // lock-screen/queue titles in place — no TrackPlayer.reset(), so playback is
+  // never interrupted. Bails if the user has since loaded something else, if
+  // nothing changed, or if the section count shifted (a structural change that
+  // an in-place metadata update can't represent — left for the next full load).
+  const applyRevalidated = useCallback(
+    async (key: string, fresh: PlayerSection[]) => {
+      if (loadedKeyRef.current !== key) return;
+      const cur = sectionsRef.current;
+      if (fresh.length !== cur.length || sectionsEqual(cur, fresh)) return;
+      sectionsRef.current = fresh;
+      setSections(fresh);
+      await Promise.all(
+        fresh.map((s, i) =>
+          TrackPlayer.updateMetadataForTrack(i, { title: s.title }).catch(() => {})
+        )
+      );
+    },
+    []
+  );
+
   const load = useCallback(
-    (locale: Locale, slug: SuttaSlug) =>
-      loadKey(locale, `${locale}/${slug}`, async () => ({
-        secs: await resolveSuttaSections(locale, slug),
+    (locale: Locale, slug: SuttaSlug) => {
+      const key = `${locale}/${slug}`;
+      return loadKey(locale, key, async () => ({
+        secs: await resolveSuttaSections(locale, slug, (fresh) => {
+          void applyRevalidated(key, fresh);
+        }),
         album: getMeta(locale, slug).title,
-      })),
-    [loadKey]
+      }));
+    },
+    [loadKey, applyRevalidated]
   );
 
   // Combined /read playlist: stitch every talk's sections (offline-aware via
-  // resolveSuttaSections), prefixing ids with the slug to keep them unique.
+  // resolveSuttaSections), prefixing ids with the slug to keep them unique. Each
+  // talk revalidates independently; a fresh result rebuilds the whole combined
+  // list from the latest known sections per slug and applies it in place.
   const loadCombined = useCallback(
-    (locale: Locale) =>
-      loadKey(locale, `all/${locale}`, async () => {
+    (locale: Locale) => {
+      const key = `all/${locale}`;
+      return loadKey(locale, key, async () => {
+        const bySlug = new Map<SuttaSlug, PlayerSection[]>();
+        const prefix = (slug: SuttaSlug, secs: PlayerSection[]) =>
+          secs.map((s) => ({ ...s, id: `${slug}--${s.id}` }));
+        const rebuild = () =>
+          SUTTAS.flatMap((slug) => {
+            const secs = bySlug.get(slug);
+            return secs ? prefix(slug, secs) : [];
+          });
         const all: PlayerSection[] = [];
         for (const slug of SUTTAS) {
-          const secs = await resolveSuttaSections(locale, slug);
-          for (const s of secs) all.push({ ...s, id: `${slug}--${s.id}` });
+          const secs = await resolveSuttaSections(locale, slug, (fresh) => {
+            bySlug.set(slug, fresh);
+            void applyRevalidated(key, rebuild());
+          });
+          bySlug.set(slug, secs);
+          all.push(...prefix(slug, secs));
         }
         return { secs: all, album: "The Buddha's foundational teachings" };
-      }),
-    [loadKey]
+      });
+    },
+    [loadKey, applyRevalidated]
   );
 
   const play = useCallback(() => {

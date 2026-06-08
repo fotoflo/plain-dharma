@@ -3,7 +3,11 @@ import { localizeSectionTitle, type AudioManifest } from "@plain-dharma/content/
 import { assetUrl } from "@plain-dharma/content/assets";
 import { Directory, File, Paths } from "expo-file-system";
 
-import { fetchSuttaSections, type PlayerSection } from "./manifest";
+import {
+  bundledSuttaSections,
+  fetchSuttaSectionsFromCdn,
+  type PlayerSection,
+} from "./manifest";
 
 // Offline storage layout (persistent — Paths.document survives low-storage):
 //   <document>/audio/<locale>/<slug>/manifest.json
@@ -96,12 +100,19 @@ export function removeLocale(locale: Locale): void {
 }
 
 /**
- * Resolve a sutta's sections to local file:// URIs when downloaded, else fall
- * back to streaming from the deployed site. Used by the audio queue builder.
+ * Resolve a sutta's sections to local file:// URIs when downloaded, else stream
+ * from the deployed site. Used by the audio queue builder.
+ *
+ * Online-but-not-downloaded uses stale-while-revalidate: the bundled manifest
+ * renders the Listen panel instantly, then the CDN copy is fetched in the
+ * background and handed to `onRevalidated` so freshly-published chapter labels
+ * appear without an app rebuild. A downloaded copy is authoritative (the reader
+ * chose it for offline) and isn't revalidated.
  */
 export async function resolveSuttaSections(
   locale: Locale,
-  slug: SuttaSlug
+  slug: SuttaSlug,
+  onRevalidated?: (fresh: PlayerSection[]) => void
 ): Promise<PlayerSection[]> {
   const local = await readLocalManifest(locale, slug);
   if (local) {
@@ -115,5 +126,16 @@ export async function resolveSuttaSections(
       durationFastSec: s.duration_fast_sec,
     }));
   }
-  return fetchSuttaSections(locale, slug);
+
+  const bundled = bundledSuttaSections(locale, slug);
+  if (bundled) {
+    if (onRevalidated) {
+      // Background revalidate; offline/flaky network keeps the bundled copy.
+      void fetchSuttaSectionsFromCdn(locale, slug)
+        .then(onRevalidated)
+        .catch(() => {});
+    }
+    return bundled;
+  }
+  return fetchSuttaSectionsFromCdn(locale, slug);
 }

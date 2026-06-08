@@ -47,18 +47,31 @@ export function manifestToSections(
 }
 
 /**
- * A sutta's streaming sections. Uses the OTA-bundled manifest when present (no
- * network round-trip — the Listen panel renders instantly), falling back to
- * fetching the manifest off the deployed site for anything not bundled.
+ * A sutta's sections from the OTA-bundled manifest, or null if none was bundled
+ * for it. Synchronous + no network — the Listen panel renders instantly. The
+ * bundled copy goes stale on any content change (it's frozen at app build time),
+ * so callers pair it with a CDN revalidation (see resolveSuttaSections).
  */
-export async function fetchSuttaSections(
+export function bundledSuttaSections(
+  locale: Locale,
+  slug: SuttaSlug
+): PlayerSection[] | null {
+  const bundled = bundledManifest(locale, slug);
+  return bundled ? manifestToSections(bundled, locale, slug) : null;
+}
+
+/**
+ * A sutta's sections fetched fresh from the deployed CDN — the source of truth
+ * for chapter labels/durations. Cache-busted with a timestamp so a stale
+ * app-bundled asset-version hash can't pin the CDN edge to an old manifest.
+ */
+export async function fetchSuttaSectionsFromCdn(
   locale: Locale,
   slug: SuttaSlug
 ): Promise<PlayerSection[]> {
-  const bundled = bundledManifest(locale, slug);
-  if (bundled) return manifestToSections(bundled, locale, slug);
-
-  const res = await fetch(assetUrl(`audio/${locale}/${slug}/manifest.json`));
+  const base = assetUrl(`audio/${locale}/${slug}/manifest.json`);
+  const url = `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}`;
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`audio manifest ${slug}: HTTP ${res.status}`);
   const manifest = (await res.json()) as AudioManifest;
   return manifestToSections(manifest, locale, slug);

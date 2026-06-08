@@ -12,9 +12,15 @@ import { StyleSheet, type TextStyle } from "react-native";
 import { SelectableRuns } from "./SelectableRuns";
 import { sectionToRuns, type RunStyle } from "./sectionRuns";
 import type { InlineHighlight, SelectionRect } from "@/components/MarkdownRenderer";
+import { useLocale } from "@/i18n/LocaleContext";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme } from "@/theme/ThemeContext";
-import { BASE_FONT_SIZE, BASE_LINE_HEIGHT, CONTRAST_INK, FONTS } from "@/theme/tokens";
+import {
+  BASE_FONT_SIZE,
+  BASE_LINE_HEIGHT,
+  CONTRAST_INK,
+  readerFonts,
+} from "@/theme/tokens";
 
 export function SelectableSectionText({
   markdown,
@@ -31,6 +37,7 @@ export function SelectableSectionText({
 }) {
   const { theme, palette } = useTheme();
   const { scale, contrast, font } = useReadingPrefs();
+  const { locale } = useLocale();
 
   const { runs, plainText } = useMemo(() => sectionToRuns(markdown), [markdown]);
 
@@ -38,20 +45,20 @@ export function SelectableSectionText({
     const ink = CONTRAST_INK[theme][contrast];
     const fontSize = BASE_FONT_SIZE * scale;
     const lineHeight = fontSize * BASE_LINE_HEIGHT;
-    const bodyFont = font === "accessible" ? FONTS.accessible : FONTS.serif;
-    const boldFont = font === "accessible" ? FONTS.accessibleBold : FONTS.serifBold;
-    const italicFont = font === "accessible" ? FONTS.accessibleItalic : FONTS.serifItalic;
+    const f = readerFonts(font, locale);
+    // zh has one CJK family, so bold/heading come from weight, not a bold face.
+    const boldWeight = f.boldWeight ? { fontWeight: f.boldWeight } : null;
     return StyleSheet.create({
-      body: { color: ink, fontFamily: bodyFont, fontSize, lineHeight },
-      bold: { fontFamily: boldFont, color: ink },
-      italic: { fontFamily: italicFont },
+      body: { color: ink, fontFamily: f.body, fontSize, lineHeight },
+      bold: { fontFamily: f.bold, color: ink, ...boldWeight },
+      italic: { fontFamily: f.italic },
       // Headings can't carry block margin inside a UITextView; keep them bold +
       // a touch larger so they still read as headings.
-      heading: { fontFamily: FONTS.serifBold, color: ink, fontSize: fontSize * 1.15 },
+      heading: { fontFamily: f.bold, color: ink, fontSize: fontSize * 1.15, ...boldWeight },
       link: { color: palette.link, textDecorationLine: "underline" as const },
-      marker: { color: ink, fontFamily: bodyFont },
+      marker: { color: ink, fontFamily: f.body },
     });
-  }, [theme, palette, scale, contrast, font]);
+  }, [theme, palette, scale, contrast, font, locale]);
 
   const runStyle = useCallback(
     (s: RunStyle): TextStyle | undefined => {

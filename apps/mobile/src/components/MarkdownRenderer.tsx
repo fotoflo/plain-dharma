@@ -4,9 +4,16 @@ import Markdown, { type ASTNode, type RenderRules } from "react-native-markdown-
 import { UITextView } from "react-native-uitextview";
 
 import { highlightWash } from "../marginalia/colors";
+import { useLocale } from "../i18n/LocaleContext";
 import { useReadingPrefs } from "../theme/ReadingPrefsContext";
 import { useTheme } from "../theme/ThemeContext";
-import { BASE_FONT_SIZE, BASE_LINE_HEIGHT, CONTRAST_INK, FONTS } from "../theme/tokens";
+import {
+  BASE_FONT_SIZE,
+  BASE_LINE_HEIGHT,
+  CONTRAST_INK,
+  FONTS,
+  readerFonts,
+} from "../theme/tokens";
 
 /** A resolved highlight to paint inline: a quote string + its mark + color. */
 export type InlineHighlight = { markId: string; quote: string; color: string };
@@ -65,6 +72,7 @@ export function MarkdownRenderer({
 }) {
   const { theme, palette } = useTheme();
   const { scale, contrast, font } = useReadingPrefs();
+  const { locale } = useLocale();
   // Debounce the high-frequency native selection-change events (fire on every
   // grabber edge adjustment) so we only act on a settled selection.
   const selTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -73,11 +81,15 @@ export function MarkdownRenderer({
     const ink = CONTRAST_INK[theme][contrast];
     const fontSize = BASE_FONT_SIZE * scale;
     const lineHeight = fontSize * BASE_LINE_HEIGHT;
-    // Accessible font swaps body text only — headings keep Garamond (per web).
-    const bodyFont = font === "accessible" ? FONTS.accessible : FONTS.serif;
-    const boldFont = font === "accessible" ? FONTS.accessibleBold : FONTS.serifBold;
-    const italicFont =
-      font === "accessible" ? FONTS.accessibleItalic : FONTS.serifItalic;
+    // Locale-aware: zh uses a CJK face so resize works; Latin reading fonts
+    // only render en/etc. Accessible font swaps body text only — Latin headings
+    // keep Garamond (per web); zh headings use the CJK face + bold weight.
+    const f = readerFonts(font, locale);
+    const bodyFont = f.body;
+    const boldFont = f.bold;
+    const italicFont = f.italic;
+    const boldWeight = f.boldWeight ? { fontWeight: f.boldWeight } : null;
+    const headingFont = locale === "zh" ? f.bold : FONTS.serifBold;
 
     return StyleSheet.create({
       // Root — text styles cascade to all inline content.
@@ -92,7 +104,8 @@ export function MarkdownRenderer({
         marginBottom: fontSize * 1.1,
       },
       heading1: {
-        fontFamily: FONTS.serifBold,
+        fontFamily: headingFont,
+        ...boldWeight,
         color: ink,
         fontSize: 32,
         lineHeight: 32 * 1.2,
@@ -100,7 +113,8 @@ export function MarkdownRenderer({
         marginBottom: 8,
       },
       heading2: {
-        fontFamily: FONTS.serifBold,
+        fontFamily: headingFont,
+        ...boldWeight,
         color: palette.accent,
         fontSize: 24,
         lineHeight: 24 * 1.3,
@@ -108,15 +122,17 @@ export function MarkdownRenderer({
         marginBottom: 16,
       },
       heading3: {
-        fontFamily: FONTS.serifBold,
+        fontFamily: headingFont,
+        ...boldWeight,
         color: ink,
         fontSize: 19,
         lineHeight: 19 * 1.4,
         marginTop: 32,
         marginBottom: 12,
       },
-      // Custom fonts don't synthesize bold/italic — switch the family instead.
-      strong: { fontFamily: boldFont, color: ink },
+      // Custom fonts don't synthesize bold/italic — switch the family instead
+      // (zh uses one CJK family, so bold comes from weight).
+      strong: { fontFamily: boldFont, ...boldWeight, color: ink },
       em: { fontFamily: italicFont },
       bullet_list: { marginTop: fontSize, marginBottom: fontSize },
       ordered_list: { marginTop: fontSize, marginBottom: fontSize },
@@ -142,7 +158,7 @@ export function MarkdownRenderer({
         textDecorationLine: "underline",
       },
     });
-  }, [theme, palette, scale, contrast, font]);
+  }, [theme, palette, scale, contrast, font, locale]);
 
   // Build custom leaf rules only when a layer needs them — with neither saved
   // highlights nor selection this is the library default.

@@ -1,6 +1,8 @@
 // Design tokens ported from the web's globals.css (the source of truth).
 // Light = "cream paper", dark = "navy night sky".
 
+import { Platform } from "react-native";
+
 export type ThemeName = "light" | "dark";
 
 export type Palette = {
@@ -86,3 +88,34 @@ export const FONTS = {
   accessibleBold: "AtkinsonHyperlegible_700Bold",
   accessibleItalic: "AtkinsonHyperlegible_400Regular_Italic",
 } as const;
+
+// The reading fonts above (Garamond/Atkinson) are Latin-only — they have no CJK
+// glyphs. Rendering Chinese with them makes iOS *substitute* a fallback face for
+// each glyph, and that substitution doesn't honour the explicit point size, so
+// the Aa resize silently does nothing for zh. Render zh with a real CJK face
+// instead: iOS exposes "Songti SC" (宋体, a serif that matches the Garamond
+// reading voice) by name without bundling; Android resolves CJK via its own
+// system fallback when the family is left undefined. One family covers bold via
+// fontWeight (CJK has no separate bold face and no italic).
+const CJK_SERIF = Platform.select({ ios: "Songti SC", default: undefined });
+
+export type ReaderFontSet = {
+  body: string | undefined;
+  bold: string | undefined;
+  italic: string | undefined;
+  /** Set for zh: there's one CJK family, so bold comes from weight, not face. */
+  boldWeight?: "700";
+};
+
+/** Reader font set for the active locale + font preference. */
+export function readerFonts(
+  font: "serif" | "accessible",
+  locale: string
+): ReaderFontSet {
+  if (locale === "zh") {
+    return { body: CJK_SERIF, bold: CJK_SERIF, italic: CJK_SERIF, boldWeight: "700" };
+  }
+  return font === "accessible"
+    ? { body: FONTS.accessible, bold: FONTS.accessibleBold, italic: FONTS.accessibleItalic }
+    : { body: FONTS.serif, bold: FONTS.serifBold, italic: FONTS.serifItalic };
+}

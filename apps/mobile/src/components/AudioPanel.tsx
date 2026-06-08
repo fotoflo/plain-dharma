@@ -18,6 +18,7 @@ import { getStrings } from "@plain-dharma/content/strings";
 import { useAudio } from "@/audio/AudioProvider";
 import { useDownloads } from "@/audio/DownloadsProvider";
 import { sectionDuration } from "@/audio/manifest";
+import { useZhConvert } from "@/i18n/LocaleContext";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -52,7 +53,12 @@ function ProgressBar({
     <Pressable onLayout={onLayout} onPress={onPress} style={styles.scrubHit}>
       <View style={[styles.scrubTrack, { backgroundColor: track }]}>
         <View
-          style={{ height: 4, borderRadius: 2, width: `${pct * 100}%`, backgroundColor: fill }}
+          style={{
+            height: 4,
+            borderRadius: 2,
+            width: `${pct * 100}%`,
+            backgroundColor: fill,
+          }}
         />
       </View>
     </Pressable>
@@ -68,14 +74,19 @@ function DownloadControl({ locale }: { locale: Locale }) {
   const { palette } = useTheme();
   const router = useRouter();
   const { downloaded, busyLocale, progress } = useDownloads();
+  const { toDisplay } = useZhConvert();
   const s = getStrings(locale).audio;
   // Once cached, show a clear confirmation (not a tappable button, and don't
   // just vanish — that left readers unsure whether it had downloaded).
   if (downloaded[locale]) {
     return (
-      <View style={[styles.dlBtn, { borderColor: palette.divider, opacity: 0.9 }]}>
+      <View
+        style={[styles.dlBtn, { borderColor: palette.divider, opacity: 0.9 }]}
+      >
         <Ionicons name="checkmark-circle" size={16} color={palette.accent} />
-        <Text style={[styles.dlText, { color: palette.ink }]}>{s.savedOffline}</Text>
+        <Text style={[styles.dlText, { color: palette.ink }]}>
+          {toDisplay(s.savedOffline)}
+        </Text>
       </View>
     );
   }
@@ -97,12 +108,18 @@ function DownloadControl({ locale }: { locale: Locale }) {
       {busy ? (
         <ActivityIndicator size="small" color={palette.accent} />
       ) : (
-        <Ionicons name="arrow-down-circle-outline" size={16} color={palette.accent} />
+        <Ionicons
+          name="arrow-down-circle-outline"
+          size={16}
+          color={palette.accent}
+        />
       )}
-      <Text style={[styles.dlText, { color: busy ? palette.ink : palette.accent }]}>
+      <Text
+        style={[styles.dlText, { color: busy ? palette.ink : palette.accent }]}
+      >
         {busy
-          ? `${s.downloading}${progress ? ` ${progress.done}/${progress.total}` : "…"}`
-          : s.downloadForOffline}
+          ? `${toDisplay(s.downloading)}${progress ? ` ${progress.done}/${progress.total}` : "…"}`
+          : toDisplay(s.downloadForOffline)}
       </Text>
     </Pressable>
   );
@@ -110,6 +127,7 @@ function DownloadControl({ locale }: { locale: Locale }) {
 
 export function AudioPanel({ locale }: { locale: Locale }) {
   const { palette } = useTheme();
+  const { toDisplay } = useZhConvert();
   const s = getStrings(locale).audio;
   const {
     sections,
@@ -141,14 +159,17 @@ export function AudioPanel({ locale }: { locale: Locale }) {
   if (error) {
     return (
       <View style={[styles.center, { backgroundColor: palette.bg }]}>
-        <Text style={{ color: palette.ink, fontFamily: FONTS.serif }}>{error}</Text>
+        <Text style={{ color: palette.ink, fontFamily: FONTS.serif }}>
+          {error}
+        </Text>
       </View>
     );
   }
   if (sections.length === 0) return null;
 
   const current = sections[index] ?? sections[0];
-  const effectiveDuration = duration > 0 ? duration : sectionDuration(current, speed);
+  const effectiveDuration =
+    duration > 0 ? duration : sectionDuration(current, speed);
 
   const PaceControl = hasFast ? (
     <View style={[styles.pace, { borderColor: palette.divider }]}>
@@ -163,7 +184,10 @@ export function AudioPanel({ locale }: { locale: Locale }) {
           <Pressable
             key={val}
             onPress={() => setSpeed(val)}
-            style={[styles.paceBtn, active && { backgroundColor: palette.accentStrong }]}
+            style={[
+              styles.paceBtn,
+              active && { backgroundColor: palette.accentStrong },
+            ]}
           >
             <Text
               style={{
@@ -172,7 +196,7 @@ export function AudioPanel({ locale }: { locale: Locale }) {
                 opacity: active ? 1 : 0.6,
               }}
             >
-              {label}
+              {toDisplay(label)}
             </Text>
           </Pressable>
         );
@@ -183,9 +207,16 @@ export function AudioPanel({ locale }: { locale: Locale }) {
   if (isPlaying) {
     return (
       <View>
-        <Text style={[styles.label, { color: palette.ink }]}>{s.nowPlaying.toUpperCase()}</Text>
-        <Text style={[styles.currentTitle, { color: palette.ink, fontFamily: FONTS.serif }]}>
-          {current.title}
+        <Text style={[styles.label, { color: palette.ink }]}>
+          {toDisplay(s.nowPlaying).toUpperCase()}
+        </Text>
+        <Text
+          style={[
+            styles.currentTitle,
+            { color: palette.ink, fontFamily: FONTS.serif },
+          ]}
+        >
+          {toDisplay(current.title)}
         </Text>
 
         <View style={styles.transport}>
@@ -198,7 +229,12 @@ export function AudioPanel({ locale }: { locale: Locale }) {
             />
           </Pressable>
           <Pressable onPress={() => seekBy(-5)} style={styles.ctrl}>
-            <Ionicons name="play-back" size={22} color={palette.ink} style={{ opacity: 0.8 }} />
+            <Ionicons
+              name="play-back"
+              size={22}
+              color={palette.ink}
+              style={{ opacity: 0.8 }}
+            />
           </Pressable>
           <Pressable
             onPress={togglePlay}
@@ -207,7 +243,12 @@ export function AudioPanel({ locale }: { locale: Locale }) {
             <Ionicons name="pause" size={32} color={palette.onAccent} />
           </Pressable>
           <Pressable onPress={() => seekBy(5)} style={styles.ctrl}>
-            <Ionicons name="play-forward" size={22} color={palette.ink} style={{ opacity: 0.8 }} />
+            <Ionicons
+              name="play-forward"
+              size={22}
+              color={palette.ink}
+              style={{ opacity: 0.8 }}
+            />
           </Pressable>
           <Pressable
             onPress={next}
@@ -231,7 +272,9 @@ export function AudioPanel({ locale }: { locale: Locale }) {
           onSeek={seekTo}
         />
         <View style={styles.times}>
-          <Text style={[styles.time, { color: palette.ink }]}>{formatTime(position)}</Text>
+          <Text style={[styles.time, { color: palette.ink }]}>
+            {formatTime(position)}
+          </Text>
           <Text style={[styles.time, { color: palette.ink }]}>
             {formatTime(effectiveDuration)}
           </Text>
@@ -250,7 +293,9 @@ export function AudioPanel({ locale }: { locale: Locale }) {
   const total = sections.reduce((n, s) => n + sectionDuration(s, speed), 0);
   return (
     <View>
-      <Text style={[styles.label, { color: palette.ink }]}>{s.listen.toUpperCase()}</Text>
+      <Text style={[styles.label, { color: palette.ink }]}>
+        {toDisplay(s.listen).toUpperCase()}
+      </Text>
       <ScrollView style={styles.toc}>
         {sections.map((s, i) => {
           const active = i === index;
@@ -278,7 +323,7 @@ export function AudioPanel({ locale }: { locale: Locale }) {
                 ]}
                 numberOfLines={1}
               >
-                {s.title}
+                {toDisplay(s.title)}
               </Text>
               <Text style={{ color: palette.ink, opacity: 0.4, fontSize: 12 }}>
                 {formatTime(sectionDuration(s, speed))}
@@ -289,8 +334,15 @@ export function AudioPanel({ locale }: { locale: Locale }) {
       </ScrollView>
       <View style={[styles.tocFooter, { borderColor: palette.divider }]}>
         {PaceControl}
-        <Text style={{ marginLeft: "auto", color: palette.ink, opacity: 0.35, fontSize: 12 }}>
-          {s.sectionsTotalLine
+        <Text
+          style={{
+            marginLeft: "auto",
+            color: palette.ink,
+            opacity: 0.35,
+            fontSize: 12,
+          }}
+        >
+          {toDisplay(s.sectionsTotalLine)
             .replace("{n}", String(sections.length))
             .replace("{time}", formatTime(total))}
         </Text>
@@ -301,7 +353,12 @@ export function AudioPanel({ locale }: { locale: Locale }) {
 }
 
 const styles = StyleSheet.create({
-  center: { padding: 24, alignItems: "center", justifyContent: "center", minHeight: 80 },
+  center: {
+    padding: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 80,
+  },
   label: {
     fontSize: 11,
     letterSpacing: 1.5,
@@ -316,11 +373,26 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 16,
   },
-  ctrl: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
-  playBtn: { width: 72, height: 72, borderRadius: 36, alignItems: "center", justifyContent: "center" },
+  ctrl: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  playBtn: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   scrubHit: { height: 24, justifyContent: "center" },
   scrubTrack: { height: 4, borderRadius: 2, overflow: "hidden" },
-  times: { flexDirection: "row", justifyContent: "space-between", marginTop: 4 },
+  times: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 4,
+  },
   time: { fontSize: 12, opacity: 0.6, fontVariant: ["tabular-nums"] },
   paceRow: { alignItems: "center", marginTop: 16 },
   pace: {
@@ -342,7 +414,7 @@ const styles = StyleSheet.create({
   // Chapter rows are regular weight; only a sutta's title track is bolded (see
   // rowTitleStrong) so it reads as a section header in the combined playlist.
   rowTitle: { flex: 1, fontWeight: "400" },
-  rowTitleStrong: { fontWeight: "600" },
+  rowTitleStrong: { fontWeight: "900" },
   tocFooter: {
     flexDirection: "row",
     alignItems: "center",

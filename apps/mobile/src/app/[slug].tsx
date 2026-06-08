@@ -20,7 +20,7 @@ import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingControls } from "@/components/FloatingControls";
 import { getSuttaMarkdown, splitSections, type ContentSection } from "@/content/markdown";
-import { useLocale } from "@/i18n/LocaleContext";
+import { useLocale, useZhConvert } from "@/i18n/LocaleContext";
 import { GlobalNotesPanel } from "@/marginalia/GlobalNotesPanel";
 import { MarginNotesPanel } from "@/marginalia/MarginNotesPanel";
 import { NoteComposer } from "@/marginalia/NoteComposer";
@@ -102,9 +102,22 @@ export default function SuttaScreen() {
   // reported sectionId rather than closing over the mapped `sec`.
   const { onSelect: mnOnSelect, beginEdit, closeSelection, marksForSlug } = mn;
 
+  // zh readers can view Traditional (繁體); convert the canonical (Simplified)
+  // content to the display script. toDisplay is identity outside zh+繁體, so en
+  // and 简体 are untouched. Converting the section markdown here (not deeper)
+  // keeps the rendered text and the marginalia selection text in the same
+  // script — onSelect folds the selection back to Simplified for storage.
+  const { toDisplay } = useZhConvert();
+
   const contentSections = useMemo(
-    () => (safeSlug ? splitSections(getSuttaMarkdown(locale, safeSlug)) : []),
-    [safeSlug, locale],
+    () =>
+      safeSlug
+        ? splitSections(getSuttaMarkdown(locale, safeSlug)).map((s) => ({
+            ...s,
+            markdown: toDisplay(s.markdown),
+          }))
+        : [],
+    [safeSlug, locale, toDisplay],
   );
 
   // The title block (kicker + title + subtitle) is selectable too, as a
@@ -115,9 +128,11 @@ export default function SuttaScreen() {
     const m = getMeta(locale, safeSlug);
     return {
       id: TITLE_SECTION_ID,
-      markdown: titleSectionMarkdown(m.kicker_override ?? m.pali_name, m.title, m.subtitle),
+      markdown: toDisplay(
+        titleSectionMarkdown(m.kicker_override ?? m.pali_name, m.title, m.subtitle),
+      ),
     };
-  }, [safeSlug, locale]);
+  }, [safeSlug, locale, toDisplay]);
 
   const handlePressHighlight = useCallback(
     (id: string) => {

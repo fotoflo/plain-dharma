@@ -9,7 +9,7 @@ import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingControls } from "@/components/FloatingControls";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { getSuttaMarkdown } from "@/content/markdown";
-import { useLocale } from "@/i18n/LocaleContext";
+import { useLocale, useZhConvert } from "@/i18n/LocaleContext";
 import { useTabBarInset, useTabBarScroll } from "@/navigation/TabBar";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme } from "@/theme/ThemeContext";
@@ -32,6 +32,7 @@ export default function ReadScreen() {
   const onScroll = useTabBarScroll();
   const tabBarInset = useTabBarInset();
   const { locale } = useLocale();
+  const { toDisplay } = useZhConvert();
   const s = getStrings(locale).read;
   const suttas = getSuttasInOrder(locale);
 
@@ -52,22 +53,28 @@ export default function ReadScreen() {
           paddingHorizontal: 24,
         }}
       >
-        <Text style={[styles.kicker, { color: palette.link }]}>{s.kicker.toUpperCase()}</Text>
-        <Text style={[styles.h1, { color: ink, fontFamily: FONTS.serifBold }]}>{s.h1}</Text>
-        <Text style={[styles.lead, { color: ink, fontFamily: editorialFont }]}>{s.subtitle}</Text>
+        <Text style={[styles.kicker, { color: palette.link }]}>
+          {toDisplay(s.kicker).toUpperCase()}
+        </Text>
+        <Text style={[styles.h1, { color: ink, fontFamily: FONTS.serifBold }]}>
+          {toDisplay(s.h1)}
+        </Text>
+        <Text style={[styles.lead, { color: ink, fontFamily: editorialFont }]}>
+          {toDisplay(s.subtitle)}
+        </Text>
 
         {suttas.map((meta) => (
           <View key={meta.slug} style={styles.section}>
             <View style={[styles.sectionHead, { borderColor: palette.divider }]}>
               <Text style={[styles.sectionKicker, { color: palette.link }]}>
                 {String(meta.ordinal).padStart(2, "0")} ·{" "}
-                {(meta.kicker_override ?? meta.pali_name).toUpperCase()}
+                {toDisplay(meta.kicker_override ?? meta.pali_name).toUpperCase()}
               </Text>
               <Text style={[styles.sectionTitle, { color: ink, fontFamily: FONTS.serifBold }]}>
-                {meta.title}
+                {toDisplay(meta.title)}
               </Text>
               <Text style={[styles.sectionSub, { color: ink, fontFamily: editorialFont }]}>
-                {meta.subtitle}
+                {toDisplay(meta.subtitle)}
               </Text>
             </View>
 
@@ -77,24 +84,24 @@ export default function ReadScreen() {
                     key={i}
                     style={[styles.editorial, { color: ink, fontFamily: editorialFont }]}
                   >
-                    {p}
+                    {toDisplay(p)}
                   </Text>
                 ))
               : null}
 
             <View style={{ marginTop: 12 }}>
-              <MarkdownRenderer>{getSuttaMarkdown(locale, meta.slug)}</MarkdownRenderer>
+              <MarkdownRenderer>{toDisplay(getSuttaMarkdown(locale, meta.slug))}</MarkdownRenderer>
             </View>
 
             <View style={styles.drop}>
               <View style={[styles.dropRule, { backgroundColor: palette.accent }]} />
               <Text style={[styles.dropText, { color: ink, fontFamily: editorialFont }]}>
-                {DROPS[locale][meta.slug]}
+                {toDisplay(DROPS[locale][meta.slug])}
               </Text>
             </View>
 
             <Link href={`/${meta.slug}`} style={[styles.openLink, { color: palette.link }]}>
-              {s.openOnOwnPage} →
+              {toDisplay(s.openOnOwnPage)} →
             </Link>
           </View>
         ))}
@@ -102,7 +109,7 @@ export default function ReadScreen() {
         <View style={styles.closing}>
           {paragraphs(CLOSING[locale]).map((p, i) => (
             <Text key={i} style={[styles.editorial, { color: ink, fontFamily: editorialFont }]}>
-              {p}
+              {toDisplay(p)}
             </Text>
           ))}
         </View>

@@ -9,6 +9,7 @@ import { useDownloads } from "@/audio/DownloadsProvider";
 import { DebugInfo } from "@/components/DebugInfo";
 import { MenuGroup, MenuRow, SectionLabel } from "@/components/MenuRow";
 import { LOCALE_LABELS, useLocale } from "@/i18n/LocaleContext";
+import type { ChineseScript } from "@/i18n/zhScript";
 import { useMarginalia } from "@/marginalia/AuthContext";
 import { useTabBarInset, useTabBarScroll } from "@/navigation/TabBar";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
@@ -27,7 +28,7 @@ const THEME_OPTS: { value: ThemeMode; key: "themeLight" | "themeDark" | "themeAu
 // docs/architecture/more-tab-refactor.md.
 export default function MoreScreen() {
   const { palette, mode, setMode } = useTheme();
-  const { locale, setLocale } = useLocale();
+  const { locale, setLocale, script, setScript } = useLocale();
   const { more: s, nav } = getStrings(locale);
   const { syncAvailable, signedIn, email, signOut, deleteAccount } = useMarginalia();
   const { downloaded, remove } = useDownloads();
@@ -197,6 +198,45 @@ export default function MoreScreen() {
             );
           })}
         </View>
+
+        {locale === "zh" ? (
+          <>
+            <View style={[styles.cardDivider, { borderColor: palette.divider }]} />
+            <Text style={[styles.cardLabel, { color: palette.ink, fontFamily: FONTS.serif }]}>
+              {script === "hant" ? "字體" : "字体"}
+            </Text>
+            <View style={[styles.segRow, { borderColor: palette.divider }]}>
+              {(
+                [
+                  ["hans", "简体"],
+                  ["hant", "繁體"],
+                ] as [ChineseScript, string][]
+              ).map(([key, label]) => {
+                const active = key === script;
+                return (
+                  <Pressable
+                    key={key}
+                    onPress={() => setScript(key)}
+                    style={[styles.seg, active && { backgroundColor: palette.accentStrong }]}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                  >
+                    <Text
+                      style={{
+                        color: active ? palette.onAccent : palette.ink,
+                        opacity: active ? 1 : 0.7,
+                        fontFamily: FONTS.serif,
+                        fontSize: 15,
+                      }}
+                    >
+                      {label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </>
+        ) : null}
       </View>
 
       <SectionLabel>{s.support}</SectionLabel>

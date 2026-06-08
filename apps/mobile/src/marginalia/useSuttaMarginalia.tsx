@@ -33,6 +33,7 @@ import { getMeta } from "@plain-dharma/content";
 import type { Locale, SuttaSlug } from "@plain-dharma/content";
 import type { ContentSection } from "@/content/markdown";
 import type { InlineHighlight, SelectionRect } from "@/components/MarkdownRenderer";
+import { useZhConvert } from "@/i18n/LocaleContext";
 import { useMarginalia } from "./AuthContext";
 import {
   DEFAULT_HIGHLIGHT_COLOR,
@@ -60,6 +61,11 @@ interface PendingSelection {
 export function useSuttaMarginalia(slug: string, locale: Locale) {
   const { marks, add, updateMark, remove, signedIn, email, signInWithEmail, signOut } =
     useMarginalia();
+  // Marks are stored in the canonical Simplified script (web/Supabase parity).
+  // In 繁體 view we paint them against the Traditional on-screen text, so convert
+  // each stored quote to the display script for matching; and fold a new
+  // Traditional selection back to Simplified before it's stored.
+  const { toDisplay, toCanonical } = useZhConvert();
 
   // The settled selection (toolbar open). The native UITextView owns the
   // on-screen selection highlight, so there's no live word-wash to clear —
@@ -103,8 +109,8 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
     (section: ContentSection): InlineHighlight[] =>
       marksForSlug
         .filter((m) => m.anchor === section.id && m.quote)
-        .map((m) => ({ markId: m.id, quote: m.quote, color: m.color })),
-    [marksForSlug],
+        .map((m) => ({ markId: m.id, quote: toDisplay(m.quote), color: m.color })),
+    [marksForSlug, toDisplay],
   );
 
   /* ── selection → toolbar ─────────────────────────────────────────────────── */
@@ -114,15 +120,21 @@ export function useSuttaMarginalia(slug: string, locale: Locale) {
   // (rect is in window coordinates, straight from the native event).
   const onSelect = useCallback(
     (result: SelectionResult, section: ContentSection) => {
-      const plain = sectionPlainText(section.markdown);
-      const selector = selectorForQuote(result.sectionId, plain, result.quote);
+      // section.markdown + result.quote are in the display script; fold both back
+      // to canonical Simplified so the stored selector matches the source text.
+      const plain = toCanonical(sectionPlainText(section.markdown));
+      const selector = selectorForQuote(
+        result.sectionId,
+        plain,
+        toCanonical(result.quote),
+      );
       setPending({
         sectionId: result.sectionId,
         selector,
         toolbar: result.rect,
       });
     },
-    [],
+    [toCanonical],
   );
 
   const closeSelection = useCallback(() => {

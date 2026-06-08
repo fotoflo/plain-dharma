@@ -21,11 +21,10 @@ const MIN_CENTS = 100;
 // wants to give more (they can do it through KDP / Buy Me a Coffee).
 const MAX_CENTS = 50_000; // $500
 
-const VALID_FILES = ["epub", "pdf", "m4b"] as const;
+const VALID_FILES = ["pdf", "m4b"] as const;
 type FileSlug = (typeof VALID_FILES)[number];
 
 const PRODUCT_DESCRIPTION: Record<FileSlug, string> = {
-  epub: "Plain Dharma — EPUB edition (six foundational Buddhist sutras in plain modern English)",
   pdf:  "Plain Dharma — PDF edition (six foundational Buddhist sutras in plain modern English)",
   m4b:  "Plain Dharma — narrated audiobook edition (six foundational Buddhist sutras in plain modern English)",
 };

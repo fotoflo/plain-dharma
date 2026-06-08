@@ -8,7 +8,7 @@ import { StoreBadges } from "@/components/StoreBadges";
 
 const TITLE = "Download";
 const DESCRIPTION =
-  "PDF and EPUB downloads of all six teachings, free for anyone to keep, copy, and share. Pay what feels right.";
+  "PDF and audiobook downloads of all six teachings, free for anyone to keep, copy, and share. Pay what feels right.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 };
 
 type FileOption = {
-  slug: "epub" | "pdf" | "m4b";
+  slug: "pdf" | "m4b";
   title: string;
   description: string;
   size: string;
@@ -40,13 +40,6 @@ type FileOption = {
 };
 
 const FILES: FileOption[] = [
-  {
-    slug: "epub",
-    title: "EPUB",
-    description: "For Kindle, Apple Books, Kobo, and other e-readers.",
-    size: "451 KB",
-    href: assetUrl("downloads/plain-dharma.epub"),
-  },
   {
     slug: "pdf",
     title: "PDF",
@@ -71,17 +64,27 @@ export default function DownloadPage() {
     <div className="relative mx-auto w-full max-w-3xl overflow-hidden px-6 py-16 sm:py-20">
       <Wash size="md" position="top-right" intensity={0.09} />
 
-      <header className="mb-12">
-        <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
-          Download
-        </p>
-        <h1 className="mt-3 font-serif text-4xl leading-tight text-ink sm:text-5xl">
-          Download the book
-        </h1>
-        <p className="mt-6 font-serif text-lg leading-relaxed text-ink/80">
-          Free and public domain — yours to keep, copy, and share. Pay what
-          feels right, including nothing.
-        </p>
+      <header className="mb-12 flex flex-col items-center gap-8 sm:flex-row sm:items-center sm:gap-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={assetUrl("downloads/plain-dharma-book-photo.png")}
+          alt="Plain Dharma — the printed hardcover"
+          width={559}
+          height={673}
+          className="w-[180px] shrink-0 [filter:drop-shadow(0_14px_22px_rgba(31,24,18,0.26))] sm:w-[200px]"
+        />
+        <div>
+          <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
+            Download
+          </p>
+          <h1 className="mt-3 font-serif text-4xl leading-tight text-ink sm:text-5xl">
+            Download the book
+          </h1>
+          <p className="mt-6 font-serif text-lg leading-relaxed text-ink/80">
+            Free and public domain — yours to keep, copy, and share. Pay what
+            feels right, including nothing.
+          </p>
+        </div>
       </header>
 
       <div className="space-y-6">

@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { assetDownloadUrl } from "@plain-dharma/content/assets";
 
-function fileSlug(raw: string | null): "epub" | "pdf" | "m4b" {
-  return raw === "pdf" || raw === "m4b" ? raw : "epub";
+function fileSlug(raw: string | null): "pdf" | "m4b" {
+  return raw === "m4b" ? raw : "pdf";
 }
 
 // This page is the Universal Link / App Link target that Stripe redirects to.

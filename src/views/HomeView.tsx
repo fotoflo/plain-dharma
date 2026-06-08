@@ -186,19 +186,16 @@ function BookSection({ locale }: { locale: Locale }) {
     <section className="relative mt-24 overflow-hidden rounded-2xl border border-divider/70 px-6 py-14 sm:py-16">
       <Wash size="md" position="top-right" intensity={0.07} />
       <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-10 md:flex-row md:gap-14">
-        {/* Book cover with a thin page-edge + layered shadow to read as a book */}
-        <div className="relative shrink-0">
-          <div
-            aria-hidden
-            className="absolute -right-1.5 top-2 bottom-2 w-2 rounded-r-sm bg-gradient-to-r from-ink/15 to-transparent"
-          />
+        {/* Photorealistic shot of the printed hardcover (shadow + cream baked
+            into the image — no CSS faux-3D needed). */}
+        <div className="shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={assetUrl("downloads/plain-dharma-cover.jpg")}
-            alt="Plain Dharma — book cover"
-            width={260}
-            height={390}
-            className="relative w-[220px] rounded-l-sm rounded-r-md shadow-[0_18px_44px_-12px_rgba(31,24,18,0.45)] ring-1 ring-ink/5 sm:w-[260px]"
+            src={assetUrl("downloads/plain-dharma-book-photo.png")}
+            alt="Plain Dharma — the printed hardcover"
+            width={559}
+            height={673}
+            className="w-[240px] [filter:drop-shadow(0_16px_24px_rgba(31,24,18,0.28))] sm:w-[280px]"
           />
         </div>
 

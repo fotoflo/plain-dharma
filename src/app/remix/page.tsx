@@ -243,7 +243,7 @@ export default async function RemixPage() {
       {/* ───────── Book formats ───────── */}
       <Section
         title="Finished editions"
-        blurb="Prefer something ready to read or hand out? The typeset EPUB, PDF, and the chaptered audiobook are on the download page — same free, public-domain terms."
+        blurb="Prefer something ready to read or hand out? The typeset PDF and the chaptered audiobook are on the download page — same free, public-domain terms."
       >
         <DownloadButton href="/download" plain>
           Go to downloads →

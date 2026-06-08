@@ -6,7 +6,6 @@ import { assetDownloadUrl, assetSize } from "@plain-dharma/content/assets";
 import { FreeDownloadButton } from "./FreeDownloadButton";
 
 const FILE_LABELS: Record<string, { label: string; href: string }> = {
-  epub: { label: "EPUB",      href: assetDownloadUrl("downloads/plain-dharma.epub") },
   pdf:  { label: "PDF",       href: assetDownloadUrl("downloads/plain-dharma.pdf") },
   m4b:  { label: "Audiobook", href: assetDownloadUrl("downloads/plain-dharma.m4b") },
 };
@@ -26,10 +25,9 @@ const PRESETS: Preset[] = [
   { cents: 1500, label: "$15", reason: "Funds printed copies given freely at temples, retreats, and hospices." },
 ];
 
-function getFileSlug(raw: string | null): "epub" | "pdf" | "m4b" {
-  if (raw === "pdf") return "pdf";
+function getFileSlug(raw: string | null): "pdf" | "m4b" {
   if (raw === "m4b") return "m4b";
-  return "epub"; // default if missing/invalid
+  return "pdf"; // default if missing/invalid
 }
 
 export function DonateForm() {

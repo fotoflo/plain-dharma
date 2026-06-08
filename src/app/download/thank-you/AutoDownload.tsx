@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation";
 import { assetDownloadUrl } from "@plain-dharma/content/assets";
 
 const FILE_LABELS: Record<string, { label: string; href: string }> = {
-  epub: { label: "EPUB",      href: assetDownloadUrl("downloads/plain-dharma.epub") },
   pdf:  { label: "PDF",       href: assetDownloadUrl("downloads/plain-dharma.pdf") },
   m4b:  { label: "Audiobook", href: assetDownloadUrl("downloads/plain-dharma.m4b") },
 };

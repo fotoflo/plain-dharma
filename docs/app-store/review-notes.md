@@ -14,7 +14,8 @@ ASC API (mint an ES256 JWT from `EXPO_ASC_*` in `.env.local`, then
 
 - **In-app email:** `PlainDharma+reviewer@gmail.com` (plus-alias of `PlainDharma@gmail.com`)
 - **Gmail webmail login:** `PlainDharma@gmail.com` — password is **not stored in this
-  public repo**; it lives in the ASC Demo Account field (source of truth) and in
+  public repo**; it lives in `.env.local` (`ASC_REVIEW_DEMO_EMAIL` /
+  `ASC_REVIEW_DEMO_PASSWORD`), the ASC Demo Account field (source of truth), and
   local agent memory.
 
 ## Notes text

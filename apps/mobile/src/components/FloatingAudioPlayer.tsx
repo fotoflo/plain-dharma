@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAudio } from "@/audio/AudioProvider";
 import { useStrings } from "@/i18n/strings";
+import { useContrastBg } from "@/theme/ReadingPrefsContext";
 import { useTabBarOverlap } from "@/navigation/TabBar";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
@@ -30,6 +31,7 @@ export function FloatingAudioPlayer({
   onToggle: () => void;
 }) {
   const { palette } = useTheme();
+  const bg = useContrastBg();
   const insets = useSafeAreaInsets();
   const tabBarOverlap = useTabBarOverlap();
   const { load, loadCombined } = useAudio();
@@ -51,7 +53,7 @@ export function FloatingAudioPlayer({
         <View
           style={[
             styles.panel,
-            { backgroundColor: palette.bg, borderColor: palette.accent },
+            { backgroundColor: bg, borderColor: palette.accent },
           ]}
         >
           <AudioPanel locale={locale} />
@@ -59,7 +61,7 @@ export function FloatingAudioPlayer({
       ) : null}
       <Pressable
         onPress={onToggle}
-        style={[styles.fab, { backgroundColor: palette.bg, borderColor: palette.accent }]}
+        style={[styles.fab, { backgroundColor: bg, borderColor: palette.accent }]}
         accessibilityRole="button"
         accessibilityLabel={open ? s.closeAudioPlayer : s.listen}
       >

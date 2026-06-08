@@ -8,7 +8,9 @@ import {
   type ReactNode,
 } from "react";
 
+import { useTheme } from "./ThemeContext";
 import {
+  CONTRAST_BG,
   READING_SCALE,
   type Contrast,
   type ReadingFont,
@@ -101,4 +103,16 @@ export function useReadingPrefs(): ReadingPrefsValue {
   if (!ctx)
     throw new Error("useReadingPrefs must be used within a ReadingPrefsProvider");
   return ctx;
+}
+
+/**
+ * The contrast-adjusted screen background (white at high / black at dark-low),
+ * falling back to the theme's default. Reactive — reading chrome (tab bar,
+ * floating controls) calls this so it stays in sync with the reader's contrast
+ * choice the instant it changes, matching the reading surface.
+ */
+export function useContrastBg(): string {
+  const { theme, palette } = useTheme();
+  const { contrast } = useReadingPrefs();
+  return CONTRAST_BG[theme][contrast] ?? palette.bg;
 }

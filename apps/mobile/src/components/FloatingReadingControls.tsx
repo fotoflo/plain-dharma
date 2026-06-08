@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocale } from "@/i18n/LocaleContext";
 import { useStrings } from "@/i18n/strings";
 import type { ChineseScript } from "@/i18n/zhScript";
-import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
+import { useContrastBg, useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import type { Palette } from "@/theme/tokens";
 import { FONTS, type Contrast, type ReadingFont, type ReadingSize } from "@/theme/tokens";
@@ -81,6 +81,7 @@ export function FloatingReadingControls({
   const { palette, mode, setMode } = useTheme();
   const { size, contrast, font, setSize, setContrast, setFont } = useReadingPrefs();
   const { locale, script, setScript } = useLocale();
+  const bg = useContrastBg();
 
   const strings = useStrings();
   const s = strings.readingControls;
@@ -108,7 +109,7 @@ export function FloatingReadingControls({
     <View style={[styles.wrap, { top: insets.top + 8 }]} pointerEvents="box-none">
       <Pressable
         onPress={onToggle}
-        style={[styles.fab, { backgroundColor: palette.bg, borderColor: palette.accent }]}
+        style={[styles.fab, { backgroundColor: bg, borderColor: palette.accent }]}
         accessibilityRole="button"
         accessibilityLabel={s.a11yTrigger}
       >
@@ -118,7 +119,7 @@ export function FloatingReadingControls({
       </Pressable>
       {open ? (
         <View
-          style={[styles.panel, { backgroundColor: palette.bg, borderColor: palette.divider }]}
+          style={[styles.panel, { backgroundColor: bg, borderColor: palette.divider }]}
         >
           <Segmented
             label={s.sectionSize.toUpperCase()}

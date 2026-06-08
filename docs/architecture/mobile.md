@@ -74,6 +74,24 @@ styled from the theme tokens + reading prefs (mirrors `.prose-dharma`).
   from the web) + Atkinson Hyperlegible (`@expo-google-fonts`, accessible toggle).
 - `FloatingReadingControls` — the "Aa" popover (size / contrast / font / theme).
 
+## Internationalization: locale + script
+
+Two independent preferences control content language and Han character form:
+
+- **Locale** (`en` / `zh`) — language of the sutta + UI. Persisted to AsyncStorage; default is English.
+- **Script** (`hans` / `hant`, only meaningful for zh) — character form. When set to `hant` (Traditional / 繁體), the app converts Simplified canonical text at render time using OpenCC's `s2tw` dictionary.
+
+| File | Role |
+|---|---|
+| `src/i18n/LocaleContext.tsx` | Persisted app-wide locale + script; `useLocale()` / `useZhConvert()` hooks |
+| `src/i18n/zhScript.ts` | Lazy OpenCC converters (dictionary parsed on first use); `toDisplayScript` / `toCanonicalScript` |
+| `src/i18n/strings.ts` | `useStrings()` hook; deep-converts the UI string table to Traditional when script=hant |
+| `src/theme/tokens.ts` | `readerFonts(font, locale)` — zh uses native CJK face (iOS "Songti SC") so the Aa resize works |
+
+**Key invariant:** All canonical content (suttas, strings, audio manifests) is authored in Simplified and stored once. Traditional is a *display toggle*, not a storage choice — margin-note selections are converted back to Simplified before being stored in Supabase, keeping sync cross-device and cross-platform. The conversion is optional and costs nothing when not enabled (~1.1 MB OpenCC dict loaded lazily on first toggle).
+
+See `docs/architecture/i18n-script-conversion.md` for the full deep-dive.
+
 ## Audio (`src/audio/`) — `react-native-track-player`
 
 Requires a **custom dev build** (native module; not Expo Go). The custom entry
@@ -83,11 +101,11 @@ perms).
 
 | File | Role |
 |---|---|
-| `manifest.ts` | Fetches a sutta's manifest from `plaindharma.com`, derives slow/fast URLs (`fast/<file>`) + durations |
+| `manifest.ts` | Manifest types + fetching; `bundledSuttaSections` (app-built snapshot, synchronous); `fetchManifestFromCdn` (live CDN copy, timestamped to bust edge cache); `manifestToSections` derives slow/fast URLs |
 | `service.ts` | Playback service — OS remote controls (lock screen, headphones) |
 | `setup.ts` | Idempotent `setupPlayer` + capabilities |
 | `AudioProvider.tsx` | Queue state; `load(locale, slug)` and `loadCombined(locale)` (stitched /read queue); fraction-preserving slow↔fast pace switch; **queue rebuild on source URL change** (triggers when online→offline, e.g., after download) |
-| `downloads.ts` | Offline: per-language bulk download to `Paths.document`; `isLocaleDownloaded()` checks disk (manifest.json exists for each sutta), not AsyncStorage; **file/disk-based source of truth**; `resolveSuttaSections` returns local `file://` URIs when downloaded, else streams |
+| `downloads.ts` | **Stale-while-revalidate (SWR):** `resolveSuttaSections` returns bundled/local manifest instantly; if online, background-fetches fresh CDN copy and hands it to `onRevalidated` callback (if provided). Offline or flaky network keeps the stale copy. Offline: per-language bulk download to `Paths.document`; `isLocaleDownloaded()` checks disk (manifest.json exists for each sutta), not AsyncStorage |
 | `DownloadsProvider.tsx` | Offline download state + progress |
 
 `AudioPanel` (TOC + transport + tap-to-seek + pace) and `FloatingAudioPlayer`
@@ -102,6 +120,13 @@ perms).
 - Does **not** rely on an AsyncStorage flag (which didn't persist reliably).
 - `downloadLocale` / `removeLocale` no longer touch AsyncStorage — they only manage files.
 - This is the source of truth for "is this locale ready to play offline?"
+
+**Manifest revalidation** (`src/audio/downloads.ts` `resolveSuttaSections`):
+- **Stale-while-revalidate (SWR):** if a manifest is bundled or on disk, return it *immediately* for fast play startup.
+- If online, background-fetch the live CDN copy (cache-busted with a timestamp to bypass edge caches).
+- If the fetch succeeds *and* the sections have the same shape (same `file` names, different titles/durations), update the persisted manifest and call `onRevalidated` with the fresh sections.
+- If offline or fetch fails, keep the stale copy — playback continues uninterrupted.
+- This allows chapter labels to be updated post-release without requiring an app rebuild or re-download.
 
 **Playback** (`src/audio/AudioProvider.tsx`):
 - `loadKey` now **always re-resolves sections and rebuilds the track-player queue** when the resolved source URL changes (e.g., a streaming queue becomes local `file://` URLs after download).

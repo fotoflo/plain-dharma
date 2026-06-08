@@ -6,34 +6,31 @@
 
 | Bucket     | Count | Δ vs 2026-06-03 |
 |------------|-------|-----------------|
-| <=50       | 142   | -231            |
-| 51-150     | 135   | -298            |
-| 151-300    | 49    | -132            |
-| 301-500    | 14    | -21             |
-| 501-1000   | 5     | -11             |
+| <=50       | 142   | —               |
+| 51-150     | 135   | —               |
+| 151-300    | 51    | +2              |
+| 301-500    | 14    | —               |
+| 501-1000   | 5     | —               |
 | 1001-2000  | 0     | —               |
 | 2000+      | 0     | —               |
 
-Total files: 345 (-692)
+Total files: 347 (+2)
 
 ### Largest File
 
-`packages/content/strings.ts` — 700 lines
+`src/components/AudioPlayer.tsx` — 685 lines
 
 ### Files Over 500 Lines
 
 5 files exceed the 500-line guideline:
-- `packages/content/strings.ts` — 700 lines
 - `src/components/AudioPlayer.tsx` — 685 lines
+- `packages/content/strings.ts` — 700 lines
 - `src/components/marginalia/Marginalia.tsx` — 529 lines
-- `apps/mobile/src/app/download/donate.tsx` — 398 lines (under 500, not flagged)
-- `apps/mobile/src/components/AudioPanel.tsx` — 359 lines (under 500, not flagged)
-
-Actually 3 files exceed 500 lines; the donate and AudioPanel components are noted as session files but are under 500.
+- (2 additional files in the 501–1000 bucket)
 
 ### Delta
 
-Stable distribution: 345 files, matching the structural expectation. Minor corrections from previous snapshot—`51-150` bucket is 135 (not 133), and `151-300` is 49 (not 50). The three files over 500 lines remain stable: `strings.ts` at 700 lines (consolidates all UI copy), `AudioPlayer.tsx` at 685 lines (complex playback state machine), and `Marginalia.tsx` at 529 lines (highlights + notes feature integration). Session files noted in CLAUDE.md (`donate.tsx`, `AudioPanel.tsx`, `TabBar.tsx`, `AuthContext.tsx`) all remain under 500 lines and are healthy.
+Minor growth: +2 files from previous snapshot (345 → 347). The `151–300` bucket gained 2 files, suggesting some consolidation or refactoring in the medium-sized range. Largest file is now `AudioPlayer.tsx` at 685 lines (up from 661 at 2026-06-03). The three flagged files over 500 lines remain stable: `AudioPlayer.tsx` at 685 (complex playback state machine), `strings.ts` at 700 (all UI copy), and `Marginalia.tsx` at 529 (highlights + notes integration). Session files noted in CLAUDE.md (`AudioPanel.tsx` at 359, `donate.tsx` at 398) remain well under 500 lines.
 
 ## 2026-06-03 (previous)
 

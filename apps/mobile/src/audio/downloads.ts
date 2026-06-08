@@ -5,6 +5,7 @@ import { Directory, File, Paths } from "expo-file-system";
 
 import {
   bundledSuttaSections,
+  fetchManifestFromCdn,
   fetchSuttaSectionsFromCdn,
   type PlayerSection,
 } from "./manifest";
@@ -103,11 +104,14 @@ export function removeLocale(locale: Locale): void {
  * Resolve a sutta's sections to local file:// URIs when downloaded, else stream
  * from the deployed site. Used by the audio queue builder.
  *
- * Online-but-not-downloaded uses stale-while-revalidate: the bundled manifest
- * renders the Listen panel instantly, then the CDN copy is fetched in the
- * background and handed to `onRevalidated` so freshly-published chapter labels
- * appear without an app rebuild. A downloaded copy is authoritative (the reader
- * chose it for offline) and isn't revalidated.
+ * Both paths use stale-while-revalidate so freshly-published chapter labels
+ * appear without an app rebuild or re-download:
+ *  - Online-not-downloaded: the bundled manifest renders instantly, then the CDN
+ *    copy is fetched and handed to `onRevalidated`.
+ *  - Downloaded: local file:// audio is authoritative for *playback*, but its
+ *    *metadata* (titles/durations) can be stale if the manifest was relabeled
+ *    after download. Revalidate the labels from the CDN, remap them onto the
+ *    local files (audio is unchanged), persist the refreshed manifest, and emit.
  */
 export async function resolveSuttaSections(
   locale: Locale,
@@ -116,15 +120,33 @@ export async function resolveSuttaSections(
 ): Promise<PlayerSection[]> {
   const local = await readLocalManifest(locale, slug);
   if (local) {
-    return local.sections.map((s) => ({
-      id: s.id,
-      title: localizeSectionTitle(locale, s.id, s.title),
-      slowUrl: new File(suttaDir(locale, slug), s.file).uri,
-      // Fast variants aren't downloaded in v1 — offline plays the slow pace.
-      fastUrl: undefined,
-      durationSec: s.duration_sec,
-      durationFastSec: s.duration_fast_sec,
-    }));
+    const toLocalSections = (m: AudioManifest): PlayerSection[] =>
+      m.sections.map((s) => ({
+        id: s.id,
+        title: localizeSectionTitle(locale, s.id, s.title),
+        slowUrl: new File(suttaDir(locale, slug), s.file).uri,
+        // Fast variants aren't downloaded in v1 — offline plays the slow pace.
+        fastUrl: undefined,
+        durationSec: s.duration_sec,
+        durationFastSec: s.duration_fast_sec,
+      }));
+
+    if (onRevalidated) {
+      void fetchManifestFromCdn(locale, slug)
+        .then((fresh) => {
+          // Only remap when the section shape matches the downloaded files
+          // (label change). A structural change needs a re-download, not a
+          // metadata patch — leave the local copy untouched in that case.
+          const sameShape =
+            fresh.sections.length === local.sections.length &&
+            fresh.sections.every((s, i) => s.file === local.sections[i].file);
+          if (!sameShape) return;
+          manifestFile(locale, slug).write(JSON.stringify(fresh));
+          onRevalidated(toLocalSections(fresh));
+        })
+        .catch(() => {}); // offline / flaky → keep the local labels
+    }
+    return toLocalSections(local);
   }
 
   const bundled = bundledSuttaSections(locale, slug);

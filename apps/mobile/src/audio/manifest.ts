@@ -61,20 +61,27 @@ export function bundledSuttaSections(
 }
 
 /**
- * A sutta's sections fetched fresh from the deployed CDN — the source of truth
- * for chapter labels/durations. Cache-busted with a timestamp so a stale
+ * A sutta's raw manifest fetched fresh from the deployed CDN — the source of
+ * truth for chapter labels/durations. Cache-busted with a timestamp so a stale
  * app-bundled asset-version hash can't pin the CDN edge to an old manifest.
  */
-export async function fetchSuttaSectionsFromCdn(
+export async function fetchManifestFromCdn(
   locale: Locale,
   slug: SuttaSlug
-): Promise<PlayerSection[]> {
+): Promise<AudioManifest> {
   const base = assetUrl(`audio/${locale}/${slug}/manifest.json`);
   const url = `${base}${base.includes("?") ? "&" : "?"}t=${Date.now()}`;
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`audio manifest ${slug}: HTTP ${res.status}`);
-  const manifest = (await res.json()) as AudioManifest;
-  return manifestToSections(manifest, locale, slug);
+  return (await res.json()) as AudioManifest;
+}
+
+/** Streaming sections from the fresh CDN manifest. */
+export async function fetchSuttaSectionsFromCdn(
+  locale: Locale,
+  slug: SuttaSlug
+): Promise<PlayerSection[]> {
+  return manifestToSections(await fetchManifestFromCdn(locale, slug), locale, slug);
 }
 
 export type Speed = "slow" | "fast";

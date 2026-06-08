@@ -232,10 +232,12 @@ This is a reading-first static site. The entire thing should build, deploy, and 
   - Unique `<title>` and meta description
   - `og:image` (per-teaching — a typeset card with the teaching's English title and Pali name)
   - Canonical URL (`<link rel="canonical">`)
-- **`hreflang`** tags on every page enumerating all locale versions
+- **`hreflang`** tags on every page enumerating all locale versions (including `x-default`)
 - **`sitemap.xml`** auto-generated from the route tree at build time
-- **Structured data** (optional, low priority): `Article` or `Book` schema on per-teaching pages
+- **Structured data** (`Article`, `BreadcrumbList`, `WebSite`, `Organization`, `MobileApplication`) — see `seo.md`
 - **No robots.txt restrictions** — we want crawlers everywhere
+
+Site-wide description emphasizes the project as a reading destination with multiple formats (web, ebook, audiobook, mobile app) and open licensing ("yours to copy, share, and reprint, no permission needed").
 
 ## Performance budget
 

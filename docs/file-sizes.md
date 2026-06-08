@@ -7,14 +7,14 @@
 | Bucket     | Count | Δ vs 2026-06-03 |
 |------------|-------|-----------------|
 | <=50       | 142   | —               |
-| 51-150     | 135   | —               |
+| 51-150     | 136   | +1              |
 | 151-300    | 51    | +2              |
-| 301-500    | 14    | —               |
+| 301-500    | 15    | +1              |
 | 501-1000   | 5     | —               |
 | 1001-2000  | 0     | —               |
 | 2000+      | 0     | —               |
 
-Total files: 347 (+2)
+Total files: 349 (+2)
 
 ### Largest File
 
@@ -30,7 +30,7 @@ Total files: 347 (+2)
 
 ### Delta
 
-Minor growth: +2 files from previous snapshot (345 → 347). The `151–300` bucket gained 2 files, suggesting some consolidation or refactoring in the medium-sized range. Largest file is now `AudioPlayer.tsx` at 685 lines (up from 661 at 2026-06-03). The three flagged files over 500 lines remain stable: `AudioPlayer.tsx` at 685 (complex playback state machine), `strings.ts` at 700 (all UI copy), and `Marginalia.tsx` at 529 (highlights + notes integration). Session files noted in CLAUDE.md (`AudioPanel.tsx` at 359, `donate.tsx` at 398) remain well under 500 lines.
+Minor growth: +2 files from 2026-06-03 snapshot (347 → 349). The `51–150` bucket gained +1 file, `151–300` gained +2, and `301–500` gained +1. Largest file remains `AudioPlayer.tsx` at 685 lines (stable). The 5 files over 500 lines remain unchanged: `AudioPlayer.tsx` at 685 (complex playback state machine), `strings.ts` at 700 (all UI copy), and `Marginalia.tsx` at 529 (highlights + notes integration). Session files noted in CLAUDE.md (`AudioPanel.tsx`, `donate.tsx`) remain well under 500 lines.
 
 ## 2026-06-03 (previous)
 

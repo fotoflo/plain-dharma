@@ -151,6 +151,12 @@ export const APP_LINKS = {
 - [x] `src/app/sitemap.ts` — uses shared `suttaMtime` (also fixes the stale `src/content` path).
 - [x] `docs/architecture/seo.md` — flipped to implemented. *(TODO: cross-link from `overview.md` when convenient.)*
 
+### Home-page app promotion (post-implementation)
+
+Once the beta is ready to share, add `APP_LINKS.testflight` to the home page's **AppBand** section — a new marketing block with a phone mockup (`public/app/listen-phone.png`) + app pitch copy + TestFlight CTA. The TestFlight link activates the moment it's shared (doesn't require App Store approval). Once the app is published to the App Store, flip `APP_LINKS.published = true` to reveal the official badge CTAs on `/download`, and update the home page AppBand to link to the official App Store instead of TestFlight.
+
+**Pre-publish URL pattern:** Both iOS and Android store URLs can ship in the site markup (structured data, hidden CTAs) before approval — they resolve to "app not found" until the listing goes live, then activate automatically. The `published` flag gates only the *visible* badges/CTAs, allowing the site to announce the app's availability with a soft launch (TestFlight / friends-and-fam beta).
+
 ### Verification done
 - `pnpm lint` — clean for all changed files (only pre-existing `apps/mobile` `require()` errors remain).
 - `tsc --noEmit` — exit 0, zero errors.

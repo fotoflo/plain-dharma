@@ -158,3 +158,12 @@ run `pnpm generate-illustrations`, then `pnpm transparentize-illustrations`.
 Both scripts are idempotent if files already exist. The PDF/print builds automatically regenerate their cached images when source PNG mtimes are newer.
 
 **PNG > JPEG for print** — JPEG flattening onto cream left a faint color-shifted rectangle behind the artwork because of the lossy conversion. LOSSLESS PNGs preserve the exact flatten color and are preferred for all builds.
+
+## Store & marketing assets (distinct)
+
+The `public/illustrations/` directory holds only per-sutta teaching illustrations. Marketing assets for the mobile app and home-page promotion live separately:
+
+| Asset | File | Purpose |
+|---|---|---|
+| Phone mockup | `public/app/listen-phone.png` | Home-page AppBand section; a bare device bezel + soft shadow (transparent background, ~600px wide). Built from `packages/store-assets/raw/IMG_5390.PNG` using the same bezel/shadow frames as `packages/store-assets/frame.sh`, but without caption or background fill. Loaded via plain `<img>` (outside Next Image localPatterns). |
+| Store badge files | `public/badges/` | Official App Store + Google Play badge SVGs/PNGs, used on `/download` when `APP_LINKS.published = true`. |

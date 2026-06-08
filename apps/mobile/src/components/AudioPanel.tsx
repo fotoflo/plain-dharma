@@ -267,12 +267,10 @@ export function AudioPanel({ locale }: { locale: Locale }) {
                 style={{ opacity: active ? 1 : 0.3, width: 16 }}
               />
               <Text
-                style={{
-                  flex: 1,
-                  color: palette.ink,
-                  opacity: active ? 1 : 0.8,
-                  fontWeight: active ? "600" : "400",
-                }}
+                style={[
+                  styles.rowTitle,
+                  { color: palette.ink, opacity: active ? 1 : 0.85 },
+                ]}
                 numberOfLines={1}
               >
                 {s.title}
@@ -336,6 +334,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
   },
+  // Every chapter title is bold (title tracks included); active state is shown
+  // via opacity + the accent play icon, not weight, so no row renders lighter.
+  rowTitle: { flex: 1, fontWeight: "700" },
   tocFooter: {
     flexDirection: "row",
     alignItems: "center",

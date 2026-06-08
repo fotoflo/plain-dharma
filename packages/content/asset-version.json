@@ -92,8 +92,8 @@
     "bytes": 81520
   },
   "audio/en/fire-sermon/manifest.json": {
-    "v": "58aad52e",
-    "bytes": 1222
+    "v": "2062aa70",
+    "bytes": 1217
   },
   "audio/en/first-talk/00-title.mp3": {
     "v": "c79631bc",
@@ -152,8 +152,8 @@
     "bytes": 45366
   },
   "audio/en/first-talk/manifest.json": {
-    "v": "ec599ffa",
-    "bytes": 1401
+    "v": "5e102bb6",
+    "bytes": 1397
   },
   "audio/en/how-to-decide/00-title.mp3": {
     "v": "38294c56",
@@ -212,8 +212,8 @@
     "bytes": 75877
   },
   "audio/en/how-to-decide/manifest.json": {
-    "v": "9ab2fe5d",
-    "bytes": 1492
+    "v": "6ed6b2ce",
+    "bytes": 1509
   },
   "audio/en/loving-kindness/00-title.mp3": {
     "v": "6d1eda56",
@@ -240,8 +240,8 @@
     "bytes": 86326
   },
   "audio/en/loving-kindness/manifest.json": {
-    "v": "d0e31560",
-    "bytes": 643
+    "v": "8c79e981",
+    "bytes": 650
   },
   "audio/en/mindfulness/00-title.mp3": {
     "v": "4095f6e9",
@@ -308,8 +308,8 @@
     "bytes": 41813
   },
   "audio/en/mindfulness/manifest.json": {
-    "v": "f5aef040",
-    "bytes": 1660
+    "v": "73a4887a",
+    "bytes": 1672
   },
   "audio/en/not-self/00-title.mp3": {
     "v": "59caa510",
@@ -360,8 +360,8 @@
     "bytes": 49546
   },
   "audio/en/not-self/manifest.json": {
-    "v": "a3774f84",
-    "bytes": 1168
+    "v": "9d01bd24",
+    "bytes": 1172
   },
   "audio/zh/fire-sermon/manifest.json": {
     "v": "9c3a0086",
@@ -471,52 +471,52 @@
     "v": "b92b03d9",
     "bytes": 3480
   },
-  "illustrations/fire-sermon.png": {
-    "v": "57615e12",
-    "bytes": 1226999
-  },
   "illustrations/fire-sermon-dark.png": {
     "v": "223d14e7",
     "bytes": 1313719
   },
-  "illustrations/first-talk.png": {
-    "v": "3c4724cb",
-    "bytes": 1337080
+  "illustrations/fire-sermon.png": {
+    "v": "57615e12",
+    "bytes": 1226999
   },
   "illustrations/first-talk-dark.png": {
     "v": "f7ed1533",
     "bytes": 1241287
   },
-  "illustrations/how-to-decide.png": {
-    "v": "f4c407b6",
-    "bytes": 1357599
+  "illustrations/first-talk.png": {
+    "v": "3c4724cb",
+    "bytes": 1337080
   },
   "illustrations/how-to-decide-dark.png": {
     "v": "ce0af819",
     "bytes": 1229525
   },
-  "illustrations/loving-kindness.png": {
-    "v": "c2f4f7f0",
-    "bytes": 1393551
+  "illustrations/how-to-decide.png": {
+    "v": "f4c407b6",
+    "bytes": 1357599
   },
   "illustrations/loving-kindness-dark.png": {
     "v": "7f390c56",
     "bytes": 1326483
   },
-  "illustrations/mindfulness.png": {
-    "v": "73d32073",
-    "bytes": 1366899
+  "illustrations/loving-kindness.png": {
+    "v": "c2f4f7f0",
+    "bytes": 1393551
   },
   "illustrations/mindfulness-dark.png": {
     "v": "bae8c616",
     "bytes": 1281964
   },
-  "illustrations/not-self.png": {
-    "v": "2640a6b6",
-    "bytes": 1331452
+  "illustrations/mindfulness.png": {
+    "v": "73d32073",
+    "bytes": 1366899
   },
   "illustrations/not-self-dark.png": {
     "v": "37a1a767",
     "bytes": 1225487
+  },
+  "illustrations/not-self.png": {
+    "v": "2640a6b6",
+    "bytes": 1331452
   }
 }

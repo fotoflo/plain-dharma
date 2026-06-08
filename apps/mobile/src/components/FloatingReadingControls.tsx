@@ -1,7 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useLocale } from "@/i18n/LocaleContext";
 import { useStrings } from "@/i18n/strings";
+import type { ChineseScript } from "@/i18n/zhScript";
 import { useReadingPrefs } from "@/theme/ReadingPrefsContext";
 import { useTheme, type ThemeMode } from "@/theme/ThemeContext";
 import type { Palette } from "@/theme/tokens";
@@ -78,10 +80,15 @@ export function FloatingReadingControls({
   const insets = useSafeAreaInsets();
   const { palette, mode, setMode } = useTheme();
   const { size, contrast, font, setSize, setContrast, setFont } = useReadingPrefs();
+  const { locale, script, setScript } = useLocale();
 
   const strings = useStrings();
   const s = strings.readingControls;
   const more = strings.more;
+  const SCRIPT_OPTS: Option<ChineseScript>[] = [
+    { value: "hans", label: "简体" },
+    { value: "hant", label: "繁體" },
+  ];
   const CONTRAST_OPTS: Option<Contrast>[] = [
     { value: "low", label: s.contrastLow },
     { value: "med", label: s.contrastMed },
@@ -135,6 +142,15 @@ export function FloatingReadingControls({
             onChange={setFont}
             palette={palette}
           />
+          {locale === "zh" ? (
+            <Segmented
+              label={script === "hant" ? "簡繁" : "简繁"}
+              value={script}
+              options={SCRIPT_OPTS}
+              onChange={setScript}
+              palette={palette}
+            />
+          ) : null}
           <Segmented
             label={s.sectionTheme.toUpperCase()}
             value={mode}

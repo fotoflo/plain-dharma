@@ -203,7 +203,7 @@ export default function MoreScreen() {
           <>
             <View style={[styles.cardDivider, { borderColor: palette.divider }]} />
             <Text style={[styles.cardLabel, { color: palette.ink, fontFamily: FONTS.serif }]}>
-              {script === "hant" ? "字體" : "字体"}
+              {script === "hant" ? "簡繁" : "简繁"}
             </Text>
             <View style={[styles.segRow, { borderColor: palette.divider }]}>
               {(

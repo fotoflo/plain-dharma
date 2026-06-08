@@ -3,7 +3,7 @@ import type { Locale } from "@/content";
 export const SITE_NAME = "Plain Dharma";
 export const SITE_URL = "https://plaindharma.com";
 export const SITE_DESCRIPTION =
-  "The Buddha's foundational teachings in plain modern English. Free, CC0, for anyone.";
+  "The Buddha's foundational teachings in plain modern English — free to read, hear, and keep. Ebook, audiobook, and a free app. Yours to copy, share, and reprint, no permission needed.";
 
 /** CC0 1.0 / public domain — the project's license, surfaced to crawlers. */
 export const LICENSE_URL =

@@ -13,6 +13,13 @@ export const APP_LINKS = {
   ios: "https://apps.apple.com/app/id6774981366",
   android:
     "https://play.google.com/store/apps/details?id=com.plaindharma.app",
+  /**
+   * Public TestFlight link for the external "friends and fam" group. Lets
+   * people install the iPhone beta *before* App Store approval — surfaced on
+   * the home page while `published` is still false. (Set in App Store Connect →
+   * TestFlight → group → Enable Public Link.)
+   */
+  testflight: "https://testflight.apple.com/join/yHg7PdwM",
   /** Flip to `true` on store approval to reveal the download badges. */
   published: false,
 } as const;

@@ -19,7 +19,7 @@ import {
 
 const TITLE = "Remix & reuse";
 const DESCRIPTION =
-  "Every asset, free to take. Audio stems track by track, the source art, and the plain-text source — all CC0. Remix it, reuse it, no permission needed.";
+  "Every asset, free to take. Audio stems track by track, the source art, and the plain-text source — all public domain. Remix it, reuse it, no permission needed.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -108,7 +108,7 @@ export default async function RemixPage() {
         <p className="mt-6 font-serif text-lg leading-relaxed text-ink/80">
           Everything here is{" "}
           <a href={CC0_URL} target="_blank" rel="noopener noreferrer">
-            CC0 / public domain
+            public domain
           </a>
           . DJs, sample it. Artists, repaint it. Translators, carry it into a new
           language. Teachers, print it. No permission, no attribution, no asking
@@ -243,7 +243,7 @@ export default async function RemixPage() {
       {/* ───────── Book formats ───────── */}
       <Section
         title="Finished editions"
-        blurb="Prefer something ready to read or hand out? The typeset EPUB, PDF, and the chaptered audiobook are on the download page — same CC0 terms."
+        blurb="Prefer something ready to read or hand out? The typeset EPUB, PDF, and the chaptered audiobook are on the download page — same free, public-domain terms."
       >
         <DownloadButton href="/download" plain>
           Go to downloads →

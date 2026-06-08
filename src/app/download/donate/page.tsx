@@ -5,7 +5,7 @@ import { DonateForm } from "./DonateForm";
 
 const TITLE = "Pay what feels right";
 const DESCRIPTION =
-  "Plain Dharma is free under CC0. If you donate, here's where it goes.";
+  "Plain Dharma is free and public domain. If you donate, here's where it goes.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -26,14 +26,14 @@ export default function DonatePage() {
           Read it. Pay what feels right.
         </h1>
         <p className="mt-6 font-serif text-lg leading-relaxed text-ink/80">
-          Plain Dharma is free under{" "}
+          Plain Dharma is free and in the{" "}
           <a
             href="https://creativecommons.org/publicdomain/zero/1.0/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-link underline-offset-4 hover:text-accent hover:underline"
           >
-            CC0
+            public domain
           </a>
           . If you do donate, it supports more translations, printed copies,
           and keeping the site online.

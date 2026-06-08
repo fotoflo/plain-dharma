@@ -7,6 +7,7 @@ import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { Wash } from "@/components/Wash";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { StoreBadges } from "@/components/StoreBadges";
+import { APP_LINKS } from "@/lib/app-links";
 
 // Editorial layout config for the six hero illustrations.
 //
@@ -119,6 +120,11 @@ export function HomeView({ locale }: { locale: Locale }) {
           locales but always points at the EN download route. */}
       <BookSection locale={locale} />
 
+      {/* APP BAND — the phone + the app pitch + the install CTA. Borderless
+          (no card) so it breathes between the bordered book card above and the
+          newsletter below rather than stacking a third heavy box. */}
+      <AppBand locale={locale} />
+
       {/* Newsletter signup — placed between the book CTA and the list so it's
           visible above the fold on most desktops but doesn't interrupt the
           editorial composition above. */}
@@ -203,26 +209,102 @@ function BookSection({ locale }: { locale: Locale }) {
           <p className="mt-4 font-sans text-lg text-ink/70">
             {s.home.bookFormats}
           </p>
-          <div className="mt-7 flex flex-col items-center gap-5 md:items-start">
-            <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
-              <Link
-                href="/download"
-                className="inline-flex items-center justify-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline hover:no-underline hover:opacity-90"
-              >
-                {s.home.bookCta}
-              </Link>
-              <Link
-                href={`${localizedHref(locale, "read")}?play=1`}
-                className="inline-flex items-center justify-center rounded-full border border-divider px-6 py-2.5 font-sans text-sm font-medium text-ink no-underline hover:no-underline hover:border-accent"
-              >
-                {s.home.bookCtaListen}
-              </Link>
-            </div>
-            <StoreBadges className="justify-center md:justify-start" />
+          <p className="mt-4 font-serif text-base leading-relaxed text-ink/75">
+            {s.home.bookBlurb}
+          </p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3 md:justify-start">
+            <Link
+              href="/download"
+              className="inline-flex items-center justify-center rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline hover:no-underline hover:opacity-90"
+            >
+              {s.home.bookCta}
+            </Link>
+            <Link
+              href={`${localizedHref(locale, "read")}?play=1`}
+              className="inline-flex items-center justify-center rounded-full border border-divider px-6 py-2.5 font-sans text-sm font-medium text-ink no-underline hover:no-underline hover:border-accent"
+            >
+              {s.home.bookCtaListen}
+            </Link>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function AppBand({ locale }: { locale: Locale }) {
+  const s = getStrings(locale);
+  return (
+    <section className="relative mt-20 overflow-hidden">
+      <Wash size="md" position="bottom-left" intensity={0.06} />
+      <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-10 md:flex-row md:gap-16">
+        {/* The phone is a pre-framed bare mockup (bezel + soft shadow baked in,
+            transparent background) — see packages/store-assets. Plain <img>:
+            it's a marketing asset in /public, outside next/image localPatterns. */}
+        <div className="shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/app/listen-phone.png"
+            alt="The Plain Dharma app, playing the narrated audiobook"
+            width={760}
+            height={1543}
+            loading="lazy"
+            decoding="async"
+            className="w-[200px] sm:w-[240px]"
+          />
+        </div>
+
+        <div className="text-center md:text-left">
+          <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
+            {s.home.appBandKicker}
+          </p>
+          <h2 className="mt-3 font-serif text-4xl leading-tight text-ink sm:text-5xl">
+            {s.home.appBandTitle}
+          </h2>
+          <p className="mt-4 font-serif text-base leading-relaxed text-ink/75 sm:text-lg">
+            {s.home.appBandBody}
+          </p>
+          <div className="mt-7 flex flex-col items-center gap-5 md:items-start">
+            {/* Once the App Store listing is approved (APP_LINKS.published),
+                StoreBadges renders the official badges; until then we surface
+                the live TestFlight public link so people can try the iPhone
+                beta now. */}
+            {APP_LINKS.published ? (
+              <StoreBadges className="justify-center md:justify-start" />
+            ) : (
+              <a
+                href={APP_LINKS.testflight}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-white no-underline hover:no-underline hover:opacity-90"
+              >
+                <AppleIcon className="h-4 w-4" />
+                {s.home.appBetaCta}
+              </a>
+            )}
+            {!APP_LINKS.published && (
+              <p className="font-sans text-xs text-ink/55">
+                {s.home.appBetaNote}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Apple logo glyph for the TestFlight beta link. */
+function AppleIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 384 512"
+      aria-hidden
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+    </svg>
   );
 }
 

@@ -76,9 +76,17 @@ const en = {
     sixTeachingsLabel: "The six teachings",
     bookTitle: "Download the Book",
     bookFormats: "Available in ebook, audiobook, and app form.",
+    bookBlurb:
+      "The audiobook is a calm, narrated reading — about 38 minutes, chapter by chapter, with markers so you can move between teachings.",
     bookCta: "Free Download",
     bookCtaListen: "Listen to the Audiobook",
     getTheApp: "Get the app",
+    appBetaCta: "Try the iPhone beta",
+    appBetaNote: "Free on TestFlight — the App Store version is on the way.",
+    appBandKicker: "On your phone",
+    appBandTitle: "Read and listen, anywhere",
+    appBandBody:
+      "The free app keeps every teaching and its narration with you offline — pick up where you left off, even on a plane or in airplane mode. Your highlights and notes sync across your phone and the web.",
   },
   sutta: {
     previous: "Previous",
@@ -411,9 +419,17 @@ const zh: Strings = {
     sixTeachingsLabel: "这六篇开示",
     bookTitle: "下载这本书",
     bookFormats: "提供电子书、有声书和应用三种形式。",
+    bookBlurb:
+      "有声书是一段平静的朗读——大约 38 分钟，一章接一章，并带有章节标记，方便在各篇之间切换。",
     bookCta: "免费下载",
     bookCtaListen: "收听有声书",
     getTheApp: "下载应用",
+    appBetaCta: "试用 iPhone 测试版",
+    appBetaNote: "在 TestFlight 上免费体验——App Store 版本即将推出。",
+    appBandKicker: "在你的手机上",
+    appBandTitle: "随时随地，阅读与聆听",
+    appBandBody:
+      "免费应用让每一篇开示和它的朗读随身离线携带——从上次停下的地方继续，即使在飞机上或飞行模式中也能听。你的高亮与笔记会在手机与网页之间同步。",
   },
   sutta: {
     previous: "上一篇",

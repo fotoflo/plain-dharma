@@ -8,7 +8,7 @@ import { StoreBadges } from "@/components/StoreBadges";
 
 const TITLE = "Download";
 const DESCRIPTION =
-  "PDF and EPUB downloads of all six teachings, free under CC0. Pay what feels right.";
+  "PDF and EPUB downloads of all six teachings, free for anyone to keep, copy, and share. Pay what feels right.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -79,7 +79,8 @@ export default function DownloadPage() {
           Download the book
         </h1>
         <p className="mt-6 font-serif text-lg leading-relaxed text-ink/80">
-          Free under CC0. Pay what feels right — including nothing.
+          Free and public domain — yours to keep, copy, and share. Pay what
+          feels right, including nothing.
         </p>
       </header>
 

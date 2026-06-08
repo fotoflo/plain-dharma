@@ -1,6 +1,6 @@
 # Margin Notes — Plain Dharma
 
-*Last updated: 2026-06-03*
+*Last updated: 2026-06-08*
 
 Reader-owned highlights and private notes on sutta passages, with optional sync to Supabase via magic-link sign-in. A deliberate exception to the site's otherwise static/no-database principle: read-first local-first design keeps annotations available instantly (no server call needed), and unauthenticated readers never touch the database. Implemented on web (browsers) and mobile (React Native / Expo).
 
@@ -118,6 +118,17 @@ create index marginalia_user_page_idx on public.marginalia (user_id, slug, local
 Row-level security (owner-only):
 - `SELECT`, `INSERT`, `UPDATE`, `DELETE` all enforce `auth.uid() = user_id`.
 - Unsigned-out readers (no session) have `auth.uid() = NULL`, so no row is visible or writable.
+
+## Account deletion
+
+Users can delete their account on mobile (via the More tab Account card) and presumably on web if that UI is ever added. Deletion happens via a Supabase Edge Function (`supabase/functions/delete-account/index.ts`):
+
+1. The client calls the function with a valid JWT in the `Authorization` header.
+2. The function verifies the JWT, extracts `user.id`, and calls `admin.auth.deleteUser(userId)`.
+3. The `marginalia` table has `on delete cascade` for the `user_id` foreign key, so all highlights and notes are deleted atomically.
+4. The client receives a 200 response and clears the local session via `signOut({ scope: "local" })`.
+
+The deletion is irreversible — no recovery/undelete path exists.
 
 ## CSS classes and tokens
 

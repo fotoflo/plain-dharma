@@ -149,8 +149,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!sb) return;
 
     let cancelled = false;
-    sb.auth.getSession().then(({ data }) => {
-      if (!cancelled) onSession(data.session);
+    sb.auth.getSession().then(async ({ data }) => {
+      if (cancelled) return;
+      // getSession() returns whatever is in AsyncStorage without validating it.
+      // A stale build (or a long-idle / rotated token) can leave a session whose
+      // refresh token the server rejects ("Invalid Refresh Token"). Validate it
+      // up front so a dead session self-heals to local-only instead of stranding
+      // a broken "signed in" state. getUser() forces a refresh if the access
+      // token is stale, surfacing the bad refresh token here where we can purge it.
+      if (data.session) {
+        const { error } = await sb.auth.getUser();
+        if (error) {
+          await sb.auth.signOut({ scope: "local" }).catch(() => {});
+          if (!cancelled) onSession(null);
+          return;
+        }
+      }
+      onSession(data.session);
     });
     const { data: sub } = sb.auth.onAuthStateChange((_e, session) => {
       if (!cancelled) onSession(session);

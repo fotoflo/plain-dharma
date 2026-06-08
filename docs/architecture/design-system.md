@@ -1,10 +1,12 @@
 # Design System — Plain Dharma
 
-*Last updated: 2026-05-28*
+*Last updated: 2026-06-08*
 
 Reading-first. Every decision optimizes for long-form prose on a range of
 screens. No dark mode at launch was an early principle; dark mode was
 subsequently added with a night-sky aesthetic distinct from the paper day mode.
+Dark-mode illustration variants are registered in `asset-version.json` so web 
+and mobile render the night art when `<html class="dark">` is active.
 
 ## Palette
 

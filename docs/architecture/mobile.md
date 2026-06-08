@@ -1,6 +1,6 @@
 # Mobile app (React Native / Expo) — Plain Dharma
 
-*Last updated: 2026-06-02*
+*Last updated: 2026-06-08*
 
 A React Native port of the reading site, sharing the sutta content with the web
 via a pnpm-monorepo workspace. Expo SDK 56 (React 19.2.3 / RN 0.85.3, New
@@ -120,49 +120,102 @@ perms).
 - When audio advances to a new section, `ScrollView` scrolls to that section's Y.
 - Keeps the visual flow synchronized with audio playback.
 
+## Custom Tab Bar (scroll-aware + contrast-synced)
+
+The bottom tab bar is a **custom React component** (`AnimatedTabBar` from `src/navigation/TabBar.tsx`), not the default expo-router bar. This enables two features:
+
+1. **Scroll-aware visibility:** the bar slides down-offscreen when the user scrolls down (reading), and slides back up on scroll-up or at page top. `useTabBarScroll` feeds a scroll listener from each scene.
+2. **Contrast-aware tinting:** when the user adjusts the "CONTRAST" reading control (low/med/high), the bar's background tints to match the reading page's `CONTRAST_BG[theme][contrast]`. On non-reading tabs (home, more), it stays on the plain theme background.
+
+**Implementation:**
+- `TabBarVisibilityProvider` wraps the app (`app/_layout.tsx`), exposing `useTabBarScroll()` and `useTabBarInset()` hooks.
+- `AnimatedTabBar` (the custom bar component) is passed to `Tabs` via the `tabBar` prop — it derives its type from React Navigation's internal generics (`Parameters<NonNullable<ComponentProps<typeof Tabs>["tabBar"]>>[0]`).
+- `useTabBarScroll()` is called inside ScrollViews (e.g., `read.tsx`, `more.tsx`, `index.tsx`).
+- `useTabBarInset()` returns the bottom padding a scene needs so its content doesn't hide under the floating bar.
+- The bar is absolutely positioned and transforms `translateY` smoothly on scroll threshold changes.
+
 ## Routing (`src/app/`, expo-router)
 
 ```
 app/
-├── _layout.tsx         ← providers (Theme, ReadingPrefs, Downloads, Audio) + fonts + Stack
-├── (tabs)/             ← bottom-tab navigator (footer nav)
+├── _layout.tsx         ← providers (Theme, ReadingPrefs, Audio, AudioPanel, Downloads) + fonts + Stack
+├── (tabs)/             ← bottom-tab navigator (custom AnimatedTabBar: scroll-aware + contrast-tinted)
 │   ├── _layout.tsx     ← Tabs: Home / Read / More
 │   ├── index.tsx       ← home (hero + six-teachings list)
-│   ├── read.tsx        ← combined /read (all six + combined audio)
-│   └── more.tsx        ← downloads / offline / donate / newsletter / about+glossary links
+│   ├── read.tsx        ← combined /read (all six + combined audio); opens FloatingAudioPlayer
+│   └── more.tsx        ← settings, account, support, about+glossary links (iOS Settings-style menu)
 ├── [slug].tsx          ← single talk, full-screen above the tab bar
 ├── download/           ← book download → donate → Stripe flow (native)
 │   ├── index.tsx       ← edition picker (EPUB / PDF / M4B), mirrors web /download
-│   ├── donate.tsx      ← pay-what-you-want; opens web Stripe; deep-link return listener
+│   ├── donate.tsx      ← pay-what-you-want; opens web Stripe; offline-listen entry point
 │   └── thank-you.tsx   ← auto-delivers the file via the OS share sheet
+├── account.tsx         ← sign-in (magic-link) + account settings + delete account
+├── donate.tsx          ← direct support link to /download/donate?ref=donate
+├── contribute.tsx      ← contact / discuss on Reddit
+├── newsletter.tsx      ← email signup (mirrors web /subscribe)
 ├── about.tsx           ← root-level, pushed
 └── glossary.tsx        ← root-level, pushed
 ```
 
-## Book download & donation flow
+## Audio panel state lifting (AudioPanelContext)
+
+The floating audio player's "open/closed" state lives in `AudioPanelContext` 
+(`src/audio/AudioPanelContext.tsx`), mounted at the app root (in `app/_layout.tsx`), 
+above the tab navigator. This allows **any screen to open the listen panel and have 
+it stay open when navigating back to the Read tab**.
+
+**Why it's needed:**
+- The listen modal ("Download for offline") taps to `/download/donate?ref=listen`, a 
+  route outside the (tabs) navigator.
+- After the donate flow completes (paid or free), it bounces back to `/read`.
+- Without a shared parent context, the listen panel would unmount during navigation 
+  and the user would land on a closed panel.
+
+**Flow:**
+1. Listen modal taps → `/download/donate?ref=listen` + `setAudioOpen(false)` (hide 
+   the panel temporarily during checkout).
+2. Stripe success/free-download → `startOfflineListen()` calls `download(locale)` 
+   (kick off audio cache in DownloadsProvider) + `setAudioOpen(true)`.
+3. `router.replace('/read')` navigates back.
+4. Read tab mounts with `audioOpen=true` — FloatingAudioPanel sees the context 
+   value and opens itself.
+
+Hooks: `useAudioPanel()` returns `{ audioOpen, setAudioOpen }`. Mounted once at 
+app root in `app/_layout.tsx`.
+
+## Book download & offline-listen donation flow
 
 Mirrors the web `/download` → `/download/donate` → Stripe → `/download/thank-you`
-flow with native screens (`app/download/`). Donations are **optional** — the file
-is always freely downloadable — and payment happens on **web Stripe Checkout**,
-never in-app: Apple only permits in-app donations for registered nonprofits (which
-Plain Dharma is not), so keeping the charge in the browser is the compliant path.
-`@stripe/stripe-react-native` (as flexbike uses) was rejected for this reason —
-better UX, but it would read as IAP circumvention for a digital good.
+flow with native screens (`app/download/`). Two distinct entry points:
 
-**Round trip** — Stripe's `success_url` must be https, so it can't target a
-`mobile://` link directly:
+**File purchase** (the traditional book download → share to Files):
+1. `app/download/index.tsx` — edition picker (EPUB / PDF / M4B).
+2. `download?to=donate` → `donate.tsx` (pay-what-you-want Stripe Checkout).
+3. Success → `thank-you.tsx` (auto-share via iOS share sheet).
 
-1. `donate.tsx` POSTs `{ amount, file, platform: "mobile" }` to
-   `plaindharma.com/api/checkout`; for mobile the route points success/cancel at
-   `/download/return?to=thankyou|cancel&file=…`.
-2. `WebBrowser.openBrowserAsync` opens Stripe (no auth-session consent dialog).
-3. Stripe redirects to `/download/return`, a **Universal Link / App Link** — the OS
-   hands the URL back to the app. `Return.tsx` also bounces a
-   `mobile://download/donate?to=…` custom scheme + shows manual links as fallback.
-4. `donate.tsx`'s `Linking` listener reads `to=` off whichever URL arrives,
-   `dismissBrowser()` (iOS only), and routes to `thank-you` (or shows the cancelled
-   banner). `thank-you.tsx` auto-delivers the file via the share sheet. The "skip
-   and download for free" path calls `deliverBookFile` directly (no Stripe).
+**Offline listening** (new in 2026-06) — from the listen modal:
+1. `FloatingAudioPanel` "Download for offline" button → `/download/donate?file=m4b&ref=listen`.
+2. `donate.tsx` reads `ref=listen` and shows a two-choice UI:
+   - **"Support Plain Dharma"** → Stripe Checkout (optional donation).
+   - **"Download for free"** → skip payment (no fundraising friction).
+3. On success (paid or free), `startOfflineListen()`:
+   - Calls `download(locale)` to cache audio in `DownloadsProvider`.
+   - Calls `setAudioOpen(true)` to open the listen panel.
+   - Returns to `/read` where the panel is already open.
+
+Donations are **optional** — the file/offline audio is always freely available.
+Payment happens on **web Stripe Checkout**, never in-app (App Store policy 
+compliance for nonprofits).
+
+**Stripe round trip:**
+1. `donate.tsx` POSTs `{ amount, file, platform: "mobile" }` to 
+   `plaindharma.com/api/checkout`.
+2. `WebBrowser.openBrowserAsync` opens Stripe (no auth-session consent).
+3. Stripe redirects success/cancel to `plaindharma.com/download/return?to=thankyou|cancel`.
+4. A **Universal Link / App Link** hands the URL back to the app.
+5. `donate.tsx`'s `Linking` listener reads `to=` and either:
+   - Calls `startOfflineListen()` if `fromListen=true` (offline audio path).
+   - Routes to `thank-you.tsx` if file purchase (auto-share).
 
 **Universal / App Link config:**
 - `app.json`: `ios.associatedDomains: ["applinks:plaindharma.com"]`;
@@ -353,6 +406,19 @@ See [more-tab-refactor.md](./more-tab-refactor.md) for details.
   Reads `EXPO_PUBLIC_SUPABASE_URL` + `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
   (now in development + preview EAS envs, previously production-only); the
   magic-link deep link (`mobile://auth/callback`) is allow-listed in Supabase.
+  
+  **Account deletion** (added 2026-06): The More tab's Account card (when signed 
+  in) includes a "Delete account" option. Tapping it shows a confirmation dialog, 
+  then calls `AuthContext.deleteAccount()`, which invokes `supabase/functions/delete-account` 
+  (an Edge Function that requires a valid JWT). The function calls `admin.auth.deleteUser()` 
+  to delete the user from Supabase Auth; `marginalia` rows cascade-delete. After 
+  deletion, the user is signed out locally.
+  
+  **Magic-link error handling** (added 2026-06): The AuthProvider now validates 
+  refreshed sessions at app startup — if the refresh token is stale/revoked, the 
+  session is purged so a broken "signed in" state doesn't strand the user. The 
+  `/auth/callback` screen captures deep-link-derived auth errors (expired/used links) 
+  and displays them to the user instead of silently failing.
 - **Env vars live as EAS environment variables** (`eas env:create --environment
   production …`), not in `eas.json` — they feed both `eas build` and
   `eas update --environment production`.

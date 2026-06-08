@@ -338,7 +338,7 @@ const en = {
     // by section id at render time. `trackDrop` is the per-sutta distilled line.
     trackOpening: "Opening",
     trackPreface: "Preface",
-    trackDrop: "The heart of it",
+    trackDrop: "The Heart of It",
   },
   canonicalLinks: {
     paliSourcePrefix: "Pali source —",

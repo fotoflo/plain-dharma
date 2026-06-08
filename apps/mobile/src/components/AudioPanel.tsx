@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   // Chapter rows are regular weight; only a sutta's title track is bolded (see
   // rowTitleStrong) so it reads as a section header in the combined playlist.
   rowTitle: { flex: 1, fontWeight: "400" },
-  rowTitleStrong: { fontWeight: "700" },
+  rowTitleStrong: { fontWeight: "600" },
   tocFooter: {
     flexDirection: "row",
     alignItems: "center",

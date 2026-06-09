@@ -5,10 +5,10 @@
 % build-kdp.ts substitutes the __TOKENS__ — crucially __SPINE_W__, computed from
 % the interior's page count × paper caliper.
 %
-% Trim is 6×9, so the existing front (cover.jpg) and back (back-cover.jpg) art —
-% both 6×9 with their gold stripe on the spine-facing edge — drop straight in.
-% The spine is filled gold, so the back stripe + spine + front stripe read as one
-% continuous binding band across the flattened cover.
+% Trim is tokenized (__TRIM_W__ × __TRIM_H__). The front (front-cover-print) and
+% back (back-cover-print) art share the trim's bleed ratio with the gold stripe on
+% the spine-facing edge, so they drop straight in. The spine is filled gold, so the
+% back stripe + spine + front stripe read as one continuous binding band.
 \documentclass{article}
 \usepackage[paperwidth=__PAPER_W__,paperheight=__PAPER_H__,margin=0pt]{geometry}
 \usepackage{graphicx}
@@ -24,8 +24,8 @@
 
 % Geometry (origin = page south-west via the current-page node; needs 2 passes).
 \newlength{\bleed}\setlength{\bleed}{0.125in}
-\newlength{\trimW}\setlength{\trimW}{6in}
-\newlength{\trimH}\setlength{\trimH}{9in}
+\newlength{\trimW}\setlength{\trimW}{__TRIM_W__}
+\newlength{\trimH}\setlength{\trimH}{__TRIM_H__}
 \newlength{\spineW}\setlength{\spineW}{__SPINE_W__}
 \newlength{\spineLeft}\setlength{\spineLeft}{\dimexpr\bleed+\trimW\relax}
 \newlength{\spineRight}\setlength{\spineRight}{\dimexpr\bleed+\trimW+\spineW\relax}

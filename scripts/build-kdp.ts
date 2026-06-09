@@ -1,9 +1,9 @@
 /**
- * Build the Plain Dharma KDP paperback package (6×9 trim).
+ * Build the Plain Dharma KDP paperback package (5×8 trim).
  *
  * For each interior variant produces TWO upload-ready files in dist/kdp/:
  *   plain-dharma-kdp-interior-{bw,color}.pdf — the book block, COVER-FREE
- *       (KDP wants covers off the interior), 6×9 + 0.125in bleed, twoside.
+ *       (KDP wants covers off the interior), 5×8 + 0.125in bleed, twoside.
  *   plain-dharma-kdp-cover-{bw,color}.pdf — the wraparound cover (back | spine |
  *       front), spine width computed from THIS interior's page count × the
  *       paper's caliper. Always full color (KDP prints covers in color
@@ -15,8 +15,10 @@
  *   3. pdfinfo → page count → spine width
  *   4. render kdp-wrap-cover.tex with that spine → xelatex (×2) → cover PDF
  *
- * Front/back cover art (dist/ebook/cover.jpg, back-cover.jpg) is 6×9 and reused
- * as-is — run `pnpm generate-cover` / `pnpm generate-back-cover` first.
+ * Cover art is the GENERATED 5×8 print pair (front-cover-print-color.jpg from
+ * generate-front-cover.ts, back-cover-print-color.jpg from generate-back-cover.ts
+ * — the latter carries the paperback ISBN barcode). The 6×9 designer cover.jpg
+ * is NOT used here (wrong ratio for 5×8). Run those two generators first.
  *
  * Run: pnpm build-kdp
  */
@@ -48,8 +50,15 @@ const TEMPLATE_DIR = join(ROOT, "scripts", "templates");
 const EBOOK_DIR = join(ROOT, "dist", "ebook");
 const OUT_DIR = join(ROOT, "dist", "kdp");
 
-const FRONT_COVER = join(EBOOK_DIR, "cover.jpg");
-const BACK_COVER = join(EBOOK_DIR, "back-cover.jpg");
+// 5×8 generated print covers (ratio 0.636 = 5.25×8.25). The back one carries the
+// paperback's own EAN-13 (ISBN 978-1-891328-38-1). Always color — KDP prints
+// covers in color even for the B&W interior.
+const FRONT_COVER = join(EBOOK_DIR, "front-cover-print-color.jpg");
+const BACK_COVER = join(EBOOK_DIR, "back-cover-print-color.jpg");
+
+// Paperback trim (inches). The wrap template + spine math derive from these.
+const TRIM_W = 5;
+const TRIM_H = 8;
 
 const ILLUSTRATION_TARGET_WIDTH = 1200; // 300 PPI at ~4in displayed width
 const ILLUSTRATION_JPEG_QUALITY = 88;
@@ -138,9 +147,9 @@ function renderPreamble(variant: Variant, variantDir: string): string {
   return out;
 }
 
-// Cover-free 6×9 interior. Page = 6.25×9.25 (trim + 0.125in bleed all sides,
-// matching the project's existing print convention; KDP accepts this — the
-// inner over-bleed is absorbed by the binding). Twoside, openright.
+// Cover-free 5×8 interior. Page = 5.25×8.25 (trim + 0.125in bleed all sides,
+// matching build-print-pdf; KDP accepts this — the inner over-bleed is absorbed
+// by the binding). Twoside, openright. 10pt for the narrower text block.
 function buildInterior(
   variant: Variant,
   bookMdPath: string,
@@ -158,17 +167,17 @@ function buildInterior(
     "-V", "documentclass=book",
     "-V", "classoption=twoside,openright",
     "-V", "papersize=",
-    "-V", "geometry:paperwidth=6.25in",
-    "-V", "geometry:paperheight=9.25in",
+    "-V", "geometry:paperwidth=5.25in",
+    "-V", "geometry:paperheight=8.25in",
     "-V", "geometry:inner=0.875in",
     "-V", "geometry:outer=0.625in",
-    "-V", "geometry:top=0.85in",
-    "-V", "geometry:bottom=0.85in",
+    "-V", "geometry:top=0.75in",
+    "-V", "geometry:bottom=0.75in",
     "-V", `title=${BOOK_TITLE}`,
     "-V", `subtitle=${BOOK_SUBTITLE}`,
     "-V", `author=${AUTHOR}`,
     "-V", "lang=en",
-    "-V", "fontsize=11pt",
+    "-V", "fontsize=10pt",
     `--output=${outPdf}`,
     bookMdPath,
   ];
@@ -183,8 +192,8 @@ function pageCount(pdf: string): number {
   return parseInt(m[1], 10);
 }
 
-// Wraparound cover sized to this interior's spine. width = bleed + 6 + spine +
-// 6 + bleed; height = 9 + 2×bleed. Compiled twice for the current-page node.
+// Wraparound cover sized to this interior's spine. width = bleed + trimW + spine
+// + trimW + bleed; height = trimH + 2×bleed. Compiled twice for current-page.
 function buildWrapCover(
   variant: Variant,
   pages: number,
@@ -193,8 +202,8 @@ function buildWrapCover(
 ): void {
   const cfg = VARIANTS[variant];
   const spineIn = pages * cfg.caliper;
-  const paperW = 0.125 + 6 + spineIn + 6 + 0.125;
-  const paperH = 9 + 0.25;
+  const paperW = 0.125 + TRIM_W + spineIn + TRIM_W + 0.125;
+  const paperH = TRIM_H + 0.25;
   const fmt = (n: number) => `${n.toFixed(4)}in`;
   console.log(
     `[build-kdp:${variant}] ${pages} pages → spine ${spineIn.toFixed(4)}in; ` +
@@ -205,6 +214,8 @@ function buildWrapCover(
   const rendered = tpl
     .replace(/__PAPER_W__/g, fmt(paperW))
     .replace(/__PAPER_H__/g, fmt(paperH))
+    .replace(/__TRIM_W__/g, `${TRIM_W}in`)
+    .replace(/__TRIM_H__/g, `${TRIM_H}in`)
     .replace(/__SPINE_W__/g, fmt(spineIn))
     .replace(/__BACK_IMG__/g, BACK_COVER)
     .replace(/__FRONT_IMG__/g, FRONT_COVER);
@@ -255,7 +266,7 @@ function main(): void {
   for (const img of [FRONT_COVER, BACK_COVER]) {
     if (!existsSync(img)) {
       console.error(
-        `ERROR: missing cover art ${img}. Run \`pnpm generate-cover\` and ` +
+        `ERROR: missing cover art ${img}. Run \`pnpm generate-front-cover\` and ` +
           `\`pnpm generate-back-cover\` first.`
       );
       process.exit(1);

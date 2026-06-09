@@ -15,13 +15,18 @@ Account / start: <https://kdp.amazon.com/en_US/bookshelf>
 | Purpose | Path | Notes |
 |---|---|---|
 | eBook manuscript | `dist/ebook/plain-dharma.epub` | EPUB 3, cover + CC0 page already embedded |
-| eBook + paperback cover art (front) | `dist/ebook/cover.jpg` | 1600×2560, 224 KB, JPEG — meets KDP min |
-| Paperback interior (color) | `dist/print/plain-dharma-print-color.pdf` | 42 pp, 5.25"×8.25" (5×8 + bleed), printed cream bg |
-| Paperback interior (B&W, cheaper) | `dist/print/plain-dharma-print-bw.pdf` | 42 pp, grayscale, white paper |
+| eBook cover art (front) | `dist/ebook/cover.jpg` | 1600×2400, 6×9 — the designer's InDesign front, for the **Kindle** edition only |
+| Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 46 pp, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
+| Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 46 pp, grayscale, white paper, **cover-free** |
+| Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.35×8.25, back+spine+front, spine 0.104", barcode = print ISBN ‑38‑1 |
+| Paperback wraparound cover (B&W interior) | `dist/kdp/plain-dharma-kdp-cover-bw.pdf` | same art, spine 0.115" (cream caliper) — match to the B&W interior |
 
-If you edited any content since 2026-05-27, rebuild first:
-`pnpm build-ebook && pnpm build-print-pdf`. The paperback needs a **wraparound**
-cover PDF (front+spine+back) — you do NOT have one yet; see Paperback → Cover below.
+If you edited any content, rebuild first:
+`pnpm build-ebook && pnpm generate-front-cover && pnpm generate-back-cover && pnpm build-kdp`
+(or just `pnpm build-all`). The 5×8 paperback now ships a complete **wraparound**
+cover PDF — you no longer need KDP Cover Creator. Use the **`dist/kdp/`** files for
+the paperback; the older `dist/print/*` 5×8 PDFs embed the back cover as an interior
+page and are NOT for KDP upload.
 
 ---
 
@@ -140,29 +145,29 @@ Same as Kindle Screen 1: Language `English`, Title `Plain Dharma`, Subtitle
 | Publication date | *(leave blank — uses approval date)* |
 | Print — Ink & Paper | **⚠️ DECIDE:** Color variant → **Premium color, white paper** · B&W variant → **Black & white, cream paper** |
 | Trim size | 5 x 8 in |
-| Bleed | **Bleed (PDF has bleed)** — both PDFs are 5.25"×8.25" |
+| Bleed | **Bleed (PDF has bleed)** — interiors are 5.25"×8.25" |
 | Cover finish | Matte |
-| Manuscript | Upload `dist/print/plain-dharma-print-color.pdf` (or `-bw.pdf` to match the paper choice above) |
-| Book Cover | See "Cover" below — you must build a wraparound first |
+| Manuscript | Upload `dist/kdp/plain-dharma-kdp-interior-color.pdf` (or `-bw.pdf` to match the paper choice above) — these are **cover-free**, as KDP requires |
+| Book Cover | "Upload a print-ready PDF (recommended)" → `dist/kdp/plain-dharma-kdp-cover-color.pdf` (use `-bw.pdf` if you chose the B&W interior — its spine is sized for cream caliper) |
 | Preview | Run Print Previewer; fix any margin/bleed flags before saving |
 
-### Cover (the one missing asset)
+### Cover (already built — a complete wraparound)
 
-You only have a **front** cover (`cover.jpg`). KDP paperback needs a full wraparound
-(back + spine + front). Easiest path:
+You now have a full wraparound PDF (back | spine | front), so **skip KDP Cover
+Creator** and upload the print-ready PDF directly:
 
-1. In Screen 2, choose **"Use Cover Creator"** → upload `dist/ebook/cover.jpg` as the
-   front image, pick a plain cream/ink background for the back, paste the same
-   Description on the back. KDP computes the spine for you.
-2. **No spine text** — at 42 pages the spine is ~0.10", below KDP's 100-page minimum
-   for spine lettering.
+- **Color interior →** `dist/kdp/plain-dharma-kdp-cover-color.pdf`
+- **B&W interior →** `dist/kdp/plain-dharma-kdp-cover-bw.pdf`
 
-If you'd rather upload your own wraparound PDF, the exact full-bleed dimensions are:
+The front is a **generated 5×8** cover (`generate-front-cover.ts` — the 6×9
+designer `cover.jpg` is the wrong ratio for 5×8 and is Kindle-only). The back
+carries the real **paperback ISBN barcode (978-1-891328-38-1)**. Built dimensions:
 
-- Page count: **42**
-- Spine width: 42 × 0.002347 (premium color, white) ≈ **0.099"** (B&W cream: 42 × 0.0025 ≈ **0.105"**)
-- Full cover **width** = 0.125 (bleed) + 5 + 0.099 + 5 + 0.125 = **10.349"** → **3105 px** @ 300 DPI
-- Full cover **height** = 0.125 + 8 + 0.125 = **8.25"** → **2475 px** @ 300 DPI
+- Page count: **46** · spine = 46 × caliper → **0.104"** color (white) / **0.115"** B&W (cream)
+- Full cover **width** = 0.125 + 5 + spine + 5 + 0.125 ≈ **10.35"**; **height** = 8.25"
+- **No spine text** — at 46 pages the spine is ~0.10", below KDP's 100-page minimum.
+
+To rebuild after a content/cover change: `pnpm generate-front-cover && pnpm generate-back-cover && pnpm build-kdp`.
 
 ## Screen 3 — Paperback Pricing
 

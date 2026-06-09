@@ -158,7 +158,9 @@ function runPandoc(
   const outPdf = join(OUT_DIR, "plain-dharma.pdf");
   const luaFilter = join(TEMPLATE_DIR, "center-images.lua");
   const args = [
-    "--from=markdown",
+    // Disable implicit_figures so the illustrations' alt text (added in
+    // book-source.ts) doesn't render as a visible caption under each image.
+    "--from=markdown-implicit_figures",
     "--to=pdf",
     `--pdf-engine=${findXelatex()}`,
     `--include-in-header=${preamblePath}`,

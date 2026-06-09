@@ -167,7 +167,9 @@ function runPandoc(
   outPdf: string
 ): void {
   const args = [
-    "--from=markdown",
+    // Disable implicit_figures so the illustrations' alt text (added in
+    // book-source.ts) doesn't render as a visible caption under each image.
+    "--from=markdown-implicit_figures",
     "--to=pdf",
     `--pdf-engine=${findXelatex()}`,
     `--include-in-header=${preamblePath}`,

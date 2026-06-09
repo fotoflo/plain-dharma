@@ -173,7 +173,11 @@ function runPandoc(): void {
   const outEpub = join(OUT_DIR, "plain-dharma.epub");
 
   const args = [
-    "--from=markdown",
+    // Disable implicit_figures so `![alt](src)` renders a plain <img alt="…">
+    // (accessible, no visible caption) instead of a <figure><figcaption>. Lets
+    // the illustrations carry real alt text — see ILLUSTRATION_ALT in
+    // book-source.ts — without printing that text under each image.
+    "--from=markdown-implicit_figures",
     "--to=epub3",
     `--output=${outEpub}`,
     `--metadata-file=${metadataYaml}`,

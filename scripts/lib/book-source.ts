@@ -32,6 +32,25 @@ export const AUTHOR = "Alex Miller";
 export const PUBLISHER = "Plain Dharma";
 export const SITE_URL = "https://plaindharma.com";
 
+// Descriptive alt text for each sutta's line-drawing illustration, so the EPUB's
+// images are accessible to screen-reader users (and we can honestly answer KDP's
+// "all informative images include alternative text"). Descriptions mirror what
+// each drawing depicts — see the prompts in scripts/generate-illustrations.ts.
+// Requires implicit_figures to be OFF in the pandoc call (build-ebook.ts), or
+// the alt text would print as a visible caption.
+const ILLUSTRATION_ALT: Record<string, string> = {
+  "first-talk":
+    "A sun rising over a low horizon, drawn as one continuous ink line, with a few tiny deer at the edge of the park.",
+  "not-self":
+    "A human head and shoulders in profile, its outline dissolving and lifting away like leaves on the wind.",
+  "fire-sermon": "A single tall flame, drawn as one flowing, calligraphic ink line.",
+  "loving-kindness":
+    "A parent cradling a child, both drawn in one continuous, tender line.",
+  mindfulness: "A single open eye, clear and calm, drawn as one continuous ink line.",
+  "how-to-decide":
+    "A pair of balance scales, slightly tilted, drawn as one continuous ink line over a soft saffron wash.",
+};
+
 function stripFrontmatter(src: string): string {
   return src.replace(/^---\n[\s\S]*?\n---\n+/, "");
 }
@@ -114,7 +133,10 @@ export function buildBookMarkdown(opts: BookSourceOptions): string {
     parts.push(`> ${DROPS[DEFAULT_LOCALE][meta.slug]}\n`);
 
     const illustration = opts.getIllustrationPath(meta.slug);
-    if (illustration) parts.push(`![](${illustration})\n`);
+    if (illustration) {
+      const alt = ILLUSTRATION_ALT[meta.slug] ?? meta.title;
+      parts.push(`![${alt}](${illustration})\n`);
+    }
 
     parts.push(`${readSuttaBody(meta.slug)}\n`);
   }

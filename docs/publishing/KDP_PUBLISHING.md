@@ -136,7 +136,7 @@ Same as Kindle Screen 1: Language `English`, Title `Plain Dharma`, Subtitle
 
 | Field | Value |
 |---|---|
-| ISBN | "Get a free KDP ISBN" (Amazon-assigned) — or supply your own Bowker ISBN if you want it portable to other printers |
+| ISBN | Use your own Bowker ISBN: **`978-1-891328-38-1`** (the paperback edition — distinct from the ebook's `…-37-4`). Choose "I have my own ISBN" and enter it; do **not** take a free KDP ISBN (the free one isn't portable to other printers). |
 | Publication date | *(leave blank — uses approval date)* |
 | Print — Ink & Paper | **⚠️ DECIDE:** Color variant → **Premium color, white paper** · B&W variant → **Black & white, cream paper** |
 | Trim size | 5 x 8 in |

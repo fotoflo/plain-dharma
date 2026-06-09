@@ -65,6 +65,10 @@ const BACK_COVER_TITLES = [
 // below intentionally keeps a placeholder rather than reusing this number.
 const EBOOK_ISBN = "978-1-891328-37-4";
 
+// ISBN of the PRINT (paperback) edition — a separate ONIX record from the ebook,
+// assigned from the same 978-1-891328 Bowker block. Per-edition by spec.
+const PRINT_ISBN = "978-1-891328-38-1";
+
 // Real EAN-13 barcode + human-readable ISBN, for the ebook back cover. Lining
 // figures (the main font defaults to old-style) so the digit row reads evenly.
 const EBOOK_BARCODE = [
@@ -74,12 +78,13 @@ const EBOOK_BARCODE = [
   "}",
 ].join("\n");
 
-// Print back cover keeps the placeholder box — the paperback's barcode waits on
-// its own ISBN from Ellen's 978-1-891328 block.
+// Real EAN-13 barcode + human-readable ISBN for the print back cover, mirroring
+// the ebook one but with the paperback's own ISBN.
 const PRINT_BARCODE = [
-  "{\\scriptsize\\color{muted}ISBN}\\\\[0.12em]",
-  "{\\color{ink}\\rule{0.8in}{0.34in}}\\\\[0.16em]",
-  "{\\tiny\\color{muted}barcode placeholder}",
+  "{\\addfontfeatures{Numbers=Lining}%",
+  `{\\scriptsize\\color{ink}ISBN ${PRINT_ISBN}}\\\\[0.16em]`,
+  ean13Tikz(PRINT_ISBN, { moduleWidth: "0.0083in", barHeight: "0.30in", fontPt: 5 }),
+  "}",
 ].join("\n");
 
 // Escape the LaTeX specials that can appear in a teaser. Em dash "—" and

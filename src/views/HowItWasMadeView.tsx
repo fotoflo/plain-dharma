@@ -380,6 +380,18 @@ export async function HowItWasMadeView() {
           <em>test it yourself, don’t take anyone’s word for it.</em>
         </p>
 
+        <figure className="not-prose my-12">
+          <ZoomableImage
+            src="/how-it-was-made/mach.png"
+            alt="Ernst Mach's 1886 drawing of his own visual field — a first-person view down his reclining body toward a window."
+            className="mx-auto w-full max-w-xs rounded-lg border border-divider/60 shadow-sm"
+          />
+          <figcaption className="mt-3 text-center font-sans text-sm leading-relaxed text-ink/60">
+            Ernst Mach, drawing his own visual field, 1886. Don’t forget to try
+            and point the finger back at yourself.
+          </figcaption>
+        </figure>
+
         <h2>More than the words</h2>
         <Doodle
           src="/how-it-was-made/audio.png"
@@ -550,8 +562,7 @@ export async function HowItWasMadeView() {
         </p>
         <p>
           Though maybe that’s unfair to Abraham. Maybe God makes it hard for us
-          on purpose — so we can taste how sweet the good parts are. The Lord
-          will see to it.
+          on purpose — so we can taste how sweet the good parts are.
         </p>
       </article>
 
@@ -562,20 +573,6 @@ export async function HowItWasMadeView() {
         >
           Read the six teachings →
         </Link>
-      </div>
-
-      <div className="mt-16 text-center">
-        <figure className="mt-12 not-prose">
-          <ZoomableImage
-            src="/how-it-was-made/mach.png"
-            alt="Ernst Mach's 1886 drawing of his own visual field — a first-person view down his reclining body toward a window."
-            className="mx-auto w-full max-w-xs rounded-lg border border-divider/60 shadow-sm"
-          />
-          <figcaption className="mt-3 text-center font-sans text-sm leading-relaxed text-ink/60">
-            Ernst Mach, drawing his own visual field, 1886. Don’t forget to try
-            and point the finger back at yourself.
-          </figcaption>
-        </figure>
       </div>
     </div>
   );

@@ -117,30 +117,39 @@ export async function HowItWasMadeView() {
           strange, empty feeling of flying through the night down an empty
           highway, just off a plane in a new country —{" "}
           <em>is this life even real? Did I just get dropped here somehow?</em>{" "}
-          And the moments of clarity, after yoga or meditation, or now that I’ve
+          And the moments of clarity, with yoga or meditation, or now that I’ve
           learned to practice, in a single deep breath: everything slowing down,
           the rising and the falling, the bones in the body.
         </p>
         <p>
           I came to it warily, though — I’ve given up on it more than once.
           Taken all the way, Buddhism felt like it went too far: detach from
-          everything, and where does that leave you? Life is too beautiful to
-          give up. The suffering is what makes it so. Frankl gave me the answer
-          I could hold onto: meaning, found inside the suffering and not beyond
-          it. Utilitarianism always sat right with me — that we’re all of equal
+          everything, and where does that leave you? Where does that leave the
+          world? Our children’s planet is being burned down; we have to fight
+          for our right to exist. I have nothing but respect for the monastery —
+          but it isn’t my path, not now. Life is too beautiful to give up.
+          The suffering is what makes it so. Frankl gave me the answer I could
+          hold onto: meaning, found inside the suffering and not beyond it.
+          Utilitarianism always sat right with me — that we’re all of equal
           value. And Descartes echoed whenever I really wondered what was real —
           or at least the start of his argument: that our thoughts, at least,
           exist.
         </p>
         <p>
-          And I don’t think the Buddha should be worshipped. I know that isn’t a
-          popular thing to say. But to me he risks becoming a golden calf — and
-          he tells you so himself, in{" "}
+          None of which is coldness toward the Buddha. Meditating in front of his
+          statue brings me a peace I can’t explain; I love the imagery and the
+          little I know of the tradition; we keep a few small statues at home.
+          And still — I don’t think he should be worshipped, and I know that isn’t
+          a popular thing to say. Worship is the line. He risks becoming a golden
+          calf — a fingertip in a reliquary — and he tells you so himself, in{" "}
           <Link href="/how-to-decide">How to Decide What to Believe</Link>:
           don’t accept something just because someone you respect said it,{" "}
           <em>even if that teacher is me</em>. I wanted to hear the teaching,
-          not bow to the teacher. So one night, wide awake at 3 a.m., I asked
-          Claude the plain question: what <em>did</em> he say?
+          not bow to the teacher.
+        </p>
+        <p>
+          So one night, wide awake at 3 a.m., I asked Claude the plain question:
+          what <em>did</em> he say?
         </p>
         <p>
           The first answer came back straight from the Pāli. Before anything
@@ -213,8 +222,20 @@ export async function HowItWasMadeView() {
           >
             SuttaCentral
           </a>
-          , kept or changed for a reason. Here is one of those inquiries, in
-          full, over the opening of the Kālāma Sutta:
+          , kept or changed for a reason.
+        </p>
+        <p>
+          The thing I still can’t quite get over is that I was examining the{" "}
+          <em>original</em> — a 2,600-year-old text, in a dead language I don’t
+          read a word of. Two years ago that would have been flatly impossible
+          for someone like me: it would have taken a PhD and months in a library
+          — the stuff of a dissertation, or at least a final-year project for a
+          degree in ancient languages. Now I could do it in a chat window, at 3
+          a.m., and actually understand what I was looking at.
+        </p>
+        <p>
+          Here is one of those inquiries, in full, over the opening of the
+          Kālāma Sutta:
         </p>
 
         <Figure
@@ -382,8 +403,8 @@ export async function HowItWasMadeView() {
           I prompted it flat and calm and slow, then dragged it 20–30% slower
           still — cut, stitched, re-rendered and stitched back in, 700
           milliseconds of silence dropped between sections to let them breathe —
-          and finally re-recorded the whole thing through the API and joined it to
-          a cover, a back cover, and a barcode. Claude designed those; my mom
+          and finally re-recorded the whole thing through the API and joined it
+          to a cover, a back cover, and a barcode. Claude designed those; my mom
           fixed them.
         </p>
 

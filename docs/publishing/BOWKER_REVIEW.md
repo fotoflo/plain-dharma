@@ -1,82 +1,70 @@
-# Bowker ISBN Registration — Review
+# Bowker ISBN Registration — final values
 
-Review of the Bowker registration form for ISBN **978-1-891328-37-4**
-(Plain Dharma, English EPUB edition). Issues are grouped by severity.
+The settled Bowker/ONIX record for ISBN **978-1-891328-37-4**
+(Plain Dharma, English **EPUB** edition). These values are reconciled against
+the printed cover, the EPUB build, and the $4.99 pricing decision — enter them
+as-is.
 
-## 🔴 Must fix (consistency / correctness)
+> This file was originally a list of issues to fix; those are now resolved and
+> folded into the values below. Three facts changed since the first review:
+> the **subtitle** (settled on the cover wording), the **file size**
+> (463 KB → 802 KB after the Jun-8 rebuild), and the **price**
+> ($0.99 → $4.99, per the pricing research in `docs/todos.md` discussion).
 
-### 1. Subtitle mismatch with the actual book
+## Title & Contributors
 
-- **Bowker says:** `The Buddha's Six Foundational Teachings in Plain Modern English`
-- **EPUB metadata + KDP guide say:** `Six Foundational Buddhist Teachings in Plain Modern English`
-
-Pick one and align all three (Bowker, `scripts/lib/book-source.ts:27`, KDP).
-The cover JPG also reads "Six Foundational Buddhist Teachings" — so if you
-change Bowker to match the canonical version, you don't have to rebuild the
-cover or EPUB.
-
-### 2. Language: Mandarin should NOT be checked here
-
-ISBNs are per-edition, and Bowker treats a translation as a separate edition.
-This ISBN (978-1-891328-37-4) is for the **English EPUB**. Uncheck Mandarin —
-the ZH edition needs its own ISBN from Ellen's block when you publish it.
-
-### 3. "Author" in Alex's functions is questionable
-
-The Buddha is the original author of the suttas. Given the context — Claude
-did the primary Pali → EN translation, Alex edited collaboratively — the
-accurate function set is:
-
-- ✅ Translated with commentary by
-- ✅ Compiled by
-- ✅ Editor
-- ✅ Cover Design by
-- ❌ **Drop "Author"** — it conflicts with the book's own positioning ("not
-  a scholarly translation, a plain reading") and overstates the relationship
-  to source material that's 2,500 years old.
-
-## 🟡 Should fix (better fit)
-
-### 4. Target Audience: "Adult Education" → "Trade"
-
-"Adult Education" implies curriculum / classroom. Plain Dharma is for general
-adult readers picking up a dharma book — **Trade** is the standard category
-for that.
-
-### 5. Format: "Digital online" → "Electronic book text"
-
-For an EPUB, "Electronic book text" is the standard ONIX value. "Digital
-online" suggests a web-only format with no downloadable file.
-
-## ⚪ Empty fields to fill
-
-| Field | Suggested value |
+| Field | Value |
 |---|---|
-| eBook File Size | `463 KB` (actual size of `dist/ebook/plain-dharma.epub`) |
-| US → Price | `0.99` (matches the KDP floor) |
-| US → Price Type | `Retail Price` |
-| US → Price Availability | `Active` |
-| US → Sales Rights → Type | `World rights` |
-| US → Sales Rights → Territory | `World` |
+| Title | `Plain Dharma` |
+| Subtitle | `The Buddha's Foundational Teachings in Modern English` |
+| Language | **English only** — leave Mandarin **unchecked** |
+| Copyright year | `2026` |
+| Alex Miller — functions | `Translated with commentary by` · `Compiled by` · `Editor` · `Cover Design by` |
+| Ellen — function | `Cover Design by` only |
+| Publisher | `Visual Language LLC dba Alphagram Learning Materials` |
+| Imprint | `Plain Dharma Press` |
 
-You can also add Australia / Canada / NZ / UK markets to mirror KDP's "All
-territories" — same price, same rights — but US-only is fine; ONIX
-distribution still reaches global retailers.
+- **Subtitle** must match the printed cover exactly — no "Six", no "Plain"
+  (the brand "Plain Dharma" already owns that word). It also matches
+  `BOOK_SUBTITLE` in `scripts/lib/book-source.ts`.
+- **Do not check "Author"** for Alex — it conflicts with the book's own
+  positioning ("a plain reading, not a scholarly translation") and overstates
+  the relationship to 2,500-year-old source material.
+- **Mandarin is a separate edition** and needs its own ISBN from Ellen's
+  978-1-891328 block when the ZH version publishes. ISBNs are per-edition.
 
-## 📋 Not in this form — but don't forget
+## Format & Size
 
-**The paperback needs its own ISBN.** This registration is for the EPUB only
-(Medium: E-Book). The 42-page print edition is a separate ONIX record and
-needs a second ISBN from Ellen's 978-1-891328 block. Plan that one now so
-the print cover (which prints the barcode) uses the right number.
+| Field | Value |
+|---|---|
+| Medium | `E-Book` |
+| Format | `Electronic book text` *(not "Digital online", which means online-only access)* |
+| eBook File Type | `EPUB` |
+| eBook File Size | `802 KB` *(actual `dist/ebook/plain-dharma.epub` = 820,971 bytes)* |
+| Packaging Description | *(blank — "Digipak" is physical-disc packaging, N/A for an ebook)* |
+| Trade Catalog | `E-book short` (optional) or blank |
+| First Genre | `BUDDHISM` |
+| Second Genre | `DEVOTIONAL LITERATURE` |
 
-## ✅ Looks correct
+## Sales & Pricing (United States)
 
-- Copyright year 2026, publication date May 31, 2026
-- Imprint "Plain Dharma Press" — nice; this is what will show on the Amazon
-  detail page when KDP imports the Bowker record (better than "Indy Pub"
-  or KDP's default)
-- Ellen with "Cover Design by" only — matches what she actually did
-- Genres BUDDHISM / DEVOTIONAL LITERATURE — fine
-- Publisher "Visual Language LLC dba Alphagram Learning Materials" — correct
-  per Ellen's account setup
+| Field | Value |
+|---|---|
+| Publication Date | publish-day (set when you register; keep aligned with the KDP date) |
+| Title Status | `Active Record` |
+| Target Audience | `Trade` *(not "Adult Education" — that implies classroom/curriculum)* |
+| Currency / Price / Type | `US Dollars` / `4.99` / `Retail Price` |
+| Price Availability | `Available` |
+| Sales Rights (if shown) | Type `World rights`, Territory `World` |
+
+> **Price = $4.99**, not the $0.99 floor from earlier drafts. $4.99 sits inside
+> Amazon's 70% royalty band ($2.99–$9.99); the original plain-English rendering
+> is your own copyrightable work, so the public-domain 35%/rejection rule does
+> **not** apply. See `docs/publishing/KDP_PUBLISHING.md` for the KDP side.
+
+## Not in this form — but don't forget
+
+**The paperback needs its own ISBN.** This registration is the EPUB only
+(Medium: E-Book). The print edition is a separate ONIX record and needs a
+second ISBN from Ellen's 978-1-891328 block — plan it before printing the
+cover, which prints the barcode for that number.

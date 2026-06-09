@@ -33,7 +33,7 @@ cover PDF (front+spine+back) — you do NOT have one yet; see Paperback → Cove
 |---|---|
 | Language | English |
 | Book Title | `Plain Dharma` |
-| Subtitle | `Six Foundational Buddhist Teachings in Plain Modern English` |
+| Subtitle | `The Buddha's Foundational Teachings in Modern English` |
 | Series | *(leave blank)* |
 | Edition number | `1` |
 | Author — First name | `Alex` |
@@ -102,14 +102,19 @@ Released into the public domain under CC0 1.0. Copy it, print it, translate it, 
 | KDP Select enrollment | **No / unchecked** — see note (exclusivity conflicts with the free site) |
 | Territories | All territories (worldwide rights) |
 | Primary marketplace | Amazon.com |
-| Royalty plan | 35% |
-| List price (USD) | `0.99` |
+| Royalty plan | 70% |
+| List price (USD) | `4.99` |
 | Other marketplaces | Let KDP auto-convert from USD |
 | Book Lending | Allow (checked) |
 
-> **Why 35% / $0.99:** 70% royalty forces a $2.99 floor. Since the whole project is
-> free under CC0, $0.99 (the lowest KDP allows) is closest to your intent. To get it
-> to **$0.00**, see "Making it free" at the bottom — you can't set $0 directly.
+> **Why 70% / $4.99:** $4.99 sits inside Amazon's 70% royalty band ($2.99–$9.99),
+> so it earns the good rate (~$3.40/sale). The book is short, so $4.99 is the
+> honest ceiling — the value story is the *rendering from the Pāli*, not page
+> count. The original plain-English rendering is your own copyrightable work, so
+> the public-domain 35%/rejection rule does **not** apply. The free version is the
+> PDF/audiobook + web reading on plaindharma.com — the Kindle file is the paid
+> edition (the free in-app EPUB has been removed). See `BOWKER_REVIEW.md` and the
+> pricing research in `docs/todos.md`.
 
 ---
 
@@ -121,7 +126,7 @@ Create it from the **same title** so KDP links the Kindle + paperback editions
 ## Screen 1 — Paperback Details
 
 Same as Kindle Screen 1: Language `English`, Title `Plain Dharma`, Subtitle
-`Six Foundational Buddhist Teachings in Plain Modern English`, Author
+`The Buddha's Foundational Teachings in Modern English`, Author
 `Alex` / `Miller`, the same Description, Categories, and Keywords, and the same
 **⚠️ DECIDE** Publishing-rights choice.
 
@@ -203,15 +208,12 @@ the same EPUB free on plaindharma.com (and anywhere else). Leave it unchecked.
 
 # After publishing
 
-### Making the Kindle edition free ($0.00)
-KDP won't let you set $0 directly. Two routes:
-
-1. **Price-matching (permanent free):** publish the same EPUB for free on another
-   store (Apple Books, Google Play Books, Kobo, or via Draft2Digital), then use KDP
-   **Help → Contact Us** to report the lower price and ask Amazon to price-match.
-   Amazon usually drops it to $0.00. This is the standard way "free" books exist on
-   Kindle.
-2. Otherwise it sits at $0.99.
+### The Kindle edition is paid ($4.99) by design
+Earlier drafts considered price-matching the Kindle file down to $0.00. That's
+been dropped: the Kindle edition is now a **paid $4.99 edition**, and the free
+in-app EPUB has been removed. Generosity is routed to the free PDF/audiobook +
+web reading on plaindharma.com and to the donate flow ($5/$15/$30), not to a
+free Kindle file. (Kindle still can't be set to $0 directly anyway.)
 
 ### Link the editions
 Kindle + paperback created under the same title auto-link on one product page. If they

@@ -29,7 +29,10 @@ export const BOOK_TITLE = "Plain Dharma";
 export const BOOK_SUBTITLE =
   "The Buddha’s Foundational Teachings in Modern English";
 export const AUTHOR = "Alex Miller";
-export const PUBLISHER = "Plain Dharma";
+// Bowker imprint of record for ISBN 978-1-891328-37-4 (see
+// docs/publishing/BOWKER_REVIEW.md). KDP's Publisher field + the EPUB's
+// dc:publisher should match this exactly.
+export const PUBLISHER = "Plain Dharma Press";
 export const SITE_URL = "https://plaindharma.com";
 
 // Descriptive alt text for each sutta's line-drawing illustration, so the EPUB's

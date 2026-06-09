@@ -48,7 +48,7 @@ cover PDF (front+spine+back) — you do NOT have one yet; see Paperback → Cove
 | Keywords | *(7 slots — see list below)* |
 | Pre-order | Release my book for sale now |
 
-### Description (paste verbatim — ~1,950 chars, KDP allows 4,000)
+### Description (paste verbatim — ~2,200 chars, KDP allows 4,000)
 
 ```
 Six of the Buddha's foundational teachings, rendered in plain modern English — clear enough to read in an afternoon, faithful enough to take seriously.
@@ -67,6 +67,8 @@ Inside:
 Each teaching opens with a one-line distillation and a simple illustration, and the book closes with a Sources & Further Reading appendix pointing to the rigorous scholarly translations (SuttaCentral, Access to Insight, Bhikkhu Bodhi) behind every plain-English rendering.
 
 Released into the public domain under CC0 1.0. Copy it, print it, translate it, give it away — no permission needed, no attribution required, in keeping with the Buddhist tradition of free dharma distribution. Every format lives free at plaindharma.com.
+
+A note on how it was made: the plain-English rendering was drafted with AI from the original Pāli, then refined by hand — argued out line by line, word by word, against the 2,600-year-old text. The full story is at plaindharma.com/how-it-was-made.
 ```
 
 ### Categories (choose 3 from KDP's browse tree)

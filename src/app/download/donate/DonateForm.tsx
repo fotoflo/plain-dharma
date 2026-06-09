@@ -16,13 +16,13 @@ type Preset = {
   reason: string;
 };
 
-// Center-bias picks the middle option. $7 is the most-clicked tier; the
-// reasoning copy attached to each amount converts much better than naked
-// numbers (Humble Bundle / itch.io research).
+// $15 is the pre-selected anchor (middle tier); the reasoning copy attached to
+// each amount converts much better than naked numbers (Humble Bundle / itch.io
+// research). $5 ≈ the Amazon ebook price ($4.99).
 const PRESETS: Preset[] = [
-  { cents: 300,  label: "$3",  reason: "Matches the Amazon price." },
-  { cents: 700,  label: "$7",  reason: "Helps cover hosting and future translations." },
+  { cents: 500,  label: "$5",  reason: "About the Amazon ebook price." },
   { cents: 1500, label: "$15", reason: "Funds printed copies given freely at temples, retreats, and hospices." },
+  { cents: 3000, label: "$30", reason: "Sponsors a temple print run and future translations." },
 ];
 
 function getFileSlug(raw: string | null): "pdf" | "m4b" {
@@ -71,7 +71,7 @@ export function DonateForm() {
     };
   }, [hideNav, ref, cid, slug]);
 
-  const [selectedCents, setSelectedCents] = useState<number>(700);
+  const [selectedCents, setSelectedCents] = useState<number>(1500);
   const [customDollars, setCustomDollars] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);

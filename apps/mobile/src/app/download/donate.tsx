@@ -22,16 +22,16 @@ import { SITE_ORIGIN } from "@/lib/site";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
-// Center-bias picks the middle option; $7 is the most-clicked tier. The reason
-// copy converts better than naked numbers. Mirrors the web DonateForm.
+// $15 is the pre-selected anchor (middle tier). The reason copy converts better
+// than naked numbers. Mirrors the web DonateForm. $5 ≈ the Amazon ebook price.
 const PRESETS = [
-  { cents: 300, label: "$3", reason: "Matches the Amazon price." },
-  { cents: 700, label: "$7", reason: "Helps cover hosting and future translations." },
+  { cents: 500, label: "$5", reason: "About the Amazon ebook price." },
   {
     cents: 1500,
     label: "$15",
     reason: "Funds printed copies given freely at temples, retreats, and hospices.",
   },
+  { cents: 3000, label: "$30", reason: "Sponsors a temple print run and future translations." },
 ] as const;
 
 export default function DonateScreen() {
@@ -49,7 +49,7 @@ export default function DonateScreen() {
   // (in-app audio caching), and a separate CTA downloads the audiobook file.
   const fromListen = ref === "listen";
 
-  const [selectedCents, setSelectedCents] = useState(700);
+  const [selectedCents, setSelectedCents] = useState(1500);
   const [customDollars, setCustomDollars] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [cancelled, setCancelled] = useState(false);

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Wash } from "@/components/Wash";
 import { ZoomableImage } from "@/components/ZoomableImage";
 import { AudioPlayer } from "@/components/AudioPlayer";
+import { LengthDisclosure } from "@/components/LengthDisclosure";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { getAudioManifest, getCombinedAudioManifest } from "@/content/audio";
 
@@ -78,6 +79,9 @@ export async function HowItWasMadeView() {
           Buddha, and it hasn’t ended yet — the slow work of weighing every
           phrase against the Pāli, by hand, out loud, more than once.
         </p>
+        <div className="mt-6">
+          <LengthDisclosure minutes={10} />
+        </div>
       </header>
 
       <figure className="mb-20 mt-4 not-prose">

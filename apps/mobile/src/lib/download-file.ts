@@ -5,7 +5,6 @@ import { Linking } from "react-native";
 import { downloadUrl, type DownloadFormat } from "./links";
 
 const MIME: Record<DownloadFormat, string> = {
-  epub: "application/epub+zip",
   pdf: "application/pdf",
   m4b: "audio/mp4",
 };

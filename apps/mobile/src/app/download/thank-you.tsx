@@ -15,7 +15,7 @@ export default function ThankYouScreen() {
   const insets = useSafeAreaInsets();
   const { file } = useLocalSearchParams<{ file?: string }>();
   const slug = asDownloadFormat(file);
-  const label = DOWNLOADS.find((d) => d.format === slug)?.title ?? "EPUB";
+  const label = DOWNLOADS.find((d) => d.format === slug)?.title ?? "PDF";
   const [busy, setBusy] = useState(false);
 
   const open = useCallback(async () => {

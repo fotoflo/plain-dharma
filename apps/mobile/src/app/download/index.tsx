@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BackLink } from "@/components/BackLink";
-import { DOWNLOADS } from "@/lib/links";
+import { AMAZON_KINDLE_URL, DOWNLOADS, openKindleStore } from "@/lib/links";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
@@ -56,6 +56,23 @@ export default function DownloadScreen() {
           </View>
         ))}
       </View>
+
+      {AMAZON_KINDLE_URL ? (
+        <View style={[styles.amazon, { borderTopColor: palette.divider }]}>
+          <Text style={[styles.amazonTitle, { color: palette.ink, fontFamily: FONTS.serif }]}>
+            Prefer Kindle?
+          </Text>
+          <Text style={[styles.desc, { color: palette.ink, fontFamily: FONTS.serif }]}>
+            The same book is on Amazon as a Kindle ebook. Everything here is free —
+            we don&rsquo;t sell it; Amazon sets its own price.
+          </Text>
+          <Pressable onPress={() => void openKindleStore()} hitSlop={8}>
+            <Text style={[styles.amazonLink, { color: palette.link, fontFamily: FONTS.serif }]}>
+              Available on Amazon →
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
@@ -71,4 +88,7 @@ const styles = StyleSheet.create({
   size: { fontSize: 12, letterSpacing: 1, opacity: 0.55, textTransform: "uppercase" },
   desc: { fontSize: 16, lineHeight: 24, opacity: 0.8, marginTop: 6 },
   cta: { borderRadius: 999, paddingVertical: 10, paddingHorizontal: 22, alignSelf: "flex-start", marginTop: 16 },
+  amazon: { marginTop: 32, paddingTop: 24, borderTopWidth: 1 },
+  amazonTitle: { fontSize: 18, marginBottom: 6 },
+  amazonLink: { fontSize: 16, marginTop: 12 },
 });

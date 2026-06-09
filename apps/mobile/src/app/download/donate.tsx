@@ -44,7 +44,7 @@ export default function DonateScreen() {
 
   const { file, ref } = useLocalSearchParams<{ file?: string; ref?: string }>();
   const slug = asDownloadFormat(file);
-  const label = DOWNLOADS.find((d) => d.format === slug)?.title ?? "EPUB";
+  const label = DOWNLOADS.find((d) => d.format === slug)?.title ?? "PDF";
   // Arrived from the listen modal: the pay/free choice gates *offline listening*
   // (in-app audio caching), and a separate CTA downloads the audiobook file.
   const fromListen = ref === "listen";

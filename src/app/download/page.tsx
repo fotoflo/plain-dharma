@@ -39,6 +39,11 @@ type FileOption = {
   bwHref?: string;
 };
 
+// The EPUB is the Kindle edition, sold on Amazon — we don't sell it, Amazon
+// does. Paste the product URL once the KDP listing is live; an empty string
+// hides the "available on Amazon" note. Mirrors apps/mobile/src/lib/links.ts.
+const AMAZON_KINDLE_URL = ""; // e.g. "https://www.amazon.com/dp/B0XXXXXXXX"
+
 const FILES: FileOption[] = [
   {
     slug: "pdf",
@@ -92,6 +97,22 @@ export default function DownloadPage() {
           <FileCard key={file.slug} file={file} />
         ))}
       </div>
+
+      {AMAZON_KINDLE_URL ? (
+        <p className="mt-8 text-center font-serif text-base text-ink/70">
+          Prefer Kindle? The ebook edition is{" "}
+          <a
+            href={AMAZON_KINDLE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link hover:text-accent"
+          >
+            available on Amazon
+          </a>
+          . Everything here is free — we don&rsquo;t sell it; Amazon sets its own
+          price.
+        </p>
+      ) : null}
 
       {APP_LINKS.published && <AppBadges />}
 

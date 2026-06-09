@@ -96,7 +96,7 @@ export async function HowItWasMadeView() {
         </figure>
 
         <article className="prose-dharma">
-          <h2>A question at 3 a.m.</h2>
+          <h2>A Question at 3 a.m.</h2>
           <p>
             I’d read plenty <em>about</em> the Buddha —{" "}
             <a
@@ -137,12 +137,33 @@ export async function HowItWasMadeView() {
             leave you? Where does that leave the world? Our planet is being
             burned down; I have nothing but respect for the monastery — but it
             isn’t my path, not now anyway. Life is too beautiful to give up. The
-            suffering is what makes it so. Frankl gave me the answer I could
-            hold onto: meaning, found inside the suffering and not beyond it.
-            Utilitarianism always sat right with me — that we’re all of equal
-            value. And Descartes echoed whenever I really wondered what was real
-            — or at least the start of his argument: that our thoughts, at
-            least, exist.
+            suffering is what makes it so.{" "}
+            <a
+              href="https://www.amazon.com/dp/0807014273"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Frankl
+            </a>{" "}
+            gave me the answer I could hold onto: meaning, found inside the
+            suffering and not beyond it.
+            <a
+              href="https://www.gutenberg.org/ebooks/11224"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Utilitarianism
+            </a>{" "}
+            always sat right with me — that we’re all of equal value. And{" "}
+            <a
+              href="https://en.wikisource.org/wiki/Meditations_on_First_Philosophy/Meditation_II"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Descartes
+            </a>{" "}
+            echoed whenever I really wondered what was real — or at least the
+            start of his argument: that our thoughts, at least, exist.
           </p>
           <p>
             None of which is coldness toward the Buddha. Meditating in front of
@@ -168,21 +189,23 @@ export async function HowItWasMadeView() {
             “This is my own plain-English rendering of the Pali rather than any
             one scholar’s copyrighted translation.”
           </blockquote>
-          <p>And it was great reading. The text came alive and gripped me.</p>
-
-          <h2>The detour: a Gen-Z Buddha</h2>
+          <p>
+            And it was great reading — the text came alive and gripped me. By
+            the time the sun came up I’d read all six in a single sitting, for
+            the first time in my life understanding them.
+          </p>
+          <h2>The Detour: A Gen-Z Buddha</h2>
           <Doodle
             src="/how-it-was-made/detour.png"
             className="not-prose mx-auto my-4 w-40"
           />
           <p>
-            My next prompt, before there was even a second teaching — was a
-            silly, irresistible thought:{" "}
+            My next prompt was a silly, irresistible thought:{" "}
             <em>
               what if the Buddha were around today, how would he say it? What if
               he was… Gen Z?
             </em>{" "}
-            and the AI cranked the voice to 11.
+            and the AI cranked the voice to 11. The eightfold path became:
           </p>
           <blockquote>
             <p>“So what’s the move? It’s these eight:</p>
@@ -199,16 +222,47 @@ export async function HowItWasMadeView() {
           </blockquote>
           <p>
             I laughed. It’s funny — and it’s slop: unworked AI output, too far,
-            nothing I’d call <em>made</em>. But the plain rendering it came
+            nothing I’d call <em>work</em>. But the plain rendering it came
             wrapped around was the opposite, and that contrast is the point —
             the book is what happens when you stop letting the machine talk and
-            start arguing with it, line by line. Here’s the line that shipped:
+            start arguing with it, line by line. Here’s how those same eight
+            shipped — our plain words, with the canonical names beside them:
           </p>
           <blockquote>
-            “If you’ve left ordinary life behind to find the truth, there are
-            two dead ends you shouldn’t waste yourself on. Chasing pleasure — it
-            never satisfies, and it leads nowhere. Punishing yourself — it’s
-            painful, pointless, and also gets you nowhere.”
+            <ol>
+              <li>
+                Seeing clearly{" "}
+                <span className="text-ink/50">· Right View</span>
+              </li>
+              <li>
+                Living with intention{" "}
+                <span className="text-ink/50">· Right Intention</span>
+              </li>
+              <li>
+                Speaking honestly{" "}
+                <span className="text-ink/50">· Right Speech</span>
+              </li>
+              <li>
+                Acting decently{" "}
+                <span className="text-ink/50">· Right Action</span>
+              </li>
+              <li>
+                Earning a living that does no harm{" "}
+                <span className="text-ink/50">· Right Livelihood</span>
+              </li>
+              <li>
+                Making steady effort{" "}
+                <span className="text-ink/50">· Right Effort</span>
+              </li>
+              <li>
+                Staying mindful{" "}
+                <span className="text-ink/50">· Right Mindfulness</span>
+              </li>
+              <li>
+                Focusing deeply{" "}
+                <span className="text-ink/50">· Right Concentration</span>
+              </li>
+            </ol>
           </blockquote>
           <p>
             The full Gen-Z slop — all eight steps and four truths, in the
@@ -217,12 +271,28 @@ export async function HowItWasMadeView() {
             curious. It’s actually quite amusing.
           </p>
 
-          <h2>Then the slow part: word by word against the Pāli</h2>
+          <h2>First Fast, Then Slow</h2>
           <p>
-            The first night wasn’t really drafting — it was reading. The six
-            renderings came one by one out of that first Claude session; I read
-            them straight through. The book took shape afterward, in much slower
-            work — each line checked against the canonical Pāli from{" "}
+            The strange part is the order. Everything came first, and fast — the
+            six renderings, then the website, the audiobook, even the Chinese in
+            both scripts — all of it generated in a rush, in a couple of days.
+            With AI you can be that prolific. Only then came the slow part:
+            making every piece of it good, by hand. The English, word by word
+            against the Pāli. The audiobook, voice by voice. The app, screen by
+            screen, experience by experience. The preface and the closing.
+          </p>
+          <p>
+            The first night wasn’t really drafting — it was reading: the six
+            renderings came one by one out of that first Claude session, and I
+            read them straight through. They spoke to me, but some of the
+            phrases still sounded like AI — full of <em>it hits different</em> —
+            so I began working with Claude to understand the texts myself, and to
+            render them plainly, in language anyone could follow.
+          </p>
+          <p>
+            And then, once everything was sketched out, I came back to the text
+            again and again — much slower work, each line checked against the
+            canonical Pāli from{" "}
             <a
               href="https://suttacentral.net"
               target="_blank"
@@ -230,24 +300,22 @@ export async function HowItWasMadeView() {
             >
               SuttaCentral
             </a>
-            , kept or changed for a reason. Then came the website, audiobook and
-            app.
+            , kept or changed for a reason.
           </p>
           <p>
             The thing I still can’t quite get over is that I was examining the{" "}
-            <em>original</em> — a 2,600-year-old text, in a dead language I
-            don’t read a word of. Two years ago that would have been flatly
-            impossible for someone like me: it would have taken a PhD and months
-            in a library — the stuff of a dissertation, or at least a final-year
+            <em>original</em> — a 2,600-year-old text, in a dead language I don’t
+            read a word of. Two years ago that would have been flatly impossible
+            for someone like me: it would have taken a PhD and months in a
+            library — the stuff of a dissertation, or at least a final-year
             project for a degree in ancient languages. Now I could do it in a
             chat window, at 3 a.m., and actually understand what I was looking
             at.
           </p>
           <p>
-            Here is one of those inquiries, in full, over the opening of the
-            Kālāma Sutta:
+            So how does that collaboration go? Here is one of those inquiries,
+            over the opening of the Kālāma Sutta:
           </p>
-
           <Figure
             src="/how-it-was-made/session-kalama-opening.png"
             alt="A working session checking the Kālāma Sutta opening against the Pāli source from SuttaCentral."
@@ -263,7 +331,6 @@ export async function HowItWasMadeView() {
               </>
             }
           />
-
           <p>
             Take the monks the Buddha travels with in{" "}
             <em>How to Decide What to Believe</em>.
@@ -278,7 +345,6 @@ export async function HowItWasMadeView() {
             came back to looking for both — what readers would understand, and
             what was still true to the text.
           </p>
-
           <Figure
             src="/how-it-was-made/session-kalama-doubt.png"
             alt="A working session weighing the Pāli terms kaṅkhā and vicikicchā in the Kālāma Sutta."
@@ -293,11 +359,11 @@ export async function HowItWasMadeView() {
               </>
             }
           />
-
           <p>
-            None of this was a fight — there was no adversary. Or the only
-            adversary was the AI’s agreeableness: Claude told me I was right no
-            matter how I put it. So the real work was against that.
+            Claude framed this as a fight in this article{"'s"} first draft, but
+            it isn’t — there was no adversary. Or the only adversary was the
+            AI’s agreeableness: Claude told me I was right no matter how I put
+            it. So the real work was against that.
           </p>
           <p>
             You can’t trust “it felt right” when the machine agrees with
@@ -306,14 +372,13 @@ export async function HowItWasMadeView() {
             you’re choosing from the real range, not from flattery.
           </p>
           <p>
-            The three poisons — <em>moha</em>, <em>rāga</em>, <em>dosa</em> —
-            are Englished by tradition as delusion, greed, and hatred; I kept
-            asking, source in hand, until “confusion, wanting, anger” held. Ours
-            stayed — and because the canonical words are repeated so often, we
-            wanted to show them too, beside ours.
+            For example, the three poisons — <em>moha</em>, <em>rāga</em>,{" "}
+            <em>dosa</em> — are Englished by tradition as delusion, greed, and
+            hatred; I kept asking until I got to “confusion, wanting, anger”.
+            Plain words we all feel. Ours stayed — and because the canonical
+            words are repeated so often, we wanted to show them too, beside
+            ours.
           </p>
-          <p>The decision leaves no trace in the final text.</p>
-
           <Figure
             src="/how-it-was-made/session-fire-suffering.png"
             alt="A lexical table glossing the Pāli terms for suffering in the Fire Sermon."
@@ -330,14 +395,14 @@ export async function HowItWasMadeView() {
               </>
             }
           />
-
           <p>
-            Most of the finishing happened on a flight from Chiang Mai to
-            Surabaya — pen on a printed proof, reading along with the audiobook
-            word for word, catching a pop in the audio, nudging the pacing. Even
-            after all the wrestling, the ElevenLabs voice had no feeling in it.
-            A machine reading words about what it is to feel.
+            The whole thing was done in a week. Most of the finishing happened
+            on a flight from Chiang Mai to Surabaya — pen on a printed proof,
+            reading
+            along with the audiobook word for word, catching a pop in the audio,
+            nudging the pacing.
           </p>
+          <h2>Living with the Text</h2>
           <p>
             Then I looked up. A woman in the row ahead was reading the first
             sutta — twenty stark Latin letters, <em>Dhammacakkappavattana</em>,
@@ -358,14 +423,14 @@ export async function HowItWasMadeView() {
             already failing it.
           </p>
           <p>
-            And I did read it — the next six hours, flight and layover and
-            flight again. I tried the techniques, the mental repeating of words:{" "}
+            And I did read the book she gave me — the next six hours, flight and
+            layover and flight again. I tried the techniques, the mental
+            repeating of words:{" "}
             <em>
               left foot rising, left foot falling, right foot rising, right foot
               falling, breathing, breathing, breathing, breathing.
             </em>
           </p>
-
           <div className="not-prose my-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <ZoomableImage
               src="/how-it-was-made/manuscript-flames.jpg"
@@ -390,20 +455,7 @@ export async function HowItWasMadeView() {
             that says{" "}
             <em>test it yourself, don’t take anyone’s word for it.</em>
           </p>
-
-          <figure className="not-prose my-12">
-            <ZoomableImage
-              src="/how-it-was-made/mach.png"
-              alt="Ernst Mach's 1886 drawing of his own visual field — a first-person view down his reclining body toward a window."
-              className="mx-auto w-full max-w-xs rounded-lg border border-divider/60 shadow-sm"
-            />
-            <figcaption className="mt-3 text-center font-sans text-sm leading-relaxed text-ink/60">
-              Ernst Mach, drawing his own visual field, 1886. Don’t forget to
-              try and point the finger back at yourself.
-            </figcaption>
-          </figure>
-
-          <h2>More than the words</h2>
+          <h2>More Than the Words</h2>
           <Doodle
             src="/how-it-was-made/audio.png"
             className="not-prose mx-auto my-4 w-40"
@@ -427,10 +479,31 @@ export async function HowItWasMadeView() {
             still — cut, stitched, re-rendered and stitched back in, 700
             milliseconds of silence dropped between sections to let them breathe
             — and finally re-recorded the whole thing through the API and joined
-            it to a cover, a back cover, and a barcode. Claude designed those;
-            my mom fixed them.
+            it to a cover, a back cover, and a barcode. Claude designed those;{" "}
+            <a
+              href="https://visualanguage.net/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              my mom
+            </a>
+            , a designer, fixed them — and donated the ISBN, too.
           </p>
-
+          <p>
+            Even after all the wrestling, the ElevenLabs voice isn’t flawless —
+            but in the end it’s meditative, and for the most part a lovely
+            voicing, if you ask me. You can listen to it awake, or you can let it
+            read you to sleep.
+          </p>
+          <p>
+            And what it reads may be the most remarkable thing here. The Metta
+            Sutta — the discourse on loving-kindness — is, in effect, a guided
+            meditation: the Buddha leading you, line by line, into wishing every
+            living thing well, the way a mother loves her only child. Twenty-six
+            centuries before Headspace, here is the practice itself, in
+            his own words — and as far as I can tell, the first guided
+            meditation, by the Buddha himself.
+          </p>
           {audioManifest && (
             <div className="not-prose my-8 flex flex-col items-center gap-3">
               <div className="flex flex-wrap items-center justify-center gap-3">
@@ -450,17 +523,17 @@ export async function HowItWasMadeView() {
               </p>
             </div>
           )}
-
+          <h2>The Mobile App</h2>
           <p>
-            The mobile app was a labor of love too: an audio player with offline
-            downloads, a free CC0 copy to keep, and a donate page. A man’s got
-            to eat; here’s my bowl. And all of it runs in three scripts —
+            The <Link href="/download">mobile app</Link> was a labor of love
+            too: an audio player with offline downloads, a free CC0 copy to keep,
+            and a donate page (a man’s got to eat; here’s my bowl). And all of it
+            runs in three scripts —
             English, and Chinese in both Simplified and Traditional — though the
             Chinese is still as the machine rendered it. A friend has promised
             to edit it one day; until then, the{" "}
             <Link href="/contribute">contributors page</Link> is wide open.
           </p>
-
           <div className="not-prose my-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
             <ZoomableImage
               src="/how-it-was-made/app-home.jpg"
@@ -486,8 +559,7 @@ export async function HowItWasMadeView() {
           <p className="font-sans text-sm leading-relaxed text-ink/60 not-prose">
             The app: read, listen, adjust, take it offline — light or dark.
           </p>
-
-          <h2>Two receipts</h2>
+          <h2>Receipts</h2>
           <Doodle
             src="/how-it-was-made/key.png"
             className="not-prose mx-auto my-4 w-40"
@@ -523,17 +595,11 @@ export async function HowItWasMadeView() {
             — copy it, print it, translate it, make it more human. That part’s
             up to you now.
           </p>
-
-          <p className="mt-12 border-t border-divider/50 pt-10">
-            So, dear reader: would you forgive this text its faults — and check
-            it for yourself?
-          </p>
-
-          <p className="mt-12 border-t border-divider/50 pt-10">
+          <h2>So Now What?</h2>
+          <p>
             Just sit and listen to six short sutras. We think you will greatly
             enjoy them.
           </p>
-
           {combinedAudio && (
             <div className="not-prose my-8 flex justify-center">
               <div className="w-[320px] max-w-full">
@@ -546,7 +612,6 @@ export async function HowItWasMadeView() {
               </div>
             </div>
           )}
-
           <p className="mt-12 border-t border-divider/50 pt-10">
             Turn them over in your mind. Sleep on them, wake on them, and fully
             get them.
@@ -556,13 +621,13 @@ export async function HowItWasMadeView() {
             meditations and further understanding. Or give some new translations
             a go yourself. I’m happy to publish more on-topic work.
           </p>
-
           <Doodle
             src="/how-it-was-made/dawn.png"
             className="not-prose mx-auto my-4 w-40"
           />
+          <h2>One Last Coincidence</h2>
           <p>
-            One last strange thing. All of this was written over Eid al-Adha,
+            All of this was written over Eid al-Adha,
             the Festival of Sacrifice — the story of Abraham, the one that parts
             Isaac from Ishmael. Jews and Christians trace themselves to one son,
             Muslims to the other, and each has made the story about itself. That
@@ -585,6 +650,17 @@ export async function HowItWasMadeView() {
             Read the six teachings →
           </Link>
         </div>
+        <figure className="not-prose my-12">
+          <ZoomableImage
+            src="/how-it-was-made/mach.png"
+            alt="Ernst Mach's 1886 drawing of his own visual field — a first-person view down his reclining body toward a window."
+            className="mx-auto w-full max-w-xs rounded-lg border border-divider/60 shadow-sm"
+          />
+          <figcaption className="mt-3 text-center font-sans text-sm leading-relaxed text-ink/60">
+            Ernst Mach, drawing his own visual field, 1886. Don’t forget to try
+            and point the finger back at yourself.
+          </figcaption>
+        </figure>
       </div>
     </>
   );

@@ -31,6 +31,15 @@ const FADE_MS = 700;
 const GAP_MS = 1400;
 const FADE_SEC = FADE_MS / 1000;
 
+// Lead-in before user-initiated playback becomes audible, so tapping a section
+// doesn't slam straight into narration the instant the UI flips to player mode.
+// We start playback muted within the click gesture (keeps iOS autoplay policy
+// happy — play() stays synchronous to the tap), hold silent for this long, then
+// seek back to the top and unmute so the narration begins from the very start
+// after a short breath. Only applied to taps, not auto-advance (which already
+// has its own GAP_MS of silence between sections).
+const LEAD_IN_MS = 400;
+
 // Playback pace. "slow" = the default -20% meditative rendition (per-section
 // `file`); "fast" = the optional -7.5% rendition (`fileFast`). The speed
 // control only appears when a fast variant exists for the manifest.
@@ -102,7 +111,7 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
 
   // Load a section by index
   const loadSection = useCallback(
-    (idx: number, autoplay = false) => {
+    (idx: number, autoplay = false, leadInMs = 0) => {
       const audio = audioRef.current;
       if (!audio) return;
       const sec = sections[idx];
@@ -117,6 +126,9 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
       setIsLoaded(false);
       fadeOutStartedRef.current = false;
       audio.volume = 1;
+      // Start muted for a tap-initiated lead-in (see LEAD_IN_MS); auto-advance
+      // and prev/next pass leadInMs = 0 and play audibly straight away.
+      audio.muted = leadInMs > 0;
       audio.src = sectionUrl(sec, speed);
       audio.load();
       if (autoplay) {
@@ -125,10 +137,21 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
           .then(() => {
             autoAdvancingRef.current = false;
             setIsPlaying(true);
+            if (leadInMs > 0) {
+              // Held silent through the lead-in; jump back to the top and
+              // unmute so the narration starts from the very beginning.
+              window.setTimeout(() => {
+                const el = audioRef.current;
+                if (!el) return;
+                el.currentTime = 0;
+                el.muted = false;
+              }, leadInMs);
+            }
           })
           .catch(() => {
             autoAdvancingRef.current = false;
             setIsPlaying(false);
+            audio.muted = false;
           });
       }
     },
@@ -199,10 +222,28 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
     if (isPlaying) {
       audio.pause();
     } else {
+      // A fresh start from the top of a section gets the same silent breath as a
+      // tap; a resume from mid-section plays immediately so we don't restart it.
+      // Muted play stays inside the click gesture so iOS autoplay still allows it.
+      const leadInMs = audio.currentTime < 0.1 ? LEAD_IN_MS : 0;
+      audio.muted = leadInMs > 0;
       audio
         .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false));
+        .then(() => {
+          setIsPlaying(true);
+          if (leadInMs > 0) {
+            window.setTimeout(() => {
+              const el = audioRef.current;
+              if (!el) return;
+              el.currentTime = 0;
+              el.muted = false;
+            }, leadInMs);
+          }
+        })
+        .catch(() => {
+          setIsPlaying(false);
+          audio.muted = false;
+        });
     }
   }, [isPlaying]);
 
@@ -398,7 +439,7 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
     if (idx === currentIdx) {
       togglePlayPause();
     } else {
-      loadSection(idx, true);
+      loadSection(idx, true, LEAD_IN_MS);
       // The page scroll is handled by the currentIdx effect below, which
       // also fires on auto-advance — keeps one source of truth.
     }

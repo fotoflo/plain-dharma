@@ -4,6 +4,7 @@ import { Wash } from "@/components/Wash";
 import { ZoomableImage } from "@/components/ZoomableImage";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { LengthDisclosure } from "@/components/LengthDisclosure";
+import { ReadingControls } from "@/components/ReadingControls";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { getAudioManifest, getCombinedAudioManifest } from "@/content/audio";
 
@@ -58,8 +59,10 @@ export async function HowItWasMadeView() {
   const combinedAudio = await getCombinedAudioManifest("en");
 
   return (
-    <div className="relative mx-auto w-full max-w-3xl overflow-hidden px-6 py-16 sm:py-20">
-      <Wash size="md" position="top-right" intensity={0.09} />
+    <>
+      <ReadingControls />
+      <div className="relative mx-auto w-full max-w-3xl overflow-hidden px-6 py-16 sm:py-20">
+        <Wash size="md" position="top-right" intensity={0.09} />
 
       <Doodle
         src="/how-it-was-made/header.png"
@@ -578,6 +581,7 @@ export async function HowItWasMadeView() {
           Read the six teachings →
         </Link>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -172,7 +172,13 @@ function buildInterior(
     "-V", "geometry:inner=0.875in",
     "-V", "geometry:outer=0.625in",
     "-V", "geometry:top=0.75in",
-    "-V", "geometry:bottom=0.75in",
+    // Bottom margin + footskip keep the page number clear of KDP's 0.25in
+    // safe zone. With 0.125in bleed, the footer baseline lands at
+    // bottom − footskip = 0.5in from the PDF edge = 0.375in from the trim —
+    // comfortably inside. (At 0.75/default-footskip it fell to ~0.2in and KDP
+    // flagged the chapter-opener page numbers.)
+    "-V", "geometry:bottom=0.85in",
+    "-V", "geometry:footskip=0.35in",
     "-V", `title=${BOOK_TITLE}`,
     "-V", `subtitle=${BOOK_SUBTITLE}`,
     "-V", `author=${AUTHOR}`,

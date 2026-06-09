@@ -16,10 +16,10 @@ Account / start: <https://kdp.amazon.com/en_US/bookshelf>
 |---|---|---|
 | eBook manuscript | `dist/ebook/plain-dharma.epub` | EPUB 3, cover + CC0 page already embedded |
 | eBook cover art (front) | `dist/ebook/cover.jpg` | 1600×2400, 6×9 — the designer's InDesign front, for the **Kindle** edition only |
-| Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 46 pp, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
-| Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 46 pp, grayscale, white paper, **cover-free** |
-| Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.35×8.25, back+spine+front, spine 0.104", barcode = print ISBN ‑38‑1 |
-| Paperback wraparound cover (B&W interior) | `dist/kdp/plain-dharma-kdp-cover-bw.pdf` | same art, spine 0.115" (cream caliper) — match to the B&W interior |
+| Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 48 pp, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
+| Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 48 pp, grayscale, white paper, **cover-free** |
+| Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.35×8.25, back+spine+front, spine 0.108", barcode = print ISBN ‑38‑1 |
+| Paperback wraparound cover (B&W interior) | `dist/kdp/plain-dharma-kdp-cover-bw.pdf` | same art, spine 0.120" (cream caliper) — match to the B&W interior |
 
 If you edited any content, rebuild first:
 `pnpm build-ebook && pnpm generate-front-cover && pnpm generate-back-cover && pnpm build-kdp`
@@ -163,7 +163,7 @@ The front is a **generated 5×8** cover (`generate-front-cover.ts` — the 6×9
 designer `cover.jpg` is the wrong ratio for 5×8 and is Kindle-only). The back
 carries the real **paperback ISBN barcode (978-1-891328-38-1)**. Built dimensions:
 
-- Page count: **46** · spine = 46 × caliper → **0.104"** color (white) / **0.115"** B&W (cream)
+- Page count: **48** · spine = 48 × caliper → **0.108"** color (white) / **0.120"** B&W (cream)
 - Full cover **width** = 0.125 + 5 + spine + 5 + 0.125 ≈ **10.35"**; **height** = 8.25"
 - **No spine text** — at 46 pages the spine is ~0.10", below KDP's 100-page minimum.
 

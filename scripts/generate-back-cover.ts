@@ -23,6 +23,7 @@ import { fileURLToPath } from "node:url";
 
 import { DEFAULT_LOCALE, getSuttasInOrder } from "@plain-dharma/content";
 
+import { ean13Tikz } from "./lib/ean13.js";
 import { publishToDownloads } from "./lib/publish.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -56,6 +57,30 @@ const BACK_COVER_TITLES = [
   "The Foundations of Mindfulness",
   "How to Decide What to Believe",
 ] as const;
+
+// ISBN of the English EPUB / ebook edition (registered with Bowker —
+// docs/publishing/BOWKER_REVIEW.md). It IS the EAN-13: the 13 digits encode the
+// scannable barcode printed in the screen/ebook back cover's ISBN box. The PRINT
+// edition is a separate ONIX record and needs its OWN ISBN, so the print target
+// below intentionally keeps a placeholder rather than reusing this number.
+const EBOOK_ISBN = "978-1-891328-37-4";
+
+// Real EAN-13 barcode + human-readable ISBN, for the ebook back cover. Lining
+// figures (the main font defaults to old-style) so the digit row reads evenly.
+const EBOOK_BARCODE = [
+  "{\\addfontfeatures{Numbers=Lining}%",
+  `{\\scriptsize\\color{ink}ISBN ${EBOOK_ISBN}}\\\\[0.16em]`,
+  ean13Tikz(EBOOK_ISBN, { moduleWidth: "0.0083in", barHeight: "0.30in", fontPt: 5 }),
+  "}",
+].join("\n");
+
+// Print back cover keeps the placeholder box — the paperback's barcode waits on
+// its own ISBN from Ellen's 978-1-891328 block.
+const PRINT_BARCODE = [
+  "{\\scriptsize\\color{muted}ISBN}\\\\[0.12em]",
+  "{\\color{ink}\\rule{0.8in}{0.34in}}\\\\[0.16em]",
+  "{\\tiny\\color{muted}barcode placeholder}",
+].join("\n");
 
 // Escape the LaTeX specials that can appear in a teaser. Em dash "—" and
 // apostrophes render fine as literals (Ligatures=TeX maps "'"), so they're left
@@ -104,6 +129,7 @@ const TARGETS: Target[] = [
       M_TOP: "0.72in", M_BOT: "0.7in", M_LEFT: "0.9in", M_RIGHT: "1.3in",
       STRIPE_W: "0.5in", STITCH_X: "0.43in",
       OV_LEFT: "0.9in", OV_RIGHT: "0.95in", OV_Y: "0.6in", OV_TEXTW: "2.6in",
+      BARCODE: EBOOK_BARCODE,
     },
     outputs: [
       { file: "back-cover.jpg", grayscale: false, publishAs: "plain-dharma-back-cover.jpg" },
@@ -121,6 +147,7 @@ const TARGETS: Target[] = [
       M_TOP: "0.5in", M_BOT: "0.5in", M_LEFT: "0.55in", M_RIGHT: "1.05in",
       STRIPE_W: "0.625in", STITCH_X: "0.555in",
       OV_LEFT: "0.55in", OV_RIGHT: "0.8in", OV_Y: "0.5in", OV_TEXTW: "2.2in",
+      BARCODE: PRINT_BARCODE,
     },
     outputs: [
       { file: "back-cover-print-color.jpg", grayscale: false },

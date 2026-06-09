@@ -113,6 +113,8 @@ function buildMetadataYaml(): string {
     "  - Spirituality",
     "  - Philosophy",
     "identifier:",
+    "  - scheme: ISBN",
+    "    text: 978-1-891328-37-4",
     "  - scheme: URL",
     `    text: ${SITE_URL}`,
     "---",

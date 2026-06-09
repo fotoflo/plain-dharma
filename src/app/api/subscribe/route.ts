@@ -28,7 +28,7 @@ const NOTIFY_TO = "fotoflo@gmail.com";
 
 const WELCOME_TEXT = `Welcome to Plain Dharma.
 
-Thank you for subscribing. Plain Dharma offers six foundational Buddhist suttas in plain modern English — free, and dedicated to the public domain.
+Thank you for subscribing. Plain Dharma offers six foundational Buddhist suttas in modern English — free, and dedicated to the public domain.
 
 Begin reading anytime: https://plaindharma.com/read
 
@@ -55,7 +55,7 @@ const WELCOME_HTML = `<table role="presentation" width="100%" cellpadding="0" ce
                 <img src="${assetUrl("illustrations/first-talk.png")}" width="280" height="280" alt="Plain Dharma illustration" style="display:inline-block;width:280px;max-width:100%;height:auto;border:0;border-radius:12px;" />
               </a>
             </div>
-            <p style="font-size:16px;line-height:1.65;margin:0 0 16px;">Thank you for subscribing. Plain Dharma offers six foundational Buddhist suttas in plain modern English — free, and dedicated to the public domain.</p>
+            <p style="font-size:16px;line-height:1.65;margin:0 0 16px;">Thank you for subscribing. Plain Dharma offers six foundational Buddhist suttas in modern English — free, and dedicated to the public domain.</p>
             <p style="font-size:16px;line-height:1.65;margin:0 0 16px;"><a href="https://plaindharma.com/read" style="color:#9a6a3c;">Begin reading anytime &rarr;</a></p>
             <p style="font-size:16px;line-height:1.65;margin:0 0 24px;">We'll only write when there's something worth your attention.</p>
             <p style="font-size:16px;line-height:1.65;margin:0;color:#6b6258;">— Plain Dharma</p>

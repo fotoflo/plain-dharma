@@ -246,7 +246,7 @@ function writeChaptersMetadata(chapters: Chapter[]): string {
     `genre=Religion/Spirituality`,
     `date=${new Date().getFullYear()}`,
     `publisher=${PUBLISHER}`,
-    `comment=Plain Dharma — six foundational Buddhist suttas in plain modern English. CC0 public domain.`,
+    `comment=Plain Dharma — six foundational Buddhist suttas in modern English. CC0 public domain.`,
   ].join("\n");
 
   const chapterBlocks = chapters

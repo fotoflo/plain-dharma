@@ -68,7 +68,7 @@ const en = {
     heroLine1: "Old Wisdom.",
     heroLine2: "Plain English.",
     heroSubtitle:
-      "The Buddha's foundational teachings, in plain modern English.",
+      "The Buddha's foundational teachings, in modern English.",
     ctaReadAll: "Read all six",
     ctaDownload: "Free Download",
     heroBlurb:
@@ -96,11 +96,11 @@ const en = {
   read: {
     metadataTitle: "Read all six teachings",
     metadataDescription:
-      "The six foundational teachings of the Buddha, in order, in plain modern English.",
+      "The six foundational teachings of the Buddha, in order, in modern English.",
     kicker: "All six teachings",
     h1: "The Buddha's foundational teachings",
     subtitle:
-      "In order, in plain modern English. Roughly an hour to read all six.",
+      "In order, in modern English. Roughly an hour to read all six.",
     onThisPage: "On this page",
     openOnOwnPage: "Open this teaching on its own page →",
   },
@@ -265,7 +265,7 @@ const en = {
     validationError: "Please add your email and a short message.",
   },
   footer: {
-    tagline: "The Buddha's foundational teachings in plain modern English.",
+    tagline: "The Buddha's foundational teachings in modern English.",
     licenseLinePrefix: "Released under ",
     licenseLinkText: "CC0 / public domain",
     licenseLineSuffix: ". Made for free distribution.",

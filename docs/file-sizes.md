@@ -1,6 +1,44 @@
 # File Size Snapshots
 
-## 2026-06-08 (current)
+## 2026-06-09 (current)
+
+### Distribution
+
+| Bucket     | Count | Δ vs 2026-06-08 |
+|------------|-------|-----------------|
+| <=50       | 144   | +2              |
+| 51-150     | 138   | +2              |
+| 151-300    | 52    | +1              |
+| 301-500    | 15    | —               |
+| 501-1000   | 6     | +1              |
+| 1001-2000  | 0     | —               |
+| 2000+      | 0     | —               |
+
+Total files: 355 (+6)
+
+### Largest File
+
+`src/components/AudioPlayer.tsx` — 728 lines
+
+### Files Over 500 Lines
+
+6 files exceed the 500-line guideline:
+- `src/components/AudioPlayer.tsx` — 728 lines (+43 from 685)
+- `src/views/HowItWasMadeView.tsx` — 667 lines (NEW)
+- `packages/content/strings.ts` — 700 lines
+- `src/components/marginalia/Marginalia.tsx` — 529 lines
+- (2 additional files in the 501–1000 bucket)
+
+### Delta
+
+Moderate growth: +6 files (349 → 355) and a notable threshold crossing. `AudioPlayer.tsx` expanded from 685 to 728 lines (+43 lines); `HowItWasMadeView.tsx` is new at 667 lines and immediately entered the 501+ bracket. `LengthDisclosure.tsx` (newly created, 120 lines) remains well under 500. The <=50, 51-150, and 151-300 buckets each gained files; the 501-1000 bucket gained +1 with the new view. No files crossed into 1001+.
+
+### Session Files (2026-06-09)
+- `src/views/HowItWasMadeView.tsx` — 667 lines (provenance page, new, exceeds guideline)
+- `src/components/AudioPlayer.tsx` — 728 lines (complex playback state, +43 lines, continues to exceed guideline)
+- `src/components/LengthDisclosure.tsx` — 120 lines (new, under guideline)
+
+## 2026-06-08
 
 ### Distribution
 

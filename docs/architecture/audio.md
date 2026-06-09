@@ -253,6 +253,14 @@ AudioPlayer switches between TOC (section list) and Player (transport controls) 
 - X button in the header (when playing) pauses playback; the popup itself stays open
 - All button labels and aria-labels come from `getStrings(locale).audio` for i18n support
 
+**User-initiated playback lead-in (400ms):**
+- When tapping a section to start fresh or resuming from the very top (currentTime < 0.1s), playback begins muted
+- The audio element starts muted within the click gesture (keeps iOS autoplay policy happy — `play()` stays synchronous to the tap)
+- After 400ms (`LEAD_IN_MS`), the player seeks back to currentTime 0 and unmutes
+- Narration begins from the very start after a short silent breath, preventing the jarring slam of UI flip + immediate narration
+- Lead-in is **only applied to fresh starts via tap or pause-to-resume from near the top**; mid-section resumes and auto-advance are exempt (they play audibly straight away)
+- Auto-advance uses its own `GAP_MS` (1400ms) silence between sections, so the lead-in's muted breath is redundant there
+
 **Cross-section transitions:**
 - Last 700ms of each section fades from 1.0 to 0.0 volume
 - 1400ms silence gap before the next section starts

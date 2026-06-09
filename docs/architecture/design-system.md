@@ -63,6 +63,7 @@ mobile, 1.8 on md+.
 | `src/components/ThemeToggle.tsx` | Toggle button + `themeInitScript` export (flicker-free theme init) |
 | `src/components/Wash.tsx` | Saffron watercolor wash decoration |
 | `src/components/NightSky.tsx` | Animated canvas star field (dark mode only) |
+| `src/components/LengthDisclosure.tsx` | "Long read" disclosure pill + modal (used on `/how-it-was-made`); reuses trigger→dialog accessibility idiom |
 
 ## Components
 
@@ -101,6 +102,16 @@ dispatches `readingsizechange`, `readingcontrastchange`, and `readingfontchange`
 events to notify other components of changes. Uses the same FOUC-prevention
 pattern as `ThemeToggle` — the `readingPrefsInitScript` is injected into
 `<head>` to apply all three classes before React hydrates, preventing flicker.
+
+### `LengthDisclosure`
+Client component. A small pill-shaped trigger ("A long read — about N minutes")
+that opens an accessible modal dialog explaining the reading time and providing
+CTA options. Uses the same trigger→dialog accessibility pattern as
+`ReadingControls`: `aria-haspopup="dialog"` trigger, `role="dialog"` modal,
+Escape + click-outside to dismiss, focus returned to trigger on close. Body
+scroll is locked while the dialog is open. Takes a `minutes` prop to populate
+both the trigger label and modal copy. Currently used on `/how-it-was-made` to
+set reader expectations.
 
 ## Reading Controls System
 

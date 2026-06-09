@@ -13,6 +13,8 @@ type Props = {
   locale: Locale;
   /** When it flips true, start playing the first section once (deep-link "?play"). */
   autoPlay?: boolean;
+  /** Shorter section list (max-h-80 vs the default 50vh) for inline embeds. */
+  compact?: boolean;
 };
 
 function formatTime(sec: number): string {
@@ -34,7 +36,7 @@ const FADE_SEC = FADE_MS / 1000;
 // control only appears when a fast variant exists for the manifest.
 type Speed = "slow" | "fast";
 
-export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay }: Props) {
+export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact }: Props) {
   const s = getStrings(locale).audio;
   // Resolve a section to its mp3 URL for the given pace. A section's `file`
   // (slow) is usually a bare filename ("01-opening.mp3"), but the combined
@@ -604,7 +606,7 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay }: Props)
         <>
           <ul
             role="list"
-            className="divide-y divide-divider max-h-[50vh] overflow-y-auto"
+            className={`divide-y divide-divider overflow-y-auto ${compact ? "max-h-80" : "max-h-[50vh]"}`}
           >
             {sections.map((sec, idx) => {
               const isActive = idx === currentIdx;

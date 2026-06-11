@@ -5,12 +5,12 @@ import { getClientId } from "./analytics";
 import { SITE_ORIGIN } from "./site";
 
 // Opens the web donate page ("pay what feels right") in an in-app browser — used
-// for the general Support CTA (no file attached). Content is CC0/free, so this
-// stays App-Store-compliant (no in-app purchase; any payment happens off-app on
-// the website). When `ref` is given we hide the site nav (so it reads as an
-// embedded sheet) and tag the referrer; `cid` is the anonymous GA install id so
-// the web funnel stitches to the same identity without any PII. The file
-// download + "listen free" funnel uses the native /download/donate screen.
+// for the general Support CTA (no file attached). Android/web only: App Review
+// 3.1.1 requires iOS tips to go through IAP, so every iOS entry point to this
+// is hidden or redirected. When `ref` is given we hide the site nav (so it
+// reads as an embedded sheet) and tag the referrer; `cid` is the anonymous GA
+// install id so the web funnel stitches to the same identity without any PII.
+// The file download + "listen free" funnel uses the native /download/donate screen.
 export async function openDonate(opts: { ref?: string } = {}): Promise<unknown> {
   const parts: string[] = [];
   if (opts.ref) {

@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Redirect } from "expo-router";
+import { Platform, Pressable, StyleSheet, Text } from "react-native";
 
 import { SubScreen } from "@/components/SubScreen";
 import { openDonate } from "@/lib/links";
@@ -6,9 +7,15 @@ import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
 // Donate screen — the CC0/free framing, then a single "Donate →" that opens the
-// web Stripe Checkout in a secure in-app browser (content is free, so this stays
-// App-Store-compliant; no in-app purchase).
+// web Stripe Checkout in a secure in-app browser. Not available on iOS: App
+// Review 3.1.1 requires tips to go through IAP, so the route redirects away
+// (the More-tab entry point is also hidden) until/unless we ship IAP tips.
 export default function DonateScreen() {
+  if (Platform.OS === "ios") return <Redirect href="/more" />;
+  return <DonateScreenInner />;
+}
+
+function DonateScreenInner() {
   const { palette } = useTheme();
 
   return (

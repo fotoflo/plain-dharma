@@ -1,18 +1,42 @@
 import { useRouter } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BackLink } from "@/components/BackLink";
-import { AMAZON_KINDLE_URL, DOWNLOADS, openKindleStore } from "@/lib/links";
+import { deliverBookFile } from "@/lib/download-file";
+import {
+  AMAZON_KINDLE_URL,
+  DOWNLOADS,
+  openKindleStore,
+  type DownloadFormat,
+} from "@/lib/links";
 import { useTheme } from "@/theme/ThemeContext";
 import { FONTS } from "@/theme/tokens";
 
-// Native mirror of the web /download landing — pick an edition, then hand off to
-// the donate screen (which mirrors /download/donate).
+// Native mirror of the web /download landing — pick an edition. On Android the
+// card hands off to the donate screen (mirrors /download/donate); on iOS it
+// downloads directly — no donation ask (App Review 3.1.1 requires IAP for tips).
 export default function DownloadScreen() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const [busy, setBusy] = useState<DownloadFormat | null>(null);
+
+  async function handlePress(format: DownloadFormat) {
+    if (Platform.OS !== "ios") {
+      router.push({ pathname: "/download/donate", params: { file: format } });
+      return;
+    }
+    setBusy(format);
+    try {
+      await deliverBookFile(format);
+    } catch (err) {
+      Alert.alert("Download failed", err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setBusy(null);
+    }
+  }
 
   return (
     <ScrollView
@@ -30,7 +54,9 @@ export default function DownloadScreen() {
         Download the book
       </Text>
       <Text style={[styles.sub, { color: palette.ink, fontFamily: FONTS.serif }]}>
-        Free under CC0. Pay what feels right — including nothing.
+        {Platform.OS === "ios"
+          ? "Free under CC0 — yours to keep, copy, and share."
+          : "Free under CC0. Pay what feels right — including nothing."}
       </Text>
 
       <View style={styles.list}>
@@ -46,11 +72,15 @@ export default function DownloadScreen() {
               {d.description}
             </Text>
             <Pressable
-              onPress={() => router.push({ pathname: "/download/donate", params: { file: d.format } })}
-              style={[styles.cta, { backgroundColor: palette.accentStrong }]}
+              onPress={() => handlePress(d.format)}
+              disabled={busy !== null}
+              style={[
+                styles.cta,
+                { backgroundColor: palette.accentStrong, opacity: busy !== null ? 0.6 : 1 },
+              ]}
             >
               <Text style={{ color: palette.onAccent, fontFamily: FONTS.serif, fontSize: 16 }}>
-                Download
+                {busy === d.format ? "Downloading…" : "Download"}
               </Text>
             </Pressable>
           </View>

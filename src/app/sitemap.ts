@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SUTTAS } from "@/content";
+import { sourceSlugs } from "@plain-dharma/content/source";
 import { suttaMtime } from "@/lib/sutta-dates";
 
 const SITE_URL = "https://plaindharma.com";
@@ -54,5 +55,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...enSuttaPages, ...zhSuttaPages];
+  // Parallel Pāli ↔ plain-English source pages, for every sutta that has a
+  // published alignment. Lower priority than the reading page they accompany.
+  const sourcePages: MetadataRoute.Sitemap = sourceSlugs("en").map((slug) => ({
+    url: `${SITE_URL}/${slug}/source`,
+    lastModified: suttaMtime(slug, "en"),
+    changeFrequency: "yearly" as const,
+    priority: 0.6,
+  }));
+
+  return [...staticPages, ...enSuttaPages, ...zhSuttaPages, ...sourcePages];
 }

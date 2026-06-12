@@ -1,4 +1,5 @@
 import { getMeta, isSuttaSlug } from "@plain-dharma/content";
+import { findSourceRow, hasSourceView, type SourceRow } from "@plain-dharma/content/source";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -19,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAudio } from "@/audio/AudioProvider";
 import { DecorativeBackground } from "@/components/DecorativeBackground";
 import { FloatingControls } from "@/components/FloatingControls";
+import { SourcePeek } from "@/components/SourcePeek";
 import { getSuttaMarkdown, splitSections, type ContentSection } from "@/content/markdown";
 import { useLocale, useZhConvert } from "@/i18n/LocaleContext";
 import { GlobalNotesPanel } from "@/marginalia/GlobalNotesPanel";
@@ -61,6 +63,10 @@ export default function SuttaScreen() {
   // per-talk panel's footer — the reader is the home for the reader's own
   // content (see docs/architecture/more-tab-refactor.md).
   const [showAllNotes, setShowAllNotes] = useState(false);
+
+  // Source peek: tap a paragraph → bottom sheet with the root Pāli + Sujato's
+  // translation for that passage (EN-only; alignment data drives availability).
+  const [peek, setPeek] = useState<SourceRow | null>(null);
 
   // Margin Notes for this sutta. `slug` may be invalid (handled below) — pass a
   // safe fallback so the hook order stays stable; we only render its UI when the
@@ -153,6 +159,24 @@ export default function SuttaScreen() {
     [contentSections, titleSection, mnOnSelect],
   );
 
+  // Source peek tap handler. Stable across toolbar-open re-renders (the memo
+  // guard on SelectableSection needs that), so the live toolbar state is read
+  // through a ref: a tap-away that dismisses an active selection must not ALSO
+  // pop the peek sheet.
+  const toolbarVisibleRef = useRef(false);
+  useEffect(() => {
+    toolbarVisibleRef.current = mn.toolbarVisible;
+  }, [mn.toolbarVisible]);
+  const canPeek = !!safeSlug && hasSourceView(locale, safeSlug);
+  const handlePressParagraph = useCallback(
+    (text: string) => {
+      if (toolbarVisibleRef.current || !safeSlug) return;
+      const row = findSourceRow(locale, safeSlug, text);
+      if (row) setPeek(row);
+    },
+    [locale, safeSlug],
+  );
+
   const screenBg = CONTRAST_BG[theme][contrast] ?? palette.bg;
 
   if (!slug || !isSuttaSlug(slug)) {
@@ -243,6 +267,7 @@ export default function SuttaScreen() {
                 onPressHighlight={handlePressHighlight}
                 onSelect={handleSelect}
                 onSelectionCleared={closeSelection}
+                onPressParagraph={canPeek ? handlePressParagraph : undefined}
               />
             </View>
           );
@@ -329,6 +354,8 @@ export default function SuttaScreen() {
       />
 
       <Toast message={mn.toast} />
+
+      <SourcePeek row={peek} slug={slug} onClose={() => setPeek(null)} />
 
       <FloatingControls locale={locale} slug={slug} />
     </View>

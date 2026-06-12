@@ -359,3 +359,71 @@ export function getSourceView(
     en: row.en,
   }));
 }
+
+/* ---------------------------------------------------------------- *
+ * Paragraph → row matching (the mobile "tap a paragraph to see the *
+ * Pāli" peek; usable anywhere a reading surface wants to look up    *
+ * the source for a passage of our prose).                           *
+ * ---------------------------------------------------------------- */
+
+/**
+ * Normalize prose to comparison tokens. The alignment's `en` passages are
+ * paraphrase-merged (lists flattened, sentences joined), so exact matching
+ * fails; token containment is what works. Words under 4 chars are dropped —
+ * "the"/"and"/"you" appear in every row and inflate containment.
+ */
+function matchTokens(s: string): string[] {
+  return s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[’']/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 4);
+}
+
+type RowIndex = { row: SourceRow; tokens: Set<string> }[];
+const rowIndexCache = new Map<string, RowIndex>();
+
+function rowIndex(locale: Locale, slug: SuttaSlug): RowIndex | null {
+  const key = `${locale}:${slug}`;
+  const hit = rowIndexCache.get(key);
+  if (hit) return hit;
+  const rows = getSourceView(locale, slug);
+  if (!rows) return null;
+  const built = rows.map((row) => ({ row, tokens: new Set(matchTokens(row.en)) }));
+  rowIndexCache.set(key, built);
+  return built;
+}
+
+/**
+ * Find the source row whose plain-English passage best CONTAINS the given
+ * paragraph of our prose (tapped in a reader). Scores each row by the share of
+ * the paragraph's tokens present in the row's passage; returns null when
+ * nothing clears the threshold (headings, drop epigraphs, framing prose that
+ * has no Pāli counterpart) — callers should treat null as "no peek", not an
+ * error.
+ */
+export function findSourceRow(
+  locale: Locale,
+  slug: SuttaSlug,
+  paragraph: string,
+): SourceRow | null {
+  const index = rowIndex(locale, slug);
+  if (!index) return null;
+  const para = matchTokens(paragraph);
+  if (para.length < 3) return null;
+  let best: SourceRow | null = null;
+  let bestScore = 0;
+  for (const { row, tokens } of index) {
+    let matched = 0;
+    for (const t of para) if (tokens.has(t)) matched++;
+    const score = matched / para.length;
+    if (score > bestScore) {
+      bestScore = score;
+      best = row;
+    }
+  }
+  return bestScore >= 0.6 ? best : null;
+}

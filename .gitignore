@@ -71,3 +71,4 @@ supabase/.temp/
 
 # claude code agent worktrees (isolated branches, not part of this tree)
 .claude/worktrees/
+.env*.local

@@ -27,6 +27,7 @@ import {
   AUTHOR,
   BOOK_SUBTITLE,
   BOOK_TITLE,
+  EPUB_ISBN,
   PUBLISHER,
   SITE_URL,
   buildBookMarkdown,
@@ -91,8 +92,11 @@ function buildMetadataYaml(): string {
     "---",
     `title: ${JSON.stringify(BOOK_TITLE)}`,
     `subtitle: ${JSON.stringify(BOOK_SUBTITLE)}`,
+    // "editor", not "author": the suttas are the Buddha's; Alex compiled and
+    // edited the renderings (see the How This Book Was Made chapter). Matches
+    // the Bowker/store contributor roles (Compiled by, Editor).
     "creator:",
-    "  - role: author",
+    "  - role: editor",
     `    text: ${JSON.stringify(AUTHOR)}`,
     "contributor:",
     "  - role: cov",
@@ -112,9 +116,11 @@ function buildMetadataYaml(): string {
     "  - Religion",
     "  - Spirituality",
     "  - Philosophy",
+    // ISBN first: pandoc uses the first identifier as the EPUB's
+    // unique-identifier, and retailers key on the ISBN.
     "identifier:",
-    "  - scheme: ISBN",
-    "    text: 978-1-891328-37-4",
+    "  - scheme: ISBN-13",
+    `    text: ${EPUB_ISBN}`,
     "  - scheme: URL",
     `    text: ${SITE_URL}`,
     "---",

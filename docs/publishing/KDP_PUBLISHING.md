@@ -43,8 +43,19 @@ page and are NOT for KDP upload.
 | Edition number | `1` |
 | Author — First name | `Alex` |
 | Author — Last name | `Miller` |
-| Contributors | *(none)* |
+| Contributors | *(none — see Byline note below)* |
 | Description | *(paste the block below)* |
+
+> **Byline / credit — read before filling the Author field.** KDP's primary
+> **Author** field is mandatory and its role is **fixed** — you can't set it to
+> "Translator/Editor" the way Bowker can. So Alex goes in the Author slot here, but
+> that is a **schema limitation, not a claim of authorship** over 2,600-year-old
+> suttas. The honest *"Translated & edited by Alex Miller"* framing is carried by the
+> printed cover and by the Bowker / Books-in-Print functions (`Translated with
+> commentary by · Compiled by · Editor` — see `BOWKER_REVIEW.md`, which says
+> explicitly **do not check "Author."**). Leave **Contributors** empty rather than
+> re-adding Alex as "Translator"/"Editor": duplicating the same name only clutters the
+> Amazon byline without adding honesty the cover doesn't already carry.
 | Publishing rights | **⚠️ DECIDE** — see "Publishing rights" note below |
 | Primary audience — Sexually explicit images | No |
 | Reading age | *(leave blank)* |
@@ -134,8 +145,9 @@ Create it from the **same title** so KDP links the Kindle + paperback editions
 
 Same as Kindle Screen 1: Language `English`, Title `Plain Dharma`, Subtitle
 `The Buddha's Foundational Teachings in Modern English`, Author
-`Alex` / `Miller`, the same Description, Categories, and Keywords, and the same
-**⚠️ DECIDE** Publishing-rights choice.
+`Alex` / `Miller` (same forced-Author-field caveat — see the Byline note in Product A),
+the same Description, Categories, and Keywords, and the same **⚠️ DECIDE**
+Publishing-rights choice.
 
 ## Screen 2 — Paperback Content
 
@@ -187,9 +199,11 @@ To rebuild after a content/cover change: `pnpm generate-front-cover && pnpm gene
 ### 1. Publishing rights  ⚠️
 KDP asks: *"public domain work"* vs *"I own the copyright and hold publishing rights."*
 
-- The ancient suttas are public domain, **but your plain-English rendering is an
-  original work you authored** — so the accurate, lower-friction choice is
-  **"I own the copyright and I hold the necessary publishing rights."**
+- The ancient suttas are public domain, **but your plain-English rendering is your
+  own original work** — so the accurate, lower-friction choice is
+  **"I own the copyright and I hold the necessary publishing rights."** (This is a
+  rights-holder statement, not an authorship credit — it doesn't conflict with the
+  translator/editor byline above.)
 - Selecting *"public domain work"* triggers price caps and KDP's duplicate-content
   checks (it may reject editions that match existing free public-domain texts).
 - Releasing it CC0 to the public does **not** stop you from being the rights holder
@@ -201,11 +215,13 @@ AI-*assisted* work you created and refined). Answer honestly per category:
 
 - **Images:** the interior illustrations and cover artwork are AI-generated (Gemini)
   → disclose **Yes, AI-generated images**, and note the number of images.
-- **Text / Translation:** if the plain-English rendering was produced by an AI tool
-  and then edited, KDP treats that as AI-generated text/translation → disclose. If you
-  wrote/translated it yourself with only incidental AI help, it's AI-*assisted* → no
-  disclosure. **You decide which is true.** Disclosure is not shown to buyers and does
-  not hurt ranking; under-disclosing risks account action.
+- **Text / Translation:** the rendering was **drafted with AI from the Pāli, then
+  refined by hand** — and the book's own Description and the `/how-it-was-made` page say
+  so *publicly*. To stay consistent with that public framing — and because disclosure is
+  never shown to buyers or used in ranking, while under-disclosing risks account action —
+  disclose it as **AI-generated text/translation**. Reserve the AI-*assisted* answer (no
+  disclosure) only for work that was genuinely human-first with incidental AI help, which
+  — given what you already say publicly — this isn't. **Recommended: disclose.**
 
 ### 3. Do NOT enroll in KDP Select
 Select demands Amazon **exclusivity** for the ebook — incompatible with distributing
@@ -230,3 +246,10 @@ don't, use **Contact Us** and give both ASINs to request linking.
 The `.m4b` cannot go to Audible — ACX has no public API and won't accept a CC0/public-
 domain narration without Approved-Producer status. Distribute the audiobook via your
 own `/download` page (already wired), or Findaway Voices/Spotify for Apple/Google/Kobo.
+
+**Narration is an AI voice, not a human reader.** The audiobook is synthesized with
+ElevenLabs (Theo Silk), then human-paced (pause markers + 30% time-stretch) and
+assembled by Alex Miller. Credit it honestly — *"Narrated by an AI voice (ElevenLabs);
+produced by Alex Miller"* — and never imply a human narrator. Findaway/Spotify/Google
+all require an **AI-narration disclosure** at upload; check the box. This mirrors the
+text's AI-drafted / human-refined provenance on `/how-it-was-made`.

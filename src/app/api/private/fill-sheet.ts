@@ -99,8 +99,8 @@ export const SECTIONS: Section[] = [
       },
       {
         label: "Cover file",
-        value: "dist/ebook/cover.jpg",
-        note: "1600×2400, 6×9 — the designer's front, Kindle edition only.",
+        value: "dist/ebook/cover-kindle.jpg",
+        note: "1600×2560 — Kindle's ideal 1.6:1, cream-padded, with the 'translated by Alex Miller' byline. (The 6×9 cover.jpg feeds the PDF cover page, EPUB interior, and audiobook art.)",
       },
       {
         label: "Publishing rights",

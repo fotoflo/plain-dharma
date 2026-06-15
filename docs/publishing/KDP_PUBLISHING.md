@@ -15,7 +15,7 @@ Account / start: <https://kdp.amazon.com/en_US/bookshelf>
 | Purpose | Path | Notes |
 |---|---|---|
 | eBook manuscript | `dist/ebook/plain-dharma.epub` | EPUB 3, cover + CC0 page already embedded |
-| eBook cover art (front) | `dist/ebook/cover.jpg` | 1600×2400, 6×9 — the designer's InDesign front, for the **Kindle** edition only |
+| eBook cover art (front) | `dist/ebook/cover-kindle.jpg` | 1600×2560 (Kindle's ideal 1.6:1), cream-padded, carries the "translated by Alex Miller" byline — for the **Kindle** edition. (`cover.jpg` is the unpadded 6×9 used by the PDF cover page, EPUB interior, and audiobook art.) |
 | Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 48 pp, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
 | Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 48 pp, grayscale, white paper, **cover-free** |
 | Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.35×8.25, back+spine+front, spine 0.108", barcode = print ISBN ‑38‑1 |
@@ -111,7 +111,7 @@ A note on how it was made: the plain-English rendering was drafted with AI from 
 | Field | Value |
 |---|---|
 | Manuscript | Upload `dist/ebook/plain-dharma.epub` |
-| Book Cover | "Upload a cover you already have" → `dist/ebook/cover.jpg` |
+| Book Cover | "Upload a cover you already have" → `dist/ebook/cover-kindle.jpg` (1.6:1, byline) |
 | AI Content disclosure | **⚠️ DECIDE** — see "AI content" note below |
 | Kindle eBook ISBN | *(leave blank — not required for Kindle)* |
 | Preview | Open Previewer, page through, confirm TOC + cover render |

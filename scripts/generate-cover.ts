@@ -70,7 +70,47 @@ function main(): void {
   );
   rmSync(tmpPng, { force: true });
 
-  console.log(`[generate-cover] wrote ${cover} from ${SOURCE_PDF}`);
+  // The InDesign source prints the byline as a bare "Alex Miller". Now that the
+  // book is credited to the Buddha (author) with Alex as the translator, stamp a
+  // small "translated by" eyebrow above the name so every surface that consumes
+  // cover.jpg (PDF cover page, EPUB/Kindle, audiobook art, download image)
+  // carries the honest credit. The geometry is measured against the 1600×2400
+  // raster above — "Alex Miller" sits at content-center x≈853 (not image-center,
+  // because of the ~130px gold stripe), cap-top y≈1818. Revisit these if
+  // TARGET_W or the InDesign layout changes.
+  const eyebrowFont = join(ROOT, "src/app/fonts/GaramondLibre-Italic.otf");
+  execFileSync(
+    "magick",
+    [
+      cover,
+      "(", "-background", "none", "-fill", "#1a1a1a",
+      "-font", eyebrowFont, "-pointsize", "32", "label:translated by", ")",
+      "-gravity", "NorthWest", "-geometry", "+770+1748",
+      "-composite", "-quality", "92", cover,
+    ],
+    { stdio: "inherit" }
+  );
+
+  // Kindle's *ideal* cover ratio is 1.6:1 (1600×2560); the 6×9 source is 1.5:1.
+  // Pad the byline'd cover into a Kindle-only variant (the other consumers keep
+  // the native 6×9 proportion — upload this one to KDP). Replicate the top/bottom
+  // edge rows (which are clean cream + full-height gold stripe, no text) rather
+  // than centering on a solid fill, so the stripe runs edge-to-edge instead of
+  // floating with cream gaps in the corners.
+  const kindleCover = join(OUT_DIR, "cover-kindle.jpg");
+  execFileSync(
+    "magick",
+    [
+      cover,
+      "-virtual-pixel", "edge",
+      "-set", "option:distort:viewport", "1600x2560-0-80",
+      "-distort", "SRT", "0",
+      "+repage", "-strip", "-quality", "92", kindleCover,
+    ],
+    { stdio: "inherit" }
+  );
+
+  console.log(`[generate-cover] wrote ${cover} (+ ${kindleCover}) from ${SOURCE_PDF}`);
 
   // Publishing is tied to generation — push the just-built cover to the site.
   publishToDownloads(cover, "plain-dharma-cover.jpg");

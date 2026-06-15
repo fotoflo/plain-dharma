@@ -74,22 +74,36 @@ function main(): void {
   // book is credited to the Buddha (author) with Alex as the translator, stamp a
   // small "translated by" eyebrow above the name so every surface that consumes
   // cover.jpg (PDF cover page, EPUB/Kindle, audiobook art, download image)
-  // carries the honest credit. The geometry is measured against the 1600×2400
-  // raster above — "Alex Miller" sits at content-center x≈853 (not image-center,
-  // because of the ~130px gold stripe), cap-top y≈1818. Revisit these if
-  // TARGET_W or the InDesign layout changes.
+  // carries the honest credit.
+  //
+  // We also nudge the whole byline down SHIFT px so it sits closer to the URL.
+  // "Alex Miller" is baked into the raster on flat cream, so we lift its band and
+  // set it down lower, erasing the old spot with a clean cream patch sampled from
+  // empty cover area (matching JPEG texture → no seam). Geometry is measured
+  // against the 1600×2400 raster above: "Alex Miller" at (661,1818) — content-
+  // center x≈853, not image-center, because of the ~130px gold stripe — and the
+  // URL at (647,2009). Revisit these if TARGET_W or the InDesign layout changes.
+  const SHIFT = 64;
   const eyebrowFont = join(ROOT, "src/app/fonts/GaramondLibre-Italic.otf");
+  const nameBand = join(OUT_DIR, "name-band.png");
+  const creamPatch = join(OUT_DIR, "cream-patch.png");
+  execFileSync("magick", [cover, "-crop", "600x100+550+1800", "+repage", nameBand], { stdio: "inherit" });
+  execFileSync("magick", [cover, "-crop", "600x100+550+2150", "+repage", creamPatch], { stdio: "inherit" });
   execFileSync(
     "magick",
     [
-      cover,
+      cover, "-gravity", "NorthWest",
+      creamPatch, "-geometry", "+550+1800", "-composite",
+      nameBand, "-geometry", `+550+${1800 + SHIFT}`, "-composite",
       "(", "-background", "none", "-fill", "#1a1a1a",
       "-font", eyebrowFont, "-pointsize", "32", "label:translated by", ")",
-      "-gravity", "NorthWest", "-geometry", "+770+1748",
-      "-composite", "-quality", "92", cover,
+      "-geometry", `+770+${1748 + SHIFT}`, "-composite",
+      "-quality", "92", cover,
     ],
     { stdio: "inherit" }
   );
+  rmSync(nameBand, { force: true });
+  rmSync(creamPatch, { force: true });
 
   // Kindle's *ideal* cover ratio is 1.6:1 (1600×2560); the 6×9 source is 1.5:1.
   // Pad the byline'd cover into a Kindle-only variant (the other consumers keep

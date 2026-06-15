@@ -229,4 +229,64 @@ export const SECTIONS: Section[] = [
       { label: "Sales Rights", value: "World rights / World territory" },
     ],
   },
+  {
+    heading: "Audiobook — Findaway Voices / Spotify for Authors",
+    intro:
+      "The .m4b can't go to Audible directly (ACX has no public API and needs Approved-Producer status for a CC0 narration). Self-host on /download, or distribute via Findaway Voices / Spotify for Authors → Apple Books, Google Play, Kobo, etc.",
+    fields: [
+      { label: "Title", value: "Plain Dharma" },
+      {
+        label: "Subtitle",
+        value: "The Buddha's Foundational Teachings in Modern English",
+      },
+      {
+        label: "Author",
+        value: "Gautama Buddha",
+        note: "Same mapping as the book — the teachings are the Buddha's; Alex is translator/producer, not author.",
+      },
+      { label: "Translator", value: "Alex Miller" },
+      {
+        label: "Narrator",
+        value: 'AI-generated voice (ElevenLabs — "Theo Silk")',
+        note: "Honest credit: a synthetic voice, NOT a human reader — never imply one. Findaway/Spotify/Google each have an AI-narration disclosure; check it.",
+      },
+      { label: "Producer / Publisher", value: "Alex Miller · Plain Dharma Press" },
+      {
+        label: "Runtime",
+        value: "~50 min (00:50:16)",
+        note: "~37 chapters, one per section, single M4B with chapter markers.",
+      },
+      {
+        label: "Cover art",
+        value: "dist/ebook/audiobook-cover.jpg",
+        note: "3000×3000 square (platforms require 1:1, min 2400). Vivid sun + 'translated by Alex Miller' byline.",
+      },
+      {
+        label: "Audio file",
+        value: "dist/audiobook/plain-dharma.m4b",
+        note: "Assembled M4B (AAC + chapters). If a platform wants per-chapter MP3s, they live under public/audio/en/<slug>/.",
+      },
+      {
+        label: "ISBN",
+        value: "",
+        note: "An audiobook is a separate edition → it needs its OWN ISBN (the ebook …-37-4 and paperback …-38-1 don't carry over). Use a third from the 978-1-891328 block, or let the platform assign one.",
+      },
+      {
+        label: "AI disclosure — Narration",
+        value: "Yes — AI-generated narration (ElevenLabs)",
+        note: "Mirrors the text's AI-drafted / human-refined provenance on /how-it-was-made.",
+      },
+      { label: "Description", value: DESCRIPTION, multiline: true },
+      {
+        label: "Categories / Keywords",
+        value:
+          "Same as the Kindle edition — Buddhism · Theravada · Rituals & Practice, plus the same 7 keywords.",
+      },
+      {
+        label: "Price",
+        value: "",
+        note: "The free audiobook stays on plaindharma.com/download. Set per platform (some require a paid floor, others allow free).",
+      },
+    ],
+  },
 ];

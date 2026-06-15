@@ -41,21 +41,24 @@ page and are NOT for KDP upload.
 | Subtitle | `The Buddha's Foundational Teachings in Modern English` |
 | Series | *(leave blank)* |
 | Edition number | `1` |
-| Author — First name | `Alex` |
-| Author — Last name | `Miller` |
-| Contributors | *(none — see Byline note below)* |
+| Primary Author or Contributor — First | `Gautama` |
+| Primary Author or Contributor — Last | `Buddha` |
+| Contributors → role `Translator` | `Alex` / `Miller` |
 | Description | *(paste the block below)* |
 
-> **Byline / credit — read before filling the Author field.** KDP's primary
-> **Author** field is mandatory and its role is **fixed** — you can't set it to
-> "Translator/Editor" the way Bowker can. So Alex goes in the Author slot here, but
-> that is a **schema limitation, not a claim of authorship** over 2,600-year-old
-> suttas. The honest *"Translated & edited by Alex Miller"* framing is carried by the
-> printed cover and by the Bowker / Books-in-Print functions (`Translated with
-> commentary by · Compiled by · Editor` — see `BOWKER_REVIEW.md`, which says
-> explicitly **do not check "Author."**). Leave **Contributors** empty rather than
-> re-adding Alex as "Translator"/"Editor": duplicating the same name only clutters the
-> Amazon byline without adding honesty the cover doesn't already carry.
+> **Byline / credit — read before filling these fields.** KDP's primary field is
+> labelled **"Primary Author *or* Contributor"** — you are **not** forced to call
+> yourself the author, and the Contributors section has a **role dropdown**
+> (Translator, Editor, …). So enter the source attribution **Gautama Buddha** as the
+> primary name and add **Alex Miller** as a **Translator** contributor. This matches
+> Bowker exactly (`Translated with commentary by · Compiled by · Editor` — which says
+> explicitly **do not check "Author"** for Alex), keeps you from overstating your
+> relationship to 2,600-year-old suttas, and clarifies the rights story: the
+> *teachings* are public-domain (Buddha), your *English rendering* is your copyright
+> (the "I own the copyright" answer below). "Gautama Buddha" is also a real Amazon
+> author entity, which helps discoverability. Optionally Add Another contributor as
+> **Editor** (Alex Miller) to mirror Bowker's full function list — or keep just
+> Translator for a cleaner "Gautama Buddha · Translated by Alex Miller" byline.
 | Publishing rights | **⚠️ DECIDE** — see "Publishing rights" note below |
 | Primary audience — Sexually explicit images | No |
 | Reading age | *(leave blank)* |
@@ -144,10 +147,10 @@ Create it from the **same title** so KDP links the Kindle + paperback editions
 ## Screen 1 — Paperback Details
 
 Same as Kindle Screen 1: Language `English`, Title `Plain Dharma`, Subtitle
-`The Buddha's Foundational Teachings in Modern English`, Author
-`Alex` / `Miller` (same forced-Author-field caveat — see the Byline note in Product A),
-the same Description, Categories, and Keywords, and the same **⚠️ DECIDE**
-Publishing-rights choice.
+`The Buddha's Foundational Teachings in Modern English`, primary name
+`Gautama` / `Buddha` with `Alex` / `Miller` as a **Translator** contributor (see the
+Byline note in Product A), the same Description, Categories, and Keywords, and the
+same **⚠️ DECIDE** Publishing-rights choice.
 
 ## Screen 2 — Paperback Content
 

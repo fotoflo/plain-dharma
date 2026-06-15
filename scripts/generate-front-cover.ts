@@ -84,6 +84,7 @@ const TARGETS: Target[] = [
       TITLE_TOP: "1.0in", TITLE_PT: "39",
       SUBTITLE_GAP: "0.26in", SUBTITLE_PT: "13",
       SUN_GAP: "0.5in", SUN_W: "3.4in",
+      EYEBROW_PT: "12", EYEBROW_GAP: "0.05in",
       AUTHOR_PT: "17", URL_GAP: "0.16in", URL_PT: "12", BOTTOM: "0.7in",
     },
     outputs: [
@@ -105,6 +106,7 @@ const TARGETS: Target[] = [
       TITLE_TOP: "0.2in", TITLE_PT: "46",
       SUBTITLE_GAP: "0.3in", SUBTITLE_PT: "17",
       SUN_GAP: "0.4in", SUN_W: "3.0in",
+      EYEBROW_PT: "15", EYEBROW_GAP: "0.06in",
       AUTHOR_PT: "22", URL_GAP: "0.18in", URL_PT: "15", BOTTOM: "0.4in",
     },
     outputs: [{ file: "audiobook-cover.jpg", grayscale: false }],

@@ -31,11 +31,11 @@ const SOURCE_PDF = join(ROOT, "scripts/assets/PlainDharma_Cover.pdf");
 const TARGET_W = 1600;
 const RENDER_DPI = 320;
 
-// pdftoppm rasterizes the CMYK InDesign PDF to RGB with no ICC profile, which
-// blows the watercolor sun out to a hot orange (far more saturated than the
-// designer's intent). Pull saturation back to land on the softer amber. 72 =
-// −28% saturation; dial toward 100 for more orange, lower for more muted gold.
-const SATURATION = 72;
+// pdftoppm rasterizes the CMYK InDesign PDF to RGB with no ICC profile. A prior
+// pass pulled saturation to 72 (−28%) to tame a hot-orange cast, but per the
+// owner's call the sun now renders at full saturation (no lightening) for the
+// richer, more vivid orange. Dial toward 72 for the muted amber.
+const SATURATION = 100;
 
 function main(): void {
   if (!existsSync(SOURCE_PDF)) {

@@ -33,7 +33,7 @@ const SUN_SRC = join(OUT_DIR, "cover-artwork.png");
 const TARGET_W = 1600;
 const RENDER_DPI = 320;
 const CREAM = "#F5EFE0";
-const SUN_SATURATION = 72; // match generate-cover.ts (−28%)
+const SUN_SATURATION = 100; // full saturation (no lightening) — matches generate-cover.ts
 
 const TEX_BIN_DIR = "/Library/TeX/texbin";
 const XELATEX_BIN = join(TEX_BIN_DIR, "xelatex");

@@ -1,8 +1,9 @@
 import * as Linking from "expo-linking";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { Link, Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useCallback, useEffect, useState } from "react";
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -34,7 +35,15 @@ const PRESETS = [
   { cents: 3000, label: "$30", reason: "Sponsors a temple print run and future translations." },
 ] as const;
 
+// Not available on iOS: App Review 3.1.1 requires tips to go through IAP, so
+// the route redirects to the editions list (which downloads directly on iOS).
+// Also covers deep links — a reviewer can't reach the Stripe flow this way.
 export default function DonateScreen() {
+  if (Platform.OS === "ios") return <Redirect href="/download" />;
+  return <DonateScreenInner />;
+}
+
+function DonateScreenInner() {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();

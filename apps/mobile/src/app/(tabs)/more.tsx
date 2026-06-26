@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { SUPPORTED_LOCALES } from "@plain-dharma/content";
 import { Link } from "expo-router";
-import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useDownloads } from "@/audio/DownloadsProvider";
@@ -241,7 +241,10 @@ export default function MoreScreen() {
 
       <SectionLabel>{s.support}</SectionLabel>
       <MenuGroup>
-        <MenuRow icon="heart-outline" label={s.donate} href="/donate" />
+        {/* No donations on iOS — App Review 3.1.1 requires IAP for tips. */}
+        {Platform.OS !== "ios" && (
+          <MenuRow icon="heart-outline" label={s.donate} href="/donate" />
+        )}
         <MenuRow icon="create-outline" label={nav.contribute} href="/contribute" />
         <MenuRow icon="mail-outline" label={s.newsletter} href="/newsletter" />
         <MenuRow

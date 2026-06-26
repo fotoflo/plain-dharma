@@ -33,6 +33,9 @@ export const AUTHOR = "Alex Miller";
 // docs/publishing/BOWKER_REVIEW.md). KDP's Publisher field + the EPUB's
 // dc:publisher should match this exactly.
 export const PUBLISHER = "Plain Dharma Press";
+// Bowker ISBN for the ENGLISH EPUB edition only — the print edition and the
+// ZH translation each need their own ISBN (per-edition rule).
+export const EPUB_ISBN = "978-1-891328-37-4";
 export const SITE_URL = "https://plaindharma.com";
 
 // Descriptive alt text for each sutta's line-drawing illustration, so the EPUB's

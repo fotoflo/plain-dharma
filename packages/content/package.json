@@ -11,6 +11,7 @@
     "./glossary": "./glossary.ts",
     "./audio": "./audio.ts",
     "./assets": "./assets.ts",
+    "./source": "./source.ts",
     "./asset-version.json": "./asset-version.json",
     "./en/*": "./en/*",
     "./zh/*": "./zh/*"

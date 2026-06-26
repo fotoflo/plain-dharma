@@ -36,6 +36,9 @@ interface SelectableSectionProps {
   onSelect: (result: SelectionResult) => void;
   /** Fired when the native selection collapses — reader closes the toolbar. */
   onSelectionCleared: () => void;
+  /** Tap on a paragraph (its plain text) — the source-peek sheet. Must be
+      referentially stable, like the other callbacks (see memo note below). */
+  onPressParagraph?: (text: string) => void;
 }
 
 /**
@@ -53,6 +56,7 @@ function SelectableSectionImpl({
   onPressHighlight,
   onSelect,
   onSelectionCleared,
+  onPressParagraph,
 }: SelectableSectionProps) {
   return (
     <SelectableSectionText
@@ -61,6 +65,7 @@ function SelectableSectionImpl({
       onPressHighlight={onPressHighlight}
       onSelectQuote={(quote, rect) => onSelect({ sectionId: section.id, quote, rect })}
       onSelectionCleared={onSelectionCleared}
+      onPressParagraph={onPressParagraph}
     />
   );
 }
@@ -83,5 +88,6 @@ export const SelectableSection = memo(
     prev.onPressHighlight === next.onPressHighlight &&
     prev.onSelect === next.onSelect &&
     prev.onSelectionCleared === next.onSelectionCleared &&
+    prev.onPressParagraph === next.onPressParagraph &&
     sameHighlights(prev.highlights, next.highlights),
 );

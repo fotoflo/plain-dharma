@@ -30,6 +30,7 @@ export function SelectableRuns({
   onPressHighlight,
   onSelectQuote,
   onSelectionCleared,
+  onPressAt,
 }: {
   runs: Run[];
   /** Exactly the runs joined — the string native selection offsets index into. */
@@ -43,6 +44,14 @@ export function SelectableRuns({
   onPressHighlight: (markId: string) => void;
   onSelectQuote: (quote: string, rect: SelectionRect) => void;
   onSelectionCleared: () => void;
+  /**
+   * Tap on plain (non-highlight) text, reporting the raw plainText offset of
+   * the tapped span — the consumer maps it to its enclosing paragraph (the
+   * source-peek sheet). Same nested-span onPress mechanism highlight taps
+   * use, so it coexists with native long-press selection. Highlight spans
+   * keep their own handler (edit wins over peek).
+   */
+  onPressAt?: (rawOffset: number) => void;
 }) {
   const selTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -111,7 +120,11 @@ export function SelectableRuns({
 
       if (ranges.length === 0) {
         out.push(
-          <UITextView key={key++} style={baseStyle}>
+          <UITextView
+            key={key++}
+            style={baseStyle}
+            onPress={onPressAt ? () => onPressAt(runStart) : undefined}
+          >
             {text}
           </UITextView>,
         );
@@ -133,7 +146,11 @@ export function SelectableRuns({
               {text}
             </UITextView>
           ) : (
-            <UITextView key={key++} style={baseStyle}>
+            <UITextView
+              key={key++}
+              style={baseStyle}
+              onPress={onPressAt ? () => onPressAt(runStart) : undefined}
+            >
               {text}
             </UITextView>
           ),
@@ -163,8 +180,13 @@ export function SelectableRuns({
               </UITextView>,
             );
           } else {
+            const sliceStart = runStart + segStart;
             out.push(
-              <UITextView key={key++} style={baseStyle}>
+              <UITextView
+                key={key++}
+                style={baseStyle}
+                onPress={onPressAt ? () => onPressAt(sliceStart) : undefined}
+              >
                 {slice}
               </UITextView>,
             );
@@ -175,7 +197,7 @@ export function SelectableRuns({
       }
     }
     return out;
-  }, [runs, plainText, highlights, runStyle, theme, onPressHighlight]);
+  }, [runs, plainText, highlights, runStyle, theme, onPressHighlight, onPressAt]);
 
   return (
     <UITextView

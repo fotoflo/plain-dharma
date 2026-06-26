@@ -8,6 +8,7 @@ import {
 } from "@/content";
 import { DROPS } from "@plain-dharma/content/drops";
 import { getStrings } from "@plain-dharma/content/strings";
+import { hasSourceView } from "@plain-dharma/content/source";
 import { getAudioManifest } from "@/content/audio";
 import { localizedHref } from "@/lib/locale-href";
 import { SuttaIllustration } from "@/components/SuttaIllustration";
@@ -79,6 +80,17 @@ export async function SuttaView({ locale, slug }: SuttaViewProps) {
         </div>
 
         <CanonicalLinks locale={locale} slug={slug} />
+
+        {hasSourceView(locale, slug) && (
+          <div className="mt-8 text-center">
+            <Link
+              href={`${localizedHref(locale, slug)}/source`}
+              className="font-sans text-sm text-link hover:text-accent"
+            >
+              See the original Pāli, side by side →
+            </Link>
+          </div>
+        )}
 
         <nav className="mt-20 grid grid-cols-1 gap-4 border-t border-divider/80 pt-8 sm:grid-cols-2">
           <div>

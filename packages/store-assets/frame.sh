@@ -78,12 +78,13 @@ frame () {
 }
 
 echo "Framing…"
+# Ordered by benefit impact: identity → reading proof → audio (player + lock screen) → comfort → engagement.
 frame raw/IMG_5388.PNG $'Old Wisdom.\nPlain English.'    light ios-6.7-en-01-home.png
 frame raw/IMG_5389.PNG $'The Buddha’s First Talk,\nin Plain English.' light ios-6.7-en-02-read.png
-frame raw/IMG_5390.PNG $'Soothing Narration.\nFree, Even Offline.' light ios-6.7-en-03-listen.png
-frame raw/IMG_5392.PNG $'Low-Contrast Night Mode.\nEasy Bedtime Reading.'    light ios-6.7-en-04-display.png
-frame raw/IMG_notes.PNG $'Highlight & Note.\nMake It Yours.'                  dark  ios-6.7-en-05-notes.png
-frame raw/IMG_lockscreen.PNG $'Listen Anywhere.\nEven on the Lock Screen.'    light ios-6.7-en-06-lockscreen.png
+frame raw/IMG_lockscreen.PNG $'Soothing Audio, Even Offline.\nListen Anywhere.' light ios-6.7-en-03-lockscreen.png
+frame raw/IMG_5390.PNG $'Read or Listen — Free.\nSet Your Own Pace.' light ios-6.7-en-04-listen.png
+frame raw/IMG_5392.PNG $'Low-Contrast Night Mode.\nEasy Bedtime Reading.'    light ios-6.7-en-05-display.png
+frame raw/IMG_notes.PNG $'Highlight & Note.\nKeep What Speaks to You.'        light ios-6.7-en-06-notes.png
 
 rm -rf tmp
 echo "Done → packages/store-assets/framed/"

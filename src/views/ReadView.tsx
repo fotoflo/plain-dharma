@@ -7,6 +7,7 @@ import {
 } from "@/content";
 import { DROPS } from "@plain-dharma/content/drops";
 import { getStrings } from "@plain-dharma/content/strings";
+import { hasSourceView } from "@plain-dharma/content/source";
 import { getCombinedAudioManifest } from "@/content/audio";
 import { localizedHref } from "@/lib/locale-href";
 import { Wash } from "@/components/Wash";
@@ -133,10 +134,18 @@ export async function ReadView({ locale }: { locale: Locale }) {
                   <div id={`${meta.slug}--drop`} className="scroll-mt-12">
                     <Drop text={DROPS[locale][meta.slug]} />
                   </div>
-                  <div className="mt-6 text-right">
+                  <div className="mt-6 flex flex-wrap justify-end gap-x-5 gap-y-2 font-sans text-xs">
+                    {hasSourceView(locale, meta.slug) && (
+                      <Link
+                        href={`${localizedHref(locale, meta.slug)}/source`}
+                        className="text-link hover:text-accent"
+                      >
+                        See the original Pāli →
+                      </Link>
+                    )}
                     <Link
                       href={localizedHref(locale, meta.slug)}
-                      className="font-sans text-xs text-link hover:text-accent"
+                      className="text-link hover:text-accent"
                     >
                       {s.read.openOnOwnPage}
                     </Link>

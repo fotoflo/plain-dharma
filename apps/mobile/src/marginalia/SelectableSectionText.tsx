@@ -28,18 +28,48 @@ export function SelectableSectionText({
   onPressHighlight,
   onSelectQuote,
   onSelectionCleared,
+  onPressParagraph,
 }: {
   markdown: string;
   highlights: InlineHighlight[];
   onPressHighlight: (markId: string) => void;
   onSelectQuote: (quote: string, rect: SelectionRect) => void;
   onSelectionCleared: () => void;
+  /**
+   * Tap on prose: receives the tapped paragraph BLOCK's plain text (blocks are
+   * the "\n\n"-separated units sectionToRuns fakes block layout with — a list
+   * arrives as one block). Powers the source-peek sheet.
+   */
+  onPressParagraph?: (text: string) => void;
 }) {
   const { theme, palette } = useTheme();
   const { scale, contrast, font } = useReadingPrefs();
   const { locale } = useLocale();
 
   const { runs, plainText } = useMemo(() => sectionToRuns(markdown), [markdown]);
+
+  // Block ranges in plainText (split on the blank-line separators), so a raw
+  // tap offset from SelectableRuns resolves to its enclosing paragraph block.
+  const blocks = useMemo(() => {
+    const out: { start: number; end: number; text: string }[] = [];
+    let start = 0;
+    for (;;) {
+      const sep = plainText.indexOf("\n\n", start);
+      const end = sep === -1 ? plainText.length : sep;
+      if (end > start) out.push({ start, end, text: plainText.slice(start, end) });
+      if (sep === -1) break;
+      start = sep + 2;
+    }
+    return out;
+  }, [plainText]);
+
+  const onPressAt = useMemo(() => {
+    if (!onPressParagraph) return undefined;
+    return (rawOffset: number) => {
+      const block = blocks.find((b) => rawOffset >= b.start && rawOffset < b.end);
+      if (block) onPressParagraph(block.text.replace(/\s+/g, " ").trim());
+    };
+  }, [blocks, onPressParagraph]);
 
   const styles = useMemo(() => {
     const ink = CONTRAST_INK[theme][contrast];
@@ -91,6 +121,7 @@ export function SelectableSectionText({
       onPressHighlight={onPressHighlight}
       onSelectQuote={onSelectQuote}
       onSelectionCleared={onSelectionCleared}
+      onPressAt={onPressAt}
     />
   );
 }

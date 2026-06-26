@@ -9,8 +9,9 @@
 //   --no-external         skip the external "friends and fam" group + Beta Review
 //   --expire-old          expire all other (non-selected) VALID builds
 //
-// Env (already in .env.local): EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, and the key
-// itself as EXPO_ASC_API_KEY_P8 (the .p8 contents, synced from Vercel).
+// Env (already in .env.local): EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID, and the ASC
+// private key as either EXPO_ASC_API_KEY_P8 (inline PEM, as pulled from Vercel)
+// or EXPO_ASC_API_KEY_PATH (path to a .p8 file).
 //
 // What it does: waits for the target build to finish Apple processing (VALID),
 // sets the "What to Test" notes, adds it to the internal group (instant, no
@@ -36,11 +37,9 @@ const whatsNew = valArg("whatsnew") ?? "Latest build — bug fixes and improveme
 function token() {
   const keyId = process.env.EXPO_ASC_KEY_ID;
   const iss = process.env.EXPO_ASC_ISSUER_ID;
-  // The .p8 key contents come from EXPO_ASC_API_KEY_P8 (synced from Vercel; the
-  // env stores newlines as literal "\n").
-  const p8 = process.env.EXPO_ASC_API_KEY_P8;
-  if (!p8) throw new Error("EXPO_ASC_API_KEY_P8 not set — run `vercel env pull`");
-  const key = p8.replace(/\\n/g, "\n");
+  const key = process.env.EXPO_ASC_API_KEY_P8
+    ? process.env.EXPO_ASC_API_KEY_P8.replace(/\\n/g, "\n")
+    : fs.readFileSync(process.env.EXPO_ASC_API_KEY_PATH, "utf8");
   const b64u = (b) =>
     Buffer.from(b).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   const now = Math.floor(Date.now() / 1000);

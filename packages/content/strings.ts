@@ -94,9 +94,9 @@ const en = {
     readAllOnOnePage: "Read all six on one page →",
   },
   read: {
-    metadataTitle: "Read all six teachings",
+    metadataTitle: "Six Core Buddhist Suttas in Plain English",
     metadataDescription:
-      "The six foundational teachings of the Buddha, in order, in modern English.",
+      "The six core Buddhist suttas — the Buddha's foundational teachings — in plain modern English. Free to read, about an hour for all six.",
     kicker: "All six teachings",
     h1: "The Buddha's foundational teachings",
     subtitle:
@@ -437,9 +437,9 @@ const zh: Strings = {
     readAllOnOnePage: "六篇一起在同一页读 →",
   },
   read: {
-    metadataTitle: "六篇开示一起读",
+    metadataTitle: "六部核心佛经 · 白话文",
     metadataDescription:
-      "佛陀最根本的六篇开示，按顺序排好，用平实的现代汉语呈现。",
+      "佛陀最根本的六部经，按顺序排好，用平实的现代白话文呈现。免费阅读，约一小时读完。",
     kicker: "六篇开示",
     h1: "佛陀最早的几篇开示",
     subtitle: "按顺序排好，用平实的现代汉语呈现。六篇大约一小时读完。",

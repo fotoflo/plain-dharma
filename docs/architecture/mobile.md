@@ -285,8 +285,8 @@ Configured in `apps/mobile/app.json`:
   `plain-dharma`, **owner** `fotoflo`.
 - **Bundle id / Android package**: `com.plaindharma.app`.
 - **EAS project**: `@fotoflo/plain-dharma` (`extra.eas.projectId`). Non-interactive
-  `eas` runs authenticate with the `plain-dharma` robot token, stored as `EXPO_TOKEN`
-  in the **repo-root** `.env.local` (synced from Vercel).
+  `eas` runs authenticate with the `plain-dharma` robot token — `EXPO_TOKEN`
+  in the **repo-root** `.env.local` (sourced by the `eas` wrapper script).
 - **Icon**: the web's saffron watercolor sun disc (`public/logo/mark.png`) centered
   on the `#F5EFE0` paper background, rendered to PNGs with ImageMagick (no AI).
   Variants in `assets/images/`:

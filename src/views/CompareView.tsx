@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { type SuttaSlug, getMeta, loadSutta } from "@/content";
+import { type SuttaSlug, SUTTAS, getMeta, loadSutta } from "@/content";
 import { getCanonical } from "@/content/canonical";
 
 type CompareViewProps = {
@@ -14,6 +14,11 @@ export async function CompareView({ slug }: CompareViewProps) {
   const meta = getMeta("en", slug);
   const canonical = getCanonical(slug);
   const Content = await loadSutta("en", slug);
+
+  // Cycle through the suttas: each compare page points to the next one's, and
+  // the last wraps back to the first.
+  const nextSlug = SUTTAS[(SUTTAS.indexOf(slug) + 1) % SUTTAS.length];
+  const nextMeta = getMeta("en", nextSlug);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-12 sm:py-16">
@@ -75,7 +80,21 @@ export async function CompareView({ slug }: CompareViewProps) {
         </section>
       </div>
 
-      <footer className="mt-16 border-t border-divider pt-6 font-sans text-xs leading-relaxed text-ink/60">
+      <nav className="mt-16 border-t border-divider pt-8 sm:text-right">
+        <Link
+          href={`/${nextSlug}/compare`}
+          className="font-sans group inline-block no-underline hover:no-underline"
+        >
+          <span className="text-xs uppercase tracking-wider text-ink/65">
+            Next, side by side
+          </span>
+          <span className="mt-1 block font-serif text-lg text-ink group-hover:text-accent">
+            {nextMeta.title} →
+          </span>
+        </Link>
+      </nav>
+
+      <footer className="mt-12 border-t border-divider pt-6 font-sans text-xs leading-relaxed text-ink/60">
         <p>
           Canonical English by{" "}
           <a

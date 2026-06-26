@@ -351,6 +351,7 @@ const en = {
   canonicalLinks: {
     paliSourcePrefix: "Pali source —",
     compareIntro: "Compare with canonical translations:",
+    sideBySide: "Read side by side (Sujato · Pali · ours)",
   },
   glossary: {
     metadataDescription:
@@ -681,6 +682,8 @@ const zh: Strings = {
   canonicalLinks: {
     paliSourcePrefix: "巴利原典 ——",
     compareIntro: "可对照参考汉译经典：",
+    // EN-only feature (no zh-aligned canonical); key present for type parity.
+    sideBySide: "对照阅读（Sujato · 巴利 · 本译）",
   },
   glossary: {
     metadataDescription:

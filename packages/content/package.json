@@ -12,6 +12,7 @@
     "./audio": "./audio.ts",
     "./assets": "./assets.ts",
     "./asset-version.json": "./asset-version.json",
+    "./canonical/*": "./canonical/*",
     "./en/*": "./en/*",
     "./zh/*": "./zh/*"
   }

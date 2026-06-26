@@ -6,6 +6,17 @@ type CompareViewProps = {
   slug: SuttaSlug;
 };
 
+// SuttaCentral text carries a little inline markup: <em> for emphasis and <j>
+// (an unclosed verse line-join marker). Render <em> as real emphasis, drop <j>,
+// and strip any other stray tags so raw markup can never leak into the page.
+function renderMarkup(text: string) {
+  return text.split(/(<em>[\s\S]*?<\/em>)/g).map((part, i) => {
+    const em = part.match(/^<em>([\s\S]*?)<\/em>$/);
+    if (em) return <em key={i}>{em[1].replace(/<[^>]+>/g, "")}</em>;
+    return part.replace(/<[^>]+>/g, "");
+  });
+}
+
 // Side-by-side reading view: our plain-English translation next to Bhikkhu
 // Sujato's canonical English and the Pāli root, pulled from SuttaCentral (both
 // CC0). Sujato + Pāli are segment-aligned per paragraph; our translation is free
@@ -66,13 +77,13 @@ export async function CompareView({ slug }: CompareViewProps) {
             {canonical.paragraphs.map((p) => (
               <div key={p.id} className="grid grid-cols-2 gap-8">
                 <p className="font-serif text-[0.95rem] leading-relaxed text-ink/90">
-                  {p.en}
+                  {renderMarkup(p.en)}
                 </p>
                 <p
                   lang="pi"
                   className="font-serif text-[0.95rem] italic leading-relaxed text-ink/70"
                 >
-                  {p.pali}
+                  {renderMarkup(p.pali)}
                 </p>
               </div>
             ))}

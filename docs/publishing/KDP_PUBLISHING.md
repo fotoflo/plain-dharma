@@ -15,7 +15,7 @@ Account / start: <https://kdp.amazon.com/en_US/bookshelf>
 | Purpose | Path | Notes |
 |---|---|---|
 | eBook manuscript | `dist/ebook/plain-dharma.epub` | EPUB 3, cover + CC0 page already embedded |
-| eBook cover art (front) | `dist/ebook/cover.jpg` | 1600×2400, 6×9 — the designer's InDesign front, for the **Kindle** edition only |
+| eBook cover art (front) | `dist/ebook/cover-kindle.jpg` | 1600×2560 (Kindle's ideal 1.6:1), cream-padded, carries the "translated by Alex Miller" byline — for the **Kindle** edition. (`cover.jpg` is the unpadded 6×9 used by the PDF cover page, EPUB interior, and audiobook art.) |
 | Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 48 pp, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
 | Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 48 pp, grayscale, white paper, **cover-free** |
 | Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.35×8.25, back+spine+front, spine 0.108", barcode = print ISBN ‑38‑1 |
@@ -41,10 +41,24 @@ page and are NOT for KDP upload.
 | Subtitle | `The Buddha's Foundational Teachings in Modern English` |
 | Series | *(leave blank)* |
 | Edition number | `1` |
-| Author — First name | `Alex` |
-| Author — Last name | `Miller` |
-| Contributors | *(none)* |
+| Primary Author or Contributor — First | `Gautama` |
+| Primary Author or Contributor — Last | `Buddha` |
+| Contributors → role `Translator` | `Alex` / `Miller` |
 | Description | *(paste the block below)* |
+
+> **Byline / credit — read before filling these fields.** KDP's primary field is
+> labelled **"Primary Author *or* Contributor"** — you are **not** forced to call
+> yourself the author, and the Contributors section has a **role dropdown**
+> (Translator, Editor, …). So enter the source attribution **Gautama Buddha** as the
+> primary name and add **Alex Miller** as a **Translator** contributor. This matches
+> Bowker exactly (`Translated with commentary by · Compiled by · Editor` — which says
+> explicitly **do not check "Author"** for Alex), keeps you from overstating your
+> relationship to 2,600-year-old suttas, and clarifies the rights story: the
+> *teachings* are public-domain (Buddha), your *English rendering* is your copyright
+> (the "I own the copyright" answer below). "Gautama Buddha" is also a real Amazon
+> author entity, which helps discoverability. Optionally Add Another contributor as
+> **Editor** (Alex Miller) to mirror Bowker's full function list — or keep just
+> Translator for a cleaner "Gautama Buddha · Translated by Alex Miller" byline.
 | Publishing rights | **⚠️ DECIDE** — see "Publishing rights" note below |
 | Primary audience — Sexually explicit images | No |
 | Reading age | *(leave blank)* |
@@ -97,7 +111,7 @@ A note on how it was made: the plain-English rendering was drafted with AI from 
 | Field | Value |
 |---|---|
 | Manuscript | Upload `dist/ebook/plain-dharma.epub` |
-| Book Cover | "Upload a cover you already have" → `dist/ebook/cover.jpg` |
+| Book Cover | "Upload a cover you already have" → `dist/ebook/cover-kindle.jpg` (1.6:1, byline) |
 | AI Content disclosure | **⚠️ DECIDE** — see "AI content" note below |
 | Kindle eBook ISBN | *(leave blank — not required for Kindle)* |
 | Preview | Open Previewer, page through, confirm TOC + cover render |
@@ -133,9 +147,10 @@ Create it from the **same title** so KDP links the Kindle + paperback editions
 ## Screen 1 — Paperback Details
 
 Same as Kindle Screen 1: Language `English`, Title `Plain Dharma`, Subtitle
-`The Buddha's Foundational Teachings in Modern English`, Author
-`Alex` / `Miller`, the same Description, Categories, and Keywords, and the same
-**⚠️ DECIDE** Publishing-rights choice.
+`The Buddha's Foundational Teachings in Modern English`, primary name
+`Gautama` / `Buddha` with `Alex` / `Miller` as a **Translator** contributor (see the
+Byline note in Product A), the same Description, Categories, and Keywords, and the
+same **⚠️ DECIDE** Publishing-rights choice.
 
 ## Screen 2 — Paperback Content
 
@@ -187,9 +202,11 @@ To rebuild after a content/cover change: `pnpm generate-front-cover && pnpm gene
 ### 1. Publishing rights  ⚠️
 KDP asks: *"public domain work"* vs *"I own the copyright and hold publishing rights."*
 
-- The ancient suttas are public domain, **but your plain-English rendering is an
-  original work you authored** — so the accurate, lower-friction choice is
-  **"I own the copyright and I hold the necessary publishing rights."**
+- The ancient suttas are public domain, **but your plain-English rendering is your
+  own original work** — so the accurate, lower-friction choice is
+  **"I own the copyright and I hold the necessary publishing rights."** (This is a
+  rights-holder statement, not an authorship credit — it doesn't conflict with the
+  translator/editor byline above.)
 - Selecting *"public domain work"* triggers price caps and KDP's duplicate-content
   checks (it may reject editions that match existing free public-domain texts).
 - Releasing it CC0 to the public does **not** stop you from being the rights holder
@@ -201,11 +218,13 @@ AI-*assisted* work you created and refined). Answer honestly per category:
 
 - **Images:** the interior illustrations and cover artwork are AI-generated (Gemini)
   → disclose **Yes, AI-generated images**, and note the number of images.
-- **Text / Translation:** if the plain-English rendering was produced by an AI tool
-  and then edited, KDP treats that as AI-generated text/translation → disclose. If you
-  wrote/translated it yourself with only incidental AI help, it's AI-*assisted* → no
-  disclosure. **You decide which is true.** Disclosure is not shown to buyers and does
-  not hurt ranking; under-disclosing risks account action.
+- **Text / Translation:** the rendering was **drafted with AI from the Pāli, then
+  refined by hand** — and the book's own Description and the `/how-it-was-made` page say
+  so *publicly*. To stay consistent with that public framing — and because disclosure is
+  never shown to buyers or used in ranking, while under-disclosing risks account action —
+  disclose it as **AI-generated text/translation**. Reserve the AI-*assisted* answer (no
+  disclosure) only for work that was genuinely human-first with incidental AI help, which
+  — given what you already say publicly — this isn't. **Recommended: disclose.**
 
 ### 3. Do NOT enroll in KDP Select
 Select demands Amazon **exclusivity** for the ebook — incompatible with distributing
@@ -230,3 +249,10 @@ don't, use **Contact Us** and give both ASINs to request linking.
 The `.m4b` cannot go to Audible — ACX has no public API and won't accept a CC0/public-
 domain narration without Approved-Producer status. Distribute the audiobook via your
 own `/download` page (already wired), or Findaway Voices/Spotify for Apple/Google/Kobo.
+
+**Narration is an AI voice, not a human reader.** The audiobook is synthesized with
+ElevenLabs (Theo Silk), then human-paced (pause markers + 30% time-stretch) and
+assembled by Alex Miller. Credit it honestly — *"Narrated by an AI voice (ElevenLabs);
+produced by Alex Miller"* — and never imply a human narrator. Findaway/Spotify/Google
+all require an **AI-narration disclosure** at upload; check the box. This mirrors the
+text's AI-drafted / human-refined provenance on `/how-it-was-made`.

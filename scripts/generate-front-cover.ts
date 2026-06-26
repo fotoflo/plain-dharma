@@ -33,7 +33,7 @@ const SUN_SRC = join(OUT_DIR, "cover-artwork.png");
 const TARGET_W = 1600;
 const RENDER_DPI = 320;
 const CREAM = "#F5EFE0";
-const SUN_SATURATION = 72; // match generate-cover.ts (−28%)
+const SUN_SATURATION = 100; // full saturation (no lightening) — matches generate-cover.ts
 
 const TEX_BIN_DIR = "/Library/TeX/texbin";
 const XELATEX_BIN = join(TEX_BIN_DIR, "xelatex");
@@ -65,6 +65,8 @@ function prepareSun(): string {
 
 type Target = {
   jobname: string;
+  /** Output raster width in px (default 1600). ACX cover needs ≥2400. */
+  widthPx?: number;
   tokens: Record<string, string>;
   outputs: { file: string; grayscale: boolean; publishAs?: string }[];
 };
@@ -82,12 +84,32 @@ const TARGETS: Target[] = [
       TITLE_TOP: "1.0in", TITLE_PT: "39",
       SUBTITLE_GAP: "0.26in", SUBTITLE_PT: "13",
       SUN_GAP: "0.5in", SUN_W: "3.4in",
+      EYEBROW_PT: "12", EYEBROW_GAP: "0.05in",
       AUTHOR_PT: "17", URL_GAP: "0.16in", URL_PT: "12", BOTTOM: "0.7in",
     },
     outputs: [
       { file: "front-cover-print-color.jpg", grayscale: false },
       { file: "front-cover-print-bw.jpg", grayscale: true },
     ],
+  },
+  // Square audiobook cover for ACX / Audible (min 2400×2400; we emit 3000²).
+  // No bleed — it's a standalone thumbnail — so margins are symmetric and the
+  // gold stripe is dropped (it would read as a stray book-spine on a square).
+  {
+    jobname: "audiobook-cover",
+    widthPx: 3000,
+    tokens: {
+      FONTSIZE: "12pt",
+      PAPER_W: "8in", PAPER_H: "8in",
+      M_TOP: "0.6in", M_BOT: "0.6in", M_LEFT: "0.7in", M_RIGHT: "0.7in",
+      STRIPE_W: "0in", STITCH_X: "-1in", // stripe off-canvas (hidden)
+      TITLE_TOP: "0.2in", TITLE_PT: "46",
+      SUBTITLE_GAP: "0.3in", SUBTITLE_PT: "17",
+      SUN_GAP: "0.4in", SUN_W: "3.0in",
+      EYEBROW_PT: "15", EYEBROW_GAP: "0.06in",
+      AUTHOR_PT: "22", URL_GAP: "0.18in", URL_PT: "15", BOTTOM: "0.4in",
+    },
+    outputs: [{ file: "audiobook-cover.jpg", grayscale: false }],
   },
 ];
 
@@ -123,13 +145,14 @@ function buildTarget(target: Target, sunImg: string): void {
     { stdio: "inherit" }
   );
 
+  const widthPx = target.widthPx ?? TARGET_W;
   for (const out of target.outputs) {
     const dest = join(OUT_DIR, out.file);
     execFileSync(
       "magick",
       [
         tmpPng,
-        "-resize", `${TARGET_W}x`,
+        "-resize", `${widthPx}x`,
         "-colorspace", out.grayscale ? "Gray" : "sRGB",
         "-background", "white", "-flatten", "-strip",
         "-quality", "92",

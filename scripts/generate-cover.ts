@@ -31,11 +31,11 @@ const SOURCE_PDF = join(ROOT, "scripts/assets/PlainDharma_Cover.pdf");
 const TARGET_W = 1600;
 const RENDER_DPI = 320;
 
-// pdftoppm rasterizes the CMYK InDesign PDF to RGB with no ICC profile, which
-// blows the watercolor sun out to a hot orange (far more saturated than the
-// designer's intent). Pull saturation back to land on the softer amber. 72 =
-// −28% saturation; dial toward 100 for more orange, lower for more muted gold.
-const SATURATION = 72;
+// pdftoppm rasterizes the CMYK InDesign PDF to RGB with no ICC profile. A prior
+// pass pulled saturation to 72 (−28%) to tame a hot-orange cast, but per the
+// owner's call the sun now renders at full saturation (no lightening) for the
+// richer, more vivid orange. Dial toward 72 for the muted amber.
+const SATURATION = 100;
 
 function main(): void {
   if (!existsSync(SOURCE_PDF)) {
@@ -70,7 +70,61 @@ function main(): void {
   );
   rmSync(tmpPng, { force: true });
 
-  console.log(`[generate-cover] wrote ${cover} from ${SOURCE_PDF}`);
+  // The InDesign source prints the byline as a bare "Alex Miller". Now that the
+  // book is credited to the Buddha (author) with Alex as the translator, stamp a
+  // small "translated by" eyebrow above the name so every surface that consumes
+  // cover.jpg (PDF cover page, EPUB/Kindle, audiobook art, download image)
+  // carries the honest credit.
+  //
+  // We also nudge the whole byline down SHIFT px so it sits closer to the URL.
+  // "Alex Miller" is baked into the raster on flat cream, so we lift its band and
+  // set it down lower, erasing the old spot with a clean cream patch sampled from
+  // empty cover area (matching JPEG texture → no seam). Geometry is measured
+  // against the 1600×2400 raster above: "Alex Miller" at (661,1818) — content-
+  // center x≈853, not image-center, because of the ~130px gold stripe — and the
+  // URL at (647,2009). Revisit these if TARGET_W or the InDesign layout changes.
+  const SHIFT = 64;
+  const eyebrowFont = join(ROOT, "src/app/fonts/GaramondLibre-Italic.otf");
+  const nameBand = join(OUT_DIR, "name-band.png");
+  const creamPatch = join(OUT_DIR, "cream-patch.png");
+  execFileSync("magick", [cover, "-crop", "600x100+550+1800", "+repage", nameBand], { stdio: "inherit" });
+  execFileSync("magick", [cover, "-crop", "600x100+550+2150", "+repage", creamPatch], { stdio: "inherit" });
+  execFileSync(
+    "magick",
+    [
+      cover, "-gravity", "NorthWest",
+      creamPatch, "-geometry", "+550+1800", "-composite",
+      nameBand, "-geometry", `+550+${1800 + SHIFT}`, "-composite",
+      "(", "-background", "none", "-fill", "#1a1a1a",
+      "-font", eyebrowFont, "-pointsize", "32", "label:translated by", ")",
+      "-geometry", `+770+${1748 + SHIFT}`, "-composite",
+      "-quality", "92", cover,
+    ],
+    { stdio: "inherit" }
+  );
+  rmSync(nameBand, { force: true });
+  rmSync(creamPatch, { force: true });
+
+  // Kindle's *ideal* cover ratio is 1.6:1 (1600×2560); the 6×9 source is 1.5:1.
+  // Pad the byline'd cover into a Kindle-only variant (the other consumers keep
+  // the native 6×9 proportion — upload this one to KDP). Replicate the top/bottom
+  // edge rows (which are clean cream + full-height gold stripe, no text) rather
+  // than centering on a solid fill, so the stripe runs edge-to-edge instead of
+  // floating with cream gaps in the corners.
+  const kindleCover = join(OUT_DIR, "cover-kindle.jpg");
+  execFileSync(
+    "magick",
+    [
+      cover,
+      "-virtual-pixel", "edge",
+      "-set", "option:distort:viewport", "1600x2560-0-80",
+      "-distort", "SRT", "0",
+      "+repage", "-strip", "-quality", "92", kindleCover,
+    ],
+    { stdio: "inherit" }
+  );
+
+  console.log(`[generate-cover] wrote ${cover} (+ ${kindleCover}) from ${SOURCE_PDF}`);
 
   // Publishing is tied to generation — push the just-built cover to the site.
   publishToDownloads(cover, "plain-dharma-cover.jpg");

@@ -36,6 +36,14 @@ const RENDER_DPI = 320;
 // owner's call the sun now renders at full saturation (no lightening) for the
 // richer, more vivid orange. Dial toward 72 for the muted amber.
 const SATURATION = 100;
+// The baked InDesign sun renders as a deep, intense orange (core ≈ srgb(245,151,29))
+// that looks over-saturated next to the softer audiobook sun. Desaturate ONLY the
+// sun's region so the global SATURATION above stays 100 (gold stripe keeps its
+// richness). Saturation is a *proportional* scale, so it barely touches the low-sat
+// cream that surrounds the sun in this region → no rectangular seam. (Brightness is
+// an absolute lift and WOULD seam the cream, so we leave it at 100.)
+const SUN_SATURATION = 84;
+const SUN_REGION = "700x680+500+850"; // sun bbox (x563–1138, y893–1461) + cream margin
 
 function main(): void {
   if (!existsSync(SOURCE_PDF)) {
@@ -70,40 +78,110 @@ function main(): void {
   );
   rmSync(tmpPng, { force: true });
 
-  // The InDesign source prints the byline as a bare "Alex Miller". Now that the
-  // book is credited to the Buddha (author) with Alex as the translator, stamp a
-  // small "translated by" eyebrow above the name so every surface that consumes
-  // cover.jpg (PDF cover page, EPUB/Kindle, audiobook art, download image)
-  // carries the honest credit.
+  // Soften + lift the sun region only (see SUN_* notes above).
+  const sunRegion = join(OUT_DIR, "sun-region.png");
+  execFileSync("magick", [cover, "-crop", SUN_REGION, "+repage",
+    "-modulate", `100,${SUN_SATURATION},100`, sunRegion], { stdio: "inherit" });
+  const sunOffset = SUN_REGION.slice(SUN_REGION.indexOf("+")); // "+500+850"
+  execFileSync("magick", [cover, "-gravity", "NorthWest",
+    "(", sunRegion, ")", "-geometry", sunOffset, "-composite",
+    "-quality", "92", cover], { stdio: "inherit" });
+  rmSync(sunRegion, { force: true });
+
+  // The InDesign source bakes the byline as a bare "Alex Miller". The book is
+  // credited to the Buddha (author); the work was "translated & edited by Alex
+  // Miller & Claude Opus". We erase the baked name and stamp a fresh credit block
+  // (small italic eyebrow over the large combined names) so every surface that
+  // consumes cover.jpg (PDF cover page, EPUB/Kindle, audiobook art, download
+  // image) carries the same honest credit.
   //
-  // We also nudge the whole byline down SHIFT px so it sits closer to the URL.
-  // "Alex Miller" is baked into the raster on flat cream, so we lift its band and
-  // set it down lower, erasing the old spot with a clean cream patch sampled from
-  // empty cover area (matching JPEG texture → no seam). Geometry is measured
-  // against the 1600×2400 raster above: "Alex Miller" at (661,1818) — content-
-  // center x≈853, not image-center, because of the ~130px gold stripe — and the
-  // URL at (647,2009). Revisit these if TARGET_W or the InDesign layout changes.
-  const SHIFT = 64;
+  // Geometry is measured against the 1600×2400 raster above: the baked "Alex
+  // Miller" sits at content-center x≈853 (not image-center — the ~130px gold
+  // stripe shifts it), y≈1818, with the URL just below at y≈2009. We sample a
+  // clean cream swatch from empty cover area (right of the name) and scale it
+  // over the baked name (matching JPEG texture → no seam), then composite the new
+  // block centered on the content axis. Revisit these if TARGET_W or the InDesign
+  // layout changes.
+  // Type sizes follow standard cover hierarchy (rule of thirds; non-celebrity
+  // author byline ≈ 0.5–0.6× the title). The baked title "Plain Dharma" has
+  // cap-height ≈ 100px; GaramondLibre renders cap ≈ 0.73× pointsize.
+  //   • Names at pt86  → cap ≈ 63px. A long two-name byline is WIDTH-constrained,
+  //     so the names STACK; each line then stays under 0.75× the title width
+  //     (635px) — "& Claude Opus" ≈ 565px at pt86 — while the type runs large.
+  //   • Eyebrow at pt40 → cap ≈ 29px (italic, lightly tracked).
+  //   • URL at pt52     → cap ≈ 38px (a quiet footer).
+  // All four credit lines are trimmed to their ink and stacked with EVEN whitespace
+  // grouped by role so the credit is HONEST: Claude Opus translated (from the Pāli),
+  // Alex Miller edited — not "both did both". Each role is a small italic eyebrow
+  // tight above its name; the two role+name groups (and the URL) are separated by a
+  // larger, even gap (Gestalt proximity: role binds to its name).
+  const CONTENT_CX = 853; // content axis (offset from image center by the gold stripe)
+  const SUN_BOTTOM = 1461; // watercolor sun's base (measured)
+  const BAKED_URL_TOP = 2009; // where the InDesign source bakes the URL (we blot + restamp it)
+  const BOTTOM_MARGIN = 200; // credit block's footer margin from the canvas foot (2400)
+  const NAME_PT = 86;
+  const EYE_PT = 40;
+  const URL_PT = 52;
+  const TIGHT = 14; // role eyebrow → its name (within a group)
+  const GROUP = 50; // between role+name groups, and last name → URL (even)
   const eyebrowFont = join(ROOT, "src/app/fonts/GaramondLibre-Italic.otf");
-  const nameBand = join(OUT_DIR, "name-band.png");
-  const creamPatch = join(OUT_DIR, "cream-patch.png");
-  execFileSync("magick", [cover, "-crop", "600x100+550+1800", "+repage", nameBand], { stdio: "inherit" });
-  execFileSync("magick", [cover, "-crop", "600x100+550+2150", "+repage", creamPatch], { stdio: "inherit" });
+  const nameFont = join(ROOT, "src/app/fonts/GaramondLibre-Regular.otf");
+  const creamSwatch = join(OUT_DIR, "cream-swatch.png");
+  const tightImg = join(OUT_DIR, "gap-tight.png");
+  const groupImg = join(OUT_DIR, "gap-group.png");
+  const eyebrow1Img = join(OUT_DIR, "eyebrow1.png");
+  const name1Img = join(OUT_DIR, "name1.png");
+  const eyebrow2Img = join(OUT_DIR, "eyebrow2.png");
+  const name2Img = join(OUT_DIR, "name2.png");
+  const urlImg = join(OUT_DIR, "url.png");
+  const creditBlock = join(OUT_DIR, "credit-block.png");
+
+  // Render each credit line to its own ink-trimmed image.
+  const line = (out: string, font: string, pt: number, text: string, kerning: number) =>
+    execFileSync("magick", ["-background", "none", "-fill", "#1a1a1a", "-font", font,
+      "-pointsize", String(pt), "-kerning", String(kerning), `label:${text}`,
+      "-trim", "+repage", out], { stdio: "inherit" });
+  line(eyebrow1Img, eyebrowFont, EYE_PT, "translated by", 2);
+  line(name1Img, nameFont, NAME_PT, "Claude Opus", 0);
+  line(eyebrow2Img, eyebrowFont, EYE_PT, "edited by", 2);
+  line(name2Img, nameFont, NAME_PT, "Alex Miller", 0);
+  line(urlImg, nameFont, URL_PT, "plaindharma.com", 1);
+
+  // Stack centered: each role tight above its name, larger even gaps between groups.
+  execFileSync("magick", ["-size", `1x${TIGHT}`, "xc:none", tightImg], { stdio: "inherit" });
+  execFileSync("magick", ["-size", `1x${GROUP}`, "xc:none", groupImg], { stdio: "inherit" });
+  execFileSync("magick", ["-background", "none", "-gravity", "center",
+    eyebrow1Img, tightImg, name1Img, groupImg, eyebrow2Img, tightImg, name2Img, groupImg, urlImg,
+    "-append", "-trim", "+repage", creditBlock], { stdio: "inherit" });
+  const [bw, bh] = execFileSync("magick", ["identify", "-format", "%w %h", creditBlock])
+    .toString().trim().split(" ").map(Number);
+
+  // Placement. Default "footer": the whole credit (eyebrow → names → URL) is one
+  // evenly-spaced block grounded at the foot — the squint test favours this over the
+  // textbook "byline under image + URL footer" here, because the sun sits high and
+  // the lower half is sparse, which strands a mid-band byline. BYLINE_PLACE=undersun
+  // anchors the same block just below the sun instead.
+  const place = process.env.BYLINE_PLACE === "undersun" ? "undersun" : "footer";
+  const blockTop = place === "undersun"
+    ? SUN_BOTTOM + Math.round(NAME_PT * 0.73 * 2.0)
+    : 2400 - BOTTOM_MARGIN - bh;
+  const blockX = Math.round(CONTENT_CX - bw / 2);
+
+  // Cream swatch from an empty patch to the right of the baked name; reused to blot
+  // both the baked "Alex Miller" and the baked URL (matching JPEG texture → no seam).
+  execFileSync("magick", [cover, "-crop", "140x140+1240+1770", "+repage", creamSwatch], { stdio: "inherit" });
   execFileSync(
     "magick",
     [
       cover, "-gravity", "NorthWest",
-      creamPatch, "-geometry", "+550+1800", "-composite",
-      nameBand, "-geometry", `+550+${1800 + SHIFT}`, "-composite",
-      "(", "-background", "none", "-fill", "#1a1a1a",
-      "-font", eyebrowFont, "-pointsize", "32", "label:translated by", ")",
-      "-geometry", `+770+${1748 + SHIFT}`, "-composite",
+      "(", creamSwatch, "-resize", "560x210!", ")", "-geometry", "+573+1755", "-composite", // erase baked name
+      "(", creamSwatch, "-resize", "520x120!", ")", "-geometry", `+610+${BAKED_URL_TOP - 18}`, "-composite", // erase baked URL
+      "(", creditBlock, ")", "-geometry", `+${blockX}+${blockTop}`, "-composite",
       "-quality", "92", cover,
     ],
     { stdio: "inherit" }
   );
-  rmSync(nameBand, { force: true });
-  rmSync(creamPatch, { force: true });
+  for (const f of [creamSwatch, tightImg, groupImg, eyebrow1Img, name1Img, eyebrow2Img, name2Img, urlImg, creditBlock]) rmSync(f, { force: true });
 
   // Kindle's *ideal* cover ratio is 1.6:1 (1600×2560); the 6×9 source is 1.5:1.
   // Pad the byline'd cover into a Kindle-only variant (the other consumers keep

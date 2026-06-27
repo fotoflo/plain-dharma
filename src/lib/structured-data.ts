@@ -99,7 +99,14 @@ export function suttaJsonLd(locale: Locale, slug: SuttaSlug): JsonLdNode {
     mainEntityOfPage: url,
     image: getIllustrationUrl(slug),
     dateModified: suttaMtime(slug, locale).toISOString(),
-    author: { "@id": ORG_ID },
+    // Authored by the Buddha; translated by Claude Opus; edited by the human.
+    // The Chinese edition is edited by Yan Zhang rather than Alex Miller.
+    author: { "@type": "Person", name: "Gautama Buddha" },
+    translator: { "@type": "Person", name: "Claude Opus" },
+    editor: {
+      "@type": "Person",
+      name: locale === "zh" ? "Yan Zhang" : "Alex Miller",
+    },
     publisher: { "@id": ORG_ID },
     license: LICENSE_URL,
     isAccessibleForFree: true,

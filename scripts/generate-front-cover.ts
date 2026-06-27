@@ -33,7 +33,13 @@ const SUN_SRC = join(OUT_DIR, "cover-artwork.png");
 const TARGET_W = 1600;
 const RENDER_DPI = 320;
 const CREAM = "#F5EFE0";
-const SUN_SATURATION = 100; // full saturation (no lightening) — matches generate-cover.ts
+// The watercolor sun source (cover-artwork.png) is paler/washed compared to the
+// vivid sun baked into the InDesign book cover (cover.jpg, core ≈ srgb(245,151,29)).
+// Deepen saturation (and trim brightness a touch so red doesn't blow to 255) so the
+// audiobook/print covers don't look faded next to the book. The cream background is
+// re-keyed to CREAM after this, so only the orange is affected.
+const SUN_BRIGHTNESS = 96;
+const SUN_SATURATION = 135;
 
 const TEX_BIN_DIR = "/Library/TeX/texbin";
 const XELATEX_BIN = join(TEX_BIN_DIR, "xelatex");
@@ -51,7 +57,7 @@ function prepareSun(): string {
     "magick",
     [
       SUN_SRC,
-      "-modulate", `100,${SUN_SATURATION},100`,
+      "-modulate", `${SUN_BRIGHTNESS},${SUN_SATURATION},100`,
       // the artwork bg is ~#FBF7EE (near-white cream); key it to the exact page
       // cream so no lighter square shows through.
       "-fuzz", "6%", "-fill", CREAM, "-opaque", "#FBF7EE",
@@ -84,7 +90,7 @@ const TARGETS: Target[] = [
       TITLE_TOP: "1.0in", TITLE_PT: "39",
       SUBTITLE_GAP: "0.26in", SUBTITLE_PT: "13",
       SUN_GAP: "0.5in", SUN_W: "3.4in",
-      EYEBROW_PT: "12", EYEBROW_GAP: "0.05in",
+      EYEBROW_PT: "12", EYEBROW_GAP: "0.05in", GROUP_GAP: "0.16in",
       AUTHOR_PT: "17", URL_GAP: "0.16in", URL_PT: "12", BOTTOM: "0.7in",
     },
     outputs: [
@@ -106,7 +112,7 @@ const TARGETS: Target[] = [
       TITLE_TOP: "0.2in", TITLE_PT: "46",
       SUBTITLE_GAP: "0.3in", SUBTITLE_PT: "17",
       SUN_GAP: "0.4in", SUN_W: "3.0in",
-      EYEBROW_PT: "15", EYEBROW_GAP: "0.06in",
+      EYEBROW_PT: "15", EYEBROW_GAP: "0.06in", GROUP_GAP: "0.22in",
       AUTHOR_PT: "22", URL_GAP: "0.18in", URL_PT: "15", BOTTOM: "0.4in",
     },
     outputs: [{ file: "audiobook-cover.jpg", grayscale: false }],

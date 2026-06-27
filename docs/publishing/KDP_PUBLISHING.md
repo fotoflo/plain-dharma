@@ -15,7 +15,7 @@ Account / start: <https://kdp.amazon.com/en_US/bookshelf>
 | Purpose | Path | Notes |
 |---|---|---|
 | eBook manuscript | `dist/ebook/plain-dharma.epub` | EPUB 3, cover + CC0 page already embedded |
-| eBook cover art (front) | `dist/ebook/cover-kindle.jpg` | 1600×2560 (Kindle's ideal 1.6:1), cream-padded, carries the "translated by Alex Miller" byline — for the **Kindle** edition. (`cover.jpg` is the unpadded 6×9 used by the PDF cover page, EPUB interior, and audiobook art.) |
+| eBook cover art (front) | `dist/ebook/cover-kindle.jpg` | 1600×2560 (Kindle's ideal 1.6:1), cream-padded, carries the "translated by Claude Opus, edited by Alex Miller" byline — for the **Kindle** edition. (`cover.jpg` is the unpadded 6×9 used by the PDF cover page, EPUB interior, and audiobook art.) |
 | Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 48 pp, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
 | Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 48 pp, grayscale, white paper, **cover-free** |
 | Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.35×8.25, back+spine+front, spine 0.108", barcode = print ISBN ‑38‑1 |
@@ -43,22 +43,22 @@ page and are NOT for KDP upload.
 | Edition number | `1` |
 | Primary Author or Contributor — First | `Gautama` |
 | Primary Author or Contributor — Last | `Buddha` |
-| Contributors → role `Translator` | `Alex` / `Miller` |
+| Contributors → role `Translator` | `Claude` / `Opus` |
+| Contributors → role `Editor` | `Alex` / `Miller` |
 | Description | *(paste the block below)* |
 
 > **Byline / credit — read before filling these fields.** KDP's primary field is
 > labelled **"Primary Author *or* Contributor"** — you are **not** forced to call
 > yourself the author, and the Contributors section has a **role dropdown**
 > (Translator, Editor, …). So enter the source attribution **Gautama Buddha** as the
-> primary name and add **Alex Miller** as a **Translator** contributor. This matches
-> Bowker exactly (`Translated with commentary by · Compiled by · Editor` — which says
-> explicitly **do not check "Author"** for Alex), keeps you from overstating your
-> relationship to 2,600-year-old suttas, and clarifies the rights story: the
-> *teachings* are public-domain (Buddha), your *English rendering* is your copyright
-> (the "I own the copyright" answer below). "Gautama Buddha" is also a real Amazon
-> author entity, which helps discoverability. Optionally Add Another contributor as
-> **Editor** (Alex Miller) to mirror Bowker's full function list — or keep just
-> Translator for a cleaner "Gautama Buddha · Translated by Alex Miller" byline.
+> primary name, add **Claude Opus** as a **Translator** contributor, and add
+> **Alex Miller** as an **Editor** contributor. This is the honest split — Claude
+> Opus produced the translation, Alex edited it line by line — keeps you from
+> overstating your relationship to 2,600-year-old suttas, and clarifies the rights
+> story: the *teachings* are public-domain (Buddha) and the whole edition is released
+> CC0 (the rights answer below). **Do not check "Author"** for Alex. "Gautama Buddha"
+> is also a real Amazon author entity, which helps discoverability. The resulting
+> byline reads "Gautama Buddha · Translated by Claude Opus · Edited by Alex Miller".
 | Publishing rights | **⚠️ DECIDE** — see "Publishing rights" note below |
 | Primary audience — Sexually explicit images | No |
 | Reading age | *(leave blank)* |
@@ -148,8 +148,9 @@ Create it from the **same title** so KDP links the Kindle + paperback editions
 
 Same as Kindle Screen 1: Language `English`, Title `Plain Dharma`, Subtitle
 `The Buddha's Foundational Teachings in Modern English`, primary name
-`Gautama` / `Buddha` with `Alex` / `Miller` as a **Translator** contributor (see the
-Byline note in Product A), the same Description, Categories, and Keywords, and the
+`Gautama` / `Buddha` with `Claude` / `Opus` as a **Translator** contributor and
+`Alex` / `Miller` as an **Editor** contributor (see the Byline note in Product A),
+the same Description, Categories, and Keywords, and the
 same **⚠️ DECIDE** Publishing-rights choice.
 
 ## Screen 2 — Paperback Content

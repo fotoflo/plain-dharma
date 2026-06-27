@@ -24,7 +24,13 @@ import { fileURLToPath } from "node:url";
 
 import { getSuttasInOrder, DEFAULT_LOCALE } from "@plain-dharma/content";
 import { getAudioManifest } from "../src/content/audio.js";
-import { AUTHOR, BOOK_TITLE, PUBLISHER } from "./lib/book-source.js";
+import {
+  ORIGINAL_AUTHOR,
+  TRANSLATOR,
+  BYLINE,
+  BOOK_TITLE,
+  PUBLISHER,
+} from "./lib/book-source.js";
 import { publishToDownloads } from "./lib/publish.js";
 
 const SUTTAS_IN_ORDER = getSuttasInOrder(DEFAULT_LOCALE);
@@ -241,14 +247,17 @@ function writeChaptersMetadata(chapters: Chapter[]): string {
   const header = [
     ";FFMETADATA1",
     `title=${BOOK_TITLE}`,
-    `artist=${AUTHOR}`,
+    // The author is the Buddha; Claude Opus translated, Alex Miller edited.
+    // M4B has no editor/translator role, so artist = author, composer = translator,
+    // and the full credit lives in the comment.
+    `artist=${ORIGINAL_AUTHOR}`,
     `album=${BOOK_TITLE}`,
-    `album_artist=${AUTHOR}`,
-    `composer=${AUTHOR}`,
+    `album_artist=${ORIGINAL_AUTHOR}`,
+    `composer=${TRANSLATOR}`,
     `genre=Religion/Spirituality`,
     `date=${new Date().getFullYear()}`,
     `publisher=${PUBLISHER}`,
-    `comment=Plain Dharma — six foundational Buddhist suttas in modern English. CC0 public domain.`,
+    `comment=Plain Dharma — six foundational Buddhist suttas in modern English. ${BYLINE}. CC0 public domain.`,
   ].join("\n");
 
   const chapterBlocks = chapters

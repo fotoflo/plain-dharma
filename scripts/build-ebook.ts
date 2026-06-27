@@ -25,6 +25,9 @@ import { fileURLToPath } from "node:url";
 import { SUTTAS } from "@plain-dharma/content";
 import {
   AUTHOR,
+  ORIGINAL_AUTHOR,
+  TRANSLATOR,
+  EDITOR,
   BOOK_SUBTITLE,
   BOOK_TITLE,
   PUBLISHER,
@@ -93,8 +96,12 @@ function buildMetadataYaml(): string {
     `subtitle: ${JSON.stringify(BOOK_SUBTITLE)}`,
     "creator:",
     "  - role: author",
-    `    text: ${JSON.stringify(AUTHOR)}`,
+    `    text: ${JSON.stringify(ORIGINAL_AUTHOR)}`,
     "contributor:",
+    "  - role: trl",
+    `    text: ${JSON.stringify(TRANSLATOR)}`,
+    "  - role: edt",
+    `    text: ${JSON.stringify(EDITOR)}`,
     "  - role: cov",
     `    text: ${JSON.stringify(AUTHOR)}`,
     "  - role: cov",

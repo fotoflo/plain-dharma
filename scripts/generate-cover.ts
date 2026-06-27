@@ -118,17 +118,19 @@ function main(): void {
   const CONTENT_CX = 853; // content axis (offset from image center by the gold stripe)
   const SUN_BOTTOM = 1461; // watercolor sun's base (measured)
   const BAKED_URL_TOP = 2009; // where the InDesign source bakes the URL (we blot + restamp it)
-  const BOTTOM_MARGIN = 200; // credit block's footer margin from the canvas foot (2400)
+  const BOTTOM_MARGIN = 150; // credit block's footer margin from the canvas foot (2400)
   const NAME_PT = 86;
   const EYE_PT = 40;
   const URL_PT = 52;
   const TIGHT = 14; // role eyebrow → its name (within a group)
-  const GROUP = 50; // between role+name groups, and last name → URL (even)
+  const GROUP = 50; // between the two role+name groups
+  const URL_GAP = 92; // names → URL: extra breathing room so the URL reads as a footer
   const eyebrowFont = join(ROOT, "src/app/fonts/GaramondLibre-Italic.otf");
   const nameFont = join(ROOT, "src/app/fonts/GaramondLibre-Regular.otf");
   const creamSwatch = join(OUT_DIR, "cream-swatch.png");
   const tightImg = join(OUT_DIR, "gap-tight.png");
   const groupImg = join(OUT_DIR, "gap-group.png");
+  const urlGapImg = join(OUT_DIR, "gap-url.png");
   const eyebrow1Img = join(OUT_DIR, "eyebrow1.png");
   const name1Img = join(OUT_DIR, "name1.png");
   const eyebrow2Img = join(OUT_DIR, "eyebrow2.png");
@@ -147,11 +149,13 @@ function main(): void {
   line(name2Img, nameFont, NAME_PT, "Alex Miller", 0);
   line(urlImg, nameFont, URL_PT, "plaindharma.com", 1);
 
-  // Stack centered: each role tight above its name, larger even gaps between groups.
+  // Stack centered: each role tight above its name, a larger gap between the two
+  // groups, and a larger gap still before the URL so it sits apart as a footer.
   execFileSync("magick", ["-size", `1x${TIGHT}`, "xc:none", tightImg], { stdio: "inherit" });
   execFileSync("magick", ["-size", `1x${GROUP}`, "xc:none", groupImg], { stdio: "inherit" });
+  execFileSync("magick", ["-size", `1x${URL_GAP}`, "xc:none", urlGapImg], { stdio: "inherit" });
   execFileSync("magick", ["-background", "none", "-gravity", "center",
-    eyebrow1Img, tightImg, name1Img, groupImg, eyebrow2Img, tightImg, name2Img, groupImg, urlImg,
+    eyebrow1Img, tightImg, name1Img, groupImg, eyebrow2Img, tightImg, name2Img, urlGapImg, urlImg,
     "-append", "-trim", "+repage", creditBlock], { stdio: "inherit" });
   const [bw, bh] = execFileSync("magick", ["identify", "-format", "%w %h", creditBlock])
     .toString().trim().split(" ").map(Number);
@@ -181,7 +185,7 @@ function main(): void {
     ],
     { stdio: "inherit" }
   );
-  for (const f of [creamSwatch, tightImg, groupImg, eyebrow1Img, name1Img, eyebrow2Img, name2Img, urlImg, creditBlock]) rmSync(f, { force: true });
+  for (const f of [creamSwatch, tightImg, groupImg, urlGapImg, eyebrow1Img, name1Img, eyebrow2Img, name2Img, urlImg, creditBlock]) rmSync(f, { force: true });
 
   // Kindle's *ideal* cover ratio is 1.6:1 (1600×2560); the 6×9 source is 1.5:1.
   // Pad the byline'd cover into a Kindle-only variant (the other consumers keep

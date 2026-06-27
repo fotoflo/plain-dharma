@@ -2,6 +2,27 @@
 
 Branch: `chore/credit-claude-translator`
 
+## Status (read first)
+
+- Core credit work is **committed + pushed** as `76dd1c0`.
+- The branch is **shared / concurrently edited**: it also carries unrelated
+  "compare reader" commits and a later `docs(compare)` commit (`9a2a7fb`) from
+  another agent. Don't assume the branch is only this work; rebase/merge carefully.
+- **Cover refinements + asset relocation are committed** on top of `76dd1c0`:
+  URL footer breathing room (`URL_GAP=92`), credit block lowered
+  (`BOTTOM_MARGIN=150`), and the original sun art moved into git (below). The
+  cover may still change — see the open design decision below.
+
+## Source assets (originals now tracked)
+
+- `scripts/assets/PlainDharma_Cover.pdf` — InDesign book cover (6×9 raster source).
+- `scripts/assets/cover-artwork.png` — original watercolor sun art (tex covers' sun).
+  **Was previously stranded in `dist/ebook/` (gitignored build dir) and would have
+  been lost on a clean build.** Moved to `scripts/assets/` and `SUN_SRC` in
+  `generate-front-cover.ts` repointed. Everything else under `dist/` is generated
+  build output (the illustration jpgs are build-copies of the offsite-backed
+  `public/illustrations` originals; audio/illustrations stay offsite by design).
+
 ## Goal
 
 Credit the whole book honestly and consistently on **every** surface:
@@ -33,7 +54,29 @@ Text/metadata surfaces (all now role-split, consistent):
 Covers (fully redesigned, role-split credit):
 - `scripts/generate-cover.ts` (6×9 raster from InDesign PDF) and `scripts/templates/front-cover.tex` + `scripts/generate-front-cover.ts` (5×8 print + square audiobook).
 - Layout is **rule-driven** (see code comments): name size ≈ 0.5–0.6× the title cap-height; long two-name byline **stacks** so it stays < 0.75× title width; credit grouped role→name (tight) with even between-group gaps; URL re-stamped as a lower bottom-margin footer (the baked InDesign URL sat too high); golden-ratio/measured placement.
-- **Sun saturation**: the baked InDesign sun read as over-saturated next to the audiobook sun. Fixed by desaturating **only the sun's region** (`SUN_SATURATION=84` in `generate-cover.ts`) — saturation-only (no brightness) so the surrounding cream and the gold stripe are untouched (no seam). The tex/audiobook sun is deepened from its pale source via `SUN_BRIGHTNESS=96`/`SUN_SATURATION=135` in `generate-front-cover.ts`.
+- **Sun saturation**: the baked InDesign sun read as over-saturated next to the audiobook sun. Fixed by desaturating **only the sun's region** (`SUN_SATURATION=84` + `SUN_REGION` in `generate-cover.ts`) — saturation-only (no brightness) so the surrounding cream and the gold stripe are untouched (no seam). The tex/audiobook sun is deepened from its pale source via `SUN_BRIGHTNESS=96`/`SUN_SATURATION=135` in `generate-front-cover.ts`.
+- **Credit spacing**: role→name `TIGHT=14`, between-group `GROUP=50`, names→URL `URL_GAP=92` (footer breathing room); block placed `BOTTOM_MARGIN=150` from the foot.
+
+## Open cover design decision (NOT resolved — owner is mid-review)
+
+After a critique, the cover is "clean but under-composed". The credit block has been
+over-iterated and is fine; **do not keep nudging it.** The real levers, if the owner
+wants to push it from clean → composed:
+
+1. **Hollow vertical rhythm.** Elements cluster top (title + sun) and bottom (credits),
+   leaving a large empty cream band between the sun and the credit block. Reads as a
+   gap, not intentional space.
+2. **The sun is small/timid** for the only hero image — floats in the upper-middle.
+   Likely fix: enlarge and/or lower the sun so title → sun → credits flows without the
+   void. (Raster sun comes from the InDesign PDF; size is baked — enlarging means
+   re-doing the InDesign art or compositing a scaled sun. The tex covers control sun
+   size via `SUN_W`.)
+3. **Gold stripe out-saturates the sun.** We softened the sun but the decorative
+   binding stripe is still full-vivid (`~251,198,8`) — the ornament now out-colours the
+   subject. Either let the sun hold its own again, or bring the stripe down too.
+
+Owner had not picked a direction when this handoff was written. Confirm before
+making cover changes; the saturation/placement constants above are the knobs.
 
 ## Remaining (NOT done — pick up here)
 

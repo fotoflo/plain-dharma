@@ -72,3 +72,11 @@ supabase/.temp/
 # claude code agent worktrees (isolated branches, not part of this tree)
 .claude/worktrees/
 .env*.local
+# Claude Code: share project config, exclude local/secret files
+.claude/*
+!.claude/settings.json
+!.claude/skills/
+!.claude/commands/
+!.claude/agents/
+.claude/settings.local.json
+.claude/.credentials.json

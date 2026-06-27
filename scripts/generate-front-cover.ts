@@ -8,7 +8,7 @@
  * raster) so it renders crisp at any trim, and pairs with the generated back
  * cover (same cream, same gold stitched stripe).
  *
- * The sun art (dist/ebook/cover-artwork.png) is desaturated to match the −28%
+ * The sun art (scripts/assets/cover-artwork.png) is desaturated to match the −28%
  * cover (generate-cover.ts) and flattened onto cream before embedding.
  *
  * Output: dist/ebook/front-cover-print-color.jpg (5.25×8.25 = 5×8 + 0.125 bleed),
@@ -28,7 +28,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = join(ROOT, "dist", "ebook");
 const FONTS_DIR = join(ROOT, "src", "app", "fonts");
 const TEMPLATE = join(ROOT, "scripts", "templates", "front-cover.tex");
-const SUN_SRC = join(OUT_DIR, "cover-artwork.png");
+// Original watercolor sun art — a committed SOURCE asset (kept in scripts/assets
+// alongside the InDesign cover PDF, NOT in dist/ which is gitignored build output).
+const SUN_SRC = join(ROOT, "scripts", "assets", "cover-artwork.png");
 
 const TARGET_W = 1600;
 const RENDER_DPI = 320;

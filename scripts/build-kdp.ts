@@ -16,7 +16,7 @@
  *   4. render kdp-wrap-cover.tex with that spine → xelatex (×2) → cover PDF
  *
  * Cover art is the GENERATED 5×8 print pair (front-cover-print-color.jpg from
- * generate-front-cover.ts, back-cover-print-color.jpg from generate-back-cover.ts
+ * render-covers.ts, back-cover-print-color.jpg from render-covers.ts
  * — the latter carries the paperback ISBN barcode). The 6×9 designer cover.jpg
  * is NOT used here (wrong ratio for 5×8). Run those two generators first.
  *
@@ -272,8 +272,8 @@ function main(): void {
   for (const img of [FRONT_COVER, BACK_COVER]) {
     if (!existsSync(img)) {
       console.error(
-        `ERROR: missing cover art ${img}. Run \`pnpm generate-front-cover\` and ` +
-          `\`pnpm generate-back-cover\` first.`
+        `ERROR: missing cover art ${img}. Run \`pnpm render-covers\` and ` +
+          `\`pnpm render-covers\` first.`
       );
       process.exit(1);
     }

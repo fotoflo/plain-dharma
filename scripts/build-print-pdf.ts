@@ -45,7 +45,7 @@ const FONTS_DIR = join(ROOT, "src", "app", "fonts");
 const TEMPLATE_DIR = join(ROOT, "scripts", "templates");
 const OUT_DIR = join(ROOT, "dist", "print");
 // Print-trim back covers (5.25×8.25 + bleed) live alongside the ebook artifacts;
-// generate-back-cover.ts emits a color and a grayscale variant. Appended as the
+// render-covers.ts emits a color and a grayscale variant. Appended as the
 // final page of each interior so the print PDFs are self-contained books. (KDP
 // uploads still want a separate wraparound — use these same images for it.)
 const EBOOK_DIR = join(ROOT, "dist", "ebook");
@@ -148,7 +148,7 @@ function renderBackCover(variant: Variant, variantDir: string): string | null {
   if (!existsSync(imgPath)) {
     console.warn(
       `[build-print-pdf:${variant}] no back cover at ${imgPath} — building ` +
-        `without one. Run \`pnpm generate-back-cover\` first to include it.`
+        `without one. Run \`pnpm render-covers\` first to include it.`
     );
     return null;
   }

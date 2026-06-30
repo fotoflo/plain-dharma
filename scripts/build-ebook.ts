@@ -12,7 +12,7 @@
  *         retained as build artifacts for debugging).
  *
  * Cover (dist/ebook/cover.jpg) is attached if present; produced separately by
- * scripts/generate-cover.ts.
+ * scripts/render-covers.ts.
  *
  * Run: pnpm build-ebook
  */
@@ -160,7 +160,7 @@ function appendBackCover(md: string): string {
   if (!existsSync(BACK_COVER_PATH)) {
     console.warn(
       "[build-ebook] no back-cover.jpg found — building EPUB without a back " +
-        "cover. Run `pnpm generate-back-cover` to create one."
+        "cover. Run `pnpm render-covers` to create one."
     );
     return md;
   }
@@ -198,7 +198,7 @@ function runPandoc(): void {
   } else {
     console.warn(
       "[build-ebook] no cover.jpg found — building EPUB without cover. " +
-        "Run `pnpm generate-cover` to create one."
+        "Run `pnpm render-covers` to create one."
     );
   }
   args.push(bookMd);

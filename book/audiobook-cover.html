@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Plain Dharma — audiobook cover (square)</title>
+<style>
+  /* Square sibling of book/front-cover.html for ACX / Audible (min 2400²;
+     rendered to 3000²). Same A design. A single spine band reads as a stray
+     book-spine on a square, so instead the gold + red-stitch motif wraps the
+     whole cover as a STITCHED BORDER — frames the art and fills the square. */
+  @font-face {
+    font-family: "Garamond Libre";
+    src: url("fonts/GaramondLibre-Regular.otf") format("opentype");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "Garamond Libre";
+    src: url("fonts/GaramondLibre-Italic.otf") format("opentype");
+    font-weight: 400; font-style: italic; font-display: swap;
+  }
+  @font-face {
+    font-family: "Garamond Libre";
+    src: url("fonts/GaramondLibre-Bold.otf") format("opentype");
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "Geist";
+    src: url("fonts/Geist-Variable.woff2") format("woff2-variations");
+    font-weight: 100 900; font-style: normal; font-display: swap;
+  }
+
+  :root {
+    --cover-paper:  #F9F1DC;
+    --cover-band:   #FBC608;
+    --cover-ink:    #1F1812;
+    --cover-stitch: #8B3A0F;
+    --cover-thread: #E01B0E;
+    --cover-mute:   rgba(31, 24, 18, 0.62);
+    --cover-faint:  rgba(31, 24, 18, 0.42);
+  }
+
+  html, body { background: #2a2a2a; margin: 0; padding: 0; }
+
+  /* 1:1 @ 2× → 3000×3000. */
+  .cover {
+    position: relative;
+    width: 1500px;
+    height: 1500px;
+    background: var(--cover-paper);
+    color: var(--cover-ink);
+    font-family: "Garamond Libre", Georgia, serif;
+    overflow: hidden;
+    margin: 24px auto;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Gold border frame + dotted red stitch inset just inside it. */
+  .frame {
+    position: absolute;
+    inset: 0;
+    border: 40px solid var(--cover-band);
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+  .stitch-frame {
+    position: absolute;
+    inset: 58px;
+    border: 4px dashed var(--cover-thread);
+    pointer-events: none;
+  }
+
+  .col {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 118px;
+    right: 118px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .masthead { margin-top: 116px; }
+  .eyebrow {
+    font-family: "Geist", system-ui, sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--cover-stitch);
+    margin: 0;
+  }
+  .rule {
+    height: 2px;
+    width: 120px;
+    background: var(--cover-stitch);
+    opacity: 0.6;
+    margin: 30px auto 0;
+  }
+
+  .title {
+    margin: 40px 0 0;
+    font-size: 212px;
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: -0.022em;
+    color: var(--cover-ink);
+  }
+  .title .l2 { display: block; }
+
+  .subtitle {
+    margin: 38px auto 0;
+    font-style: italic;
+    font-size: 38px;
+    line-height: 1.28;
+    letter-spacing: -0.005em;
+    color: var(--cover-mute);
+    max-width: 720px;
+  }
+
+  .scene {
+    position: relative;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .scene img {
+    position: relative;
+    width: 660px;          /* tight-cropped sun, rendered at true width */
+    height: auto;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .byline { margin-bottom: 116px; }
+  .author {
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1.32;
+    letter-spacing: -0.005em;
+    color: var(--cover-mute);
+    margin: 0;
+  }
+  .author .name { color: var(--cover-ink); }
+</style>
+</head>
+<body>
+
+<article class="cover">
+  <div class="col">
+    <div class="masthead">
+      <p class="eyebrow">Six Foundational Teachings</p>
+      <div class="rule"></div>
+    </div>
+
+    <h1 class="title">Plain<span class="l2">Dharma</span></h1>
+
+    <div class="scene">
+      <img src="assets/cover-sun-tight.png" alt="A watercolor sun rising over a still horizon.">
+    </div>
+
+    <div class="byline">
+      <p class="author">Translated by <span class="name">Claude Opus</span></p>
+      <p class="author">Edited by <span class="name">Alex Miller</span></p>
+    </div>
+  </div>
+
+  <div class="frame" aria-hidden="true"></div>
+  <div class="stitch-frame" aria-hidden="true"></div>
+</article>
+
+</body>
+</html>

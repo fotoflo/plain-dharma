@@ -25,6 +25,7 @@ import { fileURLToPath } from "node:url";
 import { DEFAULT_LOCALE, getSuttasInOrder } from "@plain-dharma/content";
 
 import { ean13Svg } from "./lib/ean13.js";
+import { publishToDownloads } from "./lib/publish.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = join(ROOT, "dist", "ebook");
@@ -89,6 +90,8 @@ type Output = {
   shave?: number;
   /** Output directory; defaults to dist/ebook. */
   dir?: string;
+  /** Also copy the written file into public/downloads/ under this name (reader-facing). */
+  publishAs?: string;
 };
 
 type Target = {
@@ -123,7 +126,7 @@ const TARGETS: Target[] = [
     ch: 2400,
     scale: 2, // → 3200×4800 master
     outputs: [
-      { file: "cover.jpg", resizeW: 1600 }, // EPUB interior + PDF cover page
+      { file: "cover.jpg", resizeW: 1600, publishAs: "plain-dharma-cover.jpg" }, // EPUB/PDF cover page + reader download
     ],
   },
   {
@@ -162,7 +165,7 @@ const TARGETS: Target[] = [
         BAND_W: "130", STITCH_R: "112",
         PAD_TOP: "160", PAD_LEFT: "150", PAD_RIGHT: "240", PAD_BOT: "160",
       }),
-    outputs: [{ file: "back-cover.jpg", resizeW: 1600 }],
+    outputs: [{ file: "back-cover.jpg", resizeW: 1600, publishAs: "plain-dharma-back-cover.jpg" }],
   },
 ];
 
@@ -240,6 +243,7 @@ function writeOutput(master: string, out: Output): void {
   );
   execFileSync("magick", args, { stdio: "inherit" });
   console.log(`[render-covers] wrote ${dest}`);
+  if (out.publishAs) publishToDownloads(dest, out.publishAs);
 }
 
 function main(): void {

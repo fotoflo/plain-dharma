@@ -7,6 +7,7 @@
  * exactly which file goes where. Runs last in `build-all`.
  */
 
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,9 +15,42 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
 const INDEX = join(DIST, "index.html");
+const THUMBS = join(DIST, "_thumbs"); // skipped by the walk (leading _)
 
 const IMG = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 const SKIP = /^(_|\.)|index\.html$/; // temp files, dotfiles, the index itself
+
+/** Rasterize a PDF's first page to a small PNG thumb (cover PDFs → wraparound). */
+function pdfThumb(rel: string): string | null {
+  const src = join(DIST, rel);
+  if (!existsSync(src)) return null;
+  if (!existsSync(THUMBS)) mkdirSync(THUMBS, { recursive: true });
+  const baseNoExt = join(THUMBS, rel.replace(/[/\\]/g, "__").replace(/\.[^.]+$/, ""));
+  try {
+    execFileSync(
+      "pdftoppm",
+      ["-png", "-singlefile", "-f", "1", "-l", "1", "-scale-to-x", "440", "-scale-to-y", "-1", src, baseNoExt],
+      { stdio: "ignore" },
+    );
+  } catch {
+    return null;
+  }
+  return existsSync(`${baseNoExt}.png`) ? relative(DIST, `${baseNoExt}.png`) : null;
+}
+
+/** A preview image for any artifact: itself if an image, a page raster for PDFs,
+ *  the matching cover art for EPUB/M4B. Null → fall back to an extension chip. */
+function thumbFor(rel: string): string | null {
+  const ext = extname(rel).toLowerCase();
+  if (IMG.has(ext)) return rel;
+  if (ext === ".pdf") return pdfThumb(rel);
+  const coverFor: Record<string, string> = {
+    ".epub": "ebook/cover.jpg",
+    ".m4b": "audiobook/audiobook-cover.jpg",
+  };
+  const c = coverFor[ext];
+  return c && existsSync(join(DIST, c)) ? c : null;
+}
 
 function human(bytes: number): string {
   if (bytes >= 1 << 20) return `${(bytes / (1 << 20)).toFixed(1)} MB`;
@@ -44,9 +78,11 @@ function card(rel: string): string {
   if (!existsSync(full)) return "";
   const size = human(statSync(full).size);
   const name = rel.split("/").pop()!;
-  const thumb = IMG.has(extname(rel).toLowerCase())
-    ? `<img src="${rel}" alt="">`
-    : `<div class="ext">${extname(rel).slice(1).toUpperCase() || "FILE"}</div>`;
+  const t = thumbFor(rel);
+  const ext = extname(rel).slice(1).toUpperCase() || "FILE";
+  const thumb = t
+    ? `<img src="${t}" alt=""><span class="tag">${ext}</span>`
+    : `<div class="ext">${ext}</div>`;
   return `<a class="item" href="${rel}"><div class="thumb">${thumb}</div>` +
     `<div class="meta"><span class="fn">${name}</span><span class="sz">${size}</span></div></a>`;
 }
@@ -133,8 +169,9 @@ function main(): void {
   .grid{display:flex;flex-wrap:wrap;gap:14px;}
   .item{display:flex;flex-direction:column;width:150px;text-decoration:none;color:inherit;background:#201d16;border-radius:8px;overflow:hidden;transition:.12s;}
   .item:hover{transform:translateY(-2px);background:#28241b;}
-  .thumb{height:150px;display:flex;align-items:center;justify-content:center;background:#0f0e0a;}
+  .thumb{position:relative;height:190px;display:flex;align-items:center;justify-content:center;background:#0f0e0a;}
   .thumb img{max-width:100%;max-height:100%;object-fit:contain;background:#fff;}
+  .tag{position:absolute;bottom:6px;right:6px;background:rgba(21,20,15,.82);color:#fbc608;font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 5px;border-radius:3px;}
   .ext{font-size:22px;font-weight:700;letter-spacing:.08em;color:#fbc608;opacity:.85;}
   .meta{padding:8px 10px;display:flex;flex-direction:column;gap:2px;}
   .fn{font-size:11px;word-break:break-all;} .sz{font-size:11px;opacity:.5;}

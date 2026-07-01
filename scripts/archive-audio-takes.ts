@@ -4,13 +4,15 @@
  * it never touches the public `assets` bucket the live site plays from.
  *
  * Structure (private `audio-archive` bucket):
- *   <locale>/<slug>/<section>/<kind>-<sha8>.mp3
+ *   <locale>/<slug>/<section>/<date>-<kind>[-takeN].mp3
+ *     date = the take's recording date (file mtime, YYYY-MM-DD)
  *     kind ∈ current | fast | orig | candidate   (inferred from the local path)
- *   _index.json — every take: { locale, slug, section, kind, sha, bytes, src }
+ *     -takeN only if a DIFFERENT take already exists for that date+kind
+ *   _index.json — every take: { locale, slug, section, kind, date, sha, bytes, src }
  *
- * Content-addressed: identical bytes → same sha8 → same path, so re-running
- * after a new recording only ADDS the new takes. Old takes stay forever. Run it
- * before/after any `pnpm generate-audio` to keep the full history.
+ * Human-readable + collision-proof: a new recording lands under a new dated
+ * name and never overwrites an older one. A content hash underneath means
+ * identical bytes are skipped (no dupes). Run before/after any generate-audio.
  *
  * Requires in .env.local: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY
  * (or SUPABASE_SERVICE_ROLE_KEY). Run:
@@ -19,7 +21,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { createHash } from "node:crypto";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -36,7 +38,7 @@ if (!url || !key) {
 }
 const supabase = createClient(url, key, { auth: { persistSession: false } });
 
-type Take = { locale: string; slug: string; section: string; kind: string; sha: string; bytes: number; src: string; dest: string };
+type Take = { locale: string; slug: string; section: string; kind: string; date: string; sha: string; bytes: number; src: string; dest: string };
 
 function* walk(dir: string): Generator<string> {
   for (const e of readdirSync(dir, { withFileTypes: true })) {
@@ -82,6 +84,7 @@ async function loadIndex(): Promise<Record<string, Take>> {
 async function main(): Promise<void> {
   await ensureBucket();
   const index = await loadIndex();
+  const seenSha = new Set(Object.values(index).map((t) => t.sha));
 
   const files = [...walk(AUDIO_DIR)];
   let added = 0;
@@ -92,9 +95,14 @@ async function main(): Promise<void> {
     const { locale, slug, section, kind } = classify(rel);
     const buf = readFileSync(file);
     const sha = createHash("sha256").update(buf).digest("hex").slice(0, 8);
-    const dest = `${locale}/${slug}/${section}/${kind}-${sha}.mp3`;
     byKind[kind] = (byKind[kind] ?? 0) + 1;
-    if (index[dest]) continue; // already archived (same bytes)
+    if (seenSha.has(sha)) continue; // identical bytes already archived — no dupe
+
+    const date = statSync(file).mtime.toISOString().slice(0, 10);
+    const base = `${locale}/${slug}/${section}/${date}-${kind}`;
+    let dest = `${base}.mp3`;
+    for (let n = 2; index[dest]; n++) dest = `${base}-take${n}.mp3`; // same date+kind, different audio
+
     const { error } = await supabase.storage
       .from(BUCKET)
       .upload(dest, buf, { contentType: "audio/mpeg", upsert: true });
@@ -102,7 +110,8 @@ async function main(): Promise<void> {
       console.error(`  ✗ ${dest}: ${error.message}`);
       process.exit(1);
     }
-    index[dest] = { locale, slug, section, kind, sha, bytes: buf.length, src: rel, dest };
+    index[dest] = { locale, slug, section, kind, date, sha, bytes: buf.length, src: rel, dest };
+    seenSha.add(sha);
     added += 1;
     if (added % 15 === 0) console.log(`  …+${added} new takes`);
   }

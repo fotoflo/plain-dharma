@@ -28,6 +28,7 @@ import { ean13Svg } from "./lib/ean13.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = join(ROOT, "dist", "ebook");
+const AUDIOBOOK_DIR = join(ROOT, "dist", "audiobook"); // sits with the .m4b
 const BOOK_DIR = join(ROOT, "book");
 const STAGE_INSET = 24; // the .cover offset inside the dark stage (see the HTML)
 
@@ -86,6 +87,8 @@ type Output = {
   resizeW?: number;
   /** Shave this many px off every edge of the master first (e.g. to drop bleed). */
   shave?: number;
+  /** Output directory; defaults to dist/ebook. */
+  dir?: string;
 };
 
 type Target = {
@@ -128,7 +131,7 @@ const TARGETS: Target[] = [
     cw: 1500,
     ch: 1500,
     scale: 2, // → 3000×3000 (ACX min 2400²)
-    outputs: [{ file: "audiobook-cover.jpg" }],
+    outputs: [{ file: "audiobook-cover.jpg", dir: AUDIOBOOK_DIR }],
   },
   // Back cover — print trim (5.25×8.25 + bleed), feeds build-kdp's wraparound.
   {
@@ -223,7 +226,9 @@ function renderMaster(chrome: string, t: Target): string {
 }
 
 function writeOutput(master: string, out: Output): void {
-  const dest = join(OUT_DIR, out.file);
+  const outDir = out.dir ?? OUT_DIR;
+  if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
+  const dest = join(outDir, out.file);
   const args: string[] = [master];
   if (out.shave) args.push("-shave", `${out.shave}x${out.shave}`, "+repage");
   if (out.resizeW) args.push("-resize", `${out.resizeW}x`);

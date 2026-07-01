@@ -47,8 +47,9 @@ const COLOPHON_DIR = join(AUDIO_DIR, "_colophon");
 const CLOSING_DIR = join(AUDIO_DIR, "_closing");
 const OUT_DIR = join(ROOT, "dist", "audiobook");
 // Use the SQUARE cover — audiobook players (Apple Books, Audible, Spotify) want
-// 1:1 art, not the 6×9 cover.jpg. render-covers.ts emits this 3000² JPG.
-const COVER_PATH = join(ROOT, "dist", "ebook", "audiobook-cover.jpg");
+// 1:1 art, not the 6×9 cover.jpg. render-covers.ts emits this 3000² JPG into
+// dist/audiobook/ (alongside the .m4b), so all audiobook upload assets co-locate.
+const COVER_PATH = join(ROOT, "dist", "audiobook", "audiobook-cover.jpg");
 
 // AAC bitrate. 64k mono is the speech-podcast sweet spot — clear, ~half the
 // MP3 source size. Audiobook listening doesn't benefit from higher bitrates.

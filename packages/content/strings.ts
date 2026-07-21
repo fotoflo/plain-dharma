@@ -192,7 +192,7 @@ const en = {
     kicker: "Privacy",
     h1: "Privacy",
     lastUpdatedLabel: "Last updated",
-    lastUpdated: "31 May 2026",
+    lastUpdated: "21 July 2026",
     pIntro:
       "Plain Dharma is a free reading site and app, dedicated to the public domain. We try to keep things simple and to ask for as little as possible — but the site does use a few ordinary services to run, and if you choose to, you can create an account to sync your highlights and notes. This page explains, plainly, what we collect, when, and why. We do not sell your data.",
     h2Analytics: "Analytics",
@@ -200,7 +200,7 @@ const en = {
       "The website uses Google Analytics to understand, in aggregate, how the site is used — which pages people read, where visitors came from, an approximate location derived from your IP address, and basic device and browser information. To do this, Google Analytics sets cookies and uses identifiers in your browser. This data helps us see what's working and what to improve. It is handled under ",
     pAnalyticsLinkText: "Google's privacy policy",
     pAnalyticsSuffix:
-      ". We may add similar product-analytics tools in the future (for example, Mixpanel) for the same purpose; if we do, this page will say so.",
+      ". The site also uses PostHog, a product-analytics service, for the same purpose — it records page views and interactions and can recognize a returning browser. In addition, a small first-party tag from DeckCP (a presentation tool made by the person who runs this site) notes visits here so that if someone we are already in touch with through a shared presentation — someone who gave us their email to open one — later visits this site, we can see that. The same tag runs on our other sites (deckcp.com, zeph.vc, aimhuge.com). If you have never opened one of our presentations or given us your email, these records are effectively anonymous. None of this is used for advertising, and we never sell your data.",
     h2Accounts: "Accounts and sign-in",
     pAccountsPrefix:
       "You can read everything without an account. An account is entirely optional, and only exists to sync your highlights and notes (“Margin Notes”) across your devices. Sign-in is passwordless: you enter your email address and we send you a magic link to click. We store your email address to identify your account. Sign-in and the data below are provided by Supabase, our hosting and authentication provider, under ",
@@ -530,7 +530,7 @@ const zh: Strings = {
     kicker: "隐私",
     h1: "隐私",
     lastUpdatedLabel: "最后更新",
-    lastUpdated: "2026 年 5 月 31 日",
+    lastUpdated: "2026 年 7 月 21 日",
     pIntro:
       "Plain Dharma 是一个免费的阅读网站和应用，已奉献给公有领域。我们尽量保持简单，尽量少向你索取——但网站运行确实用到几项常见的服务；如果你愿意，也可以创建一个账户，用来同步你的标注与笔记。本页面会清楚地说明我们收集什么、何时收集、以及为什么。我们不会出售你的数据。",
     h2Analytics: "分析统计",
@@ -538,7 +538,7 @@ const zh: Strings = {
       "网站使用 Google Analytics 来从整体上了解网站的使用情况——人们读了哪些页面、访客从哪里来、由你的 IP 地址推算出的大致位置，以及基本的设备和浏览器信息。为此，Google Analytics 会在你的浏览器中设置 Cookie 并使用标识符。这些数据帮助我们看清哪些有效、哪里需要改进。它依据 ",
     pAnalyticsLinkText: "Google 的隐私政策",
     pAnalyticsSuffix:
-      " 处理。未来我们可能会出于同样的目的，加入类似的产品分析工具（例如 Mixpanel）；如果加入，本页面会予以说明。",
+      " 处理。网站还出于同样的目的使用产品分析服务 PostHog——它会记录页面浏览和交互操作，并能识别再次来访的浏览器。此外，网站上还运行一小段来自 DeckCP（本站运营者开发的演示文稿工具）的第一方标签：如果某人曾通过我们分享的演示文稿与我们建立联系——例如为打开演示文稿留下过邮箱——之后再访问本站，我们能够看到这次访问。同样的标签也运行在我们的其他网站上（deckcp.com、zeph.vc、aimhuge.com）。如果你从未打开过我们的演示文稿、也未留下过邮箱，这些记录实际上是匿名的。以上数据一律不用于广告，我们也绝不出售你的数据。",
     h2Accounts: "账户与登录",
     pAccountsPrefix:
       "不创建账户也能阅读全部内容。账户完全是可选的，它的唯一作用是在你的各台设备之间同步你的标注与笔记（「页边笔记」）。登录无需密码：你输入邮箱地址，我们给你发一个魔法链接，点击即可登录。我们会保存你的邮箱地址，用以识别你的账户。登录及下文所述的数据，由我们的托管与认证服务商 Supabase 提供，依据 ",

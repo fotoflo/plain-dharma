@@ -13,6 +13,7 @@ import Marginalia from "@/components/marginalia/Marginalia";
 import { SITE_URL, SITE_DESCRIPTION, ogBase } from "@/lib/og-meta";
 import { JsonLd } from "@/components/JsonLd";
 import { siteJsonLd } from "@/lib/structured-data";
+import DeckcpAnalytics from "@/components/DeckcpAnalytics";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const GA_ENABLED = process.env.NODE_ENV === "production" && Boolean(GA_ID);
@@ -103,6 +104,8 @@ gtag('config', '${GA_ID}');`}
             </Script>
           </>
         )}
+        {/* PostHog (shared deckcp.com project) + DeckCP site tag — production only. */}
+        <DeckcpAnalytics />
       </body>
     </html>
   );

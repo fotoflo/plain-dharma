@@ -23,15 +23,15 @@
     "build-kdp": "tsx scripts/build-kdp.ts",
     "build-storyboard": "tsx scripts/build-storyboard.ts",
     "build-manifest": "tsx scripts/build-manifest.ts",
-    "build-all": "pnpm generate-cover && pnpm generate-back-cover && pnpm generate-front-cover && pnpm build-pdf && pnpm build-ebook && pnpm build-print-pdf && pnpm build-kdp && pnpm build-storyboard && pnpm build-manifest",
+    "build-all": "pnpm render-covers && pnpm build-pdf && pnpm build-ebook && pnpm build-print-pdf && pnpm build-kdp && pnpm build-storyboard && pnpm build-manifest && pnpm build-dist-index",
     "build-audiobook": "tsx scripts/build-audiobook.ts",
-    "generate-cover": "node --env-file=.env.local --import tsx scripts/generate-cover.ts",
-    "generate-back-cover": "tsx scripts/generate-back-cover.ts",
-    "generate-front-cover": "tsx scripts/generate-front-cover.ts",
+    "render-covers": "tsx scripts/render-covers.ts",
+    "build-dist-index": "tsx scripts/build-dist-index.ts",
     "publish-downloads": "tsx scripts/publish-downloads.ts",
     "build-remix-assets": "tsx scripts/build-remix-assets.ts",
     "upload-assets": "node --env-file=.env.local --import tsx scripts/upload-assets-to-supabase.ts",
-    "backup-audio": "node --env-file=.env.local --import tsx scripts/backup-audio-to-supabase.ts"
+    "backup-audio": "node --env-file=.env.local --import tsx scripts/backup-audio-to-supabase.ts",
+    "archive-audio-takes": "node --env-file=.env.local --import tsx scripts/archive-audio-takes.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

@@ -12,7 +12,7 @@
  *         retained as build artifacts for debugging).
  *
  * Cover (dist/ebook/cover.jpg) is attached if present; produced separately by
- * scripts/generate-cover.ts.
+ * scripts/render-covers.ts.
  *
  * Run: pnpm build-ebook
  */
@@ -25,6 +25,9 @@ import { fileURLToPath } from "node:url";
 import { SUTTAS } from "@plain-dharma/content";
 import {
   AUTHOR,
+  ORIGINAL_AUTHOR,
+  TRANSLATOR,
+  EDITOR,
   BOOK_SUBTITLE,
   BOOK_TITLE,
   EPUB_ISBN,
@@ -92,13 +95,17 @@ function buildMetadataYaml(): string {
     "---",
     `title: ${JSON.stringify(BOOK_TITLE)}`,
     `subtitle: ${JSON.stringify(BOOK_SUBTITLE)}`,
-    // "editor", not "author": the suttas are the Buddha's; Alex compiled and
-    // edited the renderings (see the How This Book Was Made chapter). Matches
-    // the Bowker/store contributor roles (Compiled by, Editor).
+    // The suttas are the Buddha's, so he is the creator/author; the renderings
+    // were translated by Claude Opus and edited by Alex (see the How This Book
+    // Was Made chapter). Contributor roles below match the Bowker/store roles.
     "creator:",
-    "  - role: editor",
-    `    text: ${JSON.stringify(AUTHOR)}`,
+    "  - role: author",
+    `    text: ${JSON.stringify(ORIGINAL_AUTHOR)}`,
     "contributor:",
+    "  - role: trl",
+    `    text: ${JSON.stringify(TRANSLATOR)}`,
+    "  - role: edt",
+    `    text: ${JSON.stringify(EDITOR)}`,
     "  - role: cov",
     `    text: ${JSON.stringify(AUTHOR)}`,
     "  - role: cov",
@@ -159,7 +166,7 @@ function appendBackCover(md: string): string {
   if (!existsSync(BACK_COVER_PATH)) {
     console.warn(
       "[build-ebook] no back-cover.jpg found — building EPUB without a back " +
-        "cover. Run `pnpm generate-back-cover` to create one."
+        "cover. Run `pnpm render-covers` to create one."
     );
     return md;
   }
@@ -197,7 +204,7 @@ function runPandoc(): void {
   } else {
     console.warn(
       "[build-ebook] no cover.jpg found — building EPUB without cover. " +
-        "Run `pnpm generate-cover` to create one."
+        "Run `pnpm render-covers` to create one."
     );
   }
   args.push(bookMd);

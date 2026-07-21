@@ -120,7 +120,7 @@ function renderCover(): string | null {
   if (!existsSync(COVER_PATH)) {
     console.warn(
       `[build-pdf] no cover at ${COVER_PATH} — building PDF without one. ` +
-        `Run \`pnpm generate-cover\` first to include it.`
+        `Run \`pnpm render-covers\` first to include it.`
     );
     return null;
   }
@@ -133,12 +133,12 @@ function renderCover(): string | null {
 
 // Returns the path to the rendered back-cover .tex include, or null if no back
 // cover exists. The back cover is appended as the final page; mirrors the front
-// cover handling above. Run `pnpm generate-back-cover` to (re)build the image.
+// cover handling above. Run `pnpm render-covers` to (re)build the image.
 function renderBackCover(): string | null {
   if (!existsSync(BACK_COVER_PATH)) {
     console.warn(
       `[build-pdf] no back cover at ${BACK_COVER_PATH} — building PDF without one. ` +
-        `Run \`pnpm generate-back-cover\` first to include it.`
+        `Run \`pnpm render-covers\` first to include it.`
     );
     return null;
   }

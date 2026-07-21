@@ -109,3 +109,63 @@ export function ean13Tikz(code: string, opts: Ean13Options = {}): string {
   lines.push("\\end{tikzpicture}");
   return lines.join("\n");
 }
+
+export type Ean13SvgOptions = {
+  /** Width of one module in px. */
+  moduleWidth?: number;
+  /** Guard-bar (full) height in px. */
+  barHeight?: number;
+  /** Bar + digit color. */
+  color?: string;
+  /** Human-readable digit font size in px. */
+  fontPx?: number;
+  /** Quiet-zone / background fill. */
+  bg?: string;
+};
+
+/**
+ * Return a self-contained `<svg>` string for the EAN-13 symbol — the SAME 95-
+ * module pattern as `ean13Tikz` (both call `encode`), emitted as SVG rects so
+ * the HTML covers can carry a scannable barcode without LaTeX.
+ */
+export function ean13Svg(code: string, opts: Ean13SvgOptions = {}): string {
+  const digits = normalize(code);
+  const bars = encode(digits); // 95 modules
+  const mw = opts.moduleWidth ?? 2.2;
+  const H = opts.barHeight ?? 80;
+  const color = opts.color ?? "#1F1812";
+  const fontPx = opts.fontPx ?? 15;
+  const bg = opts.bg ?? "#ffffff";
+
+  const QL = 11; // left quiet zone (modules) — room for the first digit
+  const QR = 7; // right quiet zone (modules)
+  const digitGap = fontPx * 1.05; // data bars stop short to clear the digit row
+  const dataH = H - digitGap;
+  const W = (QL + 95 + QR) * mw;
+  const svgH = H + 3;
+  const baseY = H - 1; // digit baseline
+
+  const px = (n: number) => n.toFixed(2);
+  const rects: string[] = [];
+  for (let k = 0; k < bars.length; k++) {
+    if (bars[k] !== "1") continue;
+    const h = isGuardModule(k) ? H : dataH;
+    rects.push(`<rect x="${px((QL + k) * mw)}" y="0" width="${px(mw)}" height="${px(h)}" fill="${color}"/>`);
+  }
+
+  const digit = (moduleCenter: number, d: number) =>
+    `<text x="${px((QL + moduleCenter) * mw)}" y="${px(baseY)}" font-family="Helvetica,Arial,sans-serif" font-size="${fontPx}" fill="${color}" text-anchor="middle">${d}</text>`;
+  const texts: string[] = [
+    `<text x="${px((QL - 6) * mw)}" y="${px(baseY)}" font-family="Helvetica,Arial,sans-serif" font-size="${fontPx}" fill="${color}" text-anchor="middle">${digits[0]}</text>`,
+  ];
+  for (let i = 0; i < 6; i++) texts.push(digit(3 + 7 * i + 3.5, digits[1 + i]));
+  for (let i = 0; i < 6; i++) texts.push(digit(50 + 7 * i + 3.5, digits[7 + i]));
+
+  return [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${px(W)}" height="${px(svgH)}" viewBox="0 0 ${px(W)} ${px(svgH)}">`,
+    `<rect x="0" y="0" width="${px(W)}" height="${px(svgH)}" fill="${bg}"/>`,
+    ...rects,
+    ...texts,
+    `</svg>`,
+  ].join("");
+}

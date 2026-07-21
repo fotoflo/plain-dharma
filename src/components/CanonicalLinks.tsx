@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Locale, SuttaSlug } from "@/content";
 import { CANONICAL_LINKS } from "@plain-dharma/content/canonical-links";
 import { getStrings } from "@plain-dharma/content/strings";
@@ -38,6 +39,18 @@ export function CanonicalLinks({
       </p>
       <p className="mt-3">{s.compareIntro}</p>
       <ul className="mt-2 space-y-1">
+        {/* Internal side-by-side reader — EN only (we have a Pāli↔Sujato
+            alignment for English, not for the zh surface). */}
+        {locale === "en" && (
+          <li>
+            <Link
+              href={`/${slug}/compare`}
+              className="text-link underline-offset-2 hover:text-accent hover:underline"
+            >
+              {s.sideBySide}
+            </Link>
+          </li>
+        )}
         {links.map((l) => (
           <li key={l.url}>
             <a

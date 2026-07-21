@@ -3,7 +3,7 @@
  * at /downloads/<name>.
  *
  * Publishing is tied to generation: each build script (build-ebook, build-pdf,
- * build-audiobook, generate-cover) calls this immediately after it writes its
+ * build-audiobook, render-covers) calls this immediately after it writes its
  * output, so the file friends download is always the one you just built and you
  * never have to remember a separate publish step.
  *

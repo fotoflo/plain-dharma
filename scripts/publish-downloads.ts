@@ -2,7 +2,7 @@
  * Batch-republish everything currently in dist/ into public/downloads/.
  *
  * Normally you don't need this: each build script (build-ebook, build-pdf,
- * build-audiobook, generate-cover) publishes its own output as the last step,
+ * build-audiobook, render-covers) publishes its own output as the last step,
  * so generating an artifact already serves it from /downloads/*. This is the
  * "re-sync all four at once" convenience — e.g. after pulling fresh dist/
  * artifacts from elsewhere. Missing sources are skipped (not an error), so a

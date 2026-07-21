@@ -3,14 +3,14 @@
   "locale": "en",
   "voice": "UmQN7jS1Ee8B1czsUtQh",
   "model": "eleven_multilingual_v2",
-  "generated_at": "2026-06-02T22:23:16.682Z",
+  "generated_at": "2026-06-26T20:34:10.153Z",
   "sections": [
     {
       "id": "opening",
       "title": "Opening",
       "file": "01-opening.mp3",
-      "duration_sec": 105,
-      "duration_fast_sec": 94.6
+      "duration_sec": 103.9,
+      "duration_fast_sec": 93.6
     }
   ]
 }

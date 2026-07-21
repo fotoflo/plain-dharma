@@ -1,6 +1,39 @@
 # File Size Snapshots
 
-## 2026-06-09 (current)
+## 2026-06-27 (current)
+
+### Distribution
+
+| Bucket     | Count | Δ vs 2026-06-09 |
+|------------|-------|-----------------|
+| <=50       | 146   | +2              |
+| 51-150     | 140   | +2              |
+| 151-300    | 55    | +3              |
+| 301-500    | 15    | —               |
+| 501-1000   | 6     | —               |
+| 1001-2000  | 0     | —               |
+| 2000+      | 0     | —               |
+
+Total files: 362 (+7)
+
+### Largest File
+
+`src/components/AudioPlayer.tsx` — 728 lines
+
+### Files Over 500 Lines
+
+6 files exceed the 500-line guideline:
+- `src/components/AudioPlayer.tsx` — 728 lines
+- `src/views/HowItWasMadeView.tsx` — 667 lines
+- `packages/content/strings.ts` — 700 lines
+- `src/components/marginalia/Marginalia.tsx` — 529 lines
+- (2 additional files in the 501–1000 bucket)
+
+### Delta
+
+Modest growth: +7 files from 2026-06-09 snapshot (355 → 362). The <=50, 51-150, and 151-300 buckets each gained files (+2, +2, and +3 respectively). The 301-500 and 501-1000 buckets remained unchanged. No files crossed into new size brackets. Distribution remains healthy with no new threshold-crossing files; the 501-1000 bucket holds steady at 6 files.
+
+## 2026-06-09
 
 ### Distribution
 

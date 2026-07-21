@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Plain Dharma — front cover</title>
+<style>
+  /* ── Fonts (local copies; see book/fonts/) ────────────────────
+     Garamond Libre is the body serif used site-wide (src/app/fonts);
+     Geist is the UI sans (npm `geist`). Both are copied into book/fonts
+     so this cover renders standalone — no build step, no network. */
+  @font-face {
+    font-family: "Garamond Libre";
+    src: url("fonts/GaramondLibre-Regular.otf") format("opentype");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "Garamond Libre";
+    src: url("fonts/GaramondLibre-Italic.otf") format("opentype");
+    font-weight: 400; font-style: italic; font-display: swap;
+  }
+  @font-face {
+    font-family: "Garamond Libre";
+    src: url("fonts/GaramondLibre-Bold.otf") format("opentype");
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "Geist";
+    src: url("fonts/Geist-Variable.woff2") format("woff2-variations");
+    font-weight: 100 900; font-style: normal; font-display: swap;
+  }
+
+  /* Sampled from the cover artwork — paper runs a touch warmer than the
+     screen --color-bg (#F5EFE0); keep front and back aligned for print. */
+  :root {
+    --cover-paper:  #F9F1DC;
+    --cover-band:   #FBC608;
+    --cover-ink:    #1F1812;
+    --cover-stitch: #8B3A0F;   /* rust */
+    --cover-thread: #E01B0E;   /* clear red thread — reads on the gold band */
+    --cover-mute:   rgba(31, 24, 18, 0.62);
+    --cover-faint:  rgba(31, 24, 18, 0.42);
+  }
+
+  html, body { background: #2a2a2a; margin: 0; padding: 0; }
+
+  /* 5" × 8" trim + 0.125" bleed all round = 5.25" × 8.25" @ 300dpi
+     (1575 × 2475 px), ratio 0.636 — matches the generated front-cover-print
+     pair so it drops straight into build-kdp's 5×8 wraparound. The trim line
+     sits 37.5px inside each edge; keep type clear of it. */
+  .cover {
+    position: relative;
+    width: 1575px;
+    height: 2475px;
+    background: var(--cover-paper);
+    color: var(--cover-ink);
+    font-family: "Garamond Libre", Georgia, serif;
+    overflow: hidden;
+    margin: 24px auto;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Spine-side furniture — band + stitch on the LEFT, mirroring the back. */
+  .band {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 114px;
+    background: var(--cover-band);
+  }
+  /* Stitch runs ON the gold band — inset ~16px from its right edge — so it
+     reads as thread sewn through the binding rather than floating in cream. */
+  .stitch {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 98px;
+    width: 2px;
+    background-image: linear-gradient(
+      to bottom,
+      var(--cover-thread) 0px,
+      var(--cover-thread) 12px,
+      transparent 12px,
+      transparent 26px
+    );
+    background-size: 100% 26px;
+    background-repeat: repeat-y;
+  }
+
+  /* Type column — symmetric margins so the whole composition (title, sun,
+     byline) is centered on the FULL page, not pushed right by the spine band.
+     190px clears the 114px band with room to spare. */
+  .col {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 190px;
+    right: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* ── Masthead ─────────────────────────────────────────────── */
+  .masthead { margin-top: 190px; }
+  .eyebrow {
+    font-family: "Geist", system-ui, sans-serif;
+    font-size: 25px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--cover-stitch);
+    margin: 0;
+  }
+  .rule {
+    height: 2px;
+    width: 132px;
+    background: var(--cover-stitch);
+    opacity: 0.6;
+    margin: 36px auto 0;
+  }
+
+  .title {
+    margin: 64px 0 0;
+    font-size: 232px;
+    font-weight: 400;
+    line-height: 0.92;
+    letter-spacing: -0.022em;
+    color: var(--cover-ink);
+  }
+  .title .l2 { display: block; }
+
+  .subtitle {
+    margin: 52px auto 0;
+    font-style: italic;
+    font-size: 60px;
+    line-height: 1.28;
+    letter-spacing: -0.005em;
+    color: var(--cover-mute);
+    max-width: 920px;
+  }
+
+  /* ── Hero sun — the focal point, vertically centered in the open space
+     between the subtitle and the byline (auto margins split the slack). */
+  .scene {
+    position: relative;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .scene img {
+    position: relative;
+    width: 1080px;
+    height: auto;
+    display: block;
+  }
+
+  /* ── Byline ───────────────────────────────────────────────── */
+  .byline { margin-bottom: 300px; }
+  .author {
+    font-size: 58px;
+    font-weight: 400;
+    line-height: 1.32;
+    letter-spacing: -0.005em;
+    color: var(--cover-mute);
+    margin: 0;
+  }
+  .author .name { color: var(--cover-ink); }
+  .credit {
+    margin-top: 38px;
+    font-family: "Geist", system-ui, sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cover-faint);
+  }
+  .credit b {
+    color: var(--cover-stitch);
+    font-weight: 600;
+  }
+
+  /* Print — flatten the dark stage, exact color, full 5×8 + bleed page. */
+  @media print {
+    @page { size: 5.25in 8.25in; margin: 0; }
+    html, body { background: #fff; }
+    .cover {
+      margin: 0;
+      box-shadow: none;
+      width: 5.25in;
+      height: 8.25in;
+    }
+    .band { width: 0.38in; }
+    .stitch { left: 0.3267in; }
+    .col { left: 0.7667in; right: 0.5in; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<article class="cover">
+  <div class="band" aria-hidden="true"></div>
+  <div class="stitch" aria-hidden="true"></div>
+
+  <div class="col">
+    <div class="masthead">
+      <p class="eyebrow">Six Foundational Teachings</p>
+      <div class="rule"></div>
+    </div>
+
+    <h1 class="title">Plain<span class="l2">Dharma</span></h1>
+
+    <p class="subtitle">The Buddha&rsquo;s Foundational Teachings<br>in Modern English</p>
+
+    <div class="scene">
+      <img src="assets/cover-sun.png" alt="A watercolor sun rising over a still horizon.">
+    </div>
+
+    <div class="byline">
+      <p class="author">Translated by <span class="name">Claude Opus</span></p>
+      <p class="author">Edited by <span class="name">Alex Miller</span></p>
+      <p class="credit"><b>A dharma gift</b> &nbsp;·&nbsp; plaindharma.com</p>
+    </div>
+  </div>
+</article>
+
+</body>
+</html>

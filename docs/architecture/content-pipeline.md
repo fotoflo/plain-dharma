@@ -30,6 +30,7 @@ packages/content/                 ← @plain-dharma/content (platform-agnostic; 
      ├── strings.ts  ─── i18n UI strings (nav, audio, home, footer, etc.); getStrings(locale)
      ├── drops.ts    ─── DROPS[locale][slug] + PREFACE[locale] / CLOSING[locale]
      ├── canonical-links.ts ─── CANONICAL_LINKS[locale][slug]
+     ├── canonical/   ─── segment-aligned Pāli + Sujato English from SuttaCentral (en-only, /[slug]/compare)
      ├── glossary.ts ─── GLOSSARY[locale][] (locale-parallel entries)
      └── audio.ts    ─── AudioManifest/AudioSection types, getAudioFileUrl,
                          combineManifests() — PURE stitcher (no fs)
@@ -37,7 +38,7 @@ packages/content/                 ← @plain-dharma/content (platform-agnostic; 
 
 Consumed via the package's `exports` map: `@plain-dharma/content`,
 `@plain-dharma/content/strings`, `/drops`, `/canonical-links`, `/glossary`,
-`/audio`, and `/en/*` · `/zh/*` for the raw MDX.
+`/audio`, `/canonical/*` (segment-aligned SuttaCentral data), and `/en/*` · `/zh/*` for the raw MDX.
 
 ## Per-app loading (the two bundler mechanisms)
 

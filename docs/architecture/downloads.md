@@ -1,6 +1,6 @@
 # Downloads & Distribution — Plain Dharma
 
-*Last updated: 2026-06-03*
+*Last updated: 2026-06-28*
 
 ## Overview
 
@@ -59,6 +59,9 @@ Non-published artifacts (print, KDP, storyboard) remain in `dist/` for proofing 
 | `scripts/lib/book-source.ts` | Shared book markdown builder, called by all PDF/EPUB/KDP variants. Contains `buildBookMarkdown`, `buildMetadataYaml`, `generateQrCode`. Builds the book structure: title/license → preface → six suttas (each with drop, illustration, body) → closing → **"How This Book Was Made" colophon** (AI-provenance section + contribution invite to contribute@plaindharma.com, GitHub, /contribute) → "Read it Online" (QR, formats list) → "Sources & Further Reading" appendix. |
 | `scripts/generate-cover.ts` | Rasterize InDesign cover PDF (6×9", CMYK) to 1600×2400 JPEG (sRGB) via pdftoppm + ImageMagick; publish as final step. |
 | `scripts/generate-back-cover.ts` | Generate back cover(s) from parameterized XeLaTeX template. Two trims: screen 6×9 (published), print 5.25×8.25 + grayscale variant (internal only). Back cover title layout: six sutta titles numbered, each paired with a **one-line teaser from the registry** (`SUTTA_META` `teaser` field) injected via `__SUTTA_ENTRIES__` token. Dimensions shared with front cover for consistency. |
+| `scripts/generate-front-cover.ts` | Generate the 5×8 print front cover and the 3000×3000 square audiobook cover from a XeLaTeX template. Replaces the 6×9 InDesign front (which can't be cropped without losing the gold stripe and title centering). Outputs: `dist/ebook/front-cover-print-color.jpg`, `front-cover-print-bw.jpg`, `audiobook-cover.jpg`. The color and B&W print covers are consumed by `build-kdp` as `__FRONT_IMG__`; the audiobook cover is for ACX/Audible submission. |
+| `scripts/templates/front-cover.tex` | Parameterized XeLaTeX front cover (Garamond Libre, brand palette, gold stitched stripe on LEFT/spine edge). Token substitution by `generate-front-cover.ts`. Sun is vertically centered via `\vfill` above and below `\includegraphics` so it floats in the middle band at any trim. Credits "translated by Claude Opus / edited by Alex Miller" as separate italic-eyebrow + name pairs. Two XeLaTeX passes required for TikZ `current page` node. |
+| `scripts/assets/cover-artwork.png` | Source watercolor sun art — a **committed** asset (not in `dist/`). Paler than the sun baked into the InDesign 6×9 cover; deepened by `generate-front-cover.ts` via ImageMagick `-modulate` (brightness 96, saturation 135) and cream-key (`-opaque #FBF7EE → #F5EFE0`) before embedding. |
 | `scripts/templates/back-cover.tex` | Parameterized back cover source (Garamond Libre, brand palette, gold stitched stripe on spine). Tokens: `__FONTSIZE__`, `__PAPER_W__`, `__PAPER_H__`, `__STRIPE_W__`, `__STITCH_X__`, `__SUTTA_ENTRIES__` (injected list of numbered titles + teasers). Two runs per target for TikZ current-page node. |
 | `scripts/templates/pdf-back-cover.tex` | Appends back cover to screen PDF via `\AtEndDocument` — xelatex only. |
 | `scripts/build-pdf.ts` | Build screen PDF (6×9" + 0.125" bleed, xelatex, cream background) from book markdown; append back cover as final page; publish as final step. |
@@ -98,6 +101,7 @@ Non-published artifacts (print, KDP, storyboard) remain in `dist/` for proofing 
 ```
 pnpm generate-cover &&
 pnpm generate-back-cover &&
+pnpm generate-front-cover &&
 pnpm build-pdf &&
 pnpm build-ebook &&
 pnpm build-print-pdf &&
@@ -113,6 +117,12 @@ pnpm build-manifest
 **`scripts/publish-downloads.ts` is a batch convenience** — normally, each generator publishes its own output. But if you have fresh artifacts in `dist/` (e.g. from a fresh clone or a CI build) and want to re-sync them all at once, `pnpm publish-downloads` does that. Missing sources are skipped — the script doesn't error if the audiobook isn't ready yet.
 
 **Front and back covers are shared** — `generate-cover.ts` rasterizes the designer's InDesign cover PDF to 1600×2400 JPEG (6×9"). `generate-back-cover.ts` generates the back cover at the same resolution using a parameterized XeLaTeX template. Both are read by all downstream formats (screen PDF, EPUB, audiobook) and print packages (print PDFs, KDP). This ensures dimensional consistency across all outputs.
+
+**Front cover token-substitution flow** — `generate-front-cover.ts` defines a `TARGETS` array (one entry per output format: print-trim and audiobook-square). Each target carries a `tokens` map of `KEY → value` strings. The script reads `scripts/templates/front-cover.tex`, substitutes every `__KEY__` placeholder, writes a `.tex` file into `dist/ebook/`, then shells out to `xelatex` twice (two passes required for TikZ's `current page` node). After `xelatex`, it rasterizes the PDF to PNG via `pdftoppm` and downscales to the target pixel width via ImageMagick. Geometry tokens (`PAPER_W`, `PAPER_H`, `M_*`, `STRIPE_W`, `STITCH_X`, `SUN_W`, font sizes, gaps) let one template produce both the 5.25×8.25 print trim and the 8×8 audiobook square from a single source.
+
+**Sun art source and saturation step** — The source watercolor (`scripts/assets/cover-artwork.png`) is paler than the sun baked into the InDesign 6×9 InDesign cover. Before embedding in LaTeX, `generate-front-cover.ts` calls ImageMagick to deepen it: `-modulate 96,135,100` (brightness 96%, saturation 135%), then re-keys the artwork's near-white background (`#FBF7EE`) to the page cream (`#F5EFE0`) via `-fuzz 6% -fill #F5EFE0 -opaque #FBF7EE` and flattens — so the sun floats cleanly on the cream page without a visible rectangle.
+
+**LaTeX toolchain** — All cover and PDF scripts require BasicTeX (provides `xelatex`) installed at `/Library/TeX/texbin/` (the standard macOS location). The scripts prepend this to `PATH` for child processes. Required `tlmgr` packages beyond BasicTeX's minimal set: `newunicodechar` (Pāli diacritics in PDF preambles), `enumitem` (list styling), `titlesec` (chapter heading formatting), plus the geometry/xcolor/graphicx/tikz/eso-pic/fontspec packages used by the cover templates. Install missing packages with `sudo tlmgr install <package>`.
 
 **Back cover titles + teasers** — the six sutta titles are hardcoded in `generate-back-cover.ts` as a layout/style decision local to the cover (short titles, e.g. "The Fire Sermon" instead of "The Buddha's Third Talk: The Fire Sermon"). The one-line *descriptions* under each title, however, are sourced from `SUTTA_META` `teaser` fields via `__SUTTA_ENTRIES__` token injection, so a registry update updates the back cover automatically.
 
@@ -148,6 +158,7 @@ These are cached independently in `dist/{format}/images/`, so regenerating one d
 |---|---|---|
 | `pnpm generate-cover` | `dist/ebook/cover.jpg` (1600×2400, 6×9") | `/downloads/plain-dharma-cover.jpg` |
 | `pnpm generate-back-cover` | `dist/ebook/back-cover.jpg` (screen trim); `back-cover-print-{color,bw}.jpg` (print trim, internal only) | `/downloads/plain-dharma-back-cover.jpg` (screen only) |
+| `pnpm generate-front-cover` | `dist/ebook/front-cover-print-{color,bw}.jpg` (5.25×8.25); `dist/ebook/audiobook-cover.jpg` (3000×3000) | — |
 | `pnpm build-pdf` | `dist/pdf/plain-dharma.pdf` (40 pages, 6×9 + bleed, back cover final page) | `/downloads/plain-dharma.pdf` |
 | `pnpm build-ebook` | `dist/ebook/plain-dharma.epub` (back cover final page) | `/downloads/plain-dharma.epub` |
 | `pnpm build-audiobook` | `dist/audiobook/plain-dharma.m4b` (with chapter markers) | `/downloads/plain-dharma.m4b` |
@@ -172,6 +183,8 @@ The audiobook *narration* (MP3 files) is generated separately by `scripts/genera
 
 - **KDP spine width is baked into the cover PDF**: Once `build-kdp` generates the wraparound cover, the spine width is fixed in that PDF. If the interior page count changes (e.g. because of a content edit), the spine width will be wrong — re-run `pnpm build-kdp` to recompute.
 
-- **Two XeLaTeX passes required for back cover and KDP covers**: TikZ's `current page` node (used for the gold stripe and spine positioning) is only available on the second pass. Both `generate-back-cover.ts` and `build-kdp.ts` run xelatex twice per template.
+- **Two XeLaTeX passes required for covers**: TikZ's `current page` node (used for the gold stripe and spine positioning) is only available on the second pass. `generate-back-cover.ts`, `generate-front-cover.ts`, and `build-kdp.ts` all run xelatex twice per template.
+
+- **`build-storyboard` hardcodes 40 pages**: `scripts/build-storyboard.ts` was written for the 40-page screen PDF and hardcodes that page count in the title label and spread layout logic. If the actual PDF changes page count (e.g. the current interior is 37 pages), the storyboard still renders "40-page storyboard" in its title and the spread arithmetic is off. Update the hardcoded constants in `build-storyboard.ts` whenever the page count changes.
 
 - **KDP covers are always full-color rasterized**: Even though the interior comes in B&W and color variants, the KDP covers themselves are full-color PDFs (KDP prints covers in color). The B&W/color distinction is in the *interior* (which pages are printed in color vs grayscale), not the cover. The wraparound cover templates are parameterized only by spine width, not by color variant (both color and B&W covers would look identical if printed, but we generate them separately because spine width differs per interior page count).

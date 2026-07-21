@@ -143,7 +143,7 @@ const en = {
     pGlossaryRefSuffix: ".",
     h2HowMade: "How this was made",
     pHowMade1:
-      "The English was translated from the original Pali by Claude (Anthropic's AI), then edited line by line by Alex Miller. The Chinese was translated from the Pali by Claude too, and edited by Yan Zhang. The audio is an ElevenLabs voice; the art and logos are Gemini, recolored and partially reworked by hand.",
+      "The English was translated from the original Pali by Claude Opus (Anthropic's AI), then edited line by line by Alex Miller. The Chinese was translated from the Pali by Claude Opus too, and edited by Yan Zhang. The audio is an ElevenLabs voice; the art and logos are Gemini, recolored and partially reworked by hand.",
     pHowMadeSoftware:
       "The site, the mobile app, and the scripts that build the ebooks and generated the narration were all written by Claude too.",
     pHowMade2:
@@ -161,7 +161,7 @@ const en = {
     kicker: "Contribute",
     h1: "Help carry this further",
     pHelpIntro:
-      "Plain Dharma is an open, public-domain project, and a work in progress — translated by AI and edited by hand. The clearest way to make it better is with human hands:",
+      "Plain Dharma is an open, public-domain project, and a work in progress — translated by Claude Opus and edited by hand. The clearest way to make it better is with human hands:",
     liCopyEditorsLabel: "Copy editors",
     liCopyEditorsBody:
       " — to sharpen the English, catch what reads stiffly, keep it plain.",
@@ -269,7 +269,7 @@ const en = {
     licenseLinePrefix: "Released under ",
     licenseLinkText: "CC0 / public domain",
     licenseLineSuffix: ". Made for free distribution.",
-    byLinePrefix: "by ",
+    byLinePrefix: "Translated by Claude Opus · edited by ",
     byLineLinkText: "Alex Miller",
     aboutLink: "About",
     glossaryLink: "Glossary",
@@ -351,6 +351,7 @@ const en = {
   canonicalLinks: {
     paliSourcePrefix: "Pali source —",
     compareIntro: "Compare with canonical translations:",
+    sideBySide: "Read side by side (Sujato · Pali · ours)",
   },
   glossary: {
     metadataDescription:
@@ -681,6 +682,8 @@ const zh: Strings = {
   canonicalLinks: {
     paliSourcePrefix: "巴利原典 ——",
     compareIntro: "可对照参考汉译经典：",
+    // EN-only feature (no zh-aligned canonical); key present for type parity.
+    sideBySide: "对照阅读（Sujato · 巴利 · 本译）",
   },
   glossary: {
     metadataDescription:

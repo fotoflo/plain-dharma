@@ -80,3 +80,4 @@ supabase/.temp/
 !.claude/agents/
 .claude/settings.local.json
 .claude/.credentials.json
+public/dist

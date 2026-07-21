@@ -24,7 +24,13 @@ import { fileURLToPath } from "node:url";
 
 import { getSuttasInOrder, DEFAULT_LOCALE } from "@plain-dharma/content";
 import { getAudioManifest } from "../src/content/audio.js";
-import { AUTHOR, BOOK_TITLE, PUBLISHER } from "./lib/book-source.js";
+import {
+  ORIGINAL_AUTHOR,
+  TRANSLATOR,
+  BYLINE,
+  BOOK_TITLE,
+  PUBLISHER,
+} from "./lib/book-source.js";
 import { publishToDownloads } from "./lib/publish.js";
 
 const SUTTAS_IN_ORDER = getSuttasInOrder(DEFAULT_LOCALE);
@@ -41,8 +47,9 @@ const COLOPHON_DIR = join(AUDIO_DIR, "_colophon");
 const CLOSING_DIR = join(AUDIO_DIR, "_closing");
 const OUT_DIR = join(ROOT, "dist", "audiobook");
 // Use the SQUARE cover — audiobook players (Apple Books, Audible, Spotify) want
-// 1:1 art, not the 6×9 cover.jpg. generate-front-cover.ts emits this 3000² JPG.
-const COVER_PATH = join(ROOT, "dist", "ebook", "audiobook-cover.jpg");
+// 1:1 art, not the 6×9 cover.jpg. render-covers.ts emits this 3000² JPG into
+// dist/audiobook/ (alongside the .m4b), so all audiobook upload assets co-locate.
+const COVER_PATH = join(ROOT, "dist", "audiobook", "audiobook-cover.jpg");
 
 // AAC bitrate. 64k mono is the speech-podcast sweet spot — clear, ~half the
 // MP3 source size. Audiobook listening doesn't benefit from higher bitrates.
@@ -241,14 +248,17 @@ function writeChaptersMetadata(chapters: Chapter[]): string {
   const header = [
     ";FFMETADATA1",
     `title=${BOOK_TITLE}`,
-    `artist=${AUTHOR}`,
+    // The author is the Buddha; Claude Opus translated, Alex Miller edited.
+    // M4B has no editor/translator role, so artist = author, composer = translator,
+    // and the full credit lives in the comment.
+    `artist=${ORIGINAL_AUTHOR}`,
     `album=${BOOK_TITLE}`,
-    `album_artist=${AUTHOR}`,
-    `composer=${AUTHOR}`,
+    `album_artist=${ORIGINAL_AUTHOR}`,
+    `composer=${TRANSLATOR}`,
     `genre=Religion/Spirituality`,
     `date=${new Date().getFullYear()}`,
     `publisher=${PUBLISHER}`,
-    `comment=Plain Dharma — six foundational Buddhist suttas in modern English. CC0 public domain.`,
+    `comment=Plain Dharma — six foundational Buddhist suttas in modern English. ${BYLINE}. CC0 public domain.`,
   ].join("\n");
 
   const chapterBlocks = chapters
@@ -321,7 +331,7 @@ async function main(): Promise<void> {
   if (!existsSync(COVER_PATH)) {
     console.warn(
       `[build-audiobook] no cover at ${COVER_PATH} — building without art. ` +
-        `Run \`pnpm generate-cover\` first to embed one.`
+        `Run \`pnpm render-covers\` first to embed one.`
     );
   }
 

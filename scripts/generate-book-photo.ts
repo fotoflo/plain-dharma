@@ -33,13 +33,13 @@ const MODEL_CANDIDATES = [
 
 const PROMPT = `Using the attached image as the EXACT front cover, render a photorealistic studio product photograph of this as a real printed book — a SLIM paperback, only about 100–120 pages thick (a thin, light book, NOT a chunky hardcover).
 
-The book stands upright, turned just a few degrees so the front cover faces the camera and only a NARROW sliver of the spine is visible on the left edge. Keep the spine thin and in proportion to a slim book. Keep the cover artwork, title "Plain Dharma", subtitle, author name, and the cream/saffron palette EXACTLY as in the attached image — do not redesign, recolor, retypeset, or crop the cover.
+The book stands upright, turned just a few degrees so the front cover faces the camera and only a NARROW sliver of the spine is visible on the left edge. Keep the spine thin and in proportion to a slim book. Keep the cover artwork, title "Plain Dharma", subtitle, the two credit lines ("Translated by Claude Opus" and "Edited by Alex Miller"), the footer, and the cream/saffron palette EXACTLY as in the attached image — do not redesign, recolor, retypeset, crop, or alter any text.
 
-SPINE: the spine carries a single clean saffron-yellow band matching the cover, with the title reading exactly "Plain Dharma" in a small black serif typeface running vertically, perfectly legible and correctly spelled — no repeated letters, no garbled or doubled text, no extra words, no smudges or odd discoloration. If clean legible spine text cannot be rendered, leave the spine plain saffron with no text rather than producing garbled lettering.
+SPINE: leave the spine a clean, plain saffron-yellow band with NO text on it at all. Do not attempt to letter the spine (spine text renders garbled).
 
 Lighting: soft, warm, natural studio light from the upper left, modeling the book's form (gentle highlight and shading on the cover and spine).
 
-BACKGROUND: a perfectly FLAT, UNIFORM, EVENLY-LIT neutral medium gray (#808080) — completely solid, the SAME gray in every corner and edge, with NO gradient, NO vignette, NO tonal falloff, NO texture. The book FLOATS on this gray: NO surface, NO table, and NO cast shadow at all (we add the shadow later). Nothing else in frame. The flat gray must be visually distinct from the cream cover so it can be cleanly removed. Generous breathing room around the book. Photorealistic, high detail, no illustration, no flat mockup look.`;
+BACKGROUND: a deep, DARK near-black studio backdrop (like a night sky) so the bright cream book is cleanly separable. A soft contact shadow beneath the book is fine — the cut-out step removes the whole dark backdrop by luma (see scripts/cutout-book.ts), so the exact darkness/gradient doesn't matter as long as it stays clearly darker than the cream cover. Nothing else in frame. Generous breathing room around the book. Photorealistic, high detail, no illustration, no flat mockup look. Portrait orientation.`;
 
 type GeminiPart = {
   text?: string;

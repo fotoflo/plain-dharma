@@ -70,24 +70,14 @@ export default function DownloadPage() {
       <Wash size="md" position="top-right" intensity={0.09} />
 
       <header className="mb-12 flex flex-col items-center gap-8 sm:flex-row sm:items-center sm:gap-10">
-        {/* Product photo with the studio backdrop baked in per theme — light
-            shot in light mode, dark shot in dark mode (no transparent cut-out). */}
+        {/* Transparent cut-out that floats on both themes; CSS adds the shadow. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={assetUrl("downloads/plain-dharma-book-photo.png")}
           alt="Plain Dharma — the printed book"
-          width={832}
-          height={1248}
-          className="w-[180px] shrink-0 rounded-lg dark:hidden sm:w-[200px]"
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={assetUrl("downloads/plain-dharma-book-photo-dark.png")}
-          alt=""
-          aria-hidden="true"
-          width={832}
-          height={1248}
-          className="hidden w-[180px] shrink-0 rounded-lg dark:block sm:w-[200px]"
+          width={440}
+          height={777}
+          className="w-[180px] shrink-0 [filter:drop-shadow(0_14px_22px_rgba(31,24,18,0.26))] sm:w-[200px]"
         />
         <div>
           <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">

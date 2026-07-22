@@ -186,26 +186,17 @@ function BookSection({ locale }: { locale: Locale }) {
     <section className="relative mt-24 overflow-hidden rounded-2xl border border-divider/70 px-6 py-14 sm:py-16">
       <Wash size="md" position="top-right" intensity={0.07} />
       <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-10 md:flex-row md:gap-14">
-        {/* Photorealistic shot of the printed book — studio backdrop + shadow
-            baked in per theme (light shot / dark shot), so no transparent
-            cut-out and no CSS faux-3D needed. */}
+        {/* Photorealistic shot of the printed book — a transparent cut-out that
+            floats on both themes (night-sky render, dark backdrop keyed out);
+            CSS adds the drop-shadow. */}
         <div className="shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={assetUrl("downloads/plain-dharma-book-photo.png")}
             alt="Plain Dharma — the printed book"
-            width={832}
-            height={1248}
-            className="w-[240px] rounded-lg dark:hidden sm:w-[280px]"
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={assetUrl("downloads/plain-dharma-book-photo-dark.png")}
-            alt=""
-            aria-hidden="true"
-            width={832}
-            height={1248}
-            className="hidden w-[240px] rounded-lg dark:block sm:w-[280px]"
+            width={440}
+            height={777}
+            className="w-[240px] [filter:drop-shadow(0_16px_24px_rgba(31,24,18,0.28))] sm:w-[280px]"
           />
         </div>
 

@@ -1,12 +1,18 @@
 /**
- * Turn the flat-gray book render (/tmp/pd-book/book-raw.png, produced by
- * generate-book-photo.ts) into a transparent-background cut-out, then trim and
- * save it to public/downloads/plain-dharma-book-photo.png.
+ * Turn the DARK-backdrop book render (/tmp/pd-book/book-raw.png, produced by
+ * generate-book-photo.ts on a near-black studio backdrop) into a transparent
+ * cut-out, trim it, and save to public/downloads/plain-dharma-book-photo.png.
+ * One transparent PNG floats on BOTH the light (cream) and dark (night-sky)
+ * pages; the page-side CSS adds the drop-shadow.
  *
- * Why chroma-key instead of asking Gemini for transparency? Gemini's image model
- * returns opaque RGB. So we render the book on a flat neutral gray and key that
- * gray out here. The cream cover / yellow spine / black text / orange sun are all
- * far from mid-gray, so the key is unambiguous. The page-side CSS adds the shadow.
+ * Why luma flood-fill (not a single-colour chroma key)? Gemini bakes in a
+ * gradient backdrop + a soft contact shadow, which a fixed key colour can't
+ * remove (it leaves a grey halo). Instead we exploit that the backdrop is
+ * uniformly DARK and the cream/yellow/orange book is BRIGHT: flood-fill from
+ * the border clearing every edge-connected pixel below LUMA_THRESH. The bright
+ * book stops the fill; interior dark spots (the black cover text) aren't
+ * edge-connected, so they stay opaque. THRESH sits above the anti-aliased edge
+ * so the cut lands on the book side — no dark indigo fringe.
  *
  * Run with: node --import tsx scripts/cutout-book.ts
  * Then: pnpm upload-assets
@@ -23,96 +29,60 @@ const OUT = join(
   "plain-dharma-book-photo.png",
 );
 
-// Distance (0–255) from the sampled background gray within which a pixel is
-// considered fully background. Pixels between INNER and OUTER fade their alpha
-// for a soft anti-aliased edge.
-const INNER = 26; // <= this far from bg  -> fully transparent
-const OUTER = 60; // >= this far from bg  -> fully opaque
+// Edge-connected pixels with luma <= this are background. Above the ~130 luma of
+// the indigo→cream anti-aliased edge, so the cut lands on the book (no fringe).
+const LUMA_THRESH = 175;
 
 async function main() {
-  const img = sharp(RAW).ensureAlpha();
-  const { width, height } = await img.metadata();
-  if (!width || !height) throw new Error("bad raw image");
-
-  const { data } = await img
+  const { data, info } = await sharp(RAW)
+    .removeAlpha()
     .raw()
-    .toBuffer({ resolveWithObject: true }); // RGBA, 4 channels
+    .toBuffer({ resolveWithObject: true });
+  const W = info.width, H = info.height, C = info.channels; // C === 3
+  if (!W || !H) throw new Error("bad raw image");
+  const luma = (i: number) =>
+    0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
 
-  // Sample background = average of the four corners (a few px in).
-  const pad = 4;
-  const corners = [
-    [pad, pad],
-    [width - 1 - pad, pad],
-    [pad, height - 1 - pad],
-    [width - 1 - pad, height - 1 - pad],
-  ];
-  let br = 0, bg = 0, bb = 0;
-  for (const [x, y] of corners) {
-    const i = (y * width + x) * 4;
-    br += data[i]; bg += data[i + 1]; bb += data[i + 2];
-  }
-  br /= 4; bg /= 4; bb /= 4;
-  console.log(`bg gray ≈ rgb(${br.toFixed(0)}, ${bg.toFixed(0)}, ${bb.toFixed(0)})`);
-
-  for (let p = 0; p < width * height; p++) {
-    const i = p * 4;
-    const dr = data[i] - br;
-    const dg = data[i + 1] - bg;
-    const db = data[i + 2] - bb;
-    const dist = Math.sqrt(dr * dr + dg * dg + db * db);
-    let alpha: number;
-    if (dist <= INNER) alpha = 0;
-    else if (dist >= OUTER) alpha = 255;
-    else alpha = Math.round(((dist - INNER) / (OUTER - INNER)) * 255);
-    data[i + 3] = alpha;
-  }
-
-  // Flood-fill from the border so only background CONNECTED to the edge is
-  // cleared — protects any cover region that happens to sit near the key color.
-  const fullyKeyed = new Uint8Array(width * height); // 1 = matched key color
-  for (let p = 0; p < width * height; p++) {
-    fullyKeyed[p] = data[p * 4 + 3] === 0 ? 1 : 0;
-  }
-  const reachable = new Uint8Array(width * height);
+  // Flood-fill the dark, edge-connected background.
+  const isBg = new Uint8Array(W * H);
   const stack: number[] = [];
-  const pushIf = (x: number, y: number) => {
-    if (x < 0 || y < 0 || x >= width || y >= height) return;
-    const p = y * width + x;
-    if (!reachable[p] && fullyKeyed[p]) {
-      reachable[p] = 1;
+  const seed = (x: number, y: number) => {
+    if (x < 0 || y < 0 || x >= W || y >= H) return;
+    const p = y * W + x;
+    if (!isBg[p] && luma(p * C) <= LUMA_THRESH) {
+      isBg[p] = 1;
       stack.push(p);
     }
   };
-  for (let x = 0; x < width; x++) {
-    pushIf(x, 0);
-    pushIf(x, height - 1);
-  }
-  for (let y = 0; y < height; y++) {
-    pushIf(0, y);
-    pushIf(width - 1, y);
-  }
+  for (let x = 0; x < W; x++) { seed(x, 0); seed(x, H - 1); }
+  for (let y = 0; y < H; y++) { seed(0, y); seed(W - 1, y); }
   while (stack.length) {
     const p = stack.pop()!;
-    const x = p % width;
-    const y = (p / width) | 0;
-    pushIf(x - 1, y);
-    pushIf(x + 1, y);
-    pushIf(x, y - 1);
-    pushIf(x, y + 1);
-  }
-  // Any pixel that was keyed transparent but NOT reachable from the edge is an
-  // interior region (e.g. a light patch on the cover) — restore it opaque.
-  for (let p = 0; p < width * height; p++) {
-    if (fullyKeyed[p] && !reachable[p]) data[p * 4 + 3] = 255;
+    const x = p % W, y = (p / W) | 0;
+    seed(x - 1, y); seed(x + 1, y); seed(x, y - 1); seed(x, y + 1);
   }
 
-  await sharp(data, { raw: { width, height, channels: 4 } })
+  // Assemble RGBA in ONE pass (RGB from source, alpha from the mask) and encode
+  // once — raw round-trips through sharp corrupted the raster.
+  const out = Buffer.alloc(W * H * 4);
+  for (let p = 0; p < W * H; p++) {
+    out[p * 4] = data[p * C];
+    out[p * 4 + 1] = data[p * C + 1];
+    out[p * 4 + 2] = data[p * C + 2];
+    out[p * 4 + 3] = isBg[p] ? 0 : 255;
+  }
+
+  await sharp(out, { raw: { width: W, height: H, channels: 4 } })
     .png()
     .trim() // crop the now-transparent margin tight to the book
     .toFile(OUT);
 
-  const out = await sharp(OUT).metadata();
-  console.log(`✓ wrote ${OUT} (${out.width}x${out.height}, alpha=${out.hasAlpha})`);
+  const meta = await sharp(OUT).metadata();
+  const removed = isBg.reduce((n, v) => n + v, 0);
+  console.log(
+    `✓ wrote ${OUT} (${meta.width}x${meta.height}, ` +
+      `${((100 * removed) / (W * H)).toFixed(1)}% removed)`,
+  );
   console.log("  Review it, then run `pnpm upload-assets` to publish.");
 }
 

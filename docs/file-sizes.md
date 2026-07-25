@@ -1,6 +1,41 @@
 # File Size Snapshots
 
-## 2026-07-25 (current)
+## 2026-07-26 (current)
+
+### Distribution
+
+| Bucket     | Count | Δ vs 2026-07-25 |
+|------------|-------|-----------------|
+| <=50       | 148   | +86             |
+| 51-150     | 145   | +71             |
+| 151-300    | 57    | +28             |
+| 301-500    | 15    | +6              |
+| 501-1000   | 7     | +3              |
+| 1001-2000  | 0     | —               |
+| 2000+      | 0     | —               |
+
+Total files: 372 (+194)
+
+### Largest File
+
+`src/app/assets/page.tsx` — 814 lines
+
+### Files Over 500 Lines
+
+7 files exceed the 500-line guideline:
+- `src/app/assets/page.tsx` — 814 lines (NEW, substantially rewritten)
+- `src/components/AudioPlayer.tsx` — 796 lines
+- `packages/content/strings.ts` — 725 lines
+- `packages/content/canonical/mindfulness.json` — 716 lines (data file)
+- `src/views/HowItWasMadeView.tsx` — 667 lines
+- `scripts/generate-audio.ts` — 627 lines
+- `src/components/marginalia/Marginalia.tsx` — 529 lines
+
+### Delta
+
+Major expansion: +194 files (178 → 372, +109%). All size buckets grew substantially — the <=50 bracket added 86 files, 51–150 added 71, and 151–300 added 28. The 501–1000 bucket grew from 4 to 7 files, with `src/app/assets/page.tsx` now the largest file at 814 lines (previous snapshot's 178-file count was anomalously low, likely branch-specific). Files over 500-line threshold increased from 4 to 7. `src/app/assets/page.tsx` was substantially rewritten this session and now far exceeds the 500-line guideline at 814 lines.
+
+## 2026-07-25
 
 ### Distribution
 

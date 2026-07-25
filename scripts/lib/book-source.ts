@@ -38,6 +38,18 @@ export const TRANSLATOR = "Claude Opus";
 export const EDITOR = AUTHOR;
 /** The book-wide byline, used verbatim wherever a one-line credit is shown. */
 export const BYLINE = `Translated by ${TRANSLATOR}, edited by ${EDITOR}`;
+/**
+ * Title-page attribution for the LaTeX builds. Pandoc drops this verbatim into
+ * `\author{}`, so it carries markup: the creator on the first line, the byline
+ * beneath it in smaller italics — matching the covers, which credit the
+ * translator and editor rather than naming Alex as the author. Passing plain
+ * AUTHOR here is what left the printed title page reading "Alex Miller" alone.
+ * PDF metadata is unaffected (pandoc drives pdfauthor from `author-meta`, which
+ * `-V author=` does not set — the preambles set it explicitly instead).
+ */
+export const TITLE_PAGE_AUTHOR_TEX = `${ORIGINAL_AUTHOR}\\\\[0.7em]{\\normalsize\\itshape ${BYLINE}}`;
+/** Same attribution, flattened for PDF document metadata (no markup). */
+export const PDF_AUTHOR_META = `${ORIGINAL_AUTHOR}; translated by ${TRANSLATOR}; edited by ${EDITOR}`;
 // Bowker imprint of record for ISBN 978-1-891328-37-4 (see
 // docs/publishing/BOWKER_REVIEW.md). KDP's Publisher field + the EPUB's
 // dc:publisher should match this exactly.

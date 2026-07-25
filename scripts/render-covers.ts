@@ -63,12 +63,27 @@ function backCoverEntries(): string {
   ).join("\n    ");
 }
 
+// Paper note for the groundwood edition only. KDP's substantiation is "at least
+// 15% lower CO2 emissions compared to standard papers" — quote the number rather
+// than a vague "low carbon", which we couldn't back up on the page. Groundwood is
+// B&W-interior-only and barred for heavy-ink interiors, so this line must NEVER
+// appear on the premium-color edition (white paper) or on the ebook back cover,
+// which isn't printed at all. Hence the per-render token instead of static markup.
+const ECO_NOTE =
+  "<small>Printed on groundwood paper &mdash; at least 15% lower CO₂.</small>";
+
 /** Fill the back-cover template tokens (geometry + ISBN + barcode + entries). */
-function fillBackCover(html: string, isbn: string, geom: Record<string, string>): string {
+function fillBackCover(
+  html: string,
+  isbn: string,
+  geom: Record<string, string>,
+  opts: { eco?: boolean } = {},
+): string {
   const barcode = ean13Svg(isbn, { moduleWidth: 2.6, barHeight: 100, fontPx: 22 });
   let out = html
     .replace(/__ENTRIES__/g, backCoverEntries())
     .replace(/__BARCODE__/g, barcode)
+    .replace(/__ECO_NOTE__/g, opts.eco ? ECO_NOTE : "")
     .replace(/__ISBN__/g, isbn);
   for (const [k, v] of Object.entries(geom)) out = out.replace(new RegExp(`__${k}__`, "g"), v);
   return out;
@@ -152,6 +167,29 @@ const TARGETS: Target[] = [
       { file: "back-cover-print-color.jpg" },
       { file: "back-cover-print-bw.jpg", grayscale: true },
     ],
+  },
+  // Same print back cover, plus the groundwood paper note — a separate render
+  // because the note is text, so it can't be derived from the color art the way
+  // the grayscale export is. build-kdp picks this one for the bw/groundwood
+  // wraparound. NOTE: paperback covers print in color on both editions, so this
+  // has no grayscale sibling.
+  {
+    html: "back-cover.html",
+    cw: 1575,
+    ch: 2475,
+    scale: 2,
+    build: (h) =>
+      fillBackCover(
+        h,
+        PRINT_ISBN,
+        {
+          PAGE_W: "1575", PAGE_H: "2475", BODY: "38",
+          BAND_W: "150", STITCH_R: "132",
+          PAD_TOP: "150", PAD_LEFT: "130", PAD_RIGHT: "250", PAD_BOT: "150",
+        },
+        { eco: true },
+      ),
+    outputs: [{ file: "back-cover-print-groundwood.jpg" }],
   },
   // Back cover — ebook trim (6×9), a downloadable companion to cover.jpg.
   {

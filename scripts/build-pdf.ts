@@ -29,10 +29,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  AUTHOR,
   BOOK_SUBTITLE,
   BOOK_TITLE,
   SITE_URL,
+  TITLE_PAGE_AUTHOR_TEX,
   buildBookMarkdown,
   generateQrCode,
 } from "./lib/book-source.js";
@@ -194,7 +194,7 @@ function runPandoc(
     "-V", "geometry:right=0.85in",
     "-V", `title=${BOOK_TITLE}`,
     "-V", `subtitle=${BOOK_SUBTITLE}`,
-    "-V", `author=${AUTHOR}`,
+    "-V", `author=${TITLE_PAGE_AUTHOR_TEX}`,
     "-V", "lang=en",
     "-V", "fontsize=11pt",
     "-V", "colorlinks=true",

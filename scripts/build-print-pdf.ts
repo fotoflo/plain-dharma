@@ -31,13 +31,14 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  AUTHOR,
   BOOK_SUBTITLE,
   BOOK_TITLE,
   SITE_URL,
+  TITLE_PAGE_AUTHOR_TEX,
   buildBookMarkdown,
   generateQrCode,
 } from "./lib/book-source.js";
+import { publishToDownloads } from "./lib/publish.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ILLUSTRATIONS_DIR = join(ROOT, "public", "illustrations");
@@ -192,7 +193,7 @@ function runPandoc(
     "-V", "geometry:bottom=0.75in",
     "-V", `title=${BOOK_TITLE}`,
     "-V", `subtitle=${BOOK_SUBTITLE}`,
-    "-V", `author=${AUTHOR}`,
+    "-V", `author=${TITLE_PAGE_AUTHOR_TEX}`,
     "-V", "lang=en",
     "-V", "fontsize=10pt", // tighter than screen — narrower text block
     `--output=${outPdf}`,
@@ -227,6 +228,10 @@ function buildVariant(variant: Variant): void {
   const backCover = renderBackCover(variant, variantDir);
   const outPdf = join(OUT_DIR, `plain-dharma-print-${cfg.slug}.pdf`);
   runPandoc(variant, bookMd, preamble, backCover, outPdf);
+
+  // Publishing is tied to generation (same as build-pdf/build-ebook) — without
+  // this the site kept serving whatever print booklet was copied over by hand.
+  publishToDownloads(outPdf, `plain-dharma-print-${cfg.slug}.pdf`);
 }
 
 function main(): void {

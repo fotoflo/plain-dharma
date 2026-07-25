@@ -78,6 +78,9 @@ __PAGECOLOR_SETUP__
   \hypersetup{
     colorlinks=false,
     pdfborder={0 0 0},
+    % Pandoc leaves pdfauthor empty when `author` arrives via -V, so set the
+    % full attribution here (see TITLE_PAGE_AUTHOR_TEX in lib/book-source.ts).
+    pdfauthor={Gautama Buddha; translated by Claude Opus; edited by Alex Miller},
     pdfsubject={Six Foundational Buddhist Teachings in Plain Modern English},
     pdfkeywords={Buddhism, suttas, dharma, meditation, mindfulness},
     pdfcreator={pandoc + XeLaTeX (print edition)}

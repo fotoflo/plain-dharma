@@ -19,7 +19,7 @@ Account / start: <https://kdp.amazon.com/en_US/bookshelf>
 | Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 48 pp, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
 | Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 48 pp, grayscale, white paper, **cover-free** |
 | Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.35×8.25, back+spine+front, spine 0.108", barcode = print ISBN ‑38‑1 |
-| Paperback wraparound cover (B&W interior) | `dist/kdp/plain-dharma-kdp-cover-bw.pdf` | same art, spine 0.120" (cream caliper) — match to the B&W interior |
+| Paperback wraparound cover (B&W interior) | `dist/kdp/plain-dharma-kdp-cover-bw.pdf` | same art, spine 0.113" (groundwood caliper) — match to the B&W interior |
 
 If you edited any content, rebuild first:
 `pnpm build-ebook && pnpm generate-front-cover && pnpm generate-back-cover && pnpm build-kdp`
@@ -159,12 +159,12 @@ same **⚠️ DECIDE** Publishing-rights choice.
 |---|---|
 | ISBN | Use your own Bowker ISBN: **`978-1-891328-38-1`** (the paperback edition — distinct from the ebook's `…-37-4`). Choose "I have my own ISBN" and enter it; do **not** take a free KDP ISBN (the free one isn't portable to other printers). |
 | Publication date | *(leave blank — uses approval date)* |
-| Print — Ink & Paper | **⚠️ DECIDE:** Color variant → **Premium color, white paper** · B&W variant → **Black & white, cream paper** |
+| Print — Ink & Paper | Color variant → **Premium color, white paper** · B&W variant → **Black & white, groundwood paper** (cheaper to print, ~15% lower CO2; B&W-only and barred for heavy-ink interiors, which is why the color variant can't use it) |
 | Trim size | 5 x 8 in |
 | Bleed | **Bleed (PDF has bleed)** — interiors are 5.25"×8.25" |
 | Cover finish | Matte |
 | Manuscript | Upload `dist/kdp/plain-dharma-kdp-interior-color.pdf` (or `-bw.pdf` to match the paper choice above) — these are **cover-free**, as KDP requires |
-| Book Cover | "Upload a print-ready PDF (recommended)" → `dist/kdp/plain-dharma-kdp-cover-color.pdf` (use `-bw.pdf` if you chose the B&W interior — its spine is sized for cream caliper) |
+| Book Cover | "Upload a print-ready PDF (recommended)" → `dist/kdp/plain-dharma-kdp-cover-color.pdf` (use `-bw.pdf` if you chose the B&W interior — its spine is sized for groundwood caliper) |
 | Preview | Run Print Previewer; fix any margin/bleed flags before saving |
 
 ### Cover (already built — a complete wraparound)
@@ -179,7 +179,9 @@ The front is a **generated 5×8** cover (`generate-front-cover.ts` — the 6×9
 designer `cover.jpg` is the wrong ratio for 5×8 and is Kindle-only). The back
 carries the real **paperback ISBN barcode (978-1-891328-38-1)**. Built dimensions:
 
-- Page count: **48** · spine = 48 × caliper → **0.108"** color (white) / **0.120"** B&W (cream)
+- Page count: **48** · spine = 48 × caliper → **0.108"** color (white, 0.002252) / **0.113"** B&W (groundwood, 0.002347)
+- Verified against KDP's [cover calculator](https://kdp.amazon.com/cover-calculator) (5×8, B&W, groundwood, 48pp): spine 0.113", full cover 10.363×8.25 — ours builds 10.3627×8.25.
+- Changing the paper choice means changing `CALIPER` in `scripts/build-kdp.ts` and rebuilding the wraparound; the spine drives both panel offsets.
 - Full cover **width** = 0.125 + 5 + spine + 5 + 0.125 ≈ **10.35"**; **height** = 8.25"
 - **No spine text** — at 46 pages the spine is ~0.10", below KDP's 100-page minimum.
 

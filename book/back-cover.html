@@ -126,7 +126,10 @@
   .site small {
     display: block;
     font-family: "Geist", system-ui, sans-serif;
-    font-size: 0.62em;
+    /* 0.72em of the 38px print body = ~6.6pt at 300dpi. Was 0.62em (~5.7pt),
+       under the 6pt print floor — too fine for groundwood, which is textured
+       and absorbent enough to fill in small counters. */
+    font-size: 0.72em;
     line-height: 1.45;
     color: var(--cover-mute);
   }
@@ -173,6 +176,7 @@
       <p class="url">plaindharma.com</p>
       <small>Released under CC0 1.0 &mdash; copy it, print it, translate it, distribute it. No permission needed.</small>
       <small>Free PDF, EPUB, audiobook, and printable booklets.</small>
+      __ECO_NOTE__
     </div>
     <div class="isbn">
       <p class="label">ISBN __ISBN__</p>

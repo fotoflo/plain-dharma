@@ -35,10 +35,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  AUTHOR,
   BOOK_SUBTITLE,
   BOOK_TITLE,
   SITE_URL,
+  TITLE_PAGE_AUTHOR_TEX,
   buildBookMarkdown,
   generateQrCode,
 } from "./lib/book-source.js";
@@ -55,6 +55,9 @@ const OUT_DIR = join(ROOT, "dist", "kdp");
 // covers in color even for the B&W interior.
 const FRONT_COVER = join(EBOOK_DIR, "front-cover-print-color.jpg");
 const BACK_COVER = join(EBOOK_DIR, "back-cover-print-color.jpg");
+// The bw edition prints on groundwood, so its back cover carries the paper note.
+// Same art otherwise — still color, per the note above.
+const BACK_COVER_GROUNDWOOD = join(EBOOK_DIR, "back-cover-print-groundwood.jpg");
 
 // Paperback trim (inches). The wrap template + spine math derive from these.
 const TRIM_W = 5;
@@ -68,10 +71,16 @@ const XELATEX_BIN = join(TEX_BIN_DIR, "xelatex");
 const TEX_ENV = { ...process.env, PATH: `${TEX_BIN_DIR}:${process.env.PATH ?? ""}` };
 
 // KDP per-page thickness (inches), from KDP's spine-width spec. Spine = pages ×
-// caliper. Color interiors print on white paper; B&W here uses cream stock.
+// caliper. Color interiors print on white paper; B&W here uses groundwood.
 const CALIPER = {
   white: 0.002252, // standard color & B&W on white
   cream: 0.0025, // B&W on cream
+  // B&W on groundwood — the cheaper, ~15%-lower-CO2 stock. Confirmed against
+  // KDP's cover calculator: 5×8, B&W, groundwood, 48pp → spine 0.113",
+  // full cover 10.363×8.25. Groundwood is B&W-only and excludes heavy-ink
+  // interiors, so it applies to the bw variant only — never the color one,
+  // whose cream \pagecolor floods every page.
+  groundwood: 0.002347,
 } as const;
 
 type Variant = "bw" | "color";
@@ -81,6 +90,8 @@ type VariantCfg = {
   illustrationBg: string;
   grayscale: boolean;
   caliper: number;
+  /** Back-cover art for this edition's wraparound (differs by paper note). */
+  backCover: string;
 };
 
 const VARIANTS: Record<Variant, VariantCfg> = {
@@ -89,7 +100,11 @@ const VARIANTS: Record<Variant, VariantCfg> = {
     pagecolorSetup: "% B&W variant: white pages (no \\pagecolor)",
     illustrationBg: "white",
     grayscale: true,
-    caliper: CALIPER.cream,
+    // Groundwood, not cream — pick "Black & white interior with groundwood
+    // paper" in KDP's Print Options to match. Switch back to CALIPER.cream if
+    // the paper choice changes; the spine and both panel offsets follow it.
+    caliper: CALIPER.groundwood,
+    backCover: BACK_COVER_GROUNDWOOD,
   },
   color: {
     slug: "color",
@@ -97,6 +112,7 @@ const VARIANTS: Record<Variant, VariantCfg> = {
     illustrationBg: "#F5EFE0",
     grayscale: false,
     caliper: CALIPER.white,
+    backCover: BACK_COVER,
   },
 };
 
@@ -181,7 +197,7 @@ function buildInterior(
     "-V", "geometry:footskip=0.35in",
     "-V", `title=${BOOK_TITLE}`,
     "-V", `subtitle=${BOOK_SUBTITLE}`,
-    "-V", `author=${AUTHOR}`,
+    "-V", `author=${TITLE_PAGE_AUTHOR_TEX}`,
     "-V", "lang=en",
     "-V", "fontsize=10pt",
     `--output=${outPdf}`,
@@ -223,7 +239,7 @@ function buildWrapCover(
     .replace(/__TRIM_W__/g, `${TRIM_W}in`)
     .replace(/__TRIM_H__/g, `${TRIM_H}in`)
     .replace(/__SPINE_W__/g, fmt(spineIn))
-    .replace(/__BACK_IMG__/g, BACK_COVER)
+    .replace(/__BACK_IMG__/g, cfg.backCover)
     .replace(/__FRONT_IMG__/g, FRONT_COVER);
   const jobname = `kdp-cover-${cfg.slug}`;
   const texPath = join(variantDir, `${jobname}.tex`);
@@ -269,7 +285,7 @@ function buildVariant(variant: Variant): void {
 }
 
 function main(): void {
-  for (const img of [FRONT_COVER, BACK_COVER]) {
+  for (const img of [FRONT_COVER, BACK_COVER, BACK_COVER_GROUNDWOOD]) {
     if (!existsSync(img)) {
       console.error(
         `ERROR: missing cover art ${img}. Run \`pnpm render-covers\` and ` +

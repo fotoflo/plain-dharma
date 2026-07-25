@@ -151,9 +151,18 @@ export function generateQrCode(url: string, outPath: string): string | null {
 export function buildBookMarkdown(opts: BookSourceOptions): string {
   const parts: string[] = [];
 
+  // Same printUrls rule as the sources appendix: in print the link annotation is
+  // stripped, so name the domain inline rather than leaving a bare label.
+  const suttaCentral = opts.printUrls
+    ? "SuttaCentral (suttacentral.net)"
+    : "[SuttaCentral](https://suttacentral.net)";
+  const accessToInsight = opts.printUrls
+    ? "Access to Insight (accesstoinsight.org)"
+    : "[Access to Insight](https://www.accesstoinsight.org)";
+
   parts.push(`# About This Book {.unnumbered}\n`);
   parts.push(
-    `*${BOOK_SUBTITLE}.*\n\nSix teachings of the Buddha, translated from the original Pāli by ${TRANSLATOR} and edited line by line by ${EDITOR}. Not a scholarly translation — a plain reading, meant to make the foundational suttas accessible to a first-time reader without sacrificing the substance.\n\nFor canonical translations, see *Sources & Further Reading* at the end of this volume, or visit any of: [SuttaCentral](https://suttacentral.net), [Access to Insight](https://www.accesstoinsight.org), or the published work of Bhikkhu Bodhi.\n`
+    `*${BOOK_SUBTITLE}.*\n\nSix teachings of the Buddha, translated from the original Pāli by ${TRANSLATOR} and edited line by line by ${EDITOR}. Not a scholarly translation — a plain reading, meant to make the foundational suttas accessible to a first-time reader without sacrificing the substance.\n\nFor canonical translations, see *Sources & Further Reading* at the end of this volume, or visit any of: ${suttaCentral}, ${accessToInsight}, or the published work of Bhikkhu Bodhi.\n`
   );
   parts.push(
     `## License\n\nReleased into the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Copy it, print it, translate it, distribute it, modify it. No permission needed; no attribution required.\n\nThis is in keeping with the Buddhist tradition of free dharma distribution.\n`

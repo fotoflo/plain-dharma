@@ -57,6 +57,18 @@ export function assetSize(relPath: string): number | null {
 }
 
 /**
+ * Every uploaded asset's bucket-relative key, optionally filtered by a path
+ * prefix (e.g. "audio/en/") and sorted. Pure (reads the committed version map) —
+ * safe in client/edge/static code. Used by the /assets index page.
+ */
+export function listAssets(prefix = ""): string[] {
+  const p = normalize(prefix);
+  return Object.keys(VERSION_MAP)
+    .filter((k) => k.startsWith(p) && !k.endsWith(".DS_Store"))
+    .sort();
+}
+
+/**
  * Absolute CDN URL for a bucket-relative path (e.g. "audio/en/first-talk/01.mp3"),
  * cache-busted with `?v=<hash>` when the file is in the version map.
  */

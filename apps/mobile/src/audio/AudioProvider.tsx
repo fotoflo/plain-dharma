@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMeta, SUTTAS, type Locale, type SuttaSlug } from "@plain-dharma/content";
 import {
   createContext,
@@ -12,6 +13,7 @@ import {
 import { Image } from "react-native";
 import TrackPlayer, {
   Event,
+  RepeatMode,
   useActiveTrack,
   useIsPlaying,
   useProgress,
@@ -37,6 +39,8 @@ type AudioContextValue = {
   position: number;
   duration: number;
   speed: Speed;
+  /** Queue repeats forever instead of stopping at the last section. */
+  loop: boolean;
   hasFast: boolean;
   isLoaded: boolean;
   loading: boolean;
@@ -54,9 +58,14 @@ type AudioContextValue = {
   seekTo: (sec: number) => void;
   seekBy: (delta: number) => void;
   setSpeed: (s: Speed) => void;
+  toggleLoop: () => void;
 };
 
 const AudioContext = createContext<AudioContextValue | null>(null);
+
+// Loop preference is sticky across launches — someone who falls asleep to this
+// wants it still looping tomorrow night. Same key the web player uses.
+const LOOP_KEY = "pd-audio-loop";
 
 // Bundled lock-screen / Now Playing artwork. A local require() (not a remote
 // URL) so the icon renders offline too — downloaded audio plays without a
@@ -107,6 +116,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [sections, setSections] = useState<PlayerSection[]>([]);
   const [speed, setSpeedState] = useState<Speed>("slow");
   const [index, setIndex] = useState(0);
+  const [loop, setLoop] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,6 +124,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const loadedKeyRef = useRef<string | null>(null);
   const sectionsRef = useRef<PlayerSection[]>([]);
   const speedRef = useRef<Speed>("slow");
+  const loopRef = useRef(false);
   const localeRef = useRef<Locale>("en");
   const albumRef = useRef<string>("");
 
@@ -141,6 +152,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       await setupAudioPlayer();
       await TrackPlayer.reset();
       await TrackPlayer.add(toTracks(secs, speedRef.current, album));
+      // reset() drops the repeat mode along with the queue, so re-apply the
+      // user's loop preference to every queue we install.
+      await TrackPlayer.setRepeatMode(
+        loopRef.current ? RepeatMode.Queue : RepeatMode.Off
+      );
       sectionsRef.current = secs;
       setSections(secs);
       setIndex(0);
@@ -310,6 +326,9 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     setSpeedState(next);
     await TrackPlayer.reset();
     await TrackPlayer.add(toTracks(secs, next, albumRef.current));
+    await TrackPlayer.setRepeatMode(
+      loopRef.current ? RepeatMode.Queue : RepeatMode.Off
+    );
     await TrackPlayer.skip(idx, newPos);
     if (wasPlaying) await TrackPlayer.play();
   }, []);
@@ -321,6 +340,37 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     [setSpeed]
   );
 
+  // Restore the saved loop preference on launch. Only touches the player if a
+  // queue is already installed; otherwise installQueue applies it (loopRef is
+  // set synchronously here, so a load racing this still gets the right mode).
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const saved = await AsyncStorage.getItem(LOOP_KEY).catch(() => null);
+      if (cancelled || saved !== "1") return;
+      loopRef.current = true;
+      setLoop(true);
+      if (sectionsRef.current.length > 0) {
+        await TrackPlayer.setRepeatMode(RepeatMode.Queue).catch(() => {});
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const toggleLoop = useCallback(() => {
+    const next = !loopRef.current;
+    loopRef.current = next;
+    setLoop(next);
+    AsyncStorage.setItem(LOOP_KEY, next ? "1" : "0").catch(() => {});
+    // No queue yet → nothing to configure; installQueue picks up loopRef.
+    if (sectionsRef.current.length === 0) return;
+    void TrackPlayer.setRepeatMode(
+      next ? RepeatMode.Queue : RepeatMode.Off
+    ).catch(() => {});
+  }, []);
+
   const value = useMemo<AudioContextValue>(
     () => ({
       loadedKey,
@@ -330,6 +380,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       position,
       duration,
       speed,
+      loop,
       hasFast: hasFastVariant(sections),
       isLoaded: duration > 0,
       loading,
@@ -345,6 +396,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       seekTo,
       seekBy,
       setSpeed: setSpeedSafe,
+      toggleLoop,
     }),
     [
       loadedKey,
@@ -354,6 +406,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       position,
       duration,
       speed,
+      loop,
       loading,
       error,
       load,
@@ -367,6 +420,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       seekTo,
       seekBy,
       setSpeedSafe,
+      toggleLoop,
     ]
   );
 

@@ -136,11 +136,13 @@ export function AudioPanel({ locale }: { locale: Locale }) {
     position,
     duration,
     speed,
+    loop,
     hasFast,
     isLoaded,
     loading,
     error,
     togglePlay,
+    toggleLoop,
     next,
     prev,
     jumpTo,
@@ -204,6 +206,42 @@ export function AudioPanel({ locale }: { locale: Locale }) {
     </View>
   ) : null;
 
+  // Loop toggle — the queue repeats forever instead of stopping at the last
+  // section (bedtime listening). Same pill shape as the pace control so the
+  // two read as one row of playback settings.
+  const LoopControl = (
+    <Pressable
+      onPress={toggleLoop}
+      accessibilityRole="switch"
+      accessibilityState={{ checked: loop }}
+      accessibilityLabel={loop ? s.loopOn : s.loopOff}
+      style={[
+        styles.pace,
+        styles.loop,
+        {
+          borderColor: loop ? palette.accentStrong : palette.divider,
+          backgroundColor: loop ? palette.accentStrong : "transparent",
+        },
+      ]}
+    >
+      <Ionicons
+        name="repeat"
+        size={14}
+        color={loop ? palette.onAccent : palette.ink}
+        style={{ opacity: loop ? 1 : 0.6 }}
+      />
+      <Text
+        style={{
+          fontSize: 12,
+          color: loop ? palette.onAccent : palette.ink,
+          opacity: loop ? 1 : 0.6,
+        }}
+      >
+        {toDisplay(s.loop)}
+      </Text>
+    </Pressable>
+  );
+
   if (isPlaying) {
     return (
       <View>
@@ -220,12 +258,17 @@ export function AudioPanel({ locale }: { locale: Locale }) {
         </Text>
 
         <View style={styles.transport}>
-          <Pressable onPress={prev} disabled={index === 0} style={styles.ctrl}>
+          {/* With loop on the queue wraps, so the ends aren't dead stops. */}
+          <Pressable
+            onPress={prev}
+            disabled={index === 0 && !loop}
+            style={styles.ctrl}
+          >
             <Ionicons
               name="play-skip-back"
               size={22}
               color={palette.ink}
-              style={{ opacity: index === 0 ? 0.3 : 0.8 }}
+              style={{ opacity: index === 0 && !loop ? 0.3 : 0.8 }}
             />
           </Pressable>
           <Pressable onPress={() => seekBy(-5)} style={styles.ctrl}>
@@ -252,14 +295,16 @@ export function AudioPanel({ locale }: { locale: Locale }) {
           </Pressable>
           <Pressable
             onPress={next}
-            disabled={index >= sections.length - 1}
+            disabled={index >= sections.length - 1 && !loop}
             style={styles.ctrl}
           >
             <Ionicons
               name="play-skip-forward"
               size={22}
               color={palette.ink}
-              style={{ opacity: index >= sections.length - 1 ? 0.3 : 0.8 }}
+              style={{
+                opacity: index >= sections.length - 1 && !loop ? 0.3 : 0.8,
+              }}
             />
           </Pressable>
         </View>
@@ -280,7 +325,10 @@ export function AudioPanel({ locale }: { locale: Locale }) {
           </Text>
         </View>
 
-        {PaceControl ? <View style={styles.paceRow}>{PaceControl}</View> : null}
+        <View style={styles.paceRow}>
+          {LoopControl}
+          {PaceControl}
+        </View>
         {!isLoaded ? (
           <ActivityIndicator color={palette.accent} style={{ marginTop: 8 }} />
         ) : null}
@@ -333,7 +381,12 @@ export function AudioPanel({ locale }: { locale: Locale }) {
         })}
       </ScrollView>
       <View style={[styles.tocFooter, { borderColor: palette.divider }]}>
-        {PaceControl}
+        {/* Grouped so a narrow screen wraps the totals line below the controls
+            rather than squeezing them apart. */}
+        <View style={styles.footerControls}>
+          {LoopControl}
+          {PaceControl}
+        </View>
         <Text
           style={{
             marginLeft: "auto",
@@ -394,7 +447,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   time: { fontSize: 12, opacity: 0.6, fontVariant: ["tabular-nums"] },
-  paceRow: { alignItems: "center", marginTop: 16 },
+  paceRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 16,
+  },
   pace: {
     flexDirection: "row",
     borderWidth: 1,
@@ -403,6 +463,12 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   paceBtn: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999 },
+  loop: {
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
   toc: { maxHeight: 280 },
   row: {
     flexDirection: "row",
@@ -417,11 +483,15 @@ const styles = StyleSheet.create({
   rowTitleStrong: { fontWeight: "900" },
   tocFooter: {
     flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
+    columnGap: 8,
+    rowGap: 6,
     paddingTop: 10,
     marginTop: 2,
     borderTopWidth: 1,
   },
+  footerControls: { flexDirection: "row", alignItems: "center", gap: 8 },
   dlBtn: {
     flexDirection: "row",
     alignItems: "center",

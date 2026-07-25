@@ -1,6 +1,6 @@
 # Asset hosting (offsite media on Supabase Storage) — Plain Dharma
 
-*Last updated: 2026-06-08*
+*Last updated: 2026-07-25*
 
 The heavy binary assets — audio mp3s, illustrations, and download bundles — are
 **not committed to git** and **not served from Vercel `/public`**. They live in
@@ -105,6 +105,28 @@ node --env-file=.env.local --import tsx scripts/backup-audio-masters.ts
   `components/SuttaIllustration.tsx`, `lib/links.ts`, and the home cover all
   resolve through `assetUrl`. Mobile fetches the per-sutta `manifest.json` from
   the CDN as well.
+
+## Asset discovery: the `/assets` page
+
+`src/app/assets/page.tsx` is a **public index page** that lists and plays every asset built from the version map. It complements `/remix` (reusable bundles) by offering full granular access:
+
+**Audio:** All 80+ English narration tracks (6 suttas + frontmatter/closing/colophon) grouped by sutta in canonical order, with both standard (meditative pace) and fast cuts listed separately. Each track has an inline `<audio>` player.
+
+**Illustrations:** Gallery of all 6 source PNGs (downloadable), with a note that dark-mode variants exist.
+
+**Downloads:** Book files (PDF, print PDFs, EPUB, M4B, text/audio zips, covers) with file sizes.
+
+**Implementation:** Built entirely from the committed `asset-version.json` at build time (no runtime lookups or file checks). Uses the `listAssets(prefix)` helper from `packages/content/assets.ts`:
+
+```ts
+export function listAssets(prefix = ""): string[] {
+  return Object.keys(VERSION_MAP)
+    .filter((k) => k.startsWith(prefix) && !k.endsWith(".DS_Store"))
+    .sort();
+}
+```
+
+This is **pure** — safe in static/edge/client code. The page groups results into sections (audio by sutta, then illustrations, then downloads) and builds player/size components dynamically. It's a zero-database catalog of everything the site publishes.
 
 ## Back-compat redirect
 

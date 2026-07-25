@@ -1,5 +1,37 @@
 # File Size Snapshots
 
+## 2026-07-25 (current)
+
+### Distribution
+
+| Bucket     | Count | Δ vs 2026-06-27 |
+|------------|-------|-----------------|
+| <=50       | 62    | -84             |
+| 51-150     | 74    | -66             |
+| 151-300    | 29    | -26             |
+| 301-500    | 9     | -6              |
+| 501-1000   | 4     | -2              |
+| 1001-2000  | 0     | —               |
+| 2000+      | 0     | —               |
+
+Total files: 178 (-184)
+
+### Largest File
+
+`src/components/AudioPlayer.tsx` — 728 lines
+
+### Files Over 500 Lines
+
+4 files exceed the 500-line guideline:
+- `src/components/AudioPlayer.tsx` — 728 lines
+- `packages/content/strings.ts` — 700 lines
+- `src/components/marginalia/Marginalia.tsx` — 529 lines
+- (1 additional file in the 501–1000 bucket)
+
+### Delta
+
+Significant contraction: -184 files (362 → 178, -50.8%). All size buckets decreased substantially — the 51–150 bracket lost 66 files, <=50 lost 84, and 151–300 lost 26. The 501–1000 bucket shrank from 6 to 4 files. The largest file remains `AudioPlayer.tsx` at 728 lines. Files over 500-line threshold reduced from 6 to 4. This large reduction suggests branch divergence or significant repository restructuring (e.g., removal of build outputs, temporary directories, or branch-specific files).
+
 ## 2026-06-27 (current)
 
 ### Distribution

@@ -1,10 +1,10 @@
 # Downloads & Distribution — Plain Dharma
 
-*Last updated: 2026-06-28*
+*Last updated: 2026-07-25*
 
 ## Overview
 
-Download artifacts (EPUB, PDF, audiobook, cover image) and print-ready packages (KDP paperback, print PDFs) are built on-demand via separate scripts. Reader-facing downloads are automatically published to `public/downloads/` as the final step of each generator; print and internal artifacts stay in `dist/`. All files are served at `/downloads/*` as part of the static site.
+Download artifacts (EPUB, PDF, audiobook, cover image, book mockup) and print-ready packages (KDP paperback, print PDFs) are built on-demand via separate scripts. Reader-facing downloads are automatically published to `public/downloads/` as the final step of each generator; print and internal artifacts stay in `dist/`. All files are served at `/downloads/*` as part of the static site. A product photo of the printed book is generated via Gemini and published as a transparent cutout for use on promotional pages.
 
 The donation flow is honor-system — anyone who guesses the URL can download without paying. The site nudges with the donation page; it doesn't gate access.
 
@@ -73,6 +73,8 @@ Non-published artifacts (print, KDP, storyboard) remain in `dist/` for proofing 
 | `scripts/build-storyboard.ts` | Render 40-page screen PDF to a "tall format" picture-book storyboard PNG + PDF. Page 1 single (cover), spreads 2–3…38–39, page 40 single (back). Pure ImageMagick + pdftoppm. Planning tool, not published. |
 | `scripts/build-manifest.ts` | Write `dist/MANIFEST.md` — human-readable index of all artifacts with sizes/mtimes grouped by category, recent content commits, and repo changelog. Final step of `pnpm build-all`. |
 | `scripts/publish-downloads.ts` | Batch convenience: republish all reader-facing artifacts at once from current `dist/` contents. Used when re-syncing artifacts (e.g. after fresh checkout with committed dist/ files). Missing sources are skipped. |
+| `scripts/generate-book-photo.ts` | Render a photorealistic product photo of the printed book via Gemini image-to-image (feeds the real cover from the CDN). Writes to `/tmp/pd-book/book-raw.png` on a DARK near-black studio backdrop with a BLANK spine. Not published directly; feeds `cutout-book.ts`. |
+| `scripts/cutout-book.ts` | Convert the dark-backdrop render into a transparent cutout via LUMA flood-fill (clears edge-connected pixels with luma ≤ 175, removing the dark background and contact shadow while preserving the book). Writes to `public/downloads/plain-dharma-book-photo.png` and publishes as final step. One transparent PNG floats on BOTH light and dark pages; page CSS adds drop-shadow. |
 | `scripts/assets/PlainDharma_Cover.pdf` | Designer's InDesign cover (source of truth for cover.jpg). Rendered at 320 DPI and downscaled by `generate-cover.ts`. |
 
 ## Data flow
@@ -94,6 +96,12 @@ Non-published artifacts (print, KDP, storyboard) remain in `dist/` for proofing 
 2. **Print PDF variants** — `pnpm build-print-pdf` generates color and B&W versions at 5.25×8.25, each appending its print-trim back cover. Stay in `dist/print/`.
 3. **KDP package** — `pnpm build-kdp` generates cover-free interiors (bw/color) and computed wraparound covers (spine width per variant). Stay in `dist/kdp/`.
 4. **Manifest** — `pnpm build-manifest` writes `dist/MANIFEST.md` with all artifacts indexed by category.
+
+### Book mockup photo
+
+1. **Gemini render** — `node --env-file=.env.local --import tsx scripts/generate-book-photo.ts` calls Gemini's image-to-image model with the real front cover (pulled from the CDN) as a reference image. Renders a photorealistic product shot on a DARK near-black studio backdrop with a BLANK spine (spine text is omitted to avoid garbled rendering). Writes `/tmp/pd-book/book-raw.png`.
+2. **Luma flood-fill cutout** — `node --import tsx scripts/cutout-book.ts` converts the render to a transparent PNG by flood-filling from the image borders, clearing every edge-connected pixel with luma ≤ 175. The threshold sits above the anti-aliased edge (~130 luma of the indigo-to-cream transition) so the cut lands cleanly on the book without a dark fringe. Interior dark spots (black cover text, title text) aren't edge-connected, so they stay opaque. Trims the result tight to the book and publishes to `/downloads/plain-dharma-book-photo.png`.
+3. **Single transparent PNG floats on both themes** — used on `/download` and home pages. Page CSS adds a drop-shadow; the background is determined by the page's theme (cream on light, dark on dark).
 
 ### Batch: build everything
 
@@ -159,6 +167,8 @@ These are cached independently in `dist/{format}/images/`, so regenerating one d
 | `pnpm generate-cover` | `dist/ebook/cover.jpg` (1600×2400, 6×9") | `/downloads/plain-dharma-cover.jpg` |
 | `pnpm generate-back-cover` | `dist/ebook/back-cover.jpg` (screen trim); `back-cover-print-{color,bw}.jpg` (print trim, internal only) | `/downloads/plain-dharma-back-cover.jpg` (screen only) |
 | `pnpm generate-front-cover` | `dist/ebook/front-cover-print-{color,bw}.jpg` (5.25×8.25); `dist/ebook/audiobook-cover.jpg` (3000×3000) | — |
+| `node --env-file=.env.local --import tsx scripts/generate-book-photo.ts` | `/tmp/pd-book/book-raw.png` (dark-backdrop render) | — |
+| `node --import tsx scripts/cutout-book.ts` | `public/downloads/plain-dharma-book-photo.png` (transparent cutout) | `/downloads/plain-dharma-book-photo.png` |
 | `pnpm build-pdf` | `dist/pdf/plain-dharma.pdf` (40 pages, 6×9 + bleed, back cover final page) | `/downloads/plain-dharma.pdf` |
 | `pnpm build-ebook` | `dist/ebook/plain-dharma.epub` (back cover final page) | `/downloads/plain-dharma.epub` |
 | `pnpm build-audiobook` | `dist/audiobook/plain-dharma.m4b` (with chapter markers) | `/downloads/plain-dharma.m4b` |
@@ -188,3 +198,5 @@ The audiobook *narration* (MP3 files) is generated separately by `scripts/genera
 - **`build-storyboard` hardcodes 40 pages**: `scripts/build-storyboard.ts` was written for the 40-page screen PDF and hardcodes that page count in the title label and spread layout logic. If the actual PDF changes page count (e.g. the current interior is 37 pages), the storyboard still renders "40-page storyboard" in its title and the spread arithmetic is off. Update the hardcoded constants in `build-storyboard.ts` whenever the page count changes.
 
 - **KDP covers are always full-color rasterized**: Even though the interior comes in B&W and color variants, the KDP covers themselves are full-color PDFs (KDP prints covers in color). The B&W/color distinction is in the *interior* (which pages are printed in color vs grayscale), not the cover. The wraparound cover templates are parameterized only by spine width, not by color variant (both color and B&W covers would look identical if printed, but we generate them separately because spine width differs per interior page count).
+
+- **Book mockup cutout uses luma flood-fill, not chroma key**: Gemini renders the book on a dark studio backdrop and bakes in a gradient + soft contact shadow. A fixed single-color chroma key can't remove this cleanly (it leaves a grey halo). Instead, `cutout-book.ts` flood-fills from the image borders, clearing edge-connected pixels below a luma threshold (175). The bright cream/yellow book stops the fill; the threshold is chosen above the anti-aliased edge (~130 luma) so the cut lands on the book side with no dark fringe. Interior dark text (black cover text, title text) isn't edge-connected, so it remains opaque. The result is a single transparent PNG that floats cleanly on both light (cream) and dark (night-sky) page backgrounds via CSS.

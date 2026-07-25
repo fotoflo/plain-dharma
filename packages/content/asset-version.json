@@ -901,6 +901,14 @@
     "v": "364e8df8",
     "bytes": 91577
   },
+  "audio/.DS_Store": {
+    "v": "50531fc9",
+    "bytes": 6148
+  },
+  "audio/en/.DS_Store": {
+    "v": "59dd5ed4",
+    "bytes": 6148
+  },
   "audio/en/_closing/01-opening.mp3": {
     "v": "8cf69f17",
     "bytes": 202310
@@ -914,24 +922,24 @@
     "bytes": 335
   },
   "audio/en/_colophon/01-opening.mp3": {
-    "v": "e9c7a349",
-    "bytes": 840324
+    "v": "35585f1b",
+    "bytes": 831965
   },
   "audio/en/_colophon/fast/01-opening.mp3": {
-    "v": "24238a3b",
-    "bytes": 757151
+    "v": "3495004c",
+    "bytes": 749418
   },
   "audio/en/_colophon/manifest.json": {
     "v": "c3d0eb91",
     "bytes": 337
   },
   "audio/en/_frontmatter/01-opening.mp3": {
-    "v": "16adf28e",
-    "bytes": 773451
+    "v": "fc9c5e21",
+    "bytes": 817964
   },
   "audio/en/_frontmatter/fast/01-opening.mp3": {
-    "v": "0e476588",
-    "bytes": 696755
+    "v": "aeeb938f",
+    "bytes": 737089
   },
   "audio/en/_frontmatter/manifest.json": {
     "v": "1747b50f",
@@ -1447,6 +1455,10 @@
     "v": "7c91da7b",
     "bytes": 850
   },
+  "downloads/.DS_Store": {
+    "v": "d241a1bb",
+    "bytes": 6148
+  },
   "downloads/plain-dharma-audio-en.zip": {
     "v": "18bc5fcf",
     "bytes": 21798354
@@ -1456,88 +1468,88 @@
     "bytes": 30212101
   },
   "downloads/plain-dharma-back-cover.jpg": {
-    "v": "d6cf0ac3",
-    "bytes": 434212
+    "v": "6b1c735c",
+    "bytes": 439523
   },
   "downloads/plain-dharma-book-photo-dark.png": {
     "v": "38031718",
     "bytes": 1292673
   },
   "downloads/plain-dharma-book-photo.png": {
-    "v": "47a350b0",
-    "bytes": 409794
+    "v": "5c886e37",
+    "bytes": 435300
   },
   "downloads/plain-dharma-cover.jpg": {
-    "v": "8a5ea3a7",
-    "bytes": 279772
+    "v": "1f3af7bb",
+    "bytes": 279797
   },
   "downloads/plain-dharma-print-bw.pdf": {
-    "v": "c9bbbd45",
-    "bytes": 911484
+    "v": "3640d64e",
+    "bytes": 2509689
   },
   "downloads/plain-dharma-print-color.pdf": {
-    "v": "09311fcc",
-    "bytes": 1187176
+    "v": "3b5a8874",
+    "bytes": 5678251
   },
   "downloads/plain-dharma-text.zip": {
-    "v": "80df6264",
-    "bytes": 25673
+    "v": "191cc943",
+    "bytes": 25487
   },
   "downloads/plain-dharma.epub": {
-    "v": "1f661de5",
-    "bytes": 619923
+    "v": "b0fe8c58",
+    "bytes": 884986
   },
   "downloads/plain-dharma.m4b": {
-    "v": "cefcbf7c",
-    "bytes": 25621238
+    "v": "8aecffa5",
+    "bytes": 25193613
   },
   "downloads/plain-dharma.pdf": {
-    "v": "c0358250",
-    "bytes": 822186
+    "v": "ebd390cc",
+    "bytes": 4166002
   },
   "downloads/text/en/fire-sermon.mdx": {
-    "v": "e18cb68d",
-    "bytes": 3192
+    "v": "98048c08",
+    "bytes": 2886
   },
   "downloads/text/en/first-talk.mdx": {
-    "v": "8d722c3c",
-    "bytes": 4747
+    "v": "f46111d8",
+    "bytes": 4537
   },
   "downloads/text/en/how-to-decide.mdx": {
-    "v": "ae66826b",
-    "bytes": 4279
+    "v": "162dfc65",
+    "bytes": 4284
   },
   "downloads/text/en/loving-kindness.mdx": {
-    "v": "468daa48",
-    "bytes": 2202
+    "v": "8e21daae",
+    "bytes": 2088
   },
   "downloads/text/en/mindfulness.mdx": {
-    "v": "33038c99",
-    "bytes": 12070
+    "v": "be535b3c",
+    "bytes": 11704
   },
   "downloads/text/en/not-self.mdx": {
-    "v": "c114440f",
-    "bytes": 3351
+    "v": "7a524a84",
+    "bytes": 3333
   },
   "downloads/text/zh/fire-sermon.mdx": {
     "v": "7c85d791",
     "bytes": 3065
   },
   "downloads/text/zh/first-talk.mdx": {
-    "v": "7bc82c81",
-    "bytes": 4735
+    "v": "d426434a",
+    "bytes": 4732
   },
   "downloads/text/zh/how-to-decide.mdx": {
-    "v": "66a59a0f",
-    "bytes": 4468
+    "v": "937222a4",
+    "bytes": 4483
   },
   "downloads/text/zh/loving-kindness.mdx": {
-    "v": "d2520567",
-    "bytes": 2160
+    "v": "3b955c13",
+    "bytes": 2166
   },
   "downloads/text/zh/mindfulness.mdx": {
-    "v": "dd157c3b",
-    "bytes": 13466
+    "v": "6cecfdb7",
+    "bytes": 13460
   },
   "downloads/text/zh/not-self.mdx": {
     "v": "b92b03d9",

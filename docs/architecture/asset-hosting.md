@@ -28,6 +28,10 @@ The split is **metadata in git, binaries on the CDN**:
   `https://ffoiltrarbdbibmymlqm.supabase.co/storage/v1/object/public/assets`
 - **Bucket layout mirrors the old `/public` paths 1:1:** `audio/<locale>/<slug>/<file>.mp3`,
   `illustrations/<slug>.png` + `<slug>-dark.png` (dark-mode variant), `downloads/<file>`.
+- **Two prefixes don't mirror `public/`** because their sources live outside it:
+  `audio-masters/` (raw un-stretched ElevenLabs output — `backup-audio-masters.ts`)
+  and `archive/` (superseded takes, pacing experiments, older book builds —
+  `publish-archive.ts`). See [The archive](#the-archive-superseded-takes).
 - (A separate **private** bucket `audio-archive` still holds pre-regen audio
   backups — see `scripts/backup-audio-to-supabase.ts`. Unrelated to serving.)
 
@@ -85,6 +89,83 @@ node --env-file=.env.local --import tsx scripts/backup-audio-masters.ts
 
 `scripts/backup-audio-masters.ts` copies all masters to a separate `audio-masters/` prefix in the same public bucket (never visible on the live site, used only for recovery). Uses the same auth and bucket as `upload-assets`.
 
+### The archive (superseded takes)
+
+```
+pnpm publish-archive               # upload what changed + write the index
+pnpm publish-archive --index-only  # rebuild archive.json only, upload nothing
+pnpm publish-archive --dry-run     # plan only, no network writes
+```
+
+Re-runs are cheap: each file is hashed locally first and skipped when the bucket
+already has those exact bytes, so changing a label re-uploads nothing. Use
+`--index-only` when only the *shape* of `archive.json` changed.
+
+`scripts/publish-archive.ts` publishes everything the current pipeline *replaced* —
+material that existed only on one laptop, some of it inside a git worktree one
+`git worktree remove` from deletion:
+
+| Group | Source | What it is |
+|---|---|---|
+| `pace-test` | `dist/pace-test/` | 11 renderings of one section + the write-up that settled how narration pauses |
+| `en-2026-05-27` | `.claude/worktrees/rn-mobile/public/audio/en/` | the first full English read, superseded by the June 7 regen |
+| `en-masters-2026-05-27` | same, `candidates/` | un-stretched masters behind it |
+| `zh-haoran` | `.../zh_tts/` | a complete alternate Mandarin read (voice Haoran) that never shipped |
+| `zh-masters` | `.../zh/*/candidates/` | **the only true multi-take material**: normal-speed originals, the title + preface in Hardy (`FS8UtxyDrvYcNCxVaziq`, Taiwanese — live before CarterSutra replaced it), and the opening at 10/20/30% slower. First Talk carries the audition notes, published as the group's write-up. |
+| `builds` | `dist/{audiobook,pdf,ebook,print,kdp}/` | the last build of each artifact before the current set |
+| `en-masters-2026-06-07` | already in the bucket | registered in the version map so it can be linked; 2 of the 40 are older takes than what ships |
+
+It is **additive**: it only writes `archive/` keys, and it *merges* into
+`asset-version.json` rather than rewriting it. The curated index it emits,
+`packages/content/archive.json` (committed), is read through the typed, pure
+`packages/content/archive.ts` — same contract as `assets.ts`, safe in
+client/edge/RN code.
+
+### The version map describes the BUCKET, not the local disk
+
+This invariant is load-bearing and was violated once, with real consequences.
+
+`upload-assets` used to rebuild `asset-version.json` from scratch out of whatever
+sat under `public/`. That was safe only while `public/` held everything. Once the
+heavy media moved offsite, `public/audio/zh/**` stopped existing locally — so a
+routine `pnpm upload-assets` **silently deleted every zh entry from the map**.
+
+The damage wasn't obvious, because it was split:
+
+- ASCII-named tracks (`00-title.mp3`, `01-opening.mp3`, `99-drop.mp3`) kept
+  working — `assetUrl` falls back to an un-versioned URL when a path isn't in
+  the map, and their bucket key equals their path.
+- The **18 Chinese-named section tracks did not.** Supabase rejects non-ASCII
+  object keys, so those are stored as `<sha1>.mp3` and the original-name → key
+  mapping exists *only* in the map's `key` field. With the entry gone, `assetUrl`
+  emitted the raw Chinese path and the CDN returned **400** — on the website and
+  in the mobile app, for the body of every Mandarin sutta.
+
+Two changes keep it from recurring:
+
+1. `upload-assets-to-supabase.ts` now starts from the existing map and overwrites
+   only what it uploads. It never drops an entry.
+2. `scripts/sync-version-map.ts` reconciles the map against the bucket:
+
+```
+pnpm sync-version-map              # add every bucket object missing from the map
+pnpm sync-version-map --prune      # also drop entries whose object is gone
+pnpm sync-version-map --dry-run    # report only
+```
+
+It downloads and hashes the **remote** bytes (the bucket is the source of truth
+for what's served) and recovers original filenames for hashed keys by reading the
+committed manifests. Pruning is its job, not `upload-assets`'.
+
+> **Not everything in the bucket is live.** Uploads are `upsert` and never
+> delete, so renaming a section strands the old object forever — e.g.
+> `audio/en/how-to-decide/04-now-run-it-the-other-way.mp3`, orphaned when that
+> section became `04-now-do-the-same-in-reverse.mp3`. So under `audio/`,
+> `sync-version-map` registers **only objects a manifest actually references**
+> and reports the rest as stale; otherwise phantom tracks would appear on
+> `/assets`. Everywhere else (`illustrations/`, `downloads/`, `archive/`) every
+> object is registered.
+
 > **Until you upload, new media won't appear** — not on the live site and not in
 > local dev (dev resolves to the CDN too). The upload is the publish step.
 
@@ -108,25 +189,52 @@ node --env-file=.env.local --import tsx scripts/backup-audio-masters.ts
 
 ## Asset discovery: the `/assets` page
 
-`src/app/assets/page.tsx` is a **public index page** that lists and plays every asset built from the version map. It complements `/remix` (reusable bundles) by offering full granular access:
+`src/app/assets/page.tsx` is a **public index page** that lists, plays, and bundles every asset in the version map. It complements `/remix` (ready-made bundles) with full granular access.
 
-**Audio:** All 80+ English narration tracks (6 suttas + frontmatter/closing/colophon) grouped by sutta in canonical order, with both standard (meditative pace) and fast cuts listed separately. Each track has an inline `<audio>` player.
+### Organised by what it is, not by how it was made
 
-**Illustrations:** Gallery of all 6 source PNGs (downloadable), with a note that dark-mode variants exist.
+Top-level accordions are the things a visitor is actually looking for:
 
-**Downloads:** Book files (PDF, print PDFs, EPUB, M4B, text/audio zips, covers) with file sizes.
-
-**Implementation:** Built entirely from the committed `asset-version.json` at build time (no runtime lookups or file checks). Uses the `listAssets(prefix)` helper from `packages/content/assets.ts`:
-
-```ts
-export function listAssets(prefix = ""): string[] {
-  return Object.keys(VERSION_MAP)
-    .filter((k) => k.startsWith(prefix) && !k.endsWith(".DS_Store"))
-    .sort();
-}
+```
+Illustrations                          shared by both books, so it stands alone
+The English book
+  ├ Downloads
+  │    ├ PDF · print PDFs · EPUB · M4B · zips · covers · book photos
+  │    └ Superseded book builds        2026-06-30
+  └ Narration
+       ├ Current                       80 tracks, standard + fast, by sutta
+       ├ English masters (current)     2026-06-07
+       ├ Pacing experiments            2026-05-31
+       ├ English narration, first read 2026-05-27
+       └ English masters               2026-05-27
+The Mandarin book · 中文
+  ├ Downloads
+  └ Narration
+       ├ Current                       37 tracks
+       ├ Mandarin voice auditions      2026-05-28
+       └ Haoran read (never shipped)   2026-05-27
 ```
 
-This is **pure** — safe in static/edge/client code. The page groups results into sections (audio by sutta, then illustrations, then downloads) and builds player/size components dynamically. It's a zero-database catalog of everything the site publishes.
+The path to any file is **book → what it is → which version → files**. Every narration take a book ever had — current and superseded — nests under that book's one `Narration` accordion, newest first; older book builds nest under `Downloads` beside the files they replace. Nothing is filed under "archive": a superseded take sits with the book it belongs to, not in a museum wing.
+
+Both live and archived audio render through the **same** `SuttaCard`/`TrackColumn` components: canonical order, ordinal badge, Pali name, one column per cut (Standard / Fast / Un-stretched master, or "Takes" for the zh auditions, which are named by section keyword rather than numbered). To make that possible `publish-archive.ts` emits `slug`, `variant`, `num`, and `name` per item instead of a pre-baked label, and each group carries a `locale` so zh groups title their suttas in Chinese. Slugs outside `SUTTAS` — the framing tracks, and the orphaned `first-talk-title` — keep a slot at the end rather than vanishing.
+
+Only `.mp3`/`.m4b` items become tracks; a notes file shipped alongside a group's takes carries a slug too, but surfaces as that group's write-up link. Every player is `preload="none"`, so none of the ~320 fetch until played.
+
+> **The Mandarin narration was invisible here until 2026-07-25.** The page read `listAssets("audio/en/")` only, so 37 live zh tracks and the 30 MB zh audio zip were never listed. `liveNarration(locale)` is now parameterised.
+
+### Zip downloads at every level (`src/components/ZipDownload.tsx`)
+
+Each accordion — supergroup *and* group — offers a zip of everything inside it, built **in the browser**:
+
+- The bucket serves `access-control-allow-origin: *`, so the page can fetch its own objects.
+- [`client-zip`](https://github.com/Touffy/client-zip) streams them into a zip with no compression pass (mp3s don't compress anyway).
+- With the File System Access API the zip streams straight to disk; otherwise it falls back to a Blob + anchor.
+- The save picker is opened **inside the click handler**, before any fetching, or browsers reject it as not user-initiated.
+
+Pre-building these server-side would have roughly **doubled bucket storage** (~270 MB of zips over a ~413 MB bucket, against a 1 GB free tier) to serve files most visitors never take. Zipping client-side costs nothing but a ~3 KB dependency.
+
+Paths share their leading directory stripped, so a group zip opens as `first-talk/01-opening.mp3`. A whole-book zip spans `downloads/`, `audio/`, and `archive/`, which share no prefix, so those keep full paths. Groups of one file get no button — the file already has its own download link.
 
 ## Back-compat redirect
 

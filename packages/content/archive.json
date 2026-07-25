@@ -1,0 +1,2138 @@
+{
+  "generated_at": "2026-07-25T15:12:40.070Z",
+  "groups": [
+    {
+      "id": "pace-test",
+      "title": "Pacing experiments",
+      "kind": "experiment",
+      "date": "2026-05-31",
+      "locale": "en",
+      "voice": "Theo Silk (UmQN7jS1Ee8B1czsUtQh)",
+      "note": "Eleven renderings of one section — First Talk · Knowing Each One Three Ways — testing what actually slows eleven_multilingual_v2 down. Whitespace, <break> tags and punctuation all did nothing; only time-stretch and real spliced silence worked. Sample 11 is the technique that ships.",
+      "items": [
+        {
+          "label": "01 · Raw No Slowdown",
+          "path": "archive/pace-test/01-raw-no-slowdown.mp3",
+          "bytes": 1117248,
+          "seconds": 69.8
+        },
+        {
+          "label": "02 · Slow 20pct",
+          "path": "archive/pace-test/02-slow-20pct.mp3",
+          "bytes": 670006,
+          "seconds": 83.7
+        },
+        {
+          "label": "03 · Slow 25pct",
+          "path": "archive/pace-test/03-slow-25pct.mp3",
+          "bytes": 697800,
+          "seconds": 87.2
+        },
+        {
+          "label": "04 · Slow 30pct",
+          "path": "archive/pace-test/04-slow-30pct.mp3",
+          "bytes": 726013,
+          "seconds": 90.7
+        },
+        {
+          "label": "05 · Slow 35pct",
+          "path": "archive/pace-test/05-slow-35pct.mp3",
+          "bytes": 753389,
+          "seconds": 94.1
+        },
+        {
+          "label": "06 · SPACING Newlines 20pct",
+          "path": "archive/pace-test/06-SPACING-newlines-20pct.mp3",
+          "bytes": 661020,
+          "seconds": 82.6
+        },
+        {
+          "label": "06 · Knowing Each Whitespace Blank Lines",
+          "path": "archive/pace-test/06-knowing-each-whitespace-blank-lines.mdx",
+          "bytes": 858,
+          "seconds": null
+        },
+        {
+          "label": "07 · 08 Knowing Each Break Tags Ignored",
+          "path": "archive/pace-test/07-08-knowing-each-break-tags-ignored.mdx",
+          "bytes": 985,
+          "seconds": null
+        },
+        {
+          "label": "07 · BREAKS Tags 20pct",
+          "path": "archive/pace-test/07-BREAKS-tags-20pct.mp3",
+          "bytes": 650780,
+          "seconds": 81.3
+        },
+        {
+          "label": "08 · BREAKS Tags 25pct",
+          "path": "archive/pace-test/08-BREAKS-tags-25pct.mp3",
+          "bytes": 677947,
+          "seconds": 84.7
+        },
+        {
+          "label": "09 · PUNCT Rerecord 20pct",
+          "path": "archive/pace-test/09-PUNCT-rerecord-20pct.mp3",
+          "bytes": 644720,
+          "seconds": 80.5
+        },
+        {
+          "label": "09 · Knowing Each Full Stop Punctuation",
+          "path": "archive/pace-test/09-knowing-each-full-stop-punctuation.mdx",
+          "bytes": 840,
+          "seconds": null
+        },
+        {
+          "label": "10 · 11 Knowing Each Alex Real Silence Breaks",
+          "path": "archive/pace-test/10-11-knowing-each-alex-real-silence-breaks.mdx",
+          "bytes": 1021,
+          "seconds": null
+        },
+        {
+          "label": "10 · ALEX 20pct",
+          "path": "archive/pace-test/10-ALEX-20pct.mp3",
+          "bytes": 654960,
+          "seconds": 81.8
+        },
+        {
+          "label": "11 · ALEX SILENCE 20pct",
+          "path": "archive/pace-test/11-ALEX-SILENCE-20pct.mp3",
+          "bytes": 808142,
+          "seconds": 100.9
+        },
+        {
+          "label": "README",
+          "path": "archive/pace-test/README.md",
+          "bytes": 2736,
+          "seconds": null
+        }
+      ],
+      "readme": "archive/pace-test/README.md"
+    },
+    {
+      "id": "en-2026-05-27",
+      "title": "English narration — May 27 generation",
+      "kind": "narration",
+      "date": "2026-05-27",
+      "locale": "en",
+      "voice": "Theo Silk (UmQN7jS1Ee8B1czsUtQh)",
+      "note": "The first full English read, superseded by the June 7 regeneration that added spliced-silence pausing. Same voice, different pacing — every section runs a few percent longer. Includes a First Talk title track that no longer exists anywhere else.",
+      "items": [
+        {
+          "label": "fire-sermon — 00 · Title",
+          "path": "archive/2026-05-27-en/fire-sermon/00-title.mp3",
+          "bytes": 136899,
+          "seconds": 17,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "fire-sermon — 01 · Opening",
+          "path": "archive/2026-05-27-en/fire-sermon/01-opening.mp3",
+          "bytes": 602297,
+          "seconds": 75.2,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "fire-sermon — 02 · The Same Fire Everywhere",
+          "path": "archive/2026-05-27-en/fire-sermon/02-the-same-fire-everywhere.mp3",
+          "bytes": 721833,
+          "seconds": 90.2,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "02",
+          "name": "The Same Fire Everywhere"
+        },
+        {
+          "label": "fire-sermon — 03 · What To Do About It",
+          "path": "archive/2026-05-27-en/fire-sermon/03-what-to-do-about-it.mp3",
+          "bytes": 413170,
+          "seconds": 51.6,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "03",
+          "name": "What To Do About It"
+        },
+        {
+          "label": "fire-sermon — 04 · How They Heard It",
+          "path": "archive/2026-05-27-en/fire-sermon/04-how-they-heard-it.mp3",
+          "bytes": 188099,
+          "seconds": 23.5,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "fire-sermon — 99 · Drop",
+          "path": "archive/2026-05-27-en/fire-sermon/99-drop.mp3",
+          "bytes": 111822,
+          "seconds": 13.9,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "first-talk-title — 01 · Opening",
+          "path": "archive/2026-05-27-en/first-talk-title/01-opening.mp3",
+          "bytes": 215711,
+          "seconds": 13.4,
+          "slug": "first-talk-title",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "first-talk — 00 · Title",
+          "path": "archive/2026-05-27-en/first-talk/00-title.mp3",
+          "bytes": 129167,
+          "seconds": 16.1,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "first-talk — 00b · Preface",
+          "path": "archive/2026-05-27-en/first-talk/00b-preface.mp3",
+          "bytes": 435113,
+          "seconds": 54.3,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "00b",
+          "name": "Preface"
+        },
+        {
+          "label": "first-talk — 01 · Opening",
+          "path": "archive/2026-05-27-en/first-talk/01-opening.mp3",
+          "bytes": 926006,
+          "seconds": 115.7,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "first-talk — 02 · The Four Noble Truths",
+          "path": "archive/2026-05-27-en/first-talk/02-the-four-noble-truths.mp3",
+          "bytes": 671887,
+          "seconds": 83.9,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "02",
+          "name": "The Four Noble Truths"
+        },
+        {
+          "label": "first-talk — 03 · Knowing Each One Three Ways",
+          "path": "archive/2026-05-27-en/first-talk/03-knowing-each-one-three-ways.mp3",
+          "bytes": 715982,
+          "seconds": 89.4,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "03",
+          "name": "Knowing Each One Three Ways"
+        },
+        {
+          "label": "first-talk — 04 · How They Heard It",
+          "path": "archive/2026-05-27-en/first-talk/04-how-they-heard-it.mp3",
+          "bytes": 920991,
+          "seconds": 115.1,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "first-talk — 99 · Drop",
+          "path": "archive/2026-05-27-en/first-talk/99-drop.mp3",
+          "bytes": 72533,
+          "seconds": 9,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "how-to-decide — 00 · Title",
+          "path": "archive/2026-05-27-en/how-to-decide/00-title.mp3",
+          "bytes": 77131,
+          "seconds": 9.6,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "how-to-decide — 01 · Opening",
+          "path": "archive/2026-05-27-en/how-to-decide/01-opening.mp3",
+          "bytes": 489448,
+          "seconds": 61.1,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "how-to-decide — 02 · Dont Just Take Anyones Word For It",
+          "path": "archive/2026-05-27-en/how-to-decide/02-dont-just-take-anyones-word-for-it.mp3",
+          "bytes": 454339,
+          "seconds": 56.7,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "02",
+          "name": "Dont Just Take Anyones Word For It"
+        },
+        {
+          "label": "how-to-decide — 03 · So What Do You Go On",
+          "path": "archive/2026-05-27-en/how-to-decide/03-so-what-do-you-go-on.mp3",
+          "bytes": 814202,
+          "seconds": 101.7,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "03",
+          "name": "So What Do You Go On"
+        },
+        {
+          "label": "how-to-decide — 04 · Now Run It The Other Way",
+          "path": "archive/2026-05-27-en/how-to-decide/04-now-run-it-the-other-way.mp3",
+          "bytes": 559456,
+          "seconds": 69.9,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "04",
+          "name": "Now Run It The Other Way"
+        },
+        {
+          "label": "how-to-decide — 05 · The Reassurance At The End",
+          "path": "archive/2026-05-27-en/how-to-decide/05-the-reassurance-at-the-end.mp3",
+          "bytes": 422574,
+          "seconds": 52.8,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "05",
+          "name": "The Reassurance At The End"
+        },
+        {
+          "label": "how-to-decide — 99 · Drop",
+          "path": "archive/2026-05-27-en/how-to-decide/99-drop.mp3",
+          "bytes": 130212,
+          "seconds": 16.2,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "loving-kindness — 00 · Title",
+          "path": "archive/2026-05-27-en/loving-kindness/00-title.mp3",
+          "bytes": 95312,
+          "seconds": 11.8,
+          "slug": "loving-kindness",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "loving-kindness — 01 · Opening",
+          "path": "archive/2026-05-27-en/loving-kindness/01-opening.mp3",
+          "bytes": 1376566,
+          "seconds": 172,
+          "slug": "loving-kindness",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "loving-kindness — 99 · Drop",
+          "path": "archive/2026-05-27-en/loving-kindness/99-drop.mp3",
+          "bytes": 98447,
+          "seconds": 12.2,
+          "slug": "loving-kindness",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "mindfulness — 00 · Title",
+          "path": "archive/2026-05-27-en/mindfulness/00-title.mp3",
+          "bytes": 112240,
+          "seconds": 14,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "mindfulness — 01 · Opening",
+          "path": "archive/2026-05-27-en/mindfulness/01-opening.mp3",
+          "bytes": 573667,
+          "seconds": 71.7,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "mindfulness — 02 · 1 Watching The Body",
+          "path": "archive/2026-05-27-en/mindfulness/02-1-watching-the-body.mp3",
+          "bytes": 3264906,
+          "seconds": 408,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "02",
+          "name": "1 Watching The Body"
+        },
+        {
+          "label": "mindfulness — 03 · 2 Watching Your Feelings",
+          "path": "archive/2026-05-27-en/mindfulness/03-2-watching-your-feelings.mp3",
+          "bytes": 667289,
+          "seconds": 83.4,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "03",
+          "name": "2 Watching Your Feelings"
+        },
+        {
+          "label": "mindfulness — 04 · 3 Watching Your Mind",
+          "path": "archive/2026-05-27-en/mindfulness/04-3-watching-your-mind.mp3",
+          "bytes": 821098,
+          "seconds": 102.6,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "04",
+          "name": "3 Watching Your Mind"
+        },
+        {
+          "label": "mindfulness — 05 · 4 Watching The Contents Of Experience",
+          "path": "archive/2026-05-27-en/mindfulness/05-4-watching-the-contents-of-experience.mp3",
+          "bytes": 2894803,
+          "seconds": 361.8,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "05",
+          "name": "4 Watching The Contents Of Experience"
+        },
+        {
+          "label": "mindfulness — 06 · What It Leads To",
+          "path": "archive/2026-05-27-en/mindfulness/06-what-it-leads-to.mp3",
+          "bytes": 335639,
+          "seconds": 41.9,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "06",
+          "name": "What It Leads To"
+        },
+        {
+          "label": "mindfulness — 99 · Drop",
+          "path": "archive/2026-05-27-en/mindfulness/99-drop.mp3",
+          "bytes": 131884,
+          "seconds": 16.4,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "not-self — 00 · Title",
+          "path": "archive/2026-05-27-en/not-self/00-title.mp3",
+          "bytes": 121644,
+          "seconds": 15.1,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "not-self — 01 · Opening",
+          "path": "archive/2026-05-27-en/not-self/01-opening.mp3",
+          "bytes": 951711,
+          "seconds": 118.9,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "not-self — 02 · The Questions",
+          "path": "archive/2026-05-27-en/not-self/02-the-questions.mp3",
+          "bytes": 545663,
+          "seconds": 68.1,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "02",
+          "name": "The Questions"
+        },
+        {
+          "label": "not-self — 03 · The Takeaway",
+          "path": "archive/2026-05-27-en/not-self/03-the-takeaway.mp3",
+          "bytes": 578682,
+          "seconds": 72.3,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "03",
+          "name": "The Takeaway"
+        },
+        {
+          "label": "not-self — 04 · How They Heard It",
+          "path": "archive/2026-05-27-en/not-self/04-how-they-heard-it.mp3",
+          "bytes": 249539,
+          "seconds": 31.1,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "not-self — 99 · Drop",
+          "path": "archive/2026-05-27-en/not-self/99-drop.mp3",
+          "bytes": 84654,
+          "seconds": 10.5,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        }
+      ]
+    },
+    {
+      "id": "en-masters-2026-05-27",
+      "title": "English masters — un-stretched",
+      "kind": "masters",
+      "date": "2026-05-27",
+      "locale": "en",
+      "voice": "Theo Silk (UmQN7jS1Ee8B1czsUtQh)",
+      "note": "Raw ElevenLabs output before any time-stretch, for the May 27 read. Re-pacing a section to any speed starts here and costs no new TTS.",
+      "items": [
+        {
+          "label": "fire-sermon — 00 · Title",
+          "path": "archive/2026-05-27-en-masters/fire-sermon/orig-00-title.mp3",
+          "bytes": 228249,
+          "seconds": 14.2,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "fire-sermon — 01 · Opening",
+          "path": "archive/2026-05-27-en-masters/fire-sermon/orig-01-opening.mp3",
+          "bytes": 1003982,
+          "seconds": 62.7,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "fire-sermon — 02 · The Same Fire Everywhere",
+          "path": "archive/2026-05-27-en-masters/fire-sermon/orig-02-the-same-fire-everywhere.mp3",
+          "bytes": 1203348,
+          "seconds": 75.1,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "02",
+          "name": "The Same Fire Everywhere"
+        },
+        {
+          "label": "fire-sermon — 03 · What To Do About It",
+          "path": "archive/2026-05-27-en-masters/fire-sermon/orig-03-what-to-do-about-it.mp3",
+          "bytes": 689258,
+          "seconds": 43,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "03",
+          "name": "What To Do About It"
+        },
+        {
+          "label": "fire-sermon — 04 · How They Heard It",
+          "path": "archive/2026-05-27-en-masters/fire-sermon/orig-04-how-they-heard-it.mp3",
+          "bytes": 313931,
+          "seconds": 19.6,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "fire-sermon — 99 · Drop",
+          "path": "archive/2026-05-27-en-masters/fire-sermon/orig-99-drop.mp3",
+          "bytes": 186871,
+          "seconds": 11.6,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "first-talk — 00 · Title",
+          "path": "archive/2026-05-27-en-masters/first-talk/orig-00-title.mp3",
+          "bytes": 215711,
+          "seconds": 13.4,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "first-talk — 00b · Preface",
+          "path": "archive/2026-05-27-en-masters/first-talk/orig-00b-preface.mp3",
+          "bytes": 725621,
+          "seconds": 45.3,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "00b",
+          "name": "Preface"
+        },
+        {
+          "label": "first-talk — 01 · Opening",
+          "path": "archive/2026-05-27-en-masters/first-talk/orig-01-opening.mp3",
+          "bytes": 1543567,
+          "seconds": 96.4,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "first-talk — 02 · The Four Noble Truths",
+          "path": "archive/2026-05-27-en-masters/first-talk/orig-02-the-four-noble-truths.mp3",
+          "bytes": 1120174,
+          "seconds": 69.9,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "02",
+          "name": "The Four Noble Truths"
+        },
+        {
+          "label": "first-talk — 03 · Knowing Each One Three Ways",
+          "path": "archive/2026-05-27-en-masters/first-talk/orig-03-knowing-each-one-three-ways.mp3",
+          "bytes": 1193735,
+          "seconds": 74.5,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "03",
+          "name": "Knowing Each One Three Ways"
+        },
+        {
+          "label": "first-talk — 04 · How They Heard It",
+          "path": "archive/2026-05-27-en-masters/first-talk/orig-04-how-they-heard-it.mp3",
+          "bytes": 1535626,
+          "seconds": 95.9,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "first-talk — 99 · Drop",
+          "path": "archive/2026-05-27-en-masters/first-talk/orig-99-drop.mp3",
+          "bytes": 121252,
+          "seconds": 7.5,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "how-to-decide — 00 · Title",
+          "path": "archive/2026-05-27-en-masters/how-to-decide/orig-00-title.mp3",
+          "bytes": 128775,
+          "seconds": 8,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "how-to-decide — 01 · Opening",
+          "path": "archive/2026-05-27-en-masters/how-to-decide/orig-01-opening.mp3",
+          "bytes": 816318,
+          "seconds": 50.9,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "how-to-decide — 02 · Dont Just Take Anyones Word For It",
+          "path": "archive/2026-05-27-en-masters/how-to-decide/orig-02-dont-just-take-anyones-word-for-it.mp3",
+          "bytes": 757386,
+          "seconds": 47.3,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "02",
+          "name": "Dont Just Take Anyones Word For It"
+        },
+        {
+          "label": "how-to-decide — 03 · So What Do You Go On",
+          "path": "archive/2026-05-27-en-masters/how-to-decide/orig-03-so-what-do-you-go-on.mp3",
+          "bytes": 1357157,
+          "seconds": 84.8,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "03",
+          "name": "So What Do You Go On"
+        },
+        {
+          "label": "how-to-decide — 04 · Now Run It The Other Way",
+          "path": "archive/2026-05-27-en-masters/how-to-decide/orig-04-now-run-it-the-other-way.mp3",
+          "bytes": 932928,
+          "seconds": 58.2,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "04",
+          "name": "Now Run It The Other Way"
+        },
+        {
+          "label": "how-to-decide — 05 · The Reassurance At The End",
+          "path": "archive/2026-05-27-en-masters/how-to-decide/orig-05-the-reassurance-at-the-end.mp3",
+          "bytes": 704723,
+          "seconds": 44,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "05",
+          "name": "The Reassurance At The End"
+        },
+        {
+          "label": "how-to-decide — 99 · Drop",
+          "path": "archive/2026-05-27-en-masters/how-to-decide/orig-99-drop.mp3",
+          "bytes": 217382,
+          "seconds": 13.5,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "loving-kindness — 00 · Title",
+          "path": "archive/2026-05-27-en-masters/loving-kindness/orig-00-title.mp3",
+          "bytes": 159286,
+          "seconds": 9.9,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "loving-kindness — 01 · Opening",
+          "path": "archive/2026-05-27-en-masters/loving-kindness/orig-01-opening.mp3",
+          "bytes": 2294639,
+          "seconds": 143.4,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "loving-kindness — 99 · Drop",
+          "path": "archive/2026-05-27-en-masters/loving-kindness/orig-99-drop.mp3",
+          "bytes": 164719,
+          "seconds": 10.2,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "mindfulness — 00 · Title",
+          "path": "archive/2026-05-27-en-masters/mindfulness/orig-00-title.mp3",
+          "bytes": 187707,
+          "seconds": 11.7,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "mindfulness — 01 · Opening",
+          "path": "archive/2026-05-27-en-masters/mindfulness/orig-01-opening.mp3",
+          "bytes": 956752,
+          "seconds": 59.7,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "mindfulness — 02 · 1 Watching The Body",
+          "path": "archive/2026-05-27-en-masters/mindfulness/orig-02-1-watching-the-body.mp3",
+          "bytes": 5441454,
+          "seconds": 340,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "02",
+          "name": "1 Watching The Body"
+        },
+        {
+          "label": "mindfulness — 03 · 2 Watching Your Feelings",
+          "path": "archive/2026-05-27-en-masters/mindfulness/orig-03-2-watching-your-feelings.mp3",
+          "bytes": 1112651,
+          "seconds": 69.5,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "03",
+          "name": "2 Watching Your Feelings"
+        },
+        {
+          "label": "mindfulness — 04 · 3 Watching Your Mind",
+          "path": "archive/2026-05-27-en-masters/mindfulness/orig-04-3-watching-your-mind.mp3",
+          "bytes": 1368860,
+          "seconds": 85.5,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "04",
+          "name": "3 Watching Your Mind"
+        },
+        {
+          "label": "mindfulness — 05 · 4 Watching The Contents Of Experience",
+          "path": "archive/2026-05-27-en-masters/mindfulness/orig-05-4-watching-the-contents-of-experience.mp3",
+          "bytes": 4824964,
+          "seconds": 301.5,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "05",
+          "name": "4 Watching The Contents Of Experience"
+        },
+        {
+          "label": "mindfulness — 06 · What It Leads To",
+          "path": "archive/2026-05-27-en-masters/mindfulness/orig-06-what-it-leads-to.mp3",
+          "bytes": 559691,
+          "seconds": 34.9,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "06",
+          "name": "What It Leads To"
+        },
+        {
+          "label": "mindfulness — 99 · Drop",
+          "path": "archive/2026-05-27-en-masters/mindfulness/orig-99-drop.mp3",
+          "bytes": 220308,
+          "seconds": 13.7,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "not-self — 00 · Title",
+          "path": "archive/2026-05-27-en-masters/not-self/orig-00-title.mp3",
+          "bytes": 203172,
+          "seconds": 12.6,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "not-self — 01 · Opening",
+          "path": "archive/2026-05-27-en-masters/not-self/orig-01-opening.mp3",
+          "bytes": 1586617,
+          "seconds": 99.1,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "not-self — 02 · The Questions",
+          "path": "archive/2026-05-27-en-masters/not-self/orig-02-the-questions.mp3",
+          "bytes": 909941,
+          "seconds": 56.8,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "02",
+          "name": "The Questions"
+        },
+        {
+          "label": "not-self — 03 · The Takeaway",
+          "path": "archive/2026-05-27-en-masters/not-self/orig-03-the-takeaway.mp3",
+          "bytes": 964693,
+          "seconds": 60.2,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "03",
+          "name": "The Takeaway"
+        },
+        {
+          "label": "not-self — 04 · How They Heard It",
+          "path": "archive/2026-05-27-en-masters/not-self/orig-04-how-they-heard-it.mp3",
+          "bytes": 416331,
+          "seconds": 26,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "not-self — 99 · Drop",
+          "path": "archive/2026-05-27-en-masters/not-self/orig-99-drop.mp3",
+          "bytes": 141314,
+          "seconds": 8.8,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        }
+      ]
+    },
+    {
+      "id": "zh-haoran",
+      "title": "Mandarin narration — Haoran (abandoned)",
+      "kind": "narration",
+      "date": "2026-05-27",
+      "locale": "zh",
+      "voice": "Haoran (pU9NaAwkoR3v0Mrg3uKz)",
+      "note": "A complete alternate Mandarin read in a Beijing-accented male voice, recorded the same week and never shipped — the site went with CarterSutra instead. Published here because it is the only copy.",
+      "items": [
+        {
+          "label": "fire-sermon — 00 · Title",
+          "path": "archive/2026-05-27-zh-haoran/fire-sermon/00-title.mp3",
+          "bytes": 144840,
+          "seconds": 18,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "fire-sermon — 01 · Opening",
+          "path": "archive/2026-05-27-zh-haoran/fire-sermon/01-opening.mp3",
+          "bytes": 811694,
+          "seconds": 101.4,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "fire-sermon — 02 · 同一把火，烧遍一切",
+          "path": "archive/2026-05-27-zh-haoran/fire-sermon/02-同一把火，烧遍一切.mp3",
+          "bytes": 1013151,
+          "seconds": 126.6,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "02",
+          "name": "同一把火，烧遍一切"
+        },
+        {
+          "label": "fire-sermon — 03 · 怎么办",
+          "path": "archive/2026-05-27-zh-haoran/fire-sermon/03-怎么办.mp3",
+          "bytes": 616298,
+          "seconds": 77,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "03",
+          "name": "怎么办"
+        },
+        {
+          "label": "fire-sermon — 04 · 他们是怎么听到的",
+          "path": "archive/2026-05-27-zh-haoran/fire-sermon/04-他们是怎么听到的.mp3",
+          "bytes": 246613,
+          "seconds": 30.8,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "04",
+          "name": "他们是怎么听到的"
+        },
+        {
+          "label": "fire-sermon — 99 · Drop",
+          "path": "archive/2026-05-27-zh-haoran/fire-sermon/99-drop.mp3",
+          "bytes": 148184,
+          "seconds": 18.5,
+          "slug": "fire-sermon",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "first-talk — 00 · Title",
+          "path": "archive/2026-05-27-zh-haoran/first-talk/00-title.mp3",
+          "bytes": 155498,
+          "seconds": 19.4,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "first-talk — 00b · Preface",
+          "path": "archive/2026-05-27-zh-haoran/first-talk/00b-preface.mp3",
+          "bytes": 556739,
+          "seconds": 69.5,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "00b",
+          "name": "Preface"
+        },
+        {
+          "label": "first-talk — 01 · Opening",
+          "path": "archive/2026-05-27-zh-haoran/first-talk/01-opening.mp3",
+          "bytes": 1122238,
+          "seconds": 140.2,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "first-talk — 02 · 四个真相",
+          "path": "archive/2026-05-27-zh-haoran/first-talk/02-四个真相.mp3",
+          "bytes": 811903,
+          "seconds": 101.4,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "02",
+          "name": "四个真相"
+        },
+        {
+          "label": "first-talk — 03 · 每一谛都从三个角度看清",
+          "path": "archive/2026-05-27-zh-haoran/first-talk/03-每一谛都从三个角度看清.mp3",
+          "bytes": 979296,
+          "seconds": 122.4,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "03",
+          "name": "每一谛都从三个角度看清"
+        },
+        {
+          "label": "first-talk — 04 · 他们是怎么听到的",
+          "path": "archive/2026-05-27-zh-haoran/first-talk/04-他们是怎么听到的.mp3",
+          "bytes": 1221921,
+          "seconds": 152.7,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "04",
+          "name": "他们是怎么听到的"
+        },
+        {
+          "label": "first-talk — 99 · Drop",
+          "path": "archive/2026-05-27-zh-haoran/first-talk/99-drop.mp3",
+          "bytes": 91760,
+          "seconds": 11.4,
+          "slug": "first-talk",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "how-to-decide — 00 · Title",
+          "path": "archive/2026-05-27-zh-haoran/how-to-decide/00-title.mp3",
+          "bytes": 96566,
+          "seconds": 12,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "how-to-decide — 01 · Opening",
+          "path": "archive/2026-05-27-zh-haoran/how-to-decide/01-opening.mp3",
+          "bytes": 680455,
+          "seconds": 85,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "how-to-decide — 02 · 不要光听谁说就当真",
+          "path": "archive/2026-05-27-zh-haoran/how-to-decide/02-不要光听谁说就当真.mp3",
+          "bytes": 725386,
+          "seconds": 90.6,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "02",
+          "name": "不要光听谁说就当真"
+        },
+        {
+          "label": "how-to-decide — 03 · 那要靠什么呢",
+          "path": "archive/2026-05-27-zh-haoran/how-to-decide/03-那要靠什么呢.mp3",
+          "bytes": 1154212,
+          "seconds": 144.2,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "03",
+          "name": "那要靠什么呢"
+        },
+        {
+          "label": "how-to-decide — 04 · 反过来再走一遍",
+          "path": "archive/2026-05-27-zh-haoran/how-to-decide/04-反过来再走一遍.mp3",
+          "bytes": 819009,
+          "seconds": 102.3,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "04",
+          "name": "反过来再走一遍"
+        },
+        {
+          "label": "how-to-decide — 05 · 最后的那份安心",
+          "path": "archive/2026-05-27-zh-haoran/how-to-decide/05-最后的那份安心.mp3",
+          "bytes": 624867,
+          "seconds": 78,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "05",
+          "name": "最后的那份安心"
+        },
+        {
+          "label": "how-to-decide — 99 · Drop",
+          "path": "archive/2026-05-27-zh-haoran/how-to-decide/99-drop.mp3",
+          "bytes": 158424,
+          "seconds": 19.7,
+          "slug": "how-to-decide",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "loving-kindness — 00 · Title",
+          "path": "archive/2026-05-27-zh-haoran/loving-kindness/00-title.mp3",
+          "bytes": 110986,
+          "seconds": 13.8,
+          "slug": "loving-kindness",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "loving-kindness — 01 · Opening",
+          "path": "archive/2026-05-27-zh-haoran/loving-kindness/01-opening.mp3",
+          "bytes": 1860981,
+          "seconds": 232.5,
+          "slug": "loving-kindness",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "loving-kindness — 99 · Drop",
+          "path": "archive/2026-05-27-zh-haoran/loving-kindness/99-drop.mp3",
+          "bytes": 116210,
+          "seconds": 14.5,
+          "slug": "loving-kindness",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "mindfulness — 00 · Title",
+          "path": "archive/2026-05-27-zh-haoran/mindfulness/00-title.mp3",
+          "bytes": 137108,
+          "seconds": 17.1,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "mindfulness — 01 · Opening",
+          "path": "archive/2026-05-27-zh-haoran/mindfulness/01-opening.mp3",
+          "bytes": 735417,
+          "seconds": 91.9,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "mindfulness — 02 · 1 看身体",
+          "path": "archive/2026-05-27-zh-haoran/mindfulness/02-1-看身体.mp3",
+          "bytes": 4710209,
+          "seconds": 588.7,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "02",
+          "name": "1 看身体"
+        },
+        {
+          "label": "mindfulness — 03 · 2 看感受",
+          "path": "archive/2026-05-27-zh-haoran/mindfulness/03-2-看感受.mp3",
+          "bytes": 1015658,
+          "seconds": 126.9,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "03",
+          "name": "2 看感受"
+        },
+        {
+          "label": "mindfulness — 04 · 3 看心",
+          "path": "archive/2026-05-27-zh-haoran/mindfulness/04-3-看心.mp3",
+          "bytes": 1180334,
+          "seconds": 147.5,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "04",
+          "name": "3 看心"
+        },
+        {
+          "label": "mindfulness — 05 · 4 看经验里发生的一切",
+          "path": "archive/2026-05-27-zh-haoran/mindfulness/05-4-看经验里发生的一切.mp3",
+          "bytes": 4709164,
+          "seconds": 588.6,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "05",
+          "name": "4 看经验里发生的一切"
+        },
+        {
+          "label": "mindfulness — 06 · 这条路通到哪里",
+          "path": "archive/2026-05-27-zh-haoran/mindfulness/06-这条路通到哪里.mp3",
+          "bytes": 460191,
+          "seconds": 57.5,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "06",
+          "name": "这条路通到哪里"
+        },
+        {
+          "label": "mindfulness — 99 · Drop",
+          "path": "archive/2026-05-27-zh-haoran/mindfulness/99-drop.mp3",
+          "bytes": 131466,
+          "seconds": 16.4,
+          "slug": "mindfulness",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "not-self — 00 · Title",
+          "path": "archive/2026-05-27-zh-haoran/not-self/00-title.mp3",
+          "bytes": 131884,
+          "seconds": 16.4,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "not-self — 01 · Opening",
+          "path": "archive/2026-05-27-zh-haoran/not-self/01-opening.mp3",
+          "bytes": 1210218,
+          "seconds": 151.2,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "not-self — 02 · 那几个问题",
+          "path": "archive/2026-05-27-zh-haoran/not-self/02-那几个问题.mp3",
+          "bytes": 625284,
+          "seconds": 78.1,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "02",
+          "name": "那几个问题"
+        },
+        {
+          "label": "not-self — 03 · 落到哪里",
+          "path": "archive/2026-05-27-zh-haoran/not-self/03-落到哪里.mp3",
+          "bytes": 727267,
+          "seconds": 90.8,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "03",
+          "name": "落到哪里"
+        },
+        {
+          "label": "not-self — 04 · 他们是怎么听到的",
+          "path": "archive/2026-05-27-zh-haoran/not-self/04-他们是怎么听到的.mp3",
+          "bytes": 371792,
+          "seconds": 46.4,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "04",
+          "name": "他们是怎么听到的"
+        },
+        {
+          "label": "not-self — 99 · Drop",
+          "path": "archive/2026-05-27-zh-haoran/not-self/99-drop.mp3",
+          "bytes": 118300,
+          "seconds": 14.7,
+          "slug": "not-self",
+          "variant": "standard",
+          "num": "99",
+          "name": "Drop"
+        }
+      ]
+    },
+    {
+      "id": "zh-masters",
+      "title": "Mandarin voice auditions & pre-slowdown originals",
+      "kind": "experiment",
+      "date": "2026-05-28",
+      "locale": "zh",
+      "voice": "CarterSutra (bU2VfAdiOb2Gv2eZWlFq) · Hardy (FS8UtxyDrvYcNCxVaziq)",
+      "note": "The only true multi-take material in the project. Every live Mandarin track is one of these at 30% slower (ffmpeg atempo=0.7692), and alongside the normal-speed originals sit real alternates: the title and preface in Hardy, a Taiwanese voice that was live before CarterSutra replaced it, and the opening at 10%, 20% and 30% slower so the pacing choice can be heard side by side. First Talk carries the audition notes.",
+      "items": [
+        {
+          "label": "fire-sermon — burning everything carter",
+          "path": "archive/zh-masters/fire-sermon/burning-everything-carter.mp3",
+          "bytes": 1559031,
+          "seconds": 97.4,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "name": "burning everything carter"
+        },
+        {
+          "label": "fire-sermon — drop carter",
+          "path": "archive/zh-masters/fire-sermon/drop-carter.mp3",
+          "bytes": 228249,
+          "seconds": 14.2,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "name": "drop carter"
+        },
+        {
+          "label": "fire-sermon — how heard carter",
+          "path": "archive/zh-masters/fire-sermon/how-heard-carter.mp3",
+          "bytes": 379968,
+          "seconds": 23.7,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "name": "how heard carter"
+        },
+        {
+          "label": "fire-sermon — opening carter",
+          "path": "archive/zh-masters/fire-sermon/opening-carter.mp3",
+          "bytes": 1249324,
+          "seconds": 78,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "name": "opening carter"
+        },
+        {
+          "label": "fire-sermon — title carter",
+          "path": "archive/zh-masters/fire-sermon/title-carter.mp3",
+          "bytes": 223234,
+          "seconds": 13.9,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "name": "title carter"
+        },
+        {
+          "label": "fire-sermon — what to do carter",
+          "path": "archive/zh-masters/fire-sermon/what-to-do-carter.mp3",
+          "bytes": 948393,
+          "seconds": 59.2,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "name": "what to do carter"
+        },
+        {
+          "label": "first-talk — Notes",
+          "path": "archive/zh-masters/first-talk/README.md",
+          "bytes": 1410,
+          "seconds": null,
+          "slug": "first-talk"
+        },
+        {
+          "label": "first-talk — drop carter",
+          "path": "archive/zh-masters/first-talk/drop-carter.mp3",
+          "bytes": 141314,
+          "seconds": 8.8,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "drop carter"
+        },
+        {
+          "label": "first-talk — four truths carter",
+          "path": "archive/zh-masters/first-talk/four-truths-carter.mp3",
+          "bytes": 1249324,
+          "seconds": 78,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "four truths carter"
+        },
+        {
+          "label": "first-talk — how heard carter",
+          "path": "archive/zh-masters/first-talk/how-heard-carter.mp3",
+          "bytes": 1880024,
+          "seconds": 117.4,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "how heard carter"
+        },
+        {
+          "label": "first-talk — opening carter 10slow",
+          "path": "archive/zh-masters/first-talk/opening-carter-10slow.mp3",
+          "bytes": 949830,
+          "seconds": 118.7,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "opening carter 10slow"
+        },
+        {
+          "label": "first-talk — opening carter 20slow",
+          "path": "archive/zh-masters/first-talk/opening-carter-20slow.mp3",
+          "bytes": 1044707,
+          "seconds": 130.5,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "opening carter 20slow"
+        },
+        {
+          "label": "first-talk — opening carter 30slow",
+          "path": "archive/zh-masters/first-talk/opening-carter-30slow.mp3",
+          "bytes": 1122238,
+          "seconds": 140.2,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "opening carter 30slow"
+        },
+        {
+          "label": "first-talk — opening carter",
+          "path": "archive/zh-masters/first-talk/opening-carter.mp3",
+          "bytes": 1727051,
+          "seconds": 107.9,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "opening carter"
+        },
+        {
+          "label": "first-talk — preface carter",
+          "path": "archive/zh-masters/first-talk/preface-carter.mp3",
+          "bytes": 856860,
+          "seconds": 53.5,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "preface carter"
+        },
+        {
+          "label": "first-talk — preface hardy",
+          "path": "archive/zh-masters/first-talk/preface-hardy.mp3",
+          "bytes": 738995,
+          "seconds": 46.1,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "preface hardy"
+        },
+        {
+          "label": "first-talk — three ways carter",
+          "path": "archive/zh-masters/first-talk/three-ways-carter.mp3",
+          "bytes": 1507204,
+          "seconds": 94.1,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "three ways carter"
+        },
+        {
+          "label": "first-talk — title carter",
+          "path": "archive/zh-masters/first-talk/title-carter.mp3",
+          "bytes": 239534,
+          "seconds": 14.9,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "title carter"
+        },
+        {
+          "label": "first-talk — title hardy",
+          "path": "archive/zh-masters/first-talk/title-hardy.mp3",
+          "bytes": 197320,
+          "seconds": 12.3,
+          "slug": "first-talk",
+          "variant": "master",
+          "name": "title hardy"
+        },
+        {
+          "label": "how-to-decide — drop carter",
+          "path": "archive/zh-masters/how-to-decide/drop-carter.mp3",
+          "bytes": 244132,
+          "seconds": 15.2,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "name": "drop carter"
+        },
+        {
+          "label": "how-to-decide — opening carter",
+          "path": "archive/zh-masters/how-to-decide/opening-carter.mp3",
+          "bytes": 1047449,
+          "seconds": 65.4,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "name": "opening carter"
+        },
+        {
+          "label": "how-to-decide — title carter",
+          "path": "archive/zh-masters/how-to-decide/title-carter.mp3",
+          "bytes": 148837,
+          "seconds": 9.2,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "name": "title carter"
+        },
+        {
+          "label": "how-to-decide — 不要光听谁说就当真 carter",
+          "path": "archive/zh-masters/how-to-decide/不要光听谁说就当真-carter.mp3",
+          "bytes": 1116413,
+          "seconds": 69.7,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "name": "不要光听谁说就当真 carter"
+        },
+        {
+          "label": "how-to-decide — 反过来再走一遍 carter",
+          "path": "archive/zh-masters/how-to-decide/反过来再走一遍-carter.mp3",
+          "bytes": 1260608,
+          "seconds": 78.7,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "name": "反过来再走一遍 carter"
+        },
+        {
+          "label": "how-to-decide — 最后的那份安心 carter",
+          "path": "archive/zh-masters/how-to-decide/最后的那份安心-carter.mp3",
+          "bytes": 961768,
+          "seconds": 60,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "name": "最后的那份安心 carter"
+        },
+        {
+          "label": "how-to-decide — 那要靠什么呢 carter",
+          "path": "archive/zh-masters/how-to-decide/那要靠什么呢-carter.mp3",
+          "bytes": 1776370,
+          "seconds": 110.9,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "name": "那要靠什么呢 carter"
+        },
+        {
+          "label": "loving-kindness — drop carter",
+          "path": "archive/zh-masters/loving-kindness/drop-carter.mp3",
+          "bytes": 179348,
+          "seconds": 11.1,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "name": "drop carter"
+        },
+        {
+          "label": "loving-kindness — opening carter",
+          "path": "archive/zh-masters/loving-kindness/opening-carter.mp3",
+          "bytes": 2863064,
+          "seconds": 178.9,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "name": "opening carter"
+        },
+        {
+          "label": "loving-kindness — title carter",
+          "path": "archive/zh-masters/loving-kindness/title-carter.mp3",
+          "bytes": 171407,
+          "seconds": 10.6,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "name": "title carter"
+        },
+        {
+          "label": "mindfulness — body carter",
+          "path": "archive/zh-masters/mindfulness/body-carter.mp3",
+          "bytes": 7246620,
+          "seconds": 452.8,
+          "slug": "mindfulness",
+          "variant": "master",
+          "name": "body carter"
+        },
+        {
+          "label": "mindfulness — contents carter",
+          "path": "archive/zh-masters/mindfulness/contents-carter.mp3",
+          "bytes": 7244948,
+          "seconds": 452.7,
+          "slug": "mindfulness",
+          "variant": "master",
+          "name": "contents carter"
+        },
+        {
+          "label": "mindfulness — drop carter",
+          "path": "archive/zh-masters/mindfulness/drop-carter.mp3",
+          "bytes": 202336,
+          "seconds": 12.6,
+          "slug": "mindfulness",
+          "variant": "master",
+          "name": "drop carter"
+        },
+        {
+          "label": "mindfulness — feelings carter",
+          "path": "archive/zh-masters/mindfulness/feelings-carter.mp3",
+          "bytes": 1562793,
+          "seconds": 97.6,
+          "slug": "mindfulness",
+          "variant": "master",
+          "name": "feelings carter"
+        },
+        {
+          "label": "mindfulness — mind carter",
+          "path": "archive/zh-masters/mindfulness/mind-carter.mp3",
+          "bytes": 1816494,
+          "seconds": 113.5,
+          "slug": "mindfulness",
+          "variant": "master",
+          "name": "mind carter"
+        },
+        {
+          "label": "mindfulness — opening carter",
+          "path": "archive/zh-masters/mindfulness/opening-carter.mp3",
+          "bytes": 1131877,
+          "seconds": 70.7,
+          "slug": "mindfulness",
+          "variant": "master",
+          "name": "opening carter"
+        },
+        {
+          "label": "mindfulness — title carter",
+          "path": "archive/zh-masters/mindfulness/title-carter.mp3",
+          "bytes": 211531,
+          "seconds": 13.1,
+          "slug": "mindfulness",
+          "variant": "master",
+          "name": "title carter"
+        },
+        {
+          "label": "mindfulness — where carter",
+          "path": "archive/zh-masters/mindfulness/where-carter.mp3",
+          "bytes": 708484,
+          "seconds": 44.2,
+          "slug": "mindfulness",
+          "variant": "master",
+          "name": "where carter"
+        },
+        {
+          "label": "not-self — drop carter",
+          "path": "archive/zh-masters/not-self/drop-carter.mp3",
+          "bytes": 182274,
+          "seconds": 11.3,
+          "slug": "not-self",
+          "variant": "master",
+          "name": "drop carter"
+        },
+        {
+          "label": "not-self — how heard carter",
+          "path": "archive/zh-masters/not-self/how-heard-carter.mp3",
+          "bytes": 572648,
+          "seconds": 35.7,
+          "slug": "not-self",
+          "variant": "master",
+          "name": "how heard carter"
+        },
+        {
+          "label": "not-self — opening carter",
+          "path": "archive/zh-masters/not-self/opening-carter.mp3",
+          "bytes": 1862470,
+          "seconds": 116.3,
+          "slug": "not-self",
+          "variant": "master",
+          "name": "opening carter"
+        },
+        {
+          "label": "not-self — questions carter",
+          "path": "archive/zh-masters/not-self/questions-carter.mp3",
+          "bytes": 962604,
+          "seconds": 60.1,
+          "slug": "not-self",
+          "variant": "master",
+          "name": "questions carter"
+        },
+        {
+          "label": "not-self — takeaway carter",
+          "path": "archive/zh-masters/not-self/takeaway-carter.mp3",
+          "bytes": 1119338,
+          "seconds": 69.9,
+          "slug": "not-self",
+          "variant": "master",
+          "name": "takeaway carter"
+        },
+        {
+          "label": "not-self — title carter",
+          "path": "archive/zh-masters/not-self/title-carter.mp3",
+          "bytes": 203172,
+          "seconds": 12.6,
+          "slug": "not-self",
+          "variant": "master",
+          "name": "title carter"
+        }
+      ],
+      "readme": "archive/zh-masters/first-talk/README.md"
+    },
+    {
+      "id": "builds",
+      "title": "Superseded book builds",
+      "kind": "build",
+      "date": "2026-06-30",
+      "locale": "en",
+      "note": "The last build of each artifact before the current published set — the June audiobook and the June 30 typeset run. Kept so a citation to an older edition still resolves.",
+      "items": [
+        {
+          "label": "Audiobook (M4B) · 2026-06-26",
+          "path": "archive/builds/2026-06-26-plain-dharma.m4b",
+          "bytes": 25193613,
+          "seconds": 3020.9
+        },
+        {
+          "label": "Screen PDF · 2026-06-30",
+          "path": "archive/builds/2026-06-30-plain-dharma.pdf",
+          "bytes": 4160618,
+          "seconds": null
+        },
+        {
+          "label": "EPUB · 2026-06-30",
+          "path": "archive/builds/2026-06-30-plain-dharma.epub",
+          "bytes": 879756,
+          "seconds": null
+        },
+        {
+          "label": "Print PDF (B&W) · 2026-06-30",
+          "path": "archive/builds/2026-06-30-plain-dharma-print-bw.pdf",
+          "bytes": 2502427,
+          "seconds": null
+        },
+        {
+          "label": "Print PDF (color) · 2026-06-30",
+          "path": "archive/builds/2026-06-30-plain-dharma-print-color.pdf",
+          "bytes": 5670308,
+          "seconds": null
+        },
+        {
+          "label": "KDP interior (B&W) · 2026-06-30",
+          "path": "archive/builds/2026-06-30-plain-dharma-kdp-interior-bw.pdf",
+          "bytes": 635262,
+          "seconds": null
+        },
+        {
+          "label": "KDP interior (color) · 2026-06-30",
+          "path": "archive/builds/2026-06-30-plain-dharma-kdp-interior-color.pdf",
+          "bytes": 726163,
+          "seconds": null
+        },
+        {
+          "label": "KDP cover (B&W) · 2026-06-30",
+          "path": "archive/builds/2026-06-30-plain-dharma-kdp-cover-bw.pdf",
+          "bytes": 1830171,
+          "seconds": null
+        },
+        {
+          "label": "KDP cover (color) · 2026-06-30",
+          "path": "archive/builds/2026-06-30-plain-dharma-kdp-cover-color.pdf",
+          "bytes": 1830172,
+          "seconds": null
+        }
+      ]
+    },
+    {
+      "id": "en-masters-2026-06-07",
+      "title": "English masters — current generation",
+      "kind": "masters",
+      "date": "2026-06-07",
+      "locale": "en",
+      "voice": "Theo Silk (UmQN7jS1Ee8B1czsUtQh)",
+      "note": "Un-stretched ElevenLabs output behind the narration on the site today. Two of these — the front matter and the colophon — are older takes than what ships, superseded by a June 26 re-record.",
+      "items": [
+        {
+          "label": "_closing — 01 · Opening",
+          "path": "audio-masters/en/_closing/orig-01-opening.mp3",
+          "bytes": 337755,
+          "seconds": null,
+          "slug": "_closing",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "_colophon — 01 · Opening",
+          "path": "audio-masters/en/_colophon/orig-01-opening.mp3",
+          "bytes": 1401043,
+          "seconds": null,
+          "slug": "_colophon",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "_frontmatter — 01 · Opening",
+          "path": "audio-masters/en/_frontmatter/orig-01-opening.mp3",
+          "bytes": 1289448,
+          "seconds": null,
+          "slug": "_frontmatter",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "fire-sermon — 00 · Title",
+          "path": "audio-masters/en/fire-sermon/orig-00-title.mp3",
+          "bytes": 217382,
+          "seconds": null,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "fire-sermon — 01 · Opening",
+          "path": "audio-masters/en/fire-sermon/orig-01-opening.mp3",
+          "bytes": 1052465,
+          "seconds": null,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "fire-sermon — 02 · The Same Fire Everywhere",
+          "path": "audio-masters/en/fire-sermon/orig-02-the-same-fire-everywhere.mp3",
+          "bytes": 756712,
+          "seconds": null,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "02",
+          "name": "The Same Fire Everywhere"
+        },
+        {
+          "label": "fire-sermon — 03 · What To Do About It",
+          "path": "audio-masters/en/fire-sermon/orig-03-what-to-do-about-it.mp3",
+          "bytes": 751534,
+          "seconds": null,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "03",
+          "name": "What To Do About It"
+        },
+        {
+          "label": "fire-sermon — 04 · How They Heard It",
+          "path": "audio-masters/en/fire-sermon/orig-04-how-they-heard-it.mp3",
+          "bytes": 321454,
+          "seconds": null,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "fire-sermon — 99 · Drop",
+          "path": "audio-masters/en/fire-sermon/orig-99-drop.mp3",
+          "bytes": 151345,
+          "seconds": null,
+          "slug": "fire-sermon",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "first-talk — 00 · Title",
+          "path": "audio-masters/en/first-talk/orig-00-title.mp3",
+          "bytes": 219472,
+          "seconds": null,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "first-talk — 00b · Preface",
+          "path": "audio-masters/en/first-talk/orig-00b-preface.mp3",
+          "bytes": 1024044,
+          "seconds": null,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "00b",
+          "name": "Preface"
+        },
+        {
+          "label": "first-talk — 01 · Opening",
+          "path": "audio-masters/en/first-talk/orig-01-opening.mp3",
+          "bytes": 1495919,
+          "seconds": null,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "first-talk — 02 · The Four Noble Truths",
+          "path": "audio-masters/en/first-talk/orig-02-the-four-noble-truths.mp3",
+          "bytes": 1102202,
+          "seconds": null,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "02",
+          "name": "The Four Noble Truths"
+        },
+        {
+          "label": "first-talk — 03 · Knowing Each One Three Ways",
+          "path": "audio-masters/en/first-talk/orig-03-knowing-each-one-three-ways.mp3",
+          "bytes": 1108889,
+          "seconds": null,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "03",
+          "name": "Knowing Each One Three Ways"
+        },
+        {
+          "label": "first-talk — 04 · How They Heard It",
+          "path": "audio-masters/en/first-talk/orig-04-how-they-heard-it.mp3",
+          "bytes": 1530192,
+          "seconds": null,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "first-talk — 99 · Drop",
+          "path": "audio-masters/en/first-talk/orig-99-drop.mp3",
+          "bytes": 84471,
+          "seconds": null,
+          "slug": "first-talk",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "how-to-decide — 00 · Title",
+          "path": "audio-masters/en/how-to-decide/orig-00-title.mp3",
+          "bytes": 142150,
+          "seconds": null,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "how-to-decide — 01 · Opening",
+          "path": "audio-masters/en/how-to-decide/orig-01-opening.mp3",
+          "bytes": 1006489,
+          "seconds": null,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "how-to-decide — 02 · Dont Just Take Anyones Word For It",
+          "path": "audio-masters/en/how-to-decide/orig-02-dont-just-take-anyones-word-for-it.mp3",
+          "bytes": 715172,
+          "seconds": null,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "02",
+          "name": "Dont Just Take Anyones Word For It"
+        },
+        {
+          "label": "how-to-decide — 03 · So What Do You Go On",
+          "path": "audio-masters/en/how-to-decide/orig-03-so-what-do-you-go-on.mp3",
+          "bytes": 1370532,
+          "seconds": null,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "03",
+          "name": "So What Do You Go On"
+        },
+        {
+          "label": "how-to-decide — 04 · Now Do The Same In Reverse",
+          "path": "audio-masters/en/how-to-decide/orig-04-now-do-the-same-in-reverse.mp3",
+          "bytes": 936690,
+          "seconds": null,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "04",
+          "name": "Now Do The Same In Reverse"
+        },
+        {
+          "label": "how-to-decide — 05 · The Reassurance At The End",
+          "path": "audio-masters/en/how-to-decide/orig-05-the-reassurance-at-the-end.mp3",
+          "bytes": 986427,
+          "seconds": null,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "05",
+          "name": "The Reassurance At The End"
+        },
+        {
+          "label": "how-to-decide — 99 · Drop",
+          "path": "audio-masters/en/how-to-decide/orig-99-drop.mp3",
+          "bytes": 140896,
+          "seconds": null,
+          "slug": "how-to-decide",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "loving-kindness — 00 · Title",
+          "path": "audio-masters/en/loving-kindness/orig-00-title.mp3",
+          "bytes": 165137,
+          "seconds": null,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "loving-kindness — 01 · Opening",
+          "path": "audio-masters/en/loving-kindness/orig-01-opening.mp3",
+          "bytes": 2296311,
+          "seconds": null,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "loving-kindness — 99 · Drop",
+          "path": "audio-masters/en/loving-kindness/orig-99-drop.mp3",
+          "bytes": 160122,
+          "seconds": null,
+          "slug": "loving-kindness",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "mindfulness — 00 · Title",
+          "path": "audio-masters/en/mindfulness/orig-00-title.mp3",
+          "bytes": 151763,
+          "seconds": null,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "mindfulness — 01 · Opening",
+          "path": "audio-masters/en/mindfulness/orig-01-opening.mp3",
+          "bytes": 919554,
+          "seconds": null,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "mindfulness — 02 · 1 Watching The Body",
+          "path": "audio-masters/en/mindfulness/orig-02-1-watching-the-body.mp3",
+          "bytes": 5347831,
+          "seconds": null,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "02",
+          "name": "1 Watching The Body"
+        },
+        {
+          "label": "mindfulness — 03 · 2 Watching Your Feelings",
+          "path": "audio-masters/en/mindfulness/orig-03-2-watching-your-feelings.mp3",
+          "bytes": 1086737,
+          "seconds": null,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "03",
+          "name": "2 Watching Your Feelings"
+        },
+        {
+          "label": "mindfulness — 04 · 3 Watching Your Mind",
+          "path": "audio-masters/en/mindfulness/orig-04-3-watching-your-mind.mp3",
+          "bytes": 1472932,
+          "seconds": null,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "04",
+          "name": "3 Watching Your Mind"
+        },
+        {
+          "label": "mindfulness — 05 · 4 Watching The Contents Of Experience",
+          "path": "audio-masters/en/mindfulness/orig-05-4-watching-the-contents-of-experience.mp3",
+          "bytes": 4926528,
+          "seconds": null,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "05",
+          "name": "4 Watching The Contents Of Experience"
+        },
+        {
+          "label": "mindfulness — 06 · What It Leads To",
+          "path": "audio-masters/en/mindfulness/orig-06-what-it-leads-to.mp3",
+          "bytes": 544226,
+          "seconds": null,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "06",
+          "name": "What It Leads To"
+        },
+        {
+          "label": "mindfulness — 99 · Drop",
+          "path": "audio-masters/en/mindfulness/orig-99-drop.mp3",
+          "bytes": 77784,
+          "seconds": null,
+          "slug": "mindfulness",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        },
+        {
+          "label": "not-self — 00 · Title",
+          "path": "audio-masters/en/not-self/orig-00-title.mp3",
+          "bytes": 198574,
+          "seconds": null,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "00",
+          "name": "Title"
+        },
+        {
+          "label": "not-self — 01 · Opening",
+          "path": "audio-masters/en/not-self/orig-01-opening.mp3",
+          "bytes": 1556106,
+          "seconds": null,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "01",
+          "name": "Opening"
+        },
+        {
+          "label": "not-self — 02 · The Questions",
+          "path": "audio-masters/en/not-self/orig-02-the-questions.mp3",
+          "bytes": 946303,
+          "seconds": null,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "02",
+          "name": "The Questions"
+        },
+        {
+          "label": "not-self — 03 · The Takeaway",
+          "path": "audio-masters/en/not-self/orig-03-the-takeaway.mp3",
+          "bytes": 998966,
+          "seconds": null,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "03",
+          "name": "The Takeaway"
+        },
+        {
+          "label": "not-self — 04 · How They Heard It",
+          "path": "audio-masters/en/not-self/orig-04-how-they-heard-it.mp3",
+          "bytes": 418003,
+          "seconds": null,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "04",
+          "name": "How They Heard It"
+        },
+        {
+          "label": "not-self — 99 · Drop",
+          "path": "audio-masters/en/not-self/orig-99-drop.mp3",
+          "bytes": 91577,
+          "seconds": null,
+          "slug": "not-self",
+          "variant": "master",
+          "num": "99",
+          "name": "Drop"
+        }
+      ]
+    }
+  ]
+}

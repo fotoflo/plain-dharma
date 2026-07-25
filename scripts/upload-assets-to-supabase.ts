@@ -177,10 +177,29 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  // Start from the EXISTING map and overwrite what we upload — never rebuild it
+  // from scratch.
+  //
+  // The map describes the BUCKET, not the local disk, and the two diverged once
+  // the heavy media moved offsite: `public/audio/zh/**` no longer exists here,
+  // so a from-scratch rebuild silently dropped every zh entry. ASCII-named
+  // tracks limped along on assetUrl's un-versioned fallback, but the Chinese-
+  // named ones are stored under hashed ASCII bucket keys and the `key` mapping
+  // lives only in the map — they 400'd on the site and in the app until
+  // `pnpm sync-version-map` restored them. Same hazard for anything uploaded
+  // from outside public/ (`archive/`, `audio-masters/`).
+  //
+  // Entries for genuinely deleted objects are pruned by
+  // `pnpm sync-version-map --prune`, which checks the bucket first.
+  const existing: Record<string, { v: string; bytes: number; key?: string }> =
+    existsSync(VERSION_MAP_PATH)
+      ? JSON.parse(readFileSync(VERSION_MAP_PATH, "utf8"))
+      : {};
   const versionMap: Record<
     string,
     { v: string; bytes: number; key?: string }
-  > = {};
+  > = { ...existing };
+  const carried = Object.keys(versionMap).length;
   let uploaded = 0;
   let bytes = 0;
 
@@ -221,7 +240,10 @@ async function main(): Promise<void> {
       `to public bucket "${BUCKET}"`
   );
   console.log(
-    `[assets] wrote ${relative(ROOT, VERSION_MAP_PATH)} (${uploaded} entries)`
+    `[assets] wrote ${relative(ROOT, VERSION_MAP_PATH)} ` +
+      `(${uploaded} uploaded` +
+      (carried ? `, ${carried} pre-existing entries preserved` : "") +
+      `)`
   );
 }
 

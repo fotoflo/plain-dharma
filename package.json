@@ -30,8 +30,10 @@
     "publish-downloads": "tsx scripts/publish-downloads.ts",
     "build-remix-assets": "tsx scripts/build-remix-assets.ts",
     "upload-assets": "node --env-file=.env.local --import tsx scripts/upload-assets-to-supabase.ts",
+    "sync-version-map": "node --env-file=.env.local --import tsx scripts/sync-version-map.ts",
     "backup-audio": "node --env-file=.env.local --import tsx scripts/backup-audio-to-supabase.ts",
-    "archive-audio-takes": "node --env-file=.env.local --import tsx scripts/archive-audio-takes.ts"
+    "archive-audio-takes": "node --env-file=.env.local --import tsx scripts/archive-audio-takes.ts",
+    "publish-archive": "node --env-file=.env.local --import tsx scripts/publish-archive.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -44,6 +46,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/mdx": "^2.0.13",
     "class-variance-authority": "^0.7.1",
+    "client-zip": "^2.5.0",
     "clsx": "^2.1.1",
     "geist": "^1.7.1",
     "gray-matter": "^4.0.3",

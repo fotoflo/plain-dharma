@@ -45,6 +45,10 @@ const LEAD_IN_MS = 400;
 // control only appears when a fast variant exists for the manifest.
 type Speed = "slow" | "fast";
 
+// Loop preference is sticky across sessions — someone who falls asleep to this
+// wants it still looping tomorrow night, not to re-arm it every time.
+const LOOP_KEY = "pd-audio-loop";
+
 export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact }: Props) {
   const s = getStrings(locale).audio;
   // Resolve a section to its mp3 URL for the given pace. A section's `file`
@@ -80,6 +84,9 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
   const [duration, setDuration] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [speed, setSpeed] = useState<Speed>("slow");
+  // When true, the playlist wraps around instead of stopping at the end, so it
+  // keeps playing indefinitely (bedtime listening).
+  const [loop, setLoop] = useState(false);
 
   const sections = manifest.sections;
   const currentSection: AudioSection = sections[currentIdx];
@@ -201,20 +208,47 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
     [speed, sections, currentIdx, sectionUrl]
   );
 
-  // When the audio element ends, wait a beat for breath, then advance.
+  // Restore the saved loop preference. Client-only, so it has to happen in an
+  // effect — a lazy initializer would read localStorage during render and
+  // mismatch the prerendered (loop-off) HTML.
+  useEffect(() => {
+    try {
+      /* eslint-disable-next-line react-hooks/set-state-in-effect */
+      if (window.localStorage.getItem(LOOP_KEY) === "1") setLoop(true);
+    } catch {
+      // Private mode / storage disabled — just start with loop off.
+    }
+  }, []);
+
+  const toggleLoop = useCallback(() => {
+    setLoop((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(LOOP_KEY, next ? "1" : "0");
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, []);
+
+  // When the audio element ends, wait a beat for breath, then advance. With
+  // loop on, the end of the playlist wraps back to the first section instead
+  // of stopping, so it plays through the night.
   const handleEnded = useCallback(() => {
     const nextIdx = currentIdx + 1;
-    if (nextIdx < sections.length) {
+    if (nextIdx < sections.length || loop) {
       // Auto-advance: keep the player UI visible through the silent gap rather
       // than flashing back to the TOC and in again. autoAdvancingRef tells the
       // pause handler to ignore the intervening pause/load events.
       autoAdvancingRef.current = true;
-      window.setTimeout(() => loadSection(nextIdx, true), GAP_MS);
+      const target = nextIdx < sections.length ? nextIdx : 0;
+      window.setTimeout(() => loadSection(target, true), GAP_MS);
     } else {
       // End of the playlist — nothing to advance to, so return to the TOC.
       setIsPlaying(false);
     }
-  }, [currentIdx, sections.length, loadSection]);
+  }, [currentIdx, sections.length, loadSection, loop]);
 
   const togglePlayPause = useCallback(() => {
     const audio = audioRef.current;
@@ -247,14 +281,17 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
     }
   }, [isPlaying]);
 
+  // With loop on, prev/next wrap around the ends of the playlist to match what
+  // auto-advance does; otherwise they stop (and the buttons render disabled).
   const goPrev = useCallback(() => {
     if (currentIdx > 0) loadSection(currentIdx - 1, isPlaying);
-  }, [currentIdx, loadSection, isPlaying]);
+    else if (loop) loadSection(sections.length - 1, isPlaying);
+  }, [currentIdx, sections.length, loadSection, isPlaying, loop]);
 
   const goNext = useCallback(() => {
-    if (currentIdx + 1 < sections.length)
-      loadSection(currentIdx + 1, isPlaying);
-  }, [currentIdx, sections.length, loadSection, isPlaying]);
+    if (currentIdx + 1 < sections.length) loadSection(currentIdx + 1, isPlaying);
+    else if (loop) loadSection(0, isPlaying);
+  }, [currentIdx, sections.length, loadSection, isPlaying, loop]);
 
   const seekBy = useCallback((deltaSec: number) => {
     const audio = audioRef.current;
@@ -489,6 +526,29 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
     </div>
   ) : null;
 
+  // Loop toggle. Sits alongside the pace control in both modes; matches the
+  // pace pills' shape so the two read as one row of playback settings.
+  const loopControl = (
+    <button
+      type="button"
+      aria-pressed={loop}
+      onClick={toggleLoop}
+      title={loop ? s.loopOn : s.loopOff}
+      className={[
+        "flex items-center gap-1.5 rounded-full border py-1 pl-2 pr-2.5 font-sans text-[11px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent",
+        loop
+          ? "border-accent bg-accent text-white"
+          : "border-divider text-ink/55 hover:text-ink",
+      ].join(" ")}
+    >
+      {/* Repeat arrows */}
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5 fill-current">
+        <path d="M7 7h9v2.5L20 6l-4-3.5V5H5v6h2V7zm10 10H8v-2.5L4 18l4 3.5V19h11v-6h-2v4z" />
+      </svg>
+      {s.loop}
+    </button>
+  );
+
   return (
     <div className="rounded-lg border border-accent/40 bg-paper shadow-xl overflow-hidden">
       {/* Hidden native audio element */}
@@ -541,7 +601,7 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
                 e.stopPropagation();
                 goPrev();
               }}
-              disabled={currentIdx === 0}
+              disabled={currentIdx === 0 && !loop}
               aria-label={s.prev}
               className="w-10 h-10 rounded-full flex items-center justify-center text-ink/70 hover:bg-accent/10 hover:text-ink disabled:opacity-30 disabled:hover:bg-transparent transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
@@ -601,7 +661,7 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
                 e.stopPropagation();
                 goNext();
               }}
-              disabled={currentIdx >= sections.length - 1}
+              disabled={currentIdx >= sections.length - 1 && !loop}
               aria-label={s.next}
               className="w-10 h-10 rounded-full flex items-center justify-center text-ink/70 hover:bg-accent/10 hover:text-ink disabled:opacity-30 disabled:hover:bg-transparent transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
             >
@@ -634,13 +694,16 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
             </div>
           </div>
 
-          {/* Pace control — its own row so it isn't crammed into the header.
-              stopPropagation so tapping it doesn't pause via the wrapper. */}
-          {paceControl && (
-            <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
-              {paceControl}
-            </div>
-          )}
+          {/* Loop + pace controls — their own row so they aren't crammed into
+              the header. stopPropagation so tapping them doesn't pause via the
+              wrapper. */}
+          <div
+            className="flex flex-wrap items-center justify-center gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {loopControl}
+            {paceControl}
+          </div>
         </div>
       ) : (
         /* TOC MODE — section list. Tap any row to play that section. */
@@ -690,8 +753,13 @@ export function AudioPlayer({ manifest, audioBaseUrl, locale, autoPlay, compact 
             })}
           </ul>
 
-          <div className="px-4 py-2 border-t border-divider flex items-center justify-between gap-2">
-            {paceControl}
+          <div className="px-4 py-2 border-t border-divider flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
+            {/* Grouped so that when the row is too narrow, the totals line
+                wraps below the controls rather than being spread apart. */}
+            <div className="flex items-center gap-2">
+              {loopControl}
+              {paceControl}
+            </div>
             <span className="ml-auto font-sans text-xs text-ink/35">
               {s.sectionsTotalLine
                 .replace("{n}", String(sections.length))

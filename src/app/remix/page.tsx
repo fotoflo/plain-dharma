@@ -288,7 +288,13 @@ export default async function RemixPage() {
         </div>
       </section>
 
-      <div className="mt-16 text-center">
+      <div className="mt-16 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
+        <Link
+          href="/assets"
+          className="font-sans text-sm text-link hover:text-accent"
+        >
+          Browse &amp; play every asset →
+        </Link>
         <Link
           href="/read"
           className="font-sans text-sm text-link hover:text-accent"

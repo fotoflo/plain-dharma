@@ -19,7 +19,6 @@ import {
   formatDuration,
   type ArchiveGroup,
 } from "@plain-dharma/content/archive";
-import { getIllustrationUrl } from "@/content/illustrations";
 import { ZipDownload, type ZipFile } from "@/components/ZipDownload";
 import { Wash } from "@/components/Wash";
 import { ogBase, altLanguages } from "@/lib/og-meta";
@@ -356,32 +355,34 @@ export default function AssetsPage() {
             "plain-dharma-illustrations.zip"
           )}
         >
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             {SUTTAS.map((slug) => (
-              <a
+              <div
                 key={slug}
-                href={assetDownloadUrl(`illustrations/${slug}.png`)}
-                download
-                className="group overflow-hidden rounded-lg border border-divider/80 no-underline"
+                className="overflow-hidden rounded-lg border border-divider/70"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={getIllustrationUrl(slug as SuttaSlug)}
-                  alt={getMeta("en", slug as SuttaSlug).title}
-                  width={512}
-                  height={512}
-                  loading="lazy"
-                  className="aspect-square w-full bg-paper object-contain transition group-hover:scale-[1.02]"
-                />
-                <p className="px-3 py-2 font-sans text-xs text-ink/70">
+                <p className="border-b border-divider/70 px-3 py-2 font-sans text-xs text-ink/70">
                   {getMeta("en", slug as SuttaSlug).title}
                 </p>
-              </a>
+                <div className="grid grid-cols-2 divide-x divide-divider/70">
+                  <IllustrationTile
+                    path={`illustrations/${slug}.png`}
+                    alt={`${getMeta("en", slug as SuttaSlug).title}, light`}
+                    label="Light"
+                  />
+                  <IllustrationTile
+                    path={`illustrations/${slug}-dark.png`}
+                    alt={`${getMeta("en", slug as SuttaSlug).title}, dark`}
+                    label="Dark"
+                    dark
+                  />
+                </div>
+              </div>
             ))}
           </div>
           <p className="mt-3 font-sans text-xs text-ink/50">
-            Tap any image to download the PNG. A dark-mode variant of each also
-            exists.
+            Both variants are transparent PNGs — each is previewed on the
+            background it was drawn for. Tap either to download it.
             {hasAsset("illustrations/originals.zip") && (
               <>
                 {" "}
@@ -623,6 +624,50 @@ function Accordion({
         {children}
       </div>
     </details>
+  );
+}
+
+/**
+ * One illustration variant. The art is a transparent PNG alpha-faded for a
+ * specific background, so the dark variant previews on a dark plate — on paper
+ * it would read as a smear.
+ */
+function IllustrationTile({
+  path,
+  alt,
+  label,
+  dark,
+}: {
+  path: string;
+  alt: string;
+  label: string;
+  dark?: boolean;
+}) {
+  if (!hasAsset(path)) return null;
+  return (
+    <a
+      href={assetDownloadUrl(path)}
+      download
+      className="group block no-underline"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={assetUrl(path)}
+        alt={alt}
+        width={512}
+        height={512}
+        loading="lazy"
+        className={`aspect-square w-full object-contain transition group-hover:scale-[1.02] ${
+          dark ? "bg-ink" : "bg-paper"
+        }`}
+      />
+      <p className="flex items-baseline gap-2 px-3 py-1.5 font-sans text-[0.68rem] uppercase tracking-[0.1em] text-ink/50">
+        {label}
+        <span className="ml-auto tabular-nums normal-case tracking-normal">
+          {fmtSize(path)}
+        </span>
+      </p>
+    </a>
   );
 }
 

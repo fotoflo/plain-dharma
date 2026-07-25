@@ -196,7 +196,7 @@ committed manifests. Pruning is its job, not `upload-assets`'.
 Top-level accordions are the things a visitor is actually looking for:
 
 ```
-Illustrations                          shared by both books, so it stands alone
+Illustrations                          light + dark per sutta; shared, so it stands alone
 The English book
   ├ Downloads
   │    ├ PDF · print PDFs · EPUB · M4B · zips · covers · book photos
@@ -222,6 +222,8 @@ Both live and archived audio render through the **same** `SuttaCard`/`TrackColum
 Only `.mp3`/`.m4b` items become tracks; a notes file shipped alongside a group's takes carries a slug too, but surfaces as that group's write-up link. Every player is `preload="none"`, so none of the ~320 fetch until played.
 
 > **The Mandarin narration was invisible here until 2026-07-25.** The page read `listAssets("audio/en/")` only, so 37 live zh tracks and the 30 MB zh audio zip were never listed. `liveNarration(locale)` is now parameterised.
+
+Illustrations show **both variants side by side** — 6 cards, each with the light and the dark PNG, individually downloadable with its size. The art is transparent and alpha-faded for a specific backdrop, so the dark variant previews on `bg-ink`; on paper it reads as a smear. (Before this the page showed only the light PNGs, with a line of prose claiming dark ones existed and no way to get them.)
 
 ### Zip downloads at every level (`src/components/ZipDownload.tsx`)
 

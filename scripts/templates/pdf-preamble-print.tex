@@ -64,6 +64,14 @@ __PAGECOLOR_SETUP__
 \newunicodechar{ṇ}{{\palifallback ṇ}}
 \newunicodechar{ṭ}{{\palifallback ṭ}}
 
+% Let long source URLs break across lines. The measure is only 3.75in and an
+% Access to Insight path is far wider, so without this the URL runs off the
+% page and gets clipped. Uses url.sty (already pulled in by hyperref) rather
+% than xurl, which BasicTeX doesn't ship.
+\usepackage{url}
+\Urlmuskip=0mu plus 1mu\relax
+\def\UrlBreaks{\do\/\do\-\do\.\do\_\do\?\do\&\do\=\do\#\do\:}
+
 \usepackage{enumitem}
 \setlist{itemsep=0.15em,topsep=0.3em}
 

@@ -105,6 +105,15 @@ export type BookSourceOptions = {
   getIllustrationPath: (slug: string) => string | null;
   /** Optional QR code image path to embed at the end of the book. */
   qrCodePath?: string | null;
+  /**
+   * Print the source URLs as visible text rather than relying on the link.
+   * Set for the physical editions only: KDP strips link annotations from print
+   * PDFs (it flags the pages in Print Previewer), which left the Sources
+   * appendix listing bare labels with no way to reach them. The screen PDF and
+   * EPUB keep clean clickable labels. Requires the print preamble's \UrlBreaks
+   * config — the measure is far narrower than an Access to Insight path.
+   */
+  printUrls?: boolean;
 };
 
 /**
@@ -212,7 +221,7 @@ export function buildBookMarkdown(opts: BookSourceOptions): string {
     parts.push(`## ${meta.ordinal}. ${meta.title}\n`);
     parts.push(`*${entry.paliName}* — ${entry.paliReference}\n`);
     const bullets = entry.linksByLocale[DEFAULT_LOCALE]
-      .map((l) => `- [${l.label}](${l.url})`)
+      .map((l) => (opts.printUrls ? `- ${l.label} — <${l.url}>` : `- [${l.label}](${l.url})`))
       .join("\n");
     parts.push(`${bullets}\n`);
   }

@@ -220,6 +220,7 @@ function buildVariant(variant: Variant): void {
   const md = buildBookMarkdown({
     getIllustrationPath: (slug) => prepareIllustration(variant, imagesDir, slug),
     qrCodePath: qrPath,
+    printUrls: true,
   });
   const bookMd = join(variantDir, "book.md");
   writeFileSync(bookMd, md);

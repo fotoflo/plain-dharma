@@ -337,7 +337,7 @@ if download size becomes a concern (files are currently mp3 44.1 kHz mono 64 kbp
 
 The app can receive over-the-air (OTA) JavaScript updates via Expo Updates, without requiring a new App Store / Play Store submission. This is configured in `app.json` and `eas.json`:
 
-- **`runtimeVersion: { policy: "appVersion" }`** in `app.json` pins OTA updates to the app's version (`1.0.0`). Only builds with the same version can receive OTA updates for that channel. Keep version `1.0.0` to push unlimited OTA updates to that build; bumping the version requires a new native rebuild.
+- **`runtimeVersion: { policy: "appVersion" }`** in `app.json` pins OTA updates to the app's version (currently `1.0.1`). Only builds with the same version can receive OTA updates for that channel. Bumping the version (e.g., from `1.0.1` to `1.0.2`) requires a new native rebuild and starts a fresh OTA lineage for that version.
 - **Per-profile channels** in `eas.json`: each build profile (development, development-device, preview, production) targets a distinct channel. When you publish an update, you specify which channel receives it (e.g., `eas update --channel production`).
 - **Publish command:** `pnpm eas update --channel production -m "description of JS changes"`
 - **Critical gotcha:** only builds **containing expo-updates** (build #3 onward) can receive OTA updates. The earlier TestFlight builds (#1–#2) do not have the update client and cannot pull new JS. Plan accordingly when shipping updates.
@@ -451,12 +451,75 @@ See [more-tab-refactor.md](./more-tab-refactor.md) for details.
   reports app/build version, channel, the riding OTA (id or "embedded") + bundle
   date, and Check/Download buttons via `expo-updates` `useUpdates()`.
 
-## TestFlight distribution (App Store Connect API)
+## App Store release workflow
 
-`scripts/asc-distribute.mjs` distributes a build via the ASC API (key already
-wired for `eas submit`): waits for the build to go `VALID`, sets the "What to
-Test" notes, adds it to the internal + external beta groups (creating the
-internal group if needed), and submits the external build for Beta App Review.
-`node --env-file=.env.local scripts/asc-distribute.mjs latest --whatsnew "…"`.
-Note the external group needs Beta App Review per build; internal testers (ASC
-users) get builds instantly.
+Three ASC API scripts orchestrate the release from code-signed build to the store:
+
+### 1. Draft preparation: `asc-finalize-draft.mjs`
+
+Attaches the latest VALID build to whichever version is in
+`PREPARE_FOR_SUBMISSION` and uploads the framed 6.7" screenshots from
+`packages/store-assets/framed` to the en-US localization.
+
+```bash
+node --env-file=.env.local scripts/asc-finalize-draft.mjs [--dry]
+```
+
+Idempotent: re-running attaches the same build and skips the screenshot upload
+if the set already has the same number of images. It deliberately does not
+submit for review.
+
+### 2. Release creation + submission: `asc-release.mjs` (NEW)
+
+Cuts a complete App Store release in one step:
+1. Finds or creates an appStoreVersion matching `apps/mobile/app.json` version
+2. Sets the en-US "What's New" text
+3. Attaches the latest VALID build
+4. Optionally submits for App Review (with `--submit`) or leaves a ready-to-submit draft
+
+```bash
+node --env-file=.env.local scripts/asc-release.mjs --whatsnew "Loop toggle + offline caching" [--submit] [--dry]
+```
+
+**Idempotent:** re-running updates the same version in place (useful for refreshing build attachments or bumping release notes before submit).
+
+Without `--submit`, leaves a draft for manual review in the ASC console before final submission.
+Use `--dry` to preview what would happen without making changes.
+
+### 3. TestFlight beta distribution: `asc-distribute.mjs`
+
+Distributes a build to TestFlight beta testers via the ASC API (key wired for `eas submit`):
+- Waits for the build to go `VALID`
+- Sets the "What to Test" notes  
+- Adds it to the internal + external beta groups (creating the internal group if needed)
+- Submits the external build for Beta App Review
+
+```bash
+node --env-file=.env.local scripts/asc-distribute.mjs latest --whatsnew "…"
+```
+
+Note: external group needs Beta App Review per build; internal testers (ASC users) get builds instantly.
+
+**Gotcha — don't pass `latest` right after `eas submit`.** `latest` resolves to
+the highest build number *ASC currently knows about*, and Apple's ingest takes
+5–15 minutes after the upload finishes. Run it too early and it silently
+distributes the **previous** build (and overwrites that build's "What to Test"
+notes). Wait for the new build to appear as `VALID`, then pass the build number
+explicitly: `scripts/asc-distribute.mjs 22 --whatsnew "…"`.
+
+**Typical flow** (1.0.1 / build #22 was released exactly this way):
+1. Bump `version` in `app.json` — required once the current version is
+   `READY_FOR_SALE`, and it starts a fresh OTA lineage.
+2. `pnpm eas build -p ios --profile production` → native code-signed build
+   (build number auto-increments; `appVersionSource` is `remote`).
+3. `pnpm eas submit -p ios --profile production --latest` → upload to ASC, then
+   wait for Apple to finish processing (build shows `VALID`).
+4. `asc-distribute.mjs <build#> --whatsnew "…"` → TestFlight (internal testers
+   immediately, external after Beta App Review).
+5. `asc-release.mjs --whatsnew "…"` → draft; check it, then re-run with
+   `--submit` to send it to App Review.
+
+A JS-only change usually needs none of this — publish an OTA instead
+(`pnpm eas update --channel production`). Check first with
+`pnpm eas fingerprint:compare --build-id <shipped build>`: a matching
+fingerprint means no native drift, so a new binary would be identical.

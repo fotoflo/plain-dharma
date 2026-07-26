@@ -233,6 +233,27 @@ The script `pausesToBreaks()` converts them **at generation time** to ElevenLabs
 
 Pause markers are an **audio-only** annotation — they never render on any surface except the narration.
 
+## Loop toggle
+
+Both web and mobile players offer a **Loop** control for continuous/bedtime listening:
+
+**Web** (`src/components/AudioPlayer.tsx`):
+- Preference persisted in localStorage under `pd-audio-loop`
+- When on, the playlist wraps around at the end instead of stopping (section 0 → last section → section 0 → …)
+- `goPrev` / `goNext` skip buttons wrap at the ends when loop is active (forward at last section goes to first; back at first goes to last)
+- Loop pill button rendered next to the pace control in both TOC and Player modes
+- Strings: `audio.loop`, `audio.loopOn`, `audio.loopOff` (from `packages/content/strings.ts`)
+
+**Mobile** (`apps/mobile/src/audio/AudioProvider.tsx`):
+- Calls `react-native-track-player`'s native `setRepeatMode(RepeatMode.Queue)` for OS-level looping
+- Preference persisted in AsyncStorage under `pd-audio-loop` (same key as web for cross-platform consistency)
+- Mode is re-applied after every `TrackPlayer.reset()` since queue rebuilds drop the repeat mode
+- Loop state restored synchronously at launch via `loopRef` so a racing load still installs the correct mode
+- `toggleLoop()` exposed on the audio context
+- UI: Loop pill (Ionicons `repeat` icon) next to pace control in both TOC and Player modes; skip buttons stay enabled at ends
+
+**Behavior:** loop is a sticky preference across sessions — someone falling asleep to the narration keeps the loop armed tomorrow.
+
 ## AudioPlayer — two-mode UI
 
 AudioPlayer switches between TOC (section list) and Player (transport controls) modes based on playback state:
@@ -243,6 +264,7 @@ AudioPlayer switches between TOC (section list) and Player (transport controls) 
 - The active/currently-loaded section is highlighted with a subtle bg and accent color
 - Footer shows total section count and combined duration (e.g., "6 sections · 28 minutes total")
 - Tap any row to jump to that section and start playing; tap the active row to resume from where you paused
+- Loop + pace controls in the footer, grouped so the totals line wraps below them on a narrow screen
 
 **Player Mode** (playing):
 - Hides the section list and shows the current section title (centered, serif)
@@ -251,6 +273,7 @@ AudioPlayer switches between TOC (section list) and Player (transport controls) 
 - Progress scrubber (range input) + elapsed/total time below the transport row
 - Anywhere else in the player box (except scrubber) pauses playback and returns to TOC mode
 - X button in the header (when playing) pauses playback; the popup itself stays open
+- Loop + pace controls sit in their own row below the scrubber (not the header), with click propagation stopped so tapping them doesn't pause
 - All button labels and aria-labels come from `getStrings(locale).audio` for i18n support
 
 **User-initiated playback lead-in (400ms):**

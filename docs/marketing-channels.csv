@@ -1,0 +1,52 @@
+Channel,Category,Specific target,Angle to lead with,Lead time,When,Effort,Cost,Leverage,Status,Link / contact,Notes
+Newsletter — friends preview,Owned,"Personal list, 10–30 people",Ask for an honest read and an Amazon review; no incentives,Same day,NOW — before public launch,Low,Free,High,Not started,/api/subscribe + Resend already wired,"Gates everything else. 50+ reviews in 60 days is where Amazon starts surfacing you; reviews only come from purchases, so seed before launch day."
+Newsletter — launch announce,Owned,Same list + any signups,"It's live, it's free, here's the story",Same day,Launch day,Low,Free,Med,Not started,Home-page signup form,Send the morning of the coordinated post.
+/how-it-was-made,Owned,plaindharma.com,AI drafted from the Pāli then argued out by hand line by line,Done,Launch asset,Done,Free,High,Live,plaindharma.com/how-it-was-made,"Your single best HN-linkable page. The post should point here, not at the home page."
+/remix + /assets,Owned,plaindharma.com,"Everything CC0 — take the text, audio, art, and make your own",Done,Ongoing,Done,Free,Med,Live,plaindharma.com/remix,Turns readers into distributors. Underrated for a CC0 work.
+GitHub repo,Owned,fotoflo/plain-dharma,Corrections and translations welcome via PR,Done,Ongoing,Low,Free,Med,Live,github.com/fotoflo/plain-dharma,README is a landing page for the HN crowd. Make sure it opens with the provenance story.
+Mobile app cross-promo,Owned,iOS / Android,Read and listen offline,Pending review,After App Store approval,Low,Free,Med,In review,App Store Connect,Second wave — don't try to sync it with the web launch.
+Hacker News,Community,news.ycombinator.com,"AI-drafted, human-refined translation of 2,600-year-old texts, released CC0",None,Launch day AM Pacific,Med,Free,High,Not started,,"Best single shot. Lead with the provenance story, not 'I made a Buddhism site.' Be ready for the Amazon byline question."
+r/Buddhism,Community,reddit.com/r/Buddhism,Dharma gift — free forever CC0,None,Launch day,Low,Free,High,Not started,,Lead with the gift framing. Do NOT lead with AI here; let it be the second paragraph.
+r/streamentry,Community,reddit.com/r/streamentry,Practitioner angle — Satipaṭṭhāna + Kālāma + First Talk,None,Launch day,Low,Free,High,Not started,,Most practice-serious audience of the three.
+r/Meditation,Community,reddit.com/r/Meditation,Free plain-English source texts behind the practice,None,Launch week,Low,Free,Med,Not started,,Bigger but shallower than r/streamentry.
+r/secularbuddhism,Community,reddit.com/r/secularbuddhism,No metaphysics required — read it and test it,None,Launch week,Low,Free,Med,Not started,,Kālāma sutta is the natural hook.
+r/theravada,Community,reddit.com/r/theravada,Pāli Canon sources with links to the scholarly translations,None,Launch week,Low,Free,Med,Not started,,Be humble about it not being a scholarly translation.
+Dharma Overground,Community,dharmaoverground.org,Practitioner-facing plain rendering,None,Launch week,Low,Free,Med,Not started,,Small but high signal.
+Buddhist Discord servers,Community,"r/streamentry Discord, Dharma Underground",Free CC0 text + audiobook,None,Launch week,Low,Free,Low,Not started,,Ask mods before dropping links.
+Bluesky,Social,Personal account,Thread: one teaching per post with the illustrations,None,Launch week,Low,Free,Low,Not started,,Illustrations carry it visually.
+X / Twitter,Social,Personal account,Same thread,None,Launch week,Low,Free,Low,Not started,,
+Instagram / Threads,Social,Personal account,The illustrations + one-line drops,None,Ongoing,Med,Free,Low,Not started,,The <Drop /> one-liners are already written for this.
+TikTok / Reels,Social,New account,30-sec readings over the illustrations,None,Post-launch,High,Free,Med,Not started,,Audiobook + art means the assets already exist. Highest ceiling of the social channels.
+YouTube,Social,New channel,Full audiobook chapters with the illustration on screen,None,Post-launch,Med,Free,Med,Not started,,Evergreen search traffic for 'Fire Sermon' etc. Disclose the AI narration.
+Product Hunt,Community,producthunt.com,For the app not the book,None,After App Store approval,Med,Free,Low,Not started,,Wrong audience for the book itself.
+Tricycle,Press,tricycle.org,Free CC0 plain-English edition; the project not the person,4–8 weeks,Send NOW,Med,Free,High,Not started,,Long lead — pitch before the launch not after.
+Lion's Roar,Press,lionsroar.com,Same,4–8 weeks,Send NOW,Med,Free,High,Not started,,
+Buddhadharma,Press,lionsroar.com/buddhadharma,Practitioner-facing quarterly,8–12 weeks,Send NOW,Med,Free,Med,Not started,,
+10% Happier (Dan Harris),Podcast,tenpercent.com,Accessible dharma for skeptics,4–12 weeks,Send NOW,Med,Free,High,Not started,,
+Waking Up / Making Sense (Sam Harris),Podcast,wakingup.com,Secular framing + Kālāma,8–16 weeks,Send NOW,Med,Free,High,Not started,,Long shot but the AI angle is genuinely his territory.
+Secular Buddhism (Noah Rasheta),Podcast,secularbuddhism.com,Plain English no metaphysics,2–6 weeks,Send NOW,Low,Free,Med,Not started,,More reachable than the big two.
+Deconstructing Yourself (Michael Taft),Podcast,deconstructingyourself.com,Practice-forward,2–6 weeks,Send NOW,Low,Free,Med,Not started,,
+Guru Viking,Podcast,guruviking.com,The making-of story,2–6 weeks,Send NOW,Low,Free,Med,Not started,,
+Buddhist Geeks,Podcast,buddhistgeeks.org,Tech + dharma — your exact intersection,2–6 weeks,Send NOW,Low,Free,High,Not started,,Best thematic fit of any podcast on this list.
+Substack dharma writers,Press,"Various — find 5–10",Offer the CC0 text for them to excerpt freely,1–3 weeks,Launch week,Med,Free,Med,Not started,,CC0 means they can reprint whole teachings with zero permission friction. Say so explicitly.
+Internet Archive,Distribution,archive.org,CC0 public-domain edition,1 week,Post-launch,Low,Free,High,Not started,,Permanent home + its own search traffic.
+Project Gutenberg,Distribution,gutenberg.org,CC0 makes it eligible,4–8 weeks,Post-launch,Med,Free,High,Not started,,Enormous evergreen reach. Submission process is finicky — worth it.
+Standard Ebooks,Distribution,standardebooks.org,Well-typeset public-domain EPUB,4–12 weeks,Post-launch,Med,Free,Med,Not started,,Strict typography standards; your EPUB is close.
+Wikisource,Distribution,wikisource.org,CC0 text,2–4 weeks,Post-launch,Med,Free,Med,Not started,,
+Open Library,Distribution,openlibrary.org,Catalog record + readable copy,1 week,Post-launch,Low,Free,Low,Not started,,
+Insight Timer,Distribution,insighttimer.com,The narrated audiobook as free tracks,2–4 weeks,Post-launch,Med,Free,High,Not started,,"Huge meditation audience, already free-content-native. Disclose AI narration."
+Findaway Voices / Spotify,Distribution,findawayvoices.com,Audiobook to Spotify/Apple/Google/Kobo,4–8 weeks,Post-launch,Med,Free,Med,Not started,,ACX is closed to you; this is the route. AI-narration disclosure required at upload.
+Apple Books / Google Play Books,Distribution,Publisher portals,Free EPUB edition,2–4 weeks,Post-launch,Med,Free,Med,Not started,,Free is allowed here unlike Kindle.
+Kobo Writing Life,Distribution,kobo.com/writinglife,Free EPUB,2 weeks,Post-launch,Low,Free,Low,Not started,,
+SuttaCentral / Access to Insight community,Distribution,discourse.suttacentral.net,Respectful note — we link to you throughout,1 week,Launch week,Low,Free,Med,Not started,,"You cite them a dozen times in the appendix. Tell them, don't ask for anything."
+Chiang Mai — temples,Physical,"Suan Dok, Ram Poeng, Umong, Pha Lat, Doi Suthep",Dharma gift for English-speaking visitors,3–4 weeks print,DEFERRED — after NY,High,~$0.30–0.60/booklet,Highest,Deferred,,"Your own docs call this the highest-leverage phase. Print run is the long pole — start it when you're back."
+Chiang Mai — cafes + hostels,Physical,"Free Bird, Pun Pun, Khun Churn, Wild Rose, Yoga Tree, Old City hostels",Free booklet with QR to the site,Same as above,DEFERRED,Med,Included above,High,Deferred,,
+Pai day trip,Physical,Walking street cafes + yoga studios,Same,Same as above,DEFERRED,Med,Included above,Med,Deferred,,Higher spiritual-tourism density per capita than Chiang Mai.
+Abbot one-pager (Thai + English),Physical,Prep doc for temple drops,Permission request — respectful one page,1 week,Write before you fly back,Low,Free,High,Not started,,Blocks every temple drop. Cheap to write now.
+NYC dharma centers,Physical,"NY Insight, Shambhala NYC, Village Zendo, Chogye",Free-table copies,None,WHILE IN NY,Low,Cost of a few copies,Med,Not started,,"Opportunistic — you're there anyway. US print economics don't support a real run, so hand-carry a handful."
+NYC press / podcast in person,Press,Any NY-based target above,In-person ask,None,WHILE IN NY,Low,Free,Med,Not started,,An in-person ask converts far better than a cold pitch. Check which targets are NY-based before you go.
+Retreat centers,Physical,"IMS, Spirit Rock, Insight Meditation centers",Bookstore / free table,2–4 weeks,Post-launch,Med,Shipping,Med,Not started,,
+/print — print-your-own guide,Owned,plaindharma.com/print,Empower others to run their own dharma-gift chain,1 week,Post-launch,Med,Free,High,Not started,,Reserved URL in the sitemap. Turns one distributor into many — the highest-leverage owned page you haven't built.
+Translation outreach,Community,"r/translator, Thai/Vietnamese dhamma communities",Help translate a CC0 dharma text,Ongoing,Post-launch,High,Free,High,Not started,,ZH already exists. Each new language is a whole new audience.
+Amazon Ads (KDP),Paid,Amazon,Keyword-targeted,1 week,Only after 20+ reviews,Low,$5–10/day test,Low,Not started,,Pointless before you have reviews and a linked product page. Cap it small.
+Meta / IG ads,Paid,Meta,Illustrations as creative,1 week,Optional,Med,Variable,Low,Not started,,Lowest priority. The book is free — paid acquisition math barely works.

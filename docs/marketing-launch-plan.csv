@@ -1,0 +1,43 @@
+#,Phase,Window,Action,Why now / depends on,Channel,Done when,Status
+,PHASE 0 — BEFORE YOU FLY,"Today, Sun 26 Jul",,,,,
+1,Phase 0,26 Jul,Finish the KDP paperback re-upload — interior + cover,Files are built and current in dist/kdp; every other Amazon step waits on this,Amazon,KDP shows In Review,Not started
+2,Phase 0,26 Jul,Try adding Claude Opus as a Translator contributor,"Free fix for the locked byline — if it saves, the whole ISBN question disappears",Amazon,"Saved, or confirmed blocked",Not started
+3,Phase 0,26 Jul,Confirm Kindle + paperback are linked on ONE product page,Two ASINs split reviews and rank; far harder to merge after launch than now,Amazon,One page offers both formats,Not started
+4,Phase 0,26 Jul,Send the friends-preview email (10-30 people),Reviews only come from purchases. Launch day at zero reviews wastes the best traffic you get,Newsletter,Sent,Not started
+5,Phase 0,26 Jul,Send all 9 press + podcast pitches,"4-16 week lead times — they must be in the air BEFORE launch, not after","Tricycle, Lion's Roar, Buddhadharma, 10% Happier, Waking Up, Secular Buddhism, Deconstructing Yourself, Guru Viking, Buddhist Geeks",All 9 sent,Not started
+6,Phase 0,26 Jul,Note which pitch targets are NY-based,You're about to be in the room with them; an in-person ask converts far better,Press,List made,Not started
+,PHASE 1 — IN NEW YORK,27 Jul - ~8 Aug,,,,,
+7,Phase 1,~29 Jul,Paperback clears review,~72h from upload,Amazon,Live with the corrected files,Blocked by 1
+8,Phase 1,While in NY,Hand-carry copies to NY dharma centers,Opportunistic only — US print economics don't support a real run,"NY Insight, Shambhala NYC, Village Zendo, Chogye",Copies left on free tables,Not started
+9,Phase 1,While in NY,In-person follow-up with NY-based press/podcast targets,The single highest-conversion version of a pitch,Press,Met or warm-emailed,Blocked by 6
+10,Phase 1,27 Jul - 8 Aug,Collect friends-preview feedback and reviews,Aim for 10+ reviews before launch day,Amazon,10+ reviews live,Blocked by 4
+11,Phase 1,On the plane,Write the abbot one-pager (Thai + English),Blocks every temple drop later; costs an hour and needs no tools,Physical,Drafted,Not started
+12,Phase 1,Before launch day,"DECIDE: new edition + ISBN, or live with the byline","Cost is near zero now and rises with every review. Decide before launch, not after",Amazon,Decided either way,Blocked by 2
+13,Phase 1,Week of 4 Aug,Draft the HN post and the three Reddit posts,Each venue needs a different opening — don't reuse one text,"HN, r/Buddhism, r/streamentry",Four drafts ready,Not started
+,PHASE 2 — LAUNCH DAY,"~Tue 11 Aug (gated, not fixed)",,,,,
+14,Phase 2,"Launch day, AM Pacific",Hacker News post,Your best single shot. Lead with the provenance story and link /how-it-was-made,HN,Posted,"Blocked by 7, 10"
+15,Phase 2,Same morning,r/Buddhism and r/streamentry,"Gift framing on r/Buddhism; practice framing on r/streamentry. AI is paragraph two, not one",Reddit,Both posted,Blocked by 7
+16,Phase 2,Same morning,Newsletter launch announce,,Newsletter,Sent,Not started
+17,Phase 2,All launch day,Stay in the comments,HN and Reddit both reward a present author more than a good post,"HN, Reddit",-,Not started
+,PHASE 3 — LAUNCH WEEK,+1 to +7 days,,,,,
+18,Phase 3,Launch week,"r/Meditation, r/secularbuddhism, r/theravada, Dharma Overground",Stagger these — same-day posting across subs reads as spam,Reddit,All four posted,Not started
+19,Phase 3,Launch week,Note to the SuttaCentral / Access to Insight communities,You cite them a dozen times. Tell them; ask for nothing,Distribution,Sent,Not started
+20,Phase 3,Launch week,Social threads — one teaching per post with the illustrations,The Drop one-liners are already written for exactly this,"Bluesky, X, Instagram",Threads live,Not started
+21,Phase 3,Launch week,Contact 5-10 Substack dharma writers,CC0 means they can reprint whole teachings with zero permission friction — say so explicitly,Press,5-10 contacted,Not started
+,PHASE 4 — DISTRIBUTION WAVE,Weeks 3-8,,,,,
+22,Phase 4,Week 3,Internet Archive upload,Permanent home plus its own search traffic,Distribution,Live,Not started
+23,Phase 4,Week 3-4,Insight Timer — audiobook as free tracks,"Biggest audio audience available to you, and free-content-native",Distribution,Submitted,Not started
+24,Phase 4,Week 4-6,Findaway Voices to Spotify/Apple/Google/Kobo,ACX is closed to you; this is the route. Tick the AI-narration disclosure,Distribution,Submitted,Not started
+25,Phase 4,Week 4-6,"Apple Books, Google Play Books, Kobo — free EPUB","Free is allowed on these, unlike Kindle",Distribution,Submitted,Not started
+26,Phase 4,Week 4-8,"Project Gutenberg, Standard Ebooks, Wikisource",CC0 makes you eligible where almost no new book is. Submissions are finicky; worth it,Distribution,Submitted,Not started
+27,Phase 4,Week 4-6,Build the /print page,Turns one distributor into many — the highest-leverage page you haven't built,Owned,Shipped,Not started
+28,Phase 4,Week 5-8,YouTube — audiobook chapters over the illustrations,Evergreen search traffic for 'Fire Sermon' and friends. Disclose AI narration,Social,6 videos up,Not started
+,PHASE 5 — CHIANG MAI (highest leverage),After you're back,,,,,
+29,Phase 5,On return,Print 300 booklets,The long pole at 3-4 weeks. Start it the week you land,Physical,300 printed,Deferred
+30,Phase 5,+3-4 weeks,Temple drops,Your own docs call this the highest-leverage phase of the whole plan,"Suan Dok, Ram Poeng, Umong, Pha Lat, Doi Suthep",All five dropped,"Blocked by 11, 29"
+31,Phase 5,+3-4 weeks,"Cafe, hostel and yoga drops",,"Free Bird, Pun Pun, Khun Churn, Wild Rose, Yoga Tree, Old City hostels",Dropped,Blocked by 29
+32,Phase 5,+4-5 weeks,Pai day trip,Higher spiritual-tourism density per capita than Chiang Mai,Physical,Dropped,Blocked by 29
+,ONGOING / GATED,,,,,,
+33,Gated,After 20+ reviews,Amazon Ads test at $5-10/day,Pointless before you have reviews and a linked product page. Cap it small,Paid,Running,"Blocked by 3, 10"
+34,Ongoing,Post-launch,Translation outreach,ZH already exists. Each new language is a whole new audience,Community,-,Not started
+35,Ongoing,On approval,"App Store approval, then cross-promote",Second wave. Don't try to sync it with the web launch,Owned,Live,In review

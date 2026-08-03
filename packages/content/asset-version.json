@@ -934,16 +934,16 @@
     "bytes": 337
   },
   "audio/en/_frontmatter/01-opening.mp3": {
-    "v": "fc9c5e21",
-    "bytes": 817964
+    "v": "113b1bed",
+    "bytes": 826532
   },
   "audio/en/_frontmatter/fast/01-opening.mp3": {
-    "v": "aeeb938f",
-    "bytes": 737089
+    "v": "76b0391d",
+    "bytes": 744612
   },
   "audio/en/_frontmatter/manifest.json": {
-    "v": "1747b50f",
-    "bytes": 340
+    "v": "380506a8",
+    "bytes": 338
   },
   "audio/en/fire-sermon/00-title.mp3": {
     "v": "f7a6f3f2",
@@ -1460,96 +1460,96 @@
     "bytes": 6148
   },
   "downloads/plain-dharma-audio-en.zip": {
-    "v": "18bc5fcf",
-    "bytes": 21798354
+    "v": "441b1880",
+    "bytes": 22016069
   },
   "downloads/plain-dharma-audio-zh.zip": {
     "v": "42096c83",
     "bytes": 30212101
   },
   "downloads/plain-dharma-back-cover.jpg": {
-    "v": "6b1c735c",
-    "bytes": 439523
+    "v": "d6cf0ac3",
+    "bytes": 434212
   },
   "downloads/plain-dharma-book-photo-dark.png": {
     "v": "38031718",
     "bytes": 1292673
   },
   "downloads/plain-dharma-book-photo.png": {
-    "v": "5c886e37",
-    "bytes": 435300
+    "v": "47a350b0",
+    "bytes": 409794
   },
   "downloads/plain-dharma-cover.jpg": {
-    "v": "1f3af7bb",
-    "bytes": 279797
+    "v": "8a5ea3a7",
+    "bytes": 279772
   },
   "downloads/plain-dharma-print-bw.pdf": {
-    "v": "07025948",
-    "bytes": 2509662
+    "v": "c9bbbd45",
+    "bytes": 911484
   },
   "downloads/plain-dharma-print-color.pdf": {
-    "v": "3a16aec8",
-    "bytes": 5678186
+    "v": "09311fcc",
+    "bytes": 1187176
   },
   "downloads/plain-dharma-text.zip": {
-    "v": "191cc943",
-    "bytes": 25487
+    "v": "aef49106",
+    "bytes": 25673
   },
   "downloads/plain-dharma.epub": {
-    "v": "9f9eeaff",
-    "bytes": 884986
+    "v": "1f661de5",
+    "bytes": 619923
   },
   "downloads/plain-dharma.m4b": {
-    "v": "8aecffa5",
-    "bytes": 25193613
+    "v": "e8ff4800",
+    "bytes": 25309886
   },
   "downloads/plain-dharma.pdf": {
-    "v": "5876f2a6",
-    "bytes": 4166007
+    "v": "c0358250",
+    "bytes": 822186
   },
   "downloads/text/en/fire-sermon.mdx": {
-    "v": "98048c08",
-    "bytes": 2886
+    "v": "e18cb68d",
+    "bytes": 3192
   },
   "downloads/text/en/first-talk.mdx": {
-    "v": "f46111d8",
-    "bytes": 4537
+    "v": "8d722c3c",
+    "bytes": 4747
   },
   "downloads/text/en/how-to-decide.mdx": {
-    "v": "162dfc65",
-    "bytes": 4284
+    "v": "ae66826b",
+    "bytes": 4279
   },
   "downloads/text/en/loving-kindness.mdx": {
-    "v": "8e21daae",
-    "bytes": 2088
+    "v": "468daa48",
+    "bytes": 2202
   },
   "downloads/text/en/mindfulness.mdx": {
-    "v": "be535b3c",
-    "bytes": 11704
+    "v": "33038c99",
+    "bytes": 12070
   },
   "downloads/text/en/not-self.mdx": {
-    "v": "7a524a84",
-    "bytes": 3333
+    "v": "c114440f",
+    "bytes": 3351
   },
   "downloads/text/zh/fire-sermon.mdx": {
     "v": "7c85d791",
     "bytes": 3065
   },
   "downloads/text/zh/first-talk.mdx": {
-    "v": "d426434a",
-    "bytes": 4732
+    "v": "7bc82c81",
+    "bytes": 4735
   },
   "downloads/text/zh/how-to-decide.mdx": {
-    "v": "937222a4",
-    "bytes": 4483
+    "v": "66a59a0f",
+    "bytes": 4468
   },
   "downloads/text/zh/loving-kindness.mdx": {
-    "v": "3b955c13",
-    "bytes": 2166
+    "v": "d2520567",
+    "bytes": 2160
   },
   "downloads/text/zh/mindfulness.mdx": {
-    "v": "6cecfdb7",
-    "bytes": 13460
+    "v": "dd157c3b",
+    "bytes": 13466
   },
   "downloads/text/zh/not-self.mdx": {
     "v": "b92b03d9",

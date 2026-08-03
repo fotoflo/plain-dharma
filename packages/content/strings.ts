@@ -272,6 +272,8 @@ const en = {
     licenseLineSuffix: ". Made for free distribution.",
     byLinePrefix: "Translated by Claude Opus · edited by ",
     byLineLinkText: "Alex Miller",
+    affiliateLine:
+      "As an Amazon Associate, Plain Dharma earns from qualifying purchases.",
     aboutLink: "About",
     glossaryLink: "Glossary",
     remixLink: "Remix",
@@ -612,6 +614,8 @@ const zh: Strings = {
     licenseLineSuffix: " 协议发布。为自由流通而做。",
     byLinePrefix: "作者 ",
     byLineLinkText: "Alex Miller",
+    affiliateLine:
+      "作为 Amazon Associate（亚马逊联盟成员），Plain Dharma 可从符合条件的购买中获得收益。",
     aboutLink: "关于",
     glossaryLink: "词汇表",
     remixLink: "再创作",

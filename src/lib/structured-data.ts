@@ -8,7 +8,7 @@ import {
   LICENSE_URL,
 } from "@/lib/og-meta";
 import { APP_LINKS } from "@/lib/app-links";
-import { BOOK_LINKS, PAPERBACK_ISBN } from "@/lib/book-links";
+import { BOOK_LINKS_CANONICAL, PAPERBACK_ISBN } from "@/lib/book-links";
 import { suttaMtime } from "@/lib/sutta-dates";
 
 // Builders return plain JSON-LD nodes (no `@context`); `graph()` wraps a set of
@@ -95,13 +95,13 @@ export function bookJsonLd(): JsonLdNode {
         "@type": "Book",
         bookFormat: "https://schema.org/Paperback",
         isbn: PAPERBACK_ISBN,
-        url: BOOK_LINKS.amazonPaperback,
+        url: BOOK_LINKS_CANONICAL.amazonPaperback,
       },
       {
         "@type": "Book",
         bookFormat: "https://schema.org/EBook",
         name: "Kindle edition",
-        url: BOOK_LINKS.amazonKindle,
+        url: BOOK_LINKS_CANONICAL.amazonKindle,
       },
       {
         "@type": "Book",

@@ -36,6 +36,10 @@ export function Footer() {
               {s.footer.byLineLinkText}
             </a>
           </p>
+          {/* Required by the Amazon Associates Operating Agreement — the
+              paperback/Kindle links on the home and download pages carry the
+              plaindharma-20 tag (see src/lib/book-links.ts). */}
+          <p className="mt-1 text-xs text-ink/50">{s.footer.affiliateLine}</p>
         </div>
         <div className="flex items-center gap-5 text-xs">
           <Link href={localizedHref(locale, "about")}>

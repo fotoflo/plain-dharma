@@ -214,8 +214,19 @@ const GROUPS: Group[] = [
       {
         id: "audio-verify",
         title: "Listen to the first 30 seconds of the live audiobook",
-        detail:
-          "The opening chapter should say “Translated by Claude Opus, edited by Alex Miller.”",
+        detail: (
+          <>
+            Grab the M4B from{" "}
+            <Link
+              href="/download"
+              className="text-link underline decoration-link/40 underline-offset-2 hover:decoration-link"
+            >
+              plaindharma.com/download
+            </Link>{" "}
+            — the opening chapter should say &ldquo;Translated by Claude Opus,
+            edited by Alex Miller.&rdquo;
+          </>
+        ),
       },
     ],
   },

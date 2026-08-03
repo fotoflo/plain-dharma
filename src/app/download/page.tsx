@@ -3,12 +3,13 @@ import type { Metadata } from "next";
 import { assetUrl, assetDownloadUrl } from "@plain-dharma/content/assets";
 import { Wash } from "@/components/Wash";
 import { ogBase, altLanguages } from "@/lib/og-meta";
-import { APP_LINKS } from "@/lib/app-links";
+import { APP_LINKS, APP_PUBLISHED } from "@/lib/app-links";
+import { BOOK_LINKS } from "@/lib/book-links";
 import { StoreBadges } from "@/components/StoreBadges";
 
 const TITLE = "Download";
 const DESCRIPTION =
-  "PDF and audiobook downloads of all six teachings, free for anyone to keep, copy, and share. Pay what feels right.";
+  "PDF and audiobook downloads of all six teachings, free for anyone to keep, copy, and share — or get the paperback on Amazon. Pay what feels right.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -38,11 +39,6 @@ type FileOption = {
   // directly (no donation nudge — it's for free print distribution).
   bwHref?: string;
 };
-
-// The EPUB is the Kindle edition, sold on Amazon — we don't sell it, Amazon
-// does. Paste the product URL once the KDP listing is live; an empty string
-// hides the "available on Amazon" note. Mirrors apps/mobile/src/lib/links.ts.
-const AMAZON_KINDLE_URL = ""; // e.g. "https://www.amazon.com/dp/B0XXXXXXXX"
 
 const FILES: FileOption[] = [
   {
@@ -97,13 +93,14 @@ export default function DownloadPage() {
         {FILES.map((file) => (
           <FileCard key={file.slug} file={file} />
         ))}
+        <PaperbackCard />
       </div>
 
-      {AMAZON_KINDLE_URL ? (
+      {BOOK_LINKS.amazonKindle ? (
         <p className="mt-8 text-center font-serif text-base text-ink/70">
           Prefer Kindle? The ebook edition is{" "}
           <a
-            href={AMAZON_KINDLE_URL}
+            href={BOOK_LINKS.amazonKindle}
             target="_blank"
             rel="noopener noreferrer"
             className="text-link hover:text-accent"
@@ -115,7 +112,7 @@ export default function DownloadPage() {
         </p>
       ) : null}
 
-      {APP_LINKS.published && <AppBadges />}
+      {APP_PUBLISHED && <AppBadges />}
 
       <article className="prose-dharma mt-16">
         <h2>About the files</h2>
@@ -150,13 +147,6 @@ export default function DownloadPage() {
           and translators welcome.
         </p>
 
-        <h2>Coming soon</h2>
-        <ul>
-          <li>
-            <strong>Print-ready PDF</strong> — 5×8 trim with bleed, gutter, and
-            embedded fonts for KDP Print or a local printer.
-          </li>
-        </ul>
       </article>
 
       <div className="mt-16 text-center">
@@ -172,15 +162,50 @@ export default function DownloadPage() {
 }
 
 /**
- * "Get the app" panel. Hidden until `APP_LINKS.published` (StoreBadges renders
- * null until then, so gate the surrounding chrome too).
+ * The paperback, sold on Amazon. Sits alongside the free file cards — same
+ * chrome, but the CTA is an external buy link (Amazon sets the price; nothing
+ * on this page stops being free).
+ */
+function PaperbackCard() {
+  return (
+    <div className="rounded-lg border border-divider/80 p-6">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <h2 className="font-serif text-2xl text-ink">Paperback</h2>
+        <span className="font-sans text-xs uppercase tracking-wider text-ink/55">
+          6×9 print edition
+        </span>
+      </div>
+      <p className="mt-2 font-serif text-base text-ink/80">
+        The printed book — all six teachings in the same typeset as the PDF,
+        sold on Amazon. Amazon sets its price; everything on this page stays
+        free.
+      </p>
+      <div className="mt-5">
+        <a
+          href={BOOK_LINKS.amazonPaperback}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center rounded-full border border-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-accent-strong no-underline transition hover:bg-accent-strong/5 hover:no-underline"
+        >
+          Buy on Amazon
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * "Get the app" panel. Hidden until a store listing is live (`APP_PUBLISHED`;
+ * StoreBadges renders only the live stores' badges, so gate the chrome too).
  */
 function AppBadges() {
   return (
     <section className="mt-12 rounded-lg border border-divider/80 p-6 text-center">
       <h2 className="font-serif text-2xl text-ink">Get the app</h2>
       <p className="mt-2 font-serif text-base text-ink/80">
-        Read and listen offline on iPhone and Android.
+        {APP_LINKS.androidPublished
+          ? "Read and listen offline on iPhone and Android."
+          : "Read and listen offline on your iPhone. Android is on the way."}
       </p>
       <StoreBadges className="mt-5" />
     </section>

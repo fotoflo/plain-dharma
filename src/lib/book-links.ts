@@ -1,0 +1,22 @@
+// Single source of truth for the editions of the book sold on Amazon.
+//
+// We don't sell anything — Amazon does, at its own price; every format on
+// this site stays free (CC0). These are informational pointers only.
+
+export const BOOK_LINKS = {
+  /**
+   * The 6×9 paperback (KDP Print). ISBN-10 1891328387 / ISBN-13
+   * 978-1-891328-38-1 — the ISBN-10 doubles as the Amazon ASIN, so this is
+   * the stable canonical product URL.
+   */
+  amazonPaperback: "https://www.amazon.com/dp/1891328387",
+  /**
+   * The Kindle ebook. Empty until the KDP ebook listing is live — an empty
+   * string hides the "Prefer Kindle?" note on /download. Mirrors
+   * apps/mobile/src/lib/links.ts `AMAZON_KINDLE_URL`.
+   */
+  amazonKindle: "",
+} as const;
+
+/** ISBN-13 of the paperback, for structured data. */
+export const PAPERBACK_ISBN = "9781891328381";

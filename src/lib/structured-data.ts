@@ -8,6 +8,7 @@ import {
   LICENSE_URL,
 } from "@/lib/og-meta";
 import { APP_LINKS } from "@/lib/app-links";
+import { BOOK_LINKS, PAPERBACK_ISBN } from "@/lib/book-links";
 import { suttaMtime } from "@/lib/sutta-dates";
 
 // Builders return plain JSON-LD nodes (no `@context`); `graph()` wraps a set of
@@ -71,6 +72,47 @@ export function mobileApplicationJsonLd(): JsonLdNode {
   };
 }
 
+/**
+ * The book itself: free digital editions here, the paperback sold on Amazon.
+ * One node with the paperback as a `workExample` edition, so the Amazon
+ * listing and the free downloads are tied to the same work.
+ */
+export function bookJsonLd(): JsonLdNode {
+  return {
+    "@type": "Book",
+    "@id": `${SITE_URL}/#book`,
+    name: SITE_NAME,
+    alternateName:
+      "Plain Dharma: The Buddha's Foundational Teachings in Modern English",
+    url: `${SITE_URL}/download`,
+    inLanguage: BCP47.en,
+    author: { "@type": "Person", name: "Gautama Buddha" },
+    publisher: { "@id": ORG_ID },
+    license: LICENSE_URL,
+    isAccessibleForFree: true,
+    workExample: [
+      {
+        "@type": "Book",
+        bookFormat: "https://schema.org/Paperback",
+        isbn: PAPERBACK_ISBN,
+        url: BOOK_LINKS.amazonPaperback,
+      },
+      {
+        "@type": "Book",
+        bookFormat: "https://schema.org/EBook",
+        url: `${SITE_URL}/download`,
+        isAccessibleForFree: true,
+      },
+      {
+        "@type": "Audiobook",
+        bookFormat: "https://schema.org/AudiobookFormat",
+        url: `${SITE_URL}/download`,
+        isAccessibleForFree: true,
+      },
+    ],
+  };
+}
+
 /** The canonical Pali source this teaching is based on (from canonical-links). */
 function paliSource(slug: SuttaSlug): JsonLdNode {
   const entry = CANONICAL_LINKS[slug];
@@ -128,12 +170,13 @@ export function breadcrumbJsonLd(
   };
 }
 
-/** Site-wide graph for the root layout: org + website + app. */
+/** Site-wide graph for the root layout: org + website + app + book. */
 export function siteJsonLd(locale: Locale) {
   return graph([
     organizationJsonLd(),
     websiteJsonLd(locale),
     mobileApplicationJsonLd(),
+    bookJsonLd(),
   ]);
 }
 

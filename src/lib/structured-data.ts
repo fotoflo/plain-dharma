@@ -100,6 +100,12 @@ export function bookJsonLd(): JsonLdNode {
       {
         "@type": "Book",
         bookFormat: "https://schema.org/EBook",
+        name: "Kindle edition",
+        url: BOOK_LINKS.amazonKindle,
+      },
+      {
+        "@type": "Book",
+        bookFormat: "https://schema.org/EBook",
         url: `${SITE_URL}/download`,
         isAccessibleForFree: true,
       },

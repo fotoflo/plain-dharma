@@ -11,11 +11,10 @@ export const BOOK_LINKS = {
    */
   amazonPaperback: "https://www.amazon.com/dp/1891328387",
   /**
-   * The Kindle ebook. Empty until the KDP ebook listing is live — an empty
-   * string hides the "Prefer Kindle?" note on /download. Mirrors
-   * apps/mobile/src/lib/links.ts `AMAZON_KINDLE_URL`.
+   * The Kindle ebook (ASIN B0H4W4TVGM, linked from the paperback listing's
+   * format swatch). Mirrors apps/mobile/src/lib/links.ts `AMAZON_KINDLE_URL`.
    */
-  amazonKindle: "",
+  amazonKindle: "https://www.amazon.com/dp/B0H4W4TVGM",
 } as const;
 
 /** ISBN-13 of the paperback, for structured data. */

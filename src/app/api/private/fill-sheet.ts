@@ -140,7 +140,7 @@ export const SECTIONS: Section[] = [
     fields: [
       {
         label: "ISBN",
-        value: "978-1-891328-38-1",
+        value: "978-1-891328-39-8",
         note: "Your own Bowker ISBN for the paperback (distinct from ebook …-37-4). Choose 'I have my own ISBN' — do NOT take a free KDP ISBN.",
       },
       {

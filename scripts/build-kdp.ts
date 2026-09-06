@@ -51,7 +51,7 @@ const EBOOK_DIR = join(ROOT, "dist", "ebook");
 const OUT_DIR = join(ROOT, "dist", "kdp");
 
 // 5×8 generated print covers (ratio 0.636 = 5.25×8.25). The back one carries the
-// paperback's own EAN-13 (ISBN 978-1-891328-38-1). Always color — KDP prints
+// paperback's own EAN-13 (ISBN 978-1-891328-39-8). Always color — KDP prints
 // covers in color even for the B&W interior.
 const FRONT_COVER = join(EBOOK_DIR, "front-cover-print-color.jpg");
 const BACK_COVER = join(EBOOK_DIR, "back-cover-print-color.jpg");
@@ -100,11 +100,15 @@ const VARIANTS: Record<Variant, VariantCfg> = {
     pagecolorSetup: "% B&W variant: white pages (no \\pagecolor)",
     illustrationBg: "white",
     grayscale: true,
-    // Groundwood, not cream — pick "Black & white interior with groundwood
-    // paper" in KDP's Print Options to match. Switch back to CALIPER.cream if
-    // the paper choice changes; the spine and both panel offsets follow it.
-    caliper: CALIPER.groundwood,
-    backCover: BACK_COVER_GROUNDWOOD,
+    // Cream paper — pick "Black & white interior with cream paper" in KDP's
+    // Print Options to match (owner's choice, 6 Sep 2026; it is also what the
+    // first paperback used — Amazon lists …-38-1 as 5 x 0.12 x 8 in, and only
+    // cream's caliper yields a 0.12" spine at 48pp). Switch to CALIPER.groundwood
+    // + BACK_COVER_GROUNDWOOD for the cheaper stock; the spine and both panel
+    // offsets follow the caliper, and the groundwood back cover carries a paper
+    // note that is false on any other stock.
+    caliper: CALIPER.cream,
+    backCover: BACK_COVER,
   },
   color: {
     slug: "color",

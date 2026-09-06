@@ -35,7 +35,7 @@ const STAGE_INSET = 24; // the .cover offset inside the dark stage (see the HTML
 
 // Back-cover ISBNs (per-edition Bowker records — see docs/publishing).
 const EBOOK_ISBN = "978-1-891328-37-4";
-const PRINT_ISBN = "978-1-891328-38-1";
+const PRINT_ISBN = "978-1-891328-39-8";
 // Hardcoded English titles, paired in order with the registry teasers.
 const BACK_COVER_TITLES = [
   "The Buddha's First Talk",

@@ -1,18 +1,18 @@
 #,Phase,Window,Action,Why now / depends on,Channel,Done when,Status
 ,PHASE 0 — BEFORE YOU FLY,"Today, Sun 26 Jul",,,,,
-1,Phase 0,26 Jul,Finish the KDP paperback re-upload — interior + cover,Files are built and current in dist/kdp; every other Amazon step waits on this,Amazon,KDP shows In Review,Not started
-2,Phase 0,26 Jul,Try adding Claude Opus as a Translator contributor,"Free fix for the locked byline — if it saves, the whole ISBN question disappears",Amazon,"Saved, or confirmed blocked",Not started
-3,Phase 0,26 Jul,Confirm Kindle + paperback are linked on ONE product page,Two ASINs split reviews and rank; far harder to merge after launch than now,Amazon,One page offers both formats,Not started
+1,Phase 0,26 Jul,Finish the KDP paperback re-upload — interior + cover,Files are built and current in dist/kdp; every other Amazon step waits on this,Amazon,KDP shows In Review,Done — live on Amazon
+2,Phase 0,26 Jul,Try adding Claude Opus as a Translator contributor,"Free fix for the locked byline — if it saves, the whole ISBN question disappears",Amazon,"Saved, or confirmed blocked",Done — saved on both editions
+3,Phase 0,26 Jul,Confirm Kindle + paperback are linked on ONE product page,Two ASINs split reviews and rank; far harder to merge after launch than now,Amazon,One page offers both formats,"Done — one page, both formats"
 4,Phase 0,26 Jul,Send the friends-preview email (10-30 people),Reviews only come from purchases. Launch day at zero reviews wastes the best traffic you get,Newsletter,Sent,Not started
 5,Phase 0,26 Jul,Send all 9 press + podcast pitches,"4-16 week lead times — they must be in the air BEFORE launch, not after","Tricycle, Lion's Roar, Buddhadharma, 10% Happier, Waking Up, Secular Buddhism, Deconstructing Yourself, Guru Viking, Buddhist Geeks",All 9 sent,Not started
 6,Phase 0,26 Jul,Note which pitch targets are NY-based,You're about to be in the room with them; an in-person ask converts far better,Press,List made,Not started
 ,PHASE 1 — IN NEW YORK,27 Jul - ~8 Aug,,,,,
-7,Phase 1,~29 Jul,Paperback clears review,~72h from upload,Amazon,Live with the corrected files,Blocked by 1
+7,Phase 1,~29 Jul,Paperback clears review,~72h from upload,Amazon,Live with the corrected files,Done — paperback live
 8,Phase 1,While in NY,Hand-carry copies to NY dharma centers,Opportunistic only — US print economics don't support a real run,"NY Insight, Shambhala NYC, Village Zendo, Chogye",Copies left on free tables,Not started
 9,Phase 1,While in NY,In-person follow-up with NY-based press/podcast targets,The single highest-conversion version of a pitch,Press,Met or warm-emailed,Blocked by 6
 10,Phase 1,27 Jul - 8 Aug,Collect friends-preview feedback and reviews,Aim for 10+ reviews before launch day,Amazon,10+ reviews live,Blocked by 4
 11,Phase 1,On the plane,Write the abbot one-pager (Thai + English),Blocks every temple drop later; costs an hour and needs no tools,Physical,Drafted,Not started
-12,Phase 1,Before launch day,"DECIDE: new edition + ISBN, or live with the byline","Cost is near zero now and rises with every review. Decide before launch, not after",Amazon,Decided either way,Blocked by 2
+12,Phase 1,Before launch day,"DECIDE: new edition + ISBN, or live with the byline","Cost is near zero now and rises with every review. Decide before launch, not after",Amazon,Decided either way,Decided — new edition + ISBN; support refused the in-place fix 6 Sep
 13,Phase 1,Week of 4 Aug,Draft the HN post and the three Reddit posts,Each venue needs a different opening — don't reuse one text,"HN, r/Buddhism, r/streamentry",Four drafts ready,Not started
 ,PHASE 2 — LAUNCH DAY,"~Tue 11 Aug (gated, not fixed)",,,,,
 14,Phase 2,"Launch day, AM Pacific",Hacker News post,Your best single shot. Lead with the provenance story and link /how-it-was-made,HN,Posted,"Blocked by 7, 10"

@@ -32,6 +32,11 @@ export function getLocaleFromPathname(pathname: string): Locale {
 export function stripLocalePrefix(pathname: string): string {
   if (pathname.startsWith("/zh/")) return pathname.slice(3);
   if (pathname === "/zh") return "/";
+  // /th is NOT a site locale — it exists only for /th/print, the URL handed to
+  // Thai copy shops. It still has to be stripped here, or the header's locale
+  // switcher turns /th/print into /zh/th/print, which 404s.
+  if (pathname.startsWith("/th/")) return pathname.slice(3);
+  if (pathname === "/th") return "/";
   return pathname;
 }
 

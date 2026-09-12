@@ -1,10 +1,14 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { assetDownloadUrl } from "@plain-dharma/content/assets";
-import type { Locale } from "@/content";
 import { Wash } from "@/components/Wash";
 import { PrintSpecSheet } from "@/components/PrintSpecSheet";
-import { PAGE } from "@/content/print-strings";
+import {
+  PAGE,
+  PRINT_LANGS,
+  THAI_CLASS,
+  type PrintLang,
+} from "@/content/print-strings";
 import spec from "@/content/printshop-spec.json";
 
 const { trimMm, interior, covers } = spec;
@@ -77,17 +81,49 @@ function FileCard({
   );
 }
 
-export function PrintView({ locale }: { locale: Locale }) {
-  const s = PAGE[locale];
+export function PrintView({ lang }: { lang: PrintLang }) {
+  const s = PAGE[lang];
+  // Thai isn't covered by Garamond Libre or Geist, so the whole page — not just
+  // the spec card — takes the Thai face when this is /th/print.
+  const thai = lang === "th";
 
   return (
-    <div className="relative mx-auto w-full max-w-3xl overflow-hidden px-6 py-16 sm:py-20">
+    <div
+      className={`relative mx-auto w-full max-w-3xl overflow-hidden px-6 py-16 sm:py-20${
+        thai ? ` ${THAI_CLASS}` : ""
+      }`}
+    >
       <Wash size="md" position="top-right" intensity={0.09} />
 
       <header className="mb-12">
-        <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
-          {s.eyebrow}
-        </p>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
+            {s.eyebrow}
+          </p>
+          {/* Whole-page language switcher. The site nav and footer stay English
+              on /th/print (Thai is this page only), so without this a Thai
+              reader who lands on /print has no way across. */}
+          <nav className="flex items-center gap-3 font-sans text-xs">
+            {PRINT_LANGS.map(({ code, label, href }) =>
+              code === lang ? (
+                <span key={code} className="text-ink/40" aria-current="page">
+                  {label}
+                </span>
+              ) : (
+                <Link
+                  key={code}
+                  href={href}
+                  hrefLang={code === "zh" ? "zh-Hans" : code}
+                  className={`text-link hover:text-accent${
+                    code === "th" ? ` ${THAI_CLASS}` : ""
+                  }`}
+                >
+                  {label}
+                </Link>
+              ),
+            )}
+          </nav>
+        </div>
         <h1 className="mt-3 font-serif text-4xl leading-tight text-ink sm:text-5xl">
           {s.title}
         </h1>
@@ -117,7 +153,7 @@ export function PrintView({ locale }: { locale: Locale }) {
 
       {/* Opens in the reader's own language; the toggle covers Thai too, since
           that's where most of these get printed. */}
-      <PrintSpecSheet vars={VARS} defaultLang={locale} />
+      <PrintSpecSheet vars={VARS} defaultLang={lang} />
 
       <article className="prose-dharma mt-16">
         <h2>{s.notesHeading}</h2>

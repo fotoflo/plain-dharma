@@ -3,9 +3,9 @@
 import { useState, type ReactNode } from "react";
 import {
   SPEC,
-  SPEC_LANGS,
-  THAI_FONT_STACK,
-  type SpecLang,
+  PRINT_LANGS,
+  THAI_CLASS,
+  type PrintLang,
 } from "@/content/print-strings";
 
 type Vars = { pages: number; sheets: number; trim: string };
@@ -34,19 +34,19 @@ function format(body: string, vars: Vars): ReactNode {
 type Props = {
   vars: Vars;
   /** Which language the sheet opens on — the page's own locale. */
-  defaultLang: SpecLang;
+  defaultLang: PrintLang;
 };
 
 /**
  * The shop-facing spec sheet, switchable between English, Thai and Chinese.
  *
- * It's a client component only because of the language toggle: the person
- * holding the phone at the counter needs to swap language without a navigation,
- * and the shop reads one block while the rest of the page stays in whatever
- * language the reader browses in.
+ * Each language also has its own full page (/print, /th/print, /zh/print), but
+ * this toggle is not redundant with them: it's for the moment you're standing
+ * at the counter reading English and need to show the clerk the Thai, without
+ * navigating away from the downloads you just opened.
  */
 export function PrintSpecSheet({ vars, defaultLang }: Props) {
-  const [lang, setLang] = useState<SpecLang>(defaultLang);
+  const [lang, setLang] = useState<PrintLang>(defaultLang);
   const copy = SPEC[lang];
   const thai = lang === "th";
 
@@ -54,15 +54,13 @@ export function PrintSpecSheet({ vars, defaultLang }: Props) {
     <section className="mt-16">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
         <div>
-          <h2
-            className="font-serif text-3xl text-ink"
-            style={thai ? { fontFamily: THAI_FONT_STACK } : undefined}
-          >
+          <h2 className={`font-serif text-3xl text-ink${thai ? ` ${THAI_CLASS}` : ""}`}>
             {copy.heading}
           </h2>
           <p
-            className="mt-3 font-serif text-lg leading-relaxed text-ink/70"
-            style={thai ? { fontFamily: THAI_FONT_STACK } : undefined}
+            className={`mt-3 font-serif text-lg leading-relaxed text-ink/70${
+              thai ? ` ${THAI_CLASS}` : ""
+            }`}
           >
             {copy.lede}
           </p>
@@ -73,7 +71,7 @@ export function PrintSpecSheet({ vars, defaultLang }: Props) {
           aria-label="Spec sheet language"
           className="flex shrink-0 overflow-hidden rounded-md border border-divider"
         >
-          {SPEC_LANGS.map(({ code, label }) => {
+          {PRINT_LANGS.map(({ code, label }) => {
             const active = code === lang;
             return (
               <button
@@ -86,8 +84,8 @@ export function PrintSpecSheet({ vars, defaultLang }: Props) {
                   active
                     ? "bg-ink text-paper"
                     : "text-ink/60 hover:bg-ink/5 hover:text-ink",
+                  code === "th" ? THAI_CLASS : "",
                 ].join(" ")}
-                style={code === "th" ? { fontFamily: THAI_FONT_STACK } : undefined}
               >
                 {label}
               </button>
@@ -97,9 +95,8 @@ export function PrintSpecSheet({ vars, defaultLang }: Props) {
       </div>
 
       <dl
-        className="mt-8 border-b border-divider"
+        className={`mt-8 border-b border-divider${thai ? ` ${THAI_CLASS}` : ""}`}
         lang={lang === "zh" ? "zh-Hans" : lang}
-        style={thai ? { fontFamily: THAI_FONT_STACK } : undefined}
       >
         {copy.rows.map((row) => (
           <div

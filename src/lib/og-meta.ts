@@ -14,19 +14,24 @@ export const LICENSE_URL =
  * so every page advertises its language pair plus an `x-default` (→ EN) without
  * hand-writing the map each time.
  *
- * - `current` flips the canonical to the ZH URL when called from a `/zh` page.
+ * - `current` flips the canonical to that language's URL.
  * - `zh: false` for EN-only routes (e.g. /download — the Stripe carve-out).
+ * - `th: true` for /print, the one route with a Thai twin. Thai isn't a site
+ *   locale, so it's opt-in per route rather than on by default.
  */
 export function altLanguages(
   enPath: string,
-  opts: { zh?: boolean; current?: Locale } = {},
+  opts: { zh?: boolean; th?: boolean; current?: Locale | "th" } = {},
 ): { canonical: string; languages: Record<string, string> } {
-  const { zh = true, current = "en" } = opts;
+  const { zh = true, th = false, current = "en" } = opts;
   const enUrl = enPath;
   const zhUrl = enPath === "/" ? "/zh" : `/zh${enPath}`;
+  const thUrl = enPath === "/" ? "/th" : `/th${enPath}`;
   const languages: Record<string, string> = { en: enUrl, "x-default": enUrl };
   if (zh) languages["zh-Hans"] = zhUrl;
-  return { canonical: current === "zh" ? zhUrl : enUrl, languages };
+  if (th) languages["th"] = thUrl;
+  const canonical = current === "zh" ? zhUrl : current === "th" ? thUrl : enUrl;
+  return { canonical, languages };
 }
 
 const OG_LOCALE: Record<Locale, string> = {

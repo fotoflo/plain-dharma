@@ -2,35 +2,35 @@
  * Copy for the /print (copy-shop) page.
  *
  * Web-only, so it lives here rather than in the shared `strings.ts` — and it
- * carries a THIRD language that isn't a site locale. The spec sheet is the part
- * a print shop actually reads, and most of the shops this book gets printed at
- * are in Thailand, so `SPEC` covers en/th/zh while the surrounding page copy
- * only covers the two real site locales.
+ * carries a THIRD language that isn't a site locale. /th/print is a URL sent
+ * directly to Thai copy shops, so Thai gets the whole page, not just the spec
+ * card; it stops at this page, though. The rest of the site is still en/zh, so
+ * a Thai visitor gets English nav and footer around a Thai page. Making Thai a
+ * real locale would mean translating six suttas, which is a different project.
  *
- * `**bold**` is the only markup — see <Emphasis> in PrintSpecSheet.tsx.
+ * `**bold**` is the only markup — see `format()` in PrintSpecSheet.tsx.
  * Placeholders `{pages}`, `{sheets}` and `{trim}` are filled from
  * printshop-spec.json, which the build writes.
  */
 
 import type { Locale } from "@/content";
 
-/** The spec sheet's languages: the site's two, plus Thai. */
-export type SpecLang = Locale | "th";
+/** This page's languages: the site's two, plus Thai. */
+export type PrintLang = Locale | "th";
 
-export const SPEC_LANGS: { code: SpecLang; label: string }[] = [
-  { code: "en", label: "English" },
-  { code: "th", label: "ไทย" },
-  { code: "zh", label: "中文" },
+/** Label + route for each, used by both the spec toggle and the page switcher. */
+export const PRINT_LANGS: { code: PrintLang; label: string; href: string }[] = [
+  { code: "en", label: "English", href: "/print" },
+  { code: "th", label: "ไทย", href: "/th/print" },
+  { code: "zh", label: "中文", href: "/zh/print" },
 ];
 
 /**
- * Thai has no glyphs in Garamond Libre or Geist, so the browser would fall back
- * unpredictably. Name the system Thai faces explicitly instead of shipping a
- * webfont: Thonburi on Apple, Leelawadee UI on Windows, Noto Sans Thai on
- * Android and Linux. All three are installed by default on their platform.
+ * Class that applies the system Thai face — defined in globals.css, because an
+ * inherited font-family loses to the Tailwind font-serif/font-sans utilities
+ * sitting on each element. Put it on any element whose subtree is Thai.
  */
-export const THAI_FONT_STACK =
-  '"Noto Sans Thai", "Thonburi", "Leelawadee UI", "Sarabun", sans-serif';
+export const THAI_CLASS = "lang-th";
 
 export type SpecRow = { label: string; body: string };
 
@@ -40,7 +40,7 @@ export type SpecCopy = {
   rows: SpecRow[];
 };
 
-export const SPEC: Record<SpecLang, SpecCopy> = {
+export const SPEC: Record<PrintLang, SpecCopy> = {
   en: {
     heading: "Show this to the shop",
     lede: "Everything they need, in the order they’ll ask for it.",
@@ -168,7 +168,7 @@ export const SPEC: Record<SpecLang, SpecCopy> = {
   },
 };
 
-/** Page copy outside the spec sheet — site locales only. */
+/** Page copy outside the spec sheet. */
 export type PageCopy = {
   metadataTitle: string;
   metadataDescription: string;
@@ -196,7 +196,7 @@ export type PageCopy = {
   remixLink: string;
 };
 
-export const PAGE: Record<Locale, PageCopy> = {
+export const PAGE: Record<PrintLang, PageCopy> = {
   en: {
     metadataTitle: "Print it at a copy shop",
     metadataDescription:
@@ -229,6 +229,40 @@ export const PAGE: Record<Locale, PageCopy> = {
     remixBody:
       "Everything is CC0 — translate it, re-typeset it, put your own temple’s name on it. The source text and the build scripts are on {link}, and the illustrations and fonts come with it.",
     remixLink: "the remix page",
+  },
+
+  th: {
+    metadataTitle: "พิมพ์หนังสือเล่มนี้ที่ร้านพิมพ์",
+    metadataDescription:
+      "ไฟล์สองไฟล์พร้อมใบสเปกสำหรับร้านพิมพ์ ขนาด A5 เนื้อในขาวดำ ปกสี หนังสือเป็นสาธารณสมบัติ พิมพ์กี่เล่มก็ได้ ไม่ต้องขออนุญาต",
+    eyebrow: "พิมพ์",
+    title: "พิมพ์หนังสือเล่มนี้ที่ร้านพิมพ์",
+    intro:
+      "คำสอนเหล่านี้เป็นสาธารณสมบัติ นำไฟล์สองไฟล์ด้านล่างไปที่ร้านพิมพ์ที่ไหนก็ได้ แล้วพิมพ์กี่เล่มก็ได้ตามต้องการ — สำหรับวัด สำหรับคอร์สปฏิบัติธรรม สำหรับกลุ่มอ่านหนังสือ หรือสำหรับเพื่อน ไม่ต้องขออนุญาต และไม่มีค่าใช้จ่ายใด ๆ กับเรา",
+    interiorLabel: "เนื้อใน",
+    interiorMeta: "{pages} หน้า · A5 · ขาวดำ",
+    interiorNote: "ตัวเล่มหนังสือ พิมพ์ 2 หน้าต่อแผ่น A4 แบบสองหน้า",
+    coversLabel: "ปก",
+    coversMeta: "2 หน้า · A4 · สี",
+    coversNote: "ปกหน้าและปกหลัง พิมพ์สี มีรอยมาร์กตัด พิมพ์บนกระดาษการ์ด",
+    notesHeading: "ข้อควรรู้",
+    noteCountLead: "จำนวนหน้าหารด้วยสี่ลงตัว",
+    noteCountBody:
+      "กระดาษ A4 หนึ่งแผ่นพิมพ์สองหน้าจะได้ 4 หน้า A5 ดังนั้น {pages} หน้าจึงพอดีกับ {sheets} แผ่น ไม่มีแผ่นไหนเหลือทิ้ง ถ้าแก้ไขหนังสือ ควรรักษาจำนวนหน้าให้หารสี่ลงตัวไว้ ไม่อย่างนั้นแผ่นสุดท้ายจะว่างไปครึ่งแผ่น",
+    noteCoversLead: "ปกแยกเป็นอีกไฟล์โดยตั้งใจ",
+    noteCoversBody:
+      "ร้านพิมพ์แยกงานสีกับงานขาวดำเป็นคนละงานและใช้กระดาษคนละแบบ ถ้าให้ไฟล์ PDF ที่รวมทุกอย่างไว้ด้วยกัน ร้านมักจะพิมพ์ทั้ง {pages} หน้าเป็นสีทั้งหมด ซึ่งเป็นวิธีที่แพงที่สุดในการค้นพบเรื่องนี้",
+    noteSizeLead: "ทำไมต้องเป็น A5",
+    noteSizeBody:
+      "A5 เป็นขนาดมาตรฐานทั่วไปนอกอเมริกาเหนือ และสองหน้า A5 พอดีกับกระดาษ A4 หนึ่งแผ่นโดยไม่เหลือเศษ ตัวหนังสือใช้ขนาด 12 พอยต์ ใหญ่กว่าหนังสือปกอ่อนทั่วไป เพราะหนังสือแบบนี้มักถูกอ่านออกเสียงและส่งต่อกันไปเรื่อย ๆ",
+    homeHeading: "พิมพ์เองที่บ้าน",
+    homeBody:
+      "หนังสือเล่มเดียวกันนี้มีเป็นไฟล์ PDF ธรรมดาอยู่ที่{link} (ภาษาอังกฤษ) ซึ่งเหมาะกับเครื่องพิมพ์ที่บ้านมากกว่า เพราะพิมพ์หน้าเดียวต่อแผ่น ไม่ต้องตัดครึ่ง",
+    homeLink: "หน้าดาวน์โหลด",
+    remixHeading: "แก้ไขดัดแปลง",
+    remixBody:
+      "ทุกอย่างเป็น CC0 — แปลได้ จัดหน้าใหม่ได้ ใส่ชื่อวัดของคุณเองได้ ต้นฉบับและสคริปต์สำหรับสร้างไฟล์อยู่ที่{link} (ภาษาอังกฤษ) พร้อมภาพประกอบและฟอนต์ทั้งหมด",
+    remixLink: "หน้าแก้ไขดัดแปลง",
   },
 
   zh: {

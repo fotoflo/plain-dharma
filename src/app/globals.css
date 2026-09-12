@@ -270,6 +270,22 @@ html.font-accessible-pref .reading-head :where(h1, h2, p) {
 }
 
 @layer components {
+  /* Thai. Used by /th/print and by the Thai setting of the copy-shop spec card
+     (see src/content/print-strings.ts) — Thai is not a site locale, so this is
+     the only place it appears. Garamond Libre and Geist carry no Thai glyphs,
+     so without this the browser falls back to whatever it happens to prefer,
+     which varies by platform and mixes faces mid-paragraph.
+
+     The `*` and the !important are deliberate: Tailwind's font-serif/font-sans
+     utilities set font-family on each element, so inheriting from an ancestor
+     never reaches them. Latin inside a Thai block (A5, 148 x 210 mm) renders in
+     the Thai face too, which is what we want — one face per block. */
+  .lang-th,
+  .lang-th * {
+    font-family: "Noto Sans Thai", "Thonburi", "Leelawadee UI", "Sarabun",
+      sans-serif !important;
+  }
+
   .prose-dharma {
     color: var(--reading-ink);
     max-width: 68ch;

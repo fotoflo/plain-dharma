@@ -8,7 +8,7 @@ const s = PAGE.zh;
 export const metadata: Metadata = {
   title: s.metadataTitle,
   description: s.metadataDescription,
-  alternates: altLanguages("/print", { current: "zh" }),
+  alternates: altLanguages("/print", { th: true, current: "zh" }),
   openGraph: {
     ...ogBase("zh"),
     title: s.metadataTitle,
@@ -24,5 +24,5 @@ export const metadata: Metadata = {
 };
 
 export default function ZhPrintPage() {
-  return <PrintView locale="zh" />;
+  return <PrintView lang="zh" />;
 }

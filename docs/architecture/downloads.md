@@ -1,20 +1,21 @@
 # Downloads & Distribution — Plain Dharma
 
-*Last updated: 2026-07-25*
+*Last updated: 2026-09-12*
 
 ## Overview
 
-Download artifacts (EPUB, PDF, audiobook, cover image, book mockup) and print-ready packages (KDP paperback, print PDFs) are built on-demand via separate scripts. Reader-facing downloads are automatically published to `public/downloads/` as the final step of each generator; print and internal artifacts stay in `dist/`. All files are served at `/downloads/*` as part of the static site. A product photo of the printed book is generated via Gemini and published as a transparent cutout for use on promotional pages.
+Download artifacts (EPUB, PDF, audiobook, cover image, book mockup) and print-ready packages (KDP paperback, print PDFs, print-shop edition) are built on-demand via separate scripts. Reader-facing downloads are automatically published to `public/downloads/` as the final step of each generator; print and internal artifacts stay in `dist/`. All files are served at `/downloads/*` as part of the static site. A product photo of the printed book is generated via Gemini and published as a transparent cutout for use on promotional pages.
 
 The donation flow is honor-system — anyone who guesses the URL can download without paying. The site nudges with the donation page; it doesn't gate access.
 
 ## Build pipeline & artifact families
 
-Three parallel pipelines feed from the same MDX sources but target different mediums:
+Four parallel pipelines feed from the same MDX sources but target different mediums:
 
 1. **Reader downloads** — EPUB, screen PDF (6×9), audiobook, cover art. Published to `public/downloads/`, served over HTTP.
 2. **Print PDFs** — two variants (color and B&W) at 5.25×8.25 (5×8 trim + 0.125" bleed). Cover-inclusive proofs. Stay in `dist/print/`.
 3. **KDP paperback** — interior PDFs (cover-free, 6×9 + 0.125" bleed) and computed wraparound covers (spine width = page count × paper caliper). Both color and B&W. Stay in `dist/kdp/`.
+4. **Print-shop edition** — A5 (148×210mm, ISO 226) B&W interior PDF (reading order, un-imposed) + separate A4 2-page color cover sheet with crop marks and bleed. Enables local copy shops to print and bind small quantities. Spec published to `src/content/printshop-spec.json` (page count, sheet count, file sizes) for the `/print` page; PDFs stay in `dist/printshop/`.
 
 All share the same book markdown source and per-variant illustration caches, differing only in trim size, bleed, page color, and content inclusions (cover on/off).
 
@@ -60,6 +61,7 @@ Non-published artifacts (print, KDP, storyboard) remain in `dist/` for proofing 
 | `scripts/generate-cover.ts` | Rasterize InDesign cover PDF (6×9", CMYK) to 1600×2400 JPEG (sRGB) via pdftoppm + ImageMagick; publish as final step. |
 | `scripts/generate-back-cover.ts` | Generate back cover(s) from parameterized XeLaTeX template. Two trims: screen 6×9 (published), print 5.25×8.25 + grayscale variant (internal only). Back cover title layout: six sutta titles numbered, each paired with a **one-line teaser from the registry** (`SUTTA_META` `teaser` field) injected via `__SUTTA_ENTRIES__` token. Dimensions shared with front cover for consistency. |
 | `scripts/generate-front-cover.ts` | Generate the 5×8 print front cover and the 3000×3000 square audiobook cover from a XeLaTeX template. Replaces the 6×9 InDesign front (which can't be cropped without losing the gold stripe and title centering). Outputs: `dist/ebook/front-cover-print-color.jpg`, `front-cover-print-bw.jpg`, `audiobook-cover.jpg`. The color and B&W print covers are consumed by `build-kdp` as `__FRONT_IMG__`; the audiobook cover is for ACX/Audible submission. |
+| `scripts/render-covers.ts` | Parameterized cover renderer via XeLaTeX + pdftoppm, also used by print-shop edition. The `render-covers.ts` script (MODIFIED in this session) now generates A5 cover variants (front-cover-a5-color.jpg, back-cover-a5-color.jpg) for use by `build-printshop-pdf.ts`. Parameterized tokens allow rendering multiple trim sizes (5×8, 6×9, A5, etc.) from shared LaTeX templates. |
 | `scripts/templates/front-cover.tex` | Parameterized XeLaTeX front cover (Garamond Libre, brand palette, gold stitched stripe on LEFT/spine edge). Token substitution by `generate-front-cover.ts`. Sun is vertically centered via `\vfill` above and below `\includegraphics` so it floats in the middle band at any trim. Credits "translated by Claude Opus / edited by Alex Miller" as separate italic-eyebrow + name pairs. Two XeLaTeX passes required for TikZ `current page` node. |
 | `scripts/assets/cover-artwork.png` | Source watercolor sun art — a **committed** asset (not in `dist/`). Paler than the sun baked into the InDesign 6×9 cover; deepened by `generate-front-cover.ts` via ImageMagick `-modulate` (brightness 96, saturation 135) and cream-key (`-opaque #FBF7EE → #F5EFE0`) before embedding. |
 | `scripts/templates/back-cover.tex` | Parameterized back cover source (Garamond Libre, brand palette, gold stitched stripe on spine). Tokens: `__FONTSIZE__`, `__PAPER_W__`, `__PAPER_H__`, `__STRIPE_W__`, `__STITCH_X__`, `__SUTTA_ENTRIES__` (injected list of numbered titles + teasers). Two runs per target for TikZ current-page node. |
@@ -70,6 +72,9 @@ Non-published artifacts (print, KDP, storyboard) remain in `dist/` for proofing 
 | `scripts/build-print-pdf.ts` | Build two print variants (color on white, B&W on cream) at 5.25×8.25 (5×8 trim + 0.125" bleed). Each appends its print-trim back cover as final page. Non-published. |
 | `scripts/build-kdp.ts` | Build KDP paperback packages: cover-free interiors (bw/color at 6×9 + 0.125" bleed) and computed wraparound covers. Spine width = page count × paper caliper (color: white 0.002252in, B&W: cream 0.0025in per page). Always full-color covers. |
 | `scripts/templates/kdp-wrap-cover.tex` | Parameterized KDP wraparound cover (TikZ, gold spine stripe). Tokens: `__PAPER_W__`, `__PAPER_H__`, `__SPINE_W__`, `__BACK_IMG__`, `__FRONT_IMG__`. Two runs for current-page node. |
+| `scripts/build-printshop-pdf.ts` | Build A5 (148×210mm) B&W interior PDF via pandoc+xelatex (12pt, reading order, un-imposed — shops' own software handles imposition). Separate A4 color cover sheet (2 pages: front cover with crop marks, back cover without ISBN + QR code to site). Pads interior page count to multiple of 4 for booklet printing. Writes `src/content/printshop-spec.json` with page/sheet counts and file sizes (used by `/print` page); keeps PDFs in `dist/printshop/` (non-published to /downloads). |
+| `scripts/templates/pdf-preamble-printshop.tex` | LaTeX preamble for A5 interior PDF — 12pt, B&W, 0pt paragraph indent (matches design intent). |
+| `scripts/templates/printshop-covers.tex` | LaTeX for A4 2-page cover sheet (front cover, back cover) with crop marks (1mm) and 3mm bleed on all edges. Back cover shows plaindharma.com QR code instead of ISBN. |
 | `scripts/build-storyboard.ts` | Render 40-page screen PDF to a "tall format" picture-book storyboard PNG + PDF. Page 1 single (cover), spreads 2–3…38–39, page 40 single (back). Pure ImageMagick + pdftoppm. Planning tool, not published. |
 | `scripts/build-manifest.ts` | Write `dist/MANIFEST.md` — human-readable index of all artifacts with sizes/mtimes grouped by category, recent content commits, and repo changelog. Final step of `pnpm build-all`. |
 | `scripts/publish-downloads.ts` | Batch convenience: republish all reader-facing artifacts at once from current `dist/` contents. Used when re-syncing artifacts (e.g. after fresh checkout with committed dist/ files). Missing sources are skipped. |
@@ -114,6 +119,7 @@ pnpm build-pdf &&
 pnpm build-ebook &&
 pnpm build-print-pdf &&
 pnpm build-kdp &&
+pnpm build-printshop-pdf &&
 pnpm build-storyboard &&
 pnpm build-manifest
 ```
@@ -174,6 +180,7 @@ These are cached independently in `dist/{format}/images/`, so regenerating one d
 | `pnpm build-audiobook` | `dist/audiobook/plain-dharma.m4b` (with chapter markers) | `/downloads/plain-dharma.m4b` |
 | `pnpm build-print-pdf` | `dist/print/{color,bw}/plain-dharma-print-{color,bw}.pdf` (5.25×8.25 + bleed, back cover final page) | — |
 | `pnpm build-kdp` | `dist/kdp/plain-dharma-kdp-interior-{bw,color}.pdf`, `plain-dharma-kdp-cover-{bw,color}.pdf` (cover-free interiors + computed wraparound covers) | — |
+| `pnpm build-printshop-pdf` | `dist/printshop/plain-dharma-printshop.pdf` (A5 interior, reading order, un-imposed), `plain-dharma-printshop-covers.pdf` (A4 2-page color cover sheet), `src/content/printshop-spec.json` (page/sheet counts, file sizes) | — (PDFs only in dist/; spec published to content) |
 | `pnpm build-storyboard` | `dist/storyboard/plain-dharma-storyboard.{png,pdf}` (40-page visual map, page-1 single / spreads / page-40 single) | — |
 | `pnpm build-manifest` | `dist/MANIFEST.md` (indexed artifacts, content commits, changelog) | — |
 | `pnpm build-all` | (all of the above, in order) | reader-facing artifacts |
@@ -200,3 +207,11 @@ The audiobook *narration* (MP3 files) is generated separately by `scripts/genera
 - **KDP covers are always full-color rasterized**: Even though the interior comes in B&W and color variants, the KDP covers themselves are full-color PDFs (KDP prints covers in color). The B&W/color distinction is in the *interior* (which pages are printed in color vs grayscale), not the cover. The wraparound cover templates are parameterized only by spine width, not by color variant (both color and B&W covers would look identical if printed, but we generate them separately because spine width differs per interior page count).
 
 - **Book mockup cutout uses luma flood-fill, not chroma key**: Gemini renders the book on a dark studio backdrop and bakes in a gradient + soft contact shadow. A fixed single-color chroma key can't remove this cleanly (it leaves a grey halo). Instead, `cutout-book.ts` flood-fills from the image borders, clearing edge-connected pixels below a luma threshold (175). The bright cream/yellow book stops the fill; the threshold is chosen above the anti-aliased edge (~130 luma) so the cut lands on the book side with no dark fringe. Interior dark text (black cover text, title text) isn't edge-connected, so it remains opaque. The result is a single transparent PNG that floats cleanly on both light (cream) and dark (night-sky) page backgrounds via CSS.
+
+- **Print-shop edition: interior is un-imposed (reading order, never pre-imposed)** — `build-printshop-pdf.ts` generates the A5 interior in reading order (page 1, 2, 3, … n). Copy shops have their own booklet/2-up imposition software; forcing a pre-imposed layout is incompatible with their workflows. The page count is padded to a multiple of 4 (so 4 pages of bleed, when folded, become the correct booklet signature), but the PDF itself remains in reading order. Shops receive clear instructions to use their imposition software with 2-up duplex settings.
+
+- **Print-shop edition: separate color cover sheet, no ISBN** — The A4 cover sheet (`plain-dharma-printshop-covers.pdf`) is deliberately separate from the interior, allowing shops to run covers in full color (their dedicated color printer) while running interiors in B&W. The back cover omits the ISBN (which belongs only to the retail KDP edition) and displays a QR code to plaindharma.com instead. This edition is not for retail; it's for small-quantity local printing.
+
+- **Print-shop spec.json is in src/content/, not dist/** — Unlike other PDFs (which stay in `dist/printshop/`), the `printshop-spec.json` file is written to `src/content/` so it can be read at build time by the web page (`/print`). This is the only instance where a build artifact is committed to the content source tree; it's necessary because `public/downloads/` is `.gitignore`d and the RSC page can't read dist/ at runtime.
+
+- **Flush-left image bug and centerImages() fix** — With `\parindent=0pt` (the printshop preamble's design choice), bare `![](path)` markdown images render flush-left instead of centered. The `centerImages()` function in `build-printshop-pdf.ts` rewrites all bare markdown image syntax into explicit LaTeX `\begin{center}...\end{center}` blocks. This is a localized fix, not baked into the shared `book-source.ts`, so as to preserve the existing behavior for other PDF variants.

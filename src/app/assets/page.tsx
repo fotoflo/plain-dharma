@@ -195,6 +195,8 @@ const DOWNLOADS: Record<Locale, [string, string, string][]> = {
     ["downloads/plain-dharma.pdf", "PDF", "6×9 typeset, color"],
     ["downloads/plain-dharma-print-bw.pdf", "Print PDF (B&W)", "For plain printers"],
     ["downloads/plain-dharma-print-color.pdf", "Print PDF (color)", "6×9 with bleed"],
+    ["downloads/plain-dharma-printshop-a5.pdf", "Print-shop interior", "A5, 12pt, B&W"],
+    ["downloads/plain-dharma-printshop-a5-covers.pdf", "Print-shop covers", "A4, color, crop marks"],
     ["downloads/plain-dharma.epub", "EPUB", "Kindle / e-reader"],
     ["downloads/plain-dharma.m4b", "Audiobook (M4B)", "Chaptered, ~38 min"],
     ["downloads/plain-dharma-audio-en.zip", "Audio bundle", "Every English mp3"],

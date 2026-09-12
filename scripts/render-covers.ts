@@ -46,6 +46,26 @@ const BACK_COVER_TITLES = [
   "How to Decide What to Believe",
 ];
 
+/**
+ * The site QR used on the print-shop back cover, generated once into
+ * book/assets/ so the HTML can reference it relatively (Chrome loads the filled
+ * template from BOOK_DIR). Regenerate by deleting the file.
+ */
+const SITE_QR = "qr-plaindharma.png";
+function siteQrFilename(): string {
+  return SITE_QR;
+}
+function ensureSiteQr(): void {
+  const out = join(BOOK_DIR, "assets", SITE_QR);
+  if (existsSync(out)) return;
+  execFileSync(
+    "qrencode",
+    ["-o", out, "-t", "PNG32", "-s", "12", "-m", "1", "-l", "M", "https://plaindharma.com"],
+    { stdio: "inherit" },
+  );
+  console.log(`[render-covers] generated ${out}`);
+}
+
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -72,19 +92,35 @@ function backCoverEntries(): string {
 const ECO_NOTE =
   "<small>Printed on groundwood paper &mdash; at least 15% lower CO₂.</small>";
 
-/** Fill the back-cover template tokens (geometry + ISBN + barcode + entries). */
+/**
+ * Fill the back-cover template tokens (geometry + ISBN + barcode + entries).
+ *
+ * `isbn` is nullable: pass null and the whole ISBN/barcode box is omitted. The
+ * print-shop edition takes that path — it's a free-distribution booklet, not the
+ * Amazon paperback, so stamping it with 978-1-891328-38-1 would make every copy
+ * scan as a retail product it isn't.
+ */
 function fillBackCover(
   html: string,
-  isbn: string,
+  isbn: string | null,
   geom: Record<string, string>,
-  opts: { eco?: boolean } = {},
+  opts: { eco?: boolean; qr?: boolean } = {},
 ): string {
-  const barcode = ean13Svg(isbn, { moduleWidth: 2.6, barHeight: 100, fontPx: 22 });
+  let isbnBlock = "";
+  if (isbn) {
+    isbnBlock =
+      `<div class="isbn">\n      <p class="label">ISBN ${isbn}</p>\n      ` +
+      `${ean13Svg(isbn, { moduleWidth: 2.6, barHeight: 100, fontPx: 22 })}\n    </div>`;
+  } else if (opts.qr) {
+    // Relative path — Chrome loads the filled template from BOOK_DIR.
+    isbnBlock =
+      `<div class="qrbox">\n      <img src="assets/${siteQrFilename()}" alt="">\n` +
+      `      <p class="label">READ &middot; LISTEN &middot; SHARE</p>\n    </div>`;
+  }
   let out = html
-    .replace(/__ENTRIES__/g, backCoverEntries())
-    .replace(/__BARCODE__/g, barcode)
-    .replace(/__ECO_NOTE__/g, opts.eco ? ECO_NOTE : "")
-    .replace(/__ISBN__/g, isbn);
+    .replace(/__ENTRIES__/g, () => backCoverEntries())
+    .replace(/__ISBN_BLOCK__/g, () => isbnBlock)
+    .replace(/__ECO_NOTE__/g, opts.eco ? ECO_NOTE : "");
   for (const [k, v] of Object.entries(geom)) out = out.replace(new RegExp(`__${k}__`, "g"), v);
   return out;
 }
@@ -119,12 +155,32 @@ type Target = {
   build?: (templateHtml: string) => string;
 };
 
+/**
+ * A5 + 3mm bleed, at 300dpi — the print-shop edition's trim.
+ *   A5 trim   148 × 210 mm
+ *   + bleed   154 × 216 mm  →  1819 × 2551 px
+ * Rendered at scale 2 for 600dpi masters, matching the 5×8 print pair.
+ * Note the ratio differs from the 5.25×8.25 covers (0.713 vs 0.636), which is
+ * why these are separate renders rather than a resize — scaling the 5×8 art
+ * into an A5 page would either crop the composition or leave cream side bars.
+ */
+const A5_BLEED_W = 1819;
+const A5_BLEED_H = 2551;
+
+/** Substitute geometry tokens only (front cover has no content tokens). */
+function fillGeom(html: string, geom: Record<string, string>): string {
+  let out = html;
+  for (const [k, v] of Object.entries(geom)) out = out.replace(new RegExp(`__${k}__`, "g"), v);
+  return out;
+}
+
 const TARGETS: Target[] = [
   {
     html: "front-cover.html",
     cw: 1575,
     ch: 2475,
     scale: 2, // → 3150×4950 ≈ 600dpi at 5.25×8.25
+    build: (h) => fillGeom(h, { PAGE_W: "1575", PAGE_H: "2475" }),
     outputs: [
       { file: "front-cover-print-color.jpg" },
       { file: "front-cover-print-bw.jpg", grayscale: true },
@@ -190,6 +246,39 @@ const TARGETS: Target[] = [
         { eco: true },
       ),
     outputs: [{ file: "back-cover-print-groundwood.jpg" }],
+  },
+  // ── Print-shop edition (A5 + 3mm bleed) ──────────────────────────────────
+  // Fed to build-printshop-pdf.ts, which lays each one on an A4 sheet with crop
+  // marks. Color only: the shop runs the two cover sheets on card in color and
+  // the interior in B&W, so a grayscale sibling would never be used.
+  {
+    html: "front-cover.html",
+    cw: A5_BLEED_W,
+    ch: A5_BLEED_H,
+    scale: 2,
+    build: (h) => fillGeom(h, { PAGE_W: String(A5_BLEED_W), PAGE_H: String(A5_BLEED_H) }),
+    outputs: [{ file: "front-cover-a5-color.jpg" }],
+  },
+  {
+    html: "back-cover.html",
+    cw: A5_BLEED_W,
+    ch: A5_BLEED_H,
+    scale: 2,
+    // No ISBN — see fillBackCover. Geometry scaled from the 5×8 back cover:
+    // the page is 15% wider but only 3% taller, so the horizontal pads grow
+    // and the body size ticks up to keep the measure from going slack.
+    build: (h) =>
+      fillBackCover(
+        h,
+        null,
+        {
+          PAGE_W: String(A5_BLEED_W), PAGE_H: String(A5_BLEED_H), BODY: "40",
+          BAND_W: "173", STITCH_R: "152",
+          PAD_TOP: "165", PAD_LEFT: "150", PAD_RIGHT: "290", PAD_BOT: "165",
+        },
+        { qr: true },
+      ),
+    outputs: [{ file: "back-cover-a5-color.jpg" }],
   },
   // Back cover — ebook trim (6×9), a downloadable companion to cover.jpg.
   {
@@ -287,6 +376,7 @@ function writeOutput(master: string, out: Output): void {
 function main(): void {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
   const chrome = findChrome();
+  ensureSiteQr();
   for (const t of TARGETS) {
     const master = renderMaster(chrome, t);
     for (const out of t.outputs) writeOutput(master, out);

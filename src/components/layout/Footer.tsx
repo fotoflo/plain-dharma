@@ -50,6 +50,9 @@ export function Footer() {
           </Link>
           {/* Remix is EN-only (like /download), so it always points at /remix. */}
           <Link href="/remix">{s.footer.remixLink}</Link>
+          {/* /print DOES have a ZH twin — the copy-shop spec is the one thing a
+              non-English reader most needs, so it follows the locale. */}
+          <Link href={localizedHref(locale, "print")}>{s.footer.printLink}</Link>
           <Link href={localizedHref(locale, "contribute")}>
             {s.footer.contributeLink}
           </Link>

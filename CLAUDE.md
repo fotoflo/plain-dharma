@@ -24,6 +24,7 @@ Everything else should remain compatible with `output: 'export'`. Don't add more
 | `pnpm generate-illustrations` | Run Gemini image generation (needs `GOOGLE_GENERATIVE_AI_KEY` in `.env.local`) |
 | `pnpm transparentize-illustrations` | Alpha-fade backgrounds in-place |
 | `pnpm generate-audio` | TTS pipeline (run via `node --env-file=.env.local --import tsx`) |
+| `pnpm build-printshop-pdf` | A5 print-shop edition — B&W interior + color cover sheets. Needs `pnpm render-covers` first |
 | `pnpm build-remix-assets` | Copy MDX source + build the text/audio zips into `public/downloads` for `/remix` |
 | `pnpm upload-assets` | Publish the heavy binaries (audio, illustrations, downloads) to the public Supabase bucket + write `asset-version.json` |
 

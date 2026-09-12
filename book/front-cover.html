@@ -46,11 +46,14 @@
   /* 5" × 8" trim + 0.125" bleed all round = 5.25" × 8.25" @ 300dpi
      (1575 × 2475 px), ratio 0.636 — matches the generated front-cover-print
      pair so it drops straight into build-kdp's 5×8 wraparound. The trim line
-     sits 37.5px inside each edge; keep type clear of it. */
+     sits 37.5px inside each edge; keep type clear of it.
+
+     PAGE_W/PAGE_H are substituted by render-covers.ts so the same design can
+     also render at A5 + 3mm bleed (1819x2551) for the print-shop edition. */
   .cover {
     position: relative;
-    width: 1575px;
-    height: 2475px;
+    width: __PAGE_W__px;
+    height: __PAGE_H__px;
     background: var(--cover-paper);
     color: var(--cover-ink);
     font-family: "Garamond Libre", Georgia, serif;

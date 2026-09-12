@@ -1,0 +1,106 @@
+% Plain Dharma — XeLaTeX preamble for the PRINT-SHOP edition (A5, 12pt).
+%
+% This is the file you hand a copy shop. It differs from pdf-preamble-print.tex
+% (the KDP-shaped 5×8) in four ways:
+%
+%   1. A5 trim (148×210mm) — the A-series twin of the old 5.25×8.25: same
+%      height, 15mm wider. Two A5 pages tile an A4 sheet exactly, which is how
+%      the shop prints it (2-up, duplex, cut down the middle, bind).
+%   2. 12pt body instead of 10pt. The measure grows to ~114mm, so this lands at
+%      ~62 characters per line — inside the 60–75 comfort band, not merely bigger.
+%   3. White paper, no \pagecolor. Shops print on stock they already have; a
+%      cream flood would cost a full-coverage ink charge on every page.
+%   4. NO bleed and NO cover pages. The covers are a separate 2-page color file
+%      (see build-printshop-pdf.ts) because the shop runs them on card in a
+%      different pass — a single mixed file gets printed entirely in color by
+%      mistake, which is the expensive way to find out.
+%
+% Margins are set in build-printshop-pdf.ts, not here: inner 20mm for the
+% binding, outer/top/bottom generous enough that a 3mm trim never touches type.
+
+% Garamond Libre — same family as every other edition.
+\setmainfont{GaramondLibre}[
+  Path=__FONTS_DIR__/,
+  Extension=.otf,
+  UprightFont=*-Regular,
+  ItalicFont=*-Italic,
+  BoldFont=*-Bold,
+  BoldItalicFont=*-BoldItalic,
+  Ligatures=TeX,
+  Numbers=OldStyle
+]
+
+% Brand palette. Everything here prints as gray in the shop's B&W pass; the
+% values are kept so a shop that quotes color interior gets the real colors.
+\definecolor{ink}{HTML}{2A2520}
+\definecolor{muted}{HTML}{6B5F50}
+\definecolor{saffron}{HTML}{C7651C}
+
+\color{ink}
+\linespread{1.18}
+
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\LARGE\bfseries\color{ink}}
+  {}
+  {0pt}
+  {\LARGE}
+\titlespacing*{\chapter}{0pt}{28pt}{22pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{ink}}
+  {}
+  {0pt}
+  {}
+
+% Blockquote (per-chapter drops): italic, muted, indented.
+\renewenvironment{quote}{%
+  \begin{list}{}{%
+    \leftmargin=1.2em\rightmargin=1.2em\itemindent=0pt%
+  }\item\itshape\color{muted}}{%
+  \end{list}}
+
+% Illustrations. build-printshop-pdf.ts rewrites each standalone image into an
+% explicit \begin{center} block, so the default \includegraphics width here is
+% only a fallback — see the centering note in that script.
+\usepackage{graphicx}
+\setkeys{Gin}{width=0.66\linewidth,keepaspectratio}
+
+% Pali diacritics fallback (same as every other edition).
+\usepackage{newunicodechar}
+\newfontfamily\palifallback{STIX Two Text}
+\newunicodechar{ṇ}{{\palifallback ṇ}}
+\newunicodechar{ṭ}{{\palifallback ṭ}}
+
+% Let long source URLs break across lines — the measure is 114mm and an Access
+% to Insight path is far wider. url.sty ships with BasicTeX; xurl does not.
+\usepackage{url}
+\Urlmuskip=0mu plus 1mu\relax
+\def\UrlBreaks{\do\/\do\-\do\.\do\_\do\?\do\&\do\=\do\#\do\:}
+
+\usepackage{enumitem}
+\setlist{itemsep=0.15em,topsep=0.3em}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\hyphenation{Mindfulness Loving-Kindness Dharma Buddha Buddhist}
+
+% Pad the book out to a multiple of 4 pages. 2-up duplex puts four A5 pages on
+% one A4 sheet, so a page count that isn't divisible by 4 leaves the shop with a
+% half-used final sheet and an ambiguous cut. build-printshop-pdf.ts measures the
+% first pass and substitutes the count here on the second.
+__PAD_PAGES__
+
+% Print hyperlink convention: link text renders as plain ink. Nobody can click
+% a booklet.
+\AtBeginDocument{%
+  \hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    pdfauthor={Gautama Buddha; translated by Claude Opus; edited by Alex Miller},
+    pdfsubject={Six Foundational Buddhist Teachings in Plain Modern English},
+    pdfkeywords={Buddhism, suttas, dharma, meditation, mindfulness},
+    pdfcreator={pandoc + XeLaTeX (print-shop edition)}
+  }%
+}

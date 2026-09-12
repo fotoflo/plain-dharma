@@ -1,0 +1,62 @@
+% Plain Dharma — print-shop COVER sheets (2 pages, color, on A4).
+%
+% One A4 sheet per cover, each carrying the A5 cover art at full bleed with crop
+% marks. The shop prints these two pages in color on card, trims to the marks,
+% and wraps them around the B&W interior.
+%
+% Geometry (all centered on the A4 sheet, so every mark is symmetric — which is
+% also why the crop marks don't care which corner LaTeX calls the origin):
+%
+%   A4 sheet    210 × 297 mm
+%   bleed box   154 × 216 mm   → 28   mm in from left/right, 40.5 mm top/bottom
+%   trim box    148 × 210 mm   → 31   mm in from left/right, 43.5 mm top/bottom
+%
+% The 3mm difference is the bleed: the art runs past the cut line so a drifting
+% blade never exposes a white hairline at the edge.
+
+\documentclass[12pt]{article}
+\usepackage[paperwidth=210mm,paperheight=297mm,top=40.5mm,bottom=25mm,left=28mm,right=28mm]{geometry}
+\usepackage{graphicx}
+\usepackage{eso-pic}
+\usepackage{xcolor}
+\usepackage{fontspec}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\definecolor{markgray}{gray}{0.45}
+
+% One crop mark. Rules are offset by half their thickness so the mark straddles
+% the cut line rather than sitting beside it.
+\newcommand{\hmark}[2]{\put(\LenToUnit{#1},\LenToUnit{\dimexpr#2-0.125mm\relax}){%
+  \color{markgray}\rule{8mm}{0.25mm}}}
+\newcommand{\vmark}[2]{\put(\LenToUnit{\dimexpr#1-0.125mm\relax},\LenToUnit{#2}){%
+  \color{markgray}\rule{0.25mm}{8mm}}}
+
+% Eight marks, two per corner, each ending 2mm clear of the bleed box so they're
+% never printed over by the art.
+\newcommand{\cropmarks}{%
+  \AddToShipoutPictureFG*{%
+    \hmark{18mm}{43.5mm}\hmark{18mm}{253.5mm}%     left, at both trim heights
+    \hmark{184mm}{43.5mm}\hmark{184mm}{253.5mm}%   right
+    \vmark{31mm}{30.5mm}\vmark{179mm}{30.5mm}%     bottom, at both trim widths
+    \vmark{31mm}{258.5mm}\vmark{179mm}{258.5mm}%   top
+  }%
+}
+
+% One cover sheet: art at full bleed, crop marks, and a note in the trim-off
+% margin telling the shop what it's looking at. The note is below the cut line,
+% so it vanishes when they trim.
+\newcommand{\coversheet}[2]{%
+  \cropmarks
+  \noindent\includegraphics[width=154mm,height=216mm]{#1}%
+  \par\vspace{5mm}%
+  \centerline{\sffamily\footnotesize\color{markgray} #2 — trim to the marks (148 × 210 mm)}%
+  \clearpage
+}
+
+\begin{document}
+\coversheet{__FRONT_COVER__}{FRONT COVER}
+\coversheet{__BACK_COVER__}{BACK COVER}
+\end{document}

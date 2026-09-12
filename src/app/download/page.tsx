@@ -138,7 +138,9 @@ export default function DownloadPage() {
             GitHub
           </a>
           . If you want to print booklets for free distribution at a temple or
-          retreat, copy whatever you need.
+          retreat, copy whatever you need — or take the print-ready A5 files
+          from the <Link href="/print">copy-shop page</Link>, which come with a
+          spec sheet to hand the printer.
         </p>
         <p>
           Want the raw materials instead of the finished book — the audio track

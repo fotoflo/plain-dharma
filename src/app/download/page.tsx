@@ -6,6 +6,7 @@ import { ogBase, altLanguages } from "@/lib/og-meta";
 import { APP_LINKS, APP_PUBLISHED } from "@/lib/app-links";
 import { BOOK_LINKS } from "@/lib/book-links";
 import { StoreBadges } from "@/components/StoreBadges";
+import printSpec from "@/content/printshop-spec.json";
 
 const TITLE = "Download";
 const DESCRIPTION =
@@ -94,6 +95,7 @@ export default function DownloadPage() {
           <FileCard key={file.slug} file={file} />
         ))}
         <PaperbackCard />
+        <CopyShopCard />
       </div>
 
       {BOOK_LINKS.amazonKindle ? (
@@ -191,6 +193,38 @@ function PaperbackCard() {
         >
           Buy on Amazon
         </a>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Print-it-yourself, sitting under the paperback as the other way to get a
+ * physical copy — the one that costs a trip to a copy shop instead of Amazon.
+ * The files and the spec the shop needs live on /print (also in Thai and
+ * Chinese), so this card is just the doorway.
+ */
+function CopyShopCard() {
+  return (
+    <div className="rounded-lg border border-divider/80 p-6">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <h2 className="font-serif text-2xl text-ink">Print your own</h2>
+        <span className="font-sans text-xs uppercase tracking-wider text-ink/55">
+          A5 booklet edition
+        </span>
+      </div>
+      <p className="mt-2 font-serif text-base text-ink/80">
+        Two print-ready files and a spec sheet to hand the shop — a{" "}
+        {printSpec.interior.pages}-page black-and-white interior and colour
+        covers. Print one, or a hundred for a temple. Nothing owed.
+      </p>
+      <div className="mt-5">
+        <Link
+          href="/print"
+          className="inline-flex items-center rounded-full border border-accent-strong px-6 py-2.5 font-sans text-sm font-medium text-accent-strong no-underline transition hover:bg-accent-strong/5 hover:no-underline"
+        >
+          How to print it
+        </Link>
       </div>
     </div>
   );

@@ -129,6 +129,8 @@ type Edition = {
   chapterAfter: number;
   /** LaTeX re-laying the running heads, or "" to keep the book class default. */
   headerTuning: string;
+  /** LaTeX re-laying the table of contents, or "" to keep the class default. */
+  tocTuning: string;
   interiorName: string;
   coversName: string;
   /** Cover art at this trim + 3mm bleed, rendered by render-covers.ts. */
@@ -159,10 +161,11 @@ const EDITIONS: Edition[] = [
     sectionSize: "\\Large",
     chapterBefore: 28,
     chapterAfter: 22,
-    // The class default already fits the 114mm measure, and this edition is
-    // published — leaving the heads alone keeps its pagination exactly where
-    // the spec, the site and anyone's existing print order say it is.
+    // The class defaults already fit the 114mm measure, and this edition is
+    // published — leaving the heads and the contents alone keeps its pagination
+    // exactly where the spec, the site and anyone's print order say it is.
     headerTuning: "",
+    tocTuning: "",
     interiorName: "plain-dharma-printshop-a5.pdf",
     coversName: "plain-dharma-printshop-a5-covers.pdf",
     frontCover: join(EBOOK_DIR, "front-cover-a5-color.jpg"),
@@ -201,15 +204,76 @@ const EDITIONS: Edition[] = [
       // \\thechapter here stamped a literal "0." in front of every head.
       "\\renewcommand{\\chaptermark}[1]{\\markboth{#1}{}}",
       "\\renewcommand{\\sectionmark}[1]{\\markright{#1}}",
+      // One size down is enough for every head but the longest chapter title,
+      // "3. THE BUDDHA'S THIRD TALK: THE FIRE SERMON", which still overran the
+      // measure — and a head that doesn't fit doesn't clip, it WRAPS, and the
+      // second line drops straight through the 14pt head box into the first
+      // line of body text. So the head measures itself and steps down until it
+      // fits on one line. Self-adjusting rather than tuned to today's titles:
+      // a longer heading added later can't reintroduce the collision.
+      "\\newlength{\\pdheadmax}",
+      "\\newlength{\\pdheadwd}",
+      // Leave room for the page number sitting at the other end of the line.
+      "\\AtBeginDocument{\\setlength{\\pdheadmax}{\\dimexpr\\textwidth-9mm\\relax}}",
+      "\\newcommand{\\pdheadfit}[1]{%",
+      "  \\begingroup",
+      "  \\footnotesize\\itshape",
+      "  \\settowidth{\\pdheadwd}{#1}%",
+      "  \\ifdim\\pdheadwd>\\pdheadmax",
+      "    \\scriptsize\\settowidth{\\pdheadwd}{#1}%",
+      "    \\ifdim\\pdheadwd>\\pdheadmax \\tiny\\fi",
+      "  \\fi",
+      "  #1%",
+      "  \\endgroup}",
       "\\fancyhead[LE,RO]{\\footnotesize\\thepage}",
-      "\\fancyhead[RE]{\\footnotesize\\itshape\\MakeUppercase{\\leftmark}}",
-      "\\fancyhead[LO]{\\footnotesize\\itshape\\MakeUppercase{\\rightmark}}",
+      "\\fancyhead[RE]{\\pdheadfit{\\MakeUppercase{\\leftmark}}}",
+      "\\fancyhead[LO]{\\pdheadfit{\\MakeUppercase{\\rightmark}}}",
       "% Chapter openers stay plain, page number at the foot, as the class intends.",
       "\\fancypagestyle{plain}{%",
       "  \\fancyhf{}%",
       "  \\renewcommand{\\headrulewidth}{0pt}%",
       "  \\fancyfoot[C]{\\footnotesize\\thepage}%",
       "}",
+    ].join("\n"),
+    // The longest chapter entry — "3. The Buddha's Third Talk: The Fire Sermon"
+    // — is wider than the contents measure, and the class's defaults turned that
+    // into two separate faults: TeX hyphenated it to "The Fire Ser-", then broke
+    // the page between the halves, stranding "mon" alone at the top of the next
+    // page carrying the page number. It has to wrap here; it just has to wrap
+    // like a title. So: no hyphenation, no break between an entry's own lines,
+    // and a little of the page-number gutter handed back to the text (the
+    // numbers only ever run to two oldstyle digits, nothing like 1.55em wide).
+    tocTuning: [
+      "\\usepackage{etoolbox}",
+      "\\makeatletter",
+      "\\renewcommand{\\@pnumwidth}{1.3em}",
+      "\\renewcommand{\\@tocrmarg}{2.1em}",
+      "\\makeatother",
+      "\\pretocmd{\\tableofcontents}{%",
+      "  \\begingroup",
+      "  \\hyphenpenalty=10000 \\exhyphenpenalty=10000 \\interlinepenalty=10000",
+      "  \\relax",
+      "}{}{}",
+      "\\apptocmd{\\tableofcontents}{\\endgroup}{}{}",
+      // \\l@chapter justifies to \\rightskip=\\@pnumwidth, so a wrapped entry's
+      // first line is stretched across the measure — "3.  The  Buddha's  Third
+      // Talk:  The  Fire". Adding fil stretch lets that line end ragged, which
+      // is how a title wrapping in a contents list should look. Section entries
+      // are untouched: their dot leaders already absorb the slack.
+      //
+      // The second patch pays for the first. The page number is pushed right by
+      // an \\hfil, which is the same order of infinity as the stretch just added,
+      // so the two split the slack and every chapter's number drifted in from
+      // the margin. \\hfill outranks fil, so the number goes hard right again and
+      // only the lines that aren't an entry's last stay ragged.
+      "\\makeatletter",
+      "\\patchcmd{\\l@chapter}{\\rightskip \\@pnumwidth}%",
+      "  {\\rightskip \\@pnumwidth plus 1fil}{}%",
+      "  {\\message{[plaindharma] WARNING: l@chapter rightskip patch FAILED}}",
+      "\\patchcmd{\\l@chapter}{\\hfil\\nobreak\\hb@xt@\\@pnumwidth}%",
+      "  {\\hfill\\nobreak\\hb@xt@\\@pnumwidth}{}%",
+      "  {\\message{[plaindharma] WARNING: l@chapter pnum patch FAILED}}",
+      "\\makeatother",
     ].join("\n"),
     interiorName: "plain-dharma-printshop-a6.pdf",
     coversName: "plain-dharma-printshop-a6-covers.pdf",
@@ -318,6 +382,8 @@ function renderPreamble(e: Edition, padPages: number): string {
       CHAPTER_AFTER: e.chapterAfter,
       HEADER_TUNING:
         e.headerTuning || "% running heads: book class default (fits this measure)",
+      TOC_TUNING:
+        e.tocTuning || "% contents: book class default (fits this measure)",
       PAD_PAGES: padPagesTex(padPages, pagesPerSheet(e)),
     }),
   );

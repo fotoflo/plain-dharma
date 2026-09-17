@@ -190,13 +190,69 @@ function fillGeom(html: string, geom: Record<string, string>): string {
   return out;
 }
 
+/**
+ * front-cover.html's metrics, in the px they're authored at.
+ *
+ * The design is a fixed-px poster tuned at 5.25×8.25 (1575 wide) and reused
+ * unchanged at A5 (1819) — a 15% spread it absorbs fine. A6 is a 28% drop, and
+ * it does not absorb that: the sun alone is 1080px against a 1311px page with
+ * 190px columns, i.e. wider than the 931px it has to sit in. The column
+ * overflowed, and `overflow: hidden` on .cover quietly cropped the byline —
+ * "Translated by / Edited by" and the dharma-gift line — clean off the bottom.
+ */
+const FRONT_COVER_METRICS = {
+  BAND_W: 114,
+  STITCH_L: 98,
+  STITCH_W: 2,
+  STITCH_DASH: 12,
+  STITCH_PERIOD: 26,
+  COL_X: 190,
+  MAST_TOP: 190,
+  EYEBROW_FS: 25,
+  RULE_W: 132,
+  RULE_H: 2,
+  RULE_MT: 36,
+  TITLE_FS: 232,
+  TITLE_MT: 64,
+  SUB_FS: 60,
+  SUB_MT: 52,
+  SUB_MAXW: 920,
+  SUN_W: 1080,
+  BYLINE_MB: 300,
+  AUTHOR_FS: 58,
+  CREDIT_FS: 22,
+  CREDIT_MT: 38,
+} as const;
+
+/**
+ * Fill front-cover.html for one page size.
+ *
+ * `scale` multiplies every metric, so the whole composition keeps its
+ * proportions on a smaller cover instead of the type staying put and the page
+ * shrinking out from under it. Hairlines floor at 1px so the rule and the
+ * stitch can't round away to nothing.
+ *
+ * Scale defaults to 1, which is what the 5.25×8.25 and A5 covers pass: their
+ * output is unchanged to the pixel. Only A6 asks for anything else.
+ */
+function fillFrontCover(html: string, pageW: number, pageH: number, scale = 1): string {
+  const geom: Record<string, string> = {
+    PAGE_W: String(pageW),
+    PAGE_H: String(pageH),
+  };
+  for (const [k, v] of Object.entries(FRONT_COVER_METRICS)) {
+    geom[k] = String(Math.max(1, Math.round(v * scale)));
+  }
+  return fillGeom(html, geom);
+}
+
 const TARGETS: Target[] = [
   {
     html: "front-cover.html",
     cw: 1575,
     ch: 2475,
     scale: 2, // → 3150×4950 ≈ 600dpi at 5.25×8.25
-    build: (h) => fillGeom(h, { PAGE_W: "1575", PAGE_H: "2475" }),
+    build: (h) => fillFrontCover(h, 1575, 2475),
     outputs: [
       { file: "front-cover-print-color.jpg" },
       { file: "front-cover-print-bw.jpg", grayscale: true },
@@ -272,7 +328,7 @@ const TARGETS: Target[] = [
     cw: A5_BLEED_W,
     ch: A5_BLEED_H,
     scale: 2,
-    build: (h) => fillGeom(h, { PAGE_W: String(A5_BLEED_W), PAGE_H: String(A5_BLEED_H) }),
+    build: (h) => fillFrontCover(h, A5_BLEED_W, A5_BLEED_H),
     outputs: [{ file: "front-cover-a5-color.jpg" }],
   },
   {
@@ -307,7 +363,8 @@ const TARGETS: Target[] = [
     cw: A6_BLEED_W,
     ch: A6_BLEED_H,
     scale: 2,
-    build: (h) => fillGeom(h, { PAGE_W: String(A6_BLEED_W), PAGE_H: String(A6_BLEED_H) }),
+    // Scaled against A5, the widest size these metrics were tuned at.
+    build: (h) => fillFrontCover(h, A6_BLEED_W, A6_BLEED_H, A6_BLEED_W / A5_BLEED_W),
     outputs: [{ file: "front-cover-a6-color.jpg" }],
   },
   {

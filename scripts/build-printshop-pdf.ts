@@ -393,16 +393,63 @@ function centerImages(md: string): string {
   );
 }
 
-/** LaTeX that appends `n` blank pages, or a note for none. */
+/** How the padded pages read in the build log: one is the card, the rest blank. */
+function padLabel(pad: number): string {
+  if (pad === 0) return "0 padded";
+  if (pad === 1) return "1 pass-it-on card";
+  return `1 pass-it-on card + ${pad - 1} blank`;
+}
+
+/** LaTeX that appends the pass-it-on card and `n - 1` blank pages after it. */
+/**
+ * The first padded page, spent rather than left blank.
+ *
+ * The padding exists because the block has to fill whole A4 sheets, which means
+ * these pages are already bought: 68 pages of book needs 9 sheets whether or not
+ * anything is printed on the last four sides. So the first one is the only page
+ * in the edition that costs nothing to use, and an edition whose whole purpose is
+ * being handed on has an obvious use for it. The remaining three stay blank —
+ * blank pages at the end of a signature are ordinary, and three of them still
+ * read as deliberate where four followed by nothing might not.
+ *
+ * Set on the page it lands on rather than in the markdown, because it belongs to
+ * the padding, not to the book: an edition that paginates to a whole number of
+ * sheets on its own gets no padded pages and therefore no card, which is right.
+ * A5 is exactly 13 sheets and never sees this.
+ */
+const PASS_IT_ON = [
+  "\\thispagestyle{empty}%",
+  "\\null\\vspace*{\\stretch{1}}%",
+  "\\begin{center}%",
+  "  {\\Large Pass it on}\\par",
+  "  \\vspace{1.4em}%",
+  "  \\begin{minipage}{0.88\\textwidth}%",
+  "    \\centering\\itshape\\small",
+  "    This copy was given, not sold. When you are done with it, pass it on —",
+  "    and add your name, so the book carries where it has been.",
+  "  \\end{minipage}\\par",
+  "  \\vspace{2.6em}%",
+  // Lighter than the text: these are for someone else's pen, not more of ours.
+  "  \\color{muted}%",
+  "  \\rule{0.88\\textwidth}{0.4pt}\\par\\vspace{2.4em}%",
+  "  \\rule{0.88\\textwidth}{0.4pt}\\par\\vspace{2.4em}%",
+  "  \\rule{0.88\\textwidth}{0.4pt}\\par\\vspace{2.4em}%",
+  "  \\rule{0.88\\textwidth}{0.4pt}\\par\\vspace{2.4em}%",
+  "  \\rule{0.88\\textwidth}{0.4pt}\\par",
+  "\\end{center}%",
+  "\\vspace*{\\stretch{1.3}}%",
+  "\\clearpage",
+].join("\n  ");
+
 function padPagesTex(n: number, perSheet: number): string {
   if (n <= 0) {
     return `% no padding needed — the page count is already a multiple of ${perSheet}`;
   }
-  const blanks = "\\thispagestyle{empty}\\null\\clearpage\n  ".repeat(n);
+  const blanks = "\\thispagestyle{empty}\\null\\clearpage\n  ".repeat(n - 1);
   return (
-    `% Pad to a multiple of ${perSheet} for n-up duplex (${n} blank ` +
-    `page${n === 1 ? "" : "s"}).\n` +
-    `\\AtEndDocument{%\n  \\clearpage\n  ${blanks}}`
+    `% Pad to a multiple of ${perSheet} for n-up duplex (${n} page` +
+    `${n === 1 ? "" : "s"}: the card below, then ${n - 1} blank).\n` +
+    `\\AtEndDocument{%\n  \\clearpage\n  ${PASS_IT_ON}\n  ${blanks}}`
   );
 }
 
@@ -519,7 +566,7 @@ function buildInterior(e: Edition, bookMd: string): Built {
   const final = pageCount(outPdf);
   console.log(
     `[build-printshop-pdf] ${e.label} interior ${final} pages ` +
-      `(${raw} + ${pad} blank) = ${final / perSheet} A4 sheets duplex, ` +
+      `(${raw} + ${padLabel(pad)}) = ${final / perSheet} A4 sheets duplex, ` +
       `${measure(e)}mm measure (~${Math.round(measure(e) * CHARS_PER_MM)} chars/line)`,
   );
   return { path: outPdf, pages: final };

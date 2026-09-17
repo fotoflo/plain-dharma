@@ -131,6 +131,11 @@ type Edition = {
   headerTuning: string;
   /** LaTeX re-laying the table of contents, or "" to keep the class default. */
   tocTuning: string;
+  /**
+   * LaTeX for anything else this trim needs and the other doesn't — line
+   * breaking, blank-page style. Empty keeps the class default.
+   */
+  typesetTuning: string;
   interiorName: string;
   coversName: string;
   /** Cover art at this trim + 3mm bleed, rendered by render-covers.ts. */
@@ -161,6 +166,7 @@ const EDITIONS: Edition[] = [
     sectionSize: "\\Large",
     chapterBefore: 28,
     chapterAfter: 22,
+    typesetTuning: "",
     // The class defaults already fit the 114mm measure, and this edition is
     // published — leaving the heads and the contents alone keeps its pagination
     // exactly where the spec, the site and anyone's print order say it is.
@@ -182,11 +188,50 @@ const EDITIONS: Edition[] = [
     // 12pt by design. Buying line length back would mean either shrinking the
     // type (which is the one thing this edition exists NOT to do) or cutting the
     // gutter below what a 72-page perfect-bound block can spare.
-    margins: { inner: 14, outer: 8, top: 10, bottom: 12 },
+    // top has to clear the running head, which geometry puts ABOVE the top
+    // margin, not inside it: headheight + headsep of space between the paper
+    // edge and the body. At top=10mm and the class's 18pt headsep that came to
+    // -1.3mm, so every running head was printing off the top of the page with
+    // its capitals sliced — on a trim edge the shop then cuts again. headsep
+    // drops to 8pt (the head is one size down here, and doesn't need the
+    // class's A4-sized gap) and top and bottom trade 4mm, which lands the head
+    // 6.2mm below the trim edge and leaves the body block exactly where it was:
+    // 126mm of textheight, so the pagination this edition is published at does
+    // not move.
+    margins: { inner: 14, outer: 8, top: 14, bottom: 8 },
     chapterSize: "\\Large",
     sectionSize: "\\large",
     chapterBefore: 20,
     chapterAfter: 16,
+    // Three things this trim needs and A5 doesn't.
+    typesetTuning: [
+      "\\makeatletter",
+      "% Protrusion hangs punctuation and hyphens slightly into the margin, which",
+      "% buys back part of a character per line and straightens the optical edge.",
+      "% Font expansion would do more for the stretched spaces, but XeTeX has",
+      "% never supported it, so protrusion is the half of microtype available.",
+      "\\usepackage{microtype}",
+      "\\microtypesetup{protrusion=true,expansion=false}",
+      "% The head is set a size down here and doesn't need the class's A4-sized",
+      "% gap. 8pt is what lets `top` carry the head inside the page — see the",
+      "% margins note on this edition.",
+      "\\setlength{\\headsep}{8pt}",
+      "% A blank verso inserted so a chapter opens on a recto is a blank page,",
+      "% not a last page of the chapter before it — but the class still stamps",
+      "% the running head and folio on it, which reads as a misprint. Strip both.",
+      "\\renewcommand{\\cleardoublepage}{%",
+      "  \\clearpage",
+      "  \\if@twoside",
+      "    \\ifodd\\c@page\\else",
+      "      \\null\\thispagestyle{empty}\\newpage",
+      "    \\fi",
+      "  \\fi}",
+      "% At 45 characters a line TeX runs short of good break points and pays for",
+      "% it in interword space. A little stretch on the final pass is cheaper than",
+      "% a line running out into the margin.",
+      "\\setlength{\\emergencystretch}{2em}",
+      "\\makeatother",
+    ].join("\n"),
     // At the class's default size "5. THE FOUNDATIONS OF MINDFULNESS" is wider
     // than the 83mm measure: it collided with the page number on one side and
     // ran past the text block on the other. fancyhdr re-lays the same heads one
@@ -247,7 +292,15 @@ const EDITIONS: Edition[] = [
       "\\usepackage{etoolbox}",
       "\\makeatletter",
       "\\renewcommand{\\@pnumwidth}{1.3em}",
-      "\\renewcommand{\\@tocrmarg}{2.1em}",
+      // \\@dottedtocline (every section entry) sets \\rightskip to \\@tocrmarg and
+      // \\parfillskip to its negation, so a fixed value justifies a wrapped
+      // entry's FIRST line hard across the measure — the same stretch the
+      // \\l@chapter patch below cures, and it lands on "3. The Buddha's Third
+      // Talk: The Fire / Sermon" in Sources & Further Reading. The fil rides
+      // through the negation and cancels on the last line, so only the lines
+      // that aren't an entry's last go ragged; the leaders' \\hfill still
+      // outranks it and keeps the page number hard right.
+      "\\renewcommand{\\@tocrmarg}{2.1em plus 1fil}",
       "\\makeatother",
       "\\pretocmd{\\tableofcontents}{%",
       "  \\begingroup",
@@ -259,7 +312,7 @@ const EDITIONS: Edition[] = [
       // first line is stretched across the measure — "3.  The  Buddha's  Third
       // Talk:  The  Fire". Adding fil stretch lets that line end ragged, which
       // is how a title wrapping in a contents list should look. Section entries
-      // are untouched: their dot leaders already absorb the slack.
+      // get the same treatment through \\@tocrmarg above.
       //
       // The second patch pays for the first. The page number is pushed right by
       // an \\hfil, which is the same order of infinity as the stretch just added,
@@ -384,6 +437,8 @@ function renderPreamble(e: Edition, padPages: number): string {
         e.headerTuning || "% running heads: book class default (fits this measure)",
       TOC_TUNING:
         e.tocTuning || "% contents: book class default (fits this measure)",
+      TYPESET_TUNING:
+        e.typesetTuning || "% line breaking: book class default (fits this measure)",
       PAD_PAGES: padPagesTex(padPages, pagesPerSheet(e)),
     }),
   );

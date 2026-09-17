@@ -1468,8 +1468,8 @@
     "bytes": 30212101
   },
   "downloads/plain-dharma-back-cover.jpg": {
-    "v": "92ea6a78",
-    "bytes": 439480
+    "v": "6b1c735c",
+    "bytes": 439523
   },
   "downloads/plain-dharma-book-photo-dark.png": {
     "v": "38031718",
@@ -1480,8 +1480,8 @@
     "bytes": 409794
   },
   "downloads/plain-dharma-cover.jpg": {
-    "v": "8a5ea3a7",
-    "bytes": 279772
+    "v": "1f3af7bb",
+    "bytes": 279797
   },
   "downloads/plain-dharma-print-bw.pdf": {
     "v": "c9bbbd45",
@@ -1492,12 +1492,20 @@
     "bytes": 1187176
   },
   "downloads/plain-dharma-printshop-a5-covers.pdf": {
-    "v": "dfb64178",
-    "bytes": 1960976
+    "v": "8a9321f8",
+    "bytes": 1960992
   },
   "downloads/plain-dharma-printshop-a5.pdf": {
-    "v": "94b310cf",
-    "bytes": 1700602
+    "v": "98251eba",
+    "bytes": 1700610
+  },
+  "downloads/plain-dharma-printshop-a6-covers.pdf": {
+    "v": "ad8837b5",
+    "bytes": 1360057
+  },
+  "downloads/plain-dharma-printshop-a6.pdf": {
+    "v": "c07da804",
+    "bytes": 1711676
   },
   "downloads/plain-dharma-text.zip": {
     "v": "aef49106",

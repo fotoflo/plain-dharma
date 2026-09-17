@@ -15,12 +15,12 @@
         "file": "plain-dharma-printshop-a5.pdf",
         "pages": 52,
         "sheets": 13,
-        "bytes": 1700602
+        "bytes": 1700610
       },
       "covers": {
         "file": "plain-dharma-printshop-a5-covers.pdf",
         "pages": 2,
-        "bytes": 1960976
+        "bytes": 1960992
       }
     },
     {
@@ -37,12 +37,12 @@
         "file": "plain-dharma-printshop-a6.pdf",
         "pages": 72,
         "sheets": 9,
-        "bytes": null
+        "bytes": 1711676
       },
       "covers": {
         "file": "plain-dharma-printshop-a6-covers.pdf",
         "pages": 2,
-        "bytes": null
+        "bytes": 1360057
       }
     }
   ]

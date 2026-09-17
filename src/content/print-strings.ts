@@ -245,6 +245,12 @@ export type PageCopy = {
   intro: string;
   editionsHeading: string;
   editionsIntro: string;
+  /** The size-comparison picture. The image itself carries no words — the trim
+   *  names and millimetres read the same in every language — so only the alt
+   *  text, the caption and the link to the printable sheet live here. */
+  sizesAlt: string;
+  sizesCaption: string;
+  sizesSheetLink: string;
   /** Keyed by trim. The name ("A5") comes from the spec — a paper size is a
    *  paper size in every language — so only the human copy lives here. */
   editions: Record<EditionKey, EditionCopy>;
@@ -281,6 +287,10 @@ export const PAGE: Record<PrintLang, PageCopy> = {
     editionsHeading: "Three sizes",
     editionsIntro:
       "The same book, set in the same 12pt type, on three different pages. Each size is two files: a black-and-white interior and a colour cover sheet.",
+    sizesAlt:
+      "The opening page of chapter one at all three trims, side by side and to scale: A5, B6 and A6.",
+    sizesCaption: "The same page at all three sizes, to scale.",
+    sizesSheetLink: "Printable size guide (A4, at 100%)",
     editions: {
       a5: {
         tagline: "The reading size",
@@ -339,6 +349,9 @@ export const PAGE: Record<PrintLang, PageCopy> = {
     editionsHeading: "สามขนาด",
     editionsIntro:
       "หนังสือเล่มเดียวกัน ใช้ตัวอักษรขนาด 12 พอยต์เท่ากัน ต่างกันแค่ขนาดหน้า แต่ละขนาดมีสองไฟล์ คือเนื้อในขาวดำ กับปกสี",
+    sizesAlt: "หน้าแรกของบทที่หนึ่งในทั้งสามขนาด เรียงข้างกันตามสัดส่วนจริง: A5 B6 และ A6",
+    sizesCaption: "หน้าเดียวกันในทั้งสามขนาด ตามสัดส่วนจริง",
+    sizesSheetLink: "ใบเทียบขนาดสำหรับพิมพ์ (A4 พิมพ์ที่ 100%)",
     editions: {
       a5: {
         tagline: "ขนาดสำหรับอ่าน",
@@ -395,6 +408,9 @@ export const PAGE: Record<PrintLang, PageCopy> = {
     editionsHeading: "三种开本",
     editionsIntro:
       "同一本书，同样的 12 磅正文，只是落在不同大小的页面上。每个开本都是两个文件：黑白内页和彩色封面。",
+    sizesAlt: "第一章首页在三种开本下的并排对比，按真实比例：A5、B6 和 A6。",
+    sizesCaption: "同一页，三种开本，按真实比例。",
+    sizesSheetLink: "可打印的尺寸对照表（A4，请按 100% 打印）",
     editions: {
       a5: {
         tagline: "适合阅读",

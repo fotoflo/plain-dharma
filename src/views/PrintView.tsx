@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { assetDownloadUrl } from "@plain-dharma/content/assets";
+import Image from "next/image";
+import { assetDownloadUrl, assetUrl } from "@plain-dharma/content/assets";
 import { Wash } from "@/components/Wash";
 import { PrintSpecSheet } from "@/components/PrintSpecSheet";
 import {
@@ -192,6 +193,31 @@ export function PrintView({ lang }: { lang: PrintLang }) {
           {s.editionsIntro}
         </p>
       </div>
+
+      {/* Picked before anything else on the page: which size. The trims differ
+          by more than their numbers suggest, and nobody holds a millimetre in
+          their head — so show the same page at all three, to scale. The image
+          carries no words, so it serves all three languages; the printable
+          sheet below it is true size, with a 100mm bar to check the print by. */}
+      <figure className="mt-10">
+        <Image
+          src={assetUrl("downloads/plain-dharma-print-sizes.jpg")}
+          alt={s.sizesAlt}
+          width={2000}
+          height={1077}
+          sizes="(min-width: 768px) 46rem, 100vw"
+          className="w-full rounded-lg"
+        />
+        <figcaption className="mt-3 font-serif text-base text-ink/60">
+          {s.sizesCaption}{" "}
+          <a
+            className="underline underline-offset-4 hover:text-ink"
+            href={assetDownloadUrl("downloads/plain-dharma-print-sizes.pdf")}
+          >
+            {s.sizesSheetLink}
+          </a>
+        </figcaption>
+      </figure>
 
       {PRINTSHOP_EDITIONS.map((edition) => (
         <Edition key={edition.key} edition={edition} lang={lang} />

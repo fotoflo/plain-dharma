@@ -1,21 +1,32 @@
 % Plain Dharma — print-shop COVER sheets (2 pages, color, on A4).
 %
-% One A4 sheet per cover, each carrying the A5 cover art at full bleed with crop
+% ONE template for every print-shop trim: build-printshop-pdf.ts computes the
+% geometry from the edition's trim and substitutes the __TOKENS__ below, so the
+% crop-mark arithmetic lives in one place (TypeScript, where it can be read and
+% checked) rather than being hand-copied per size into LaTeX.
+%
+% One A4 sheet per cover, each carrying the cover art at full bleed with crop
 % marks. The shop prints these two pages in color on card, trims to the marks,
 % and wraps them around the B&W interior.
+%
+% One cover per sheet even for A6, where two would look like they ought to fit:
+% A6 + 3mm bleed is 111 × 154 mm, so a pair side by side needs 222 mm across an
+% A4 sheet that is 210 mm wide, and a pair stacked needs 308 mm down one that is
+% 297 mm tall. Dropping the bleed to make them fit would put the cut line exactly
+% on the edge of the art, which is the one thing bleed exists to prevent.
 %
 % Geometry (all centered on the A4 sheet, so every mark is symmetric — which is
 % also why the crop marks don't care which corner LaTeX calls the origin):
 %
 %   A4 sheet    210 × 297 mm
-%   bleed box   154 × 216 mm   → 28   mm in from left/right, 40.5 mm top/bottom
-%   trim box    148 × 210 mm   → 31   mm in from left/right, 43.5 mm top/bottom
+%   bleed box   __BLEED_W__ × __BLEED_H__ mm   → __BLEED_SIDE__ mm in from left/right, __BLEED_TB__ mm top/bottom
+%   trim box    __TRIM_W__ × __TRIM_H__ mm   → __TRIM_SIDE__ mm in from left/right, __TRIM_TB__ mm top/bottom
 %
 % The 3mm difference is the bleed: the art runs past the cut line so a drifting
 % blade never exposes a white hairline at the edge.
 
 \documentclass[12pt]{article}
-\usepackage[paperwidth=210mm,paperheight=297mm,top=40.5mm,bottom=25mm,left=28mm,right=28mm]{geometry}
+\usepackage[paperwidth=210mm,paperheight=297mm,top=__BLEED_TB__mm,bottom=25mm,left=__BLEED_SIDE__mm,right=__BLEED_SIDE__mm]{geometry}
 \usepackage{graphicx}
 \usepackage{eso-pic}
 \usepackage{xcolor}
@@ -38,10 +49,10 @@
 % never printed over by the art.
 \newcommand{\cropmarks}{%
   \AddToShipoutPictureFG*{%
-    \hmark{18mm}{43.5mm}\hmark{18mm}{253.5mm}%     left, at both trim heights
-    \hmark{184mm}{43.5mm}\hmark{184mm}{253.5mm}%   right
-    \vmark{31mm}{30.5mm}\vmark{179mm}{30.5mm}%     bottom, at both trim widths
-    \vmark{31mm}{258.5mm}\vmark{179mm}{258.5mm}%   top
+    \hmark{__HMARK_XL__mm}{__HMARK_YB__mm}\hmark{__HMARK_XL__mm}{__HMARK_YT__mm}%     left, at both trim heights
+    \hmark{__HMARK_XR__mm}{__HMARK_YB__mm}\hmark{__HMARK_XR__mm}{__HMARK_YT__mm}%   right
+    \vmark{__VMARK_XL__mm}{__VMARK_YB__mm}\vmark{__VMARK_XR__mm}{__VMARK_YB__mm}%     bottom, at both trim widths
+    \vmark{__VMARK_XL__mm}{__VMARK_YT__mm}\vmark{__VMARK_XR__mm}{__VMARK_YT__mm}%   top
   }%
 }
 
@@ -50,13 +61,13 @@
 % so it vanishes when they trim.
 \newcommand{\coversheet}[2]{%
   \cropmarks
-  \noindent\includegraphics[width=154mm,height=216mm]{#1}%
+  \noindent\includegraphics[width=__BLEED_W__mm,height=__BLEED_H__mm]{#1}%
   \par\vspace{5mm}%
-  \centerline{\sffamily\footnotesize\color{markgray} #2 — trim to the marks (148 × 210 mm)}%
+  \centerline{\sffamily\footnotesize\color{markgray} #2 — trim to the marks (__TRIM_W__ × __TRIM_H__ mm)}%
   \clearpage
 }
 
 \begin{document}
-\coversheet{__FRONT_COVER__}{FRONT COVER}
-\coversheet{__BACK_COVER__}{BACK COVER}
+\coversheet{__FRONT_COVER__}{FRONT COVER — __EDITION__}
+\coversheet{__BACK_COVER__}{BACK COVER — __EDITION__}
 \end{document}

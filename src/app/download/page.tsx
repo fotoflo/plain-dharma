@@ -6,7 +6,7 @@ import { ogBase, altLanguages } from "@/lib/og-meta";
 import { APP_LINKS, APP_PUBLISHED } from "@/lib/app-links";
 import { BOOK_LINKS } from "@/lib/book-links";
 import { StoreBadges } from "@/components/StoreBadges";
-import printSpec from "@/content/printshop-spec.json";
+import { PRINTSHOP_EDITIONS } from "@/content/printshop";
 
 const TITLE = "Download";
 const DESCRIPTION =
@@ -210,13 +210,16 @@ function CopyShopCard() {
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <h2 className="font-serif text-2xl text-ink">Print your own</h2>
         <span className="font-sans text-xs uppercase tracking-wider text-ink/55">
-          A5 booklet edition
+          {PRINTSHOP_EDITIONS.map((e) => e.label).join(" or ")} booklet edition
         </span>
       </div>
       <p className="mt-2 font-serif text-base text-ink/80">
-        Two print-ready files and a spec sheet to hand the shop — a{" "}
-        {printSpec.interior.pages}-page black-and-white interior and colour
-        covers. Print one, or a hundred for a temple. Nothing owed.
+        Print-ready files and a spec sheet to hand the shop — a black-and-white
+        interior and colour covers, in{" "}
+        {PRINTSHOP_EDITIONS.map((e) => `${e.label} (${e.interior.pages}pp)`).join(
+          " or ",
+        )}
+        . Print one, or a hundred for a temple. Nothing owed.
       </p>
       <div className="mt-5">
         <Link

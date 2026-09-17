@@ -9,11 +9,16 @@
  * real locale would mean translating six suttas, which is a different project.
  *
  * `**bold**` is the only markup — see `format()` in PrintSpecSheet.tsx.
- * Placeholders `{pages}`, `{sheets}` and `{trim}` are filled from
- * printshop-spec.json, which the build writes.
+ * Placeholders are filled per EDITION from printshop-spec.json, which the build
+ * writes: `{size}` `{trim}` `{pages}` `{sheets}` `{up}` `{perSheet}` `{gutter}`,
+ * plus `{cut}` from the CUT table below. The page offers two trims, so anything
+ * that differs between them has to arrive through a placeholder rather than be
+ * written into the sentence — otherwise the A6 spec sheet quietly tells the shop
+ * to cut A5.
  */
 
 import type { Locale } from "@/content";
+import type { EditionKey } from "@/content/printshop";
 
 /** This page's languages: the site's two, plus Thai. */
 export type PrintLang = Locale | "th";
@@ -32,6 +37,28 @@ export const PRINT_LANGS: { code: PrintLang; label: string; href: string }[] = [
  */
 export const THAI_CLASS = "lang-th";
 
+/**
+ * The cutting instruction, per language and trim — `{cut}` in the interior row.
+ *
+ * It's a whole clause rather than just "in half" / "into quarters" because the
+ * verb doesn't sit in the same place in all three languages, and a shop reading
+ * a half-assembled sentence is exactly the failure this page exists to avoid.
+ */
+export const CUT: Record<PrintLang, Record<EditionKey, string>> = {
+  en: {
+    a5: "cut each sheet in half",
+    a6: "cut each sheet into quarters",
+  },
+  th: {
+    a5: "ตัดครึ่งแผ่น",
+    a6: "ตัดแผ่นละสี่ส่วน",
+  },
+  zh: {
+    a5: "从中间裁开",
+    a6: "裁成四份",
+  },
+};
+
 export type SpecRow = { label: string; body: string };
 
 export type SpecCopy = {
@@ -47,13 +74,13 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
     rows: [
       {
         label: "Finished size",
-        body: "A5 — {trim}. Two A5 pages fit one A4 sheet exactly.",
+        body: "{size} — {trim}. {up} {size} pages fit one A4 sheet exactly.",
       },
       {
         label: "Interior",
         body:
           "{pages} pages, **black & white**, on your standard paper. Print " +
-          "**2-up on A4, double-sided**, then cut each sheet in half. That’s " +
+          "**{up}-up on A4, double-sided**, then {cut}. That’s " +
           "{sheets} A4 sheets per copy.",
       },
       {
@@ -66,7 +93,7 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
         label: "Binding",
         body:
           "Perfect bind, or staple along the binding edge. The inside margin is " +
-          "20mm, so nothing is lost in the gutter.",
+          "{gutter}mm, so nothing is lost in the gutter.",
       },
       {
         label: "Scaling",
@@ -78,7 +105,7 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
         label: "Imposition",
         body:
           "The interior pages are in reading order, **not imposed**. Use your " +
-          "own booklet or 2-up setting to arrange them — it knows which way " +
+          "own booklet or {up}-up setting to arrange them — it knows which way " +
           "your printer flips.",
       },
     ],
@@ -90,13 +117,13 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
     rows: [
       {
         label: "ขนาดสำเร็จ",
-        body: "A5 — {trim} สองหน้า A5 พอดีกับกระดาษ A4 หนึ่งแผ่น",
+        body: "{size} — {trim} — {up} หน้า {size} พอดีกับกระดาษ A4 หนึ่งแผ่น",
       },
       {
         label: "เนื้อใน",
         body:
           "{pages} หน้า **ขาวดำ** ใช้กระดาษปกติของร้านได้ พิมพ์ " +
-          "**2 หน้าต่อแผ่น A4 แบบสองหน้า (หน้า–หลัง)** แล้วตัดครึ่งแผ่น " +
+          "**{up} หน้าต่อแผ่น A4 แบบสองหน้า (หน้า–หลัง)** แล้ว{cut} " +
           "รวม {sheets} แผ่น A4 ต่อหนึ่งเล่ม",
       },
       {
@@ -108,7 +135,7 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
       {
         label: "เข้าเล่ม",
         body:
-          "ไสกาว หรือเย็บแม็กด้านสัน ขอบด้านในเผื่อไว้ 20 มม. " +
+          "ไสกาว หรือเย็บแม็กด้านสัน ขอบด้านในเผื่อไว้ {gutter} มม. " +
           "ตัวหนังสือจึงไม่หายเข้าไปในสัน",
       },
       {
@@ -121,7 +148,7 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
         label: "การจัดหน้า",
         body:
           "หน้าในไฟล์เรียงตามลำดับการอ่าน **ยังไม่ได้จัดหน้าพิมพ์** " +
-          "ให้ใช้ฟังก์ชัน booklet หรือ 2-up ของเครื่องพิมพ์ร้านจัดเอง " +
+          "ให้ใช้ฟังก์ชัน booklet หรือ {up} หน้าต่อแผ่นของเครื่องพิมพ์ร้านจัดเอง " +
           "เพราะเครื่องรู้ว่าพลิกกระดาษด้านไหน",
       },
     ],
@@ -133,13 +160,13 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
     rows: [
       {
         label: "成品尺寸",
-        body: "A5 — {trim}。两页 A5 正好拼满一张 A4。",
+        body: "{size} — {trim}。{up} 页 {size} 正好拼满一张 A4。",
       },
       {
         label: "内页",
         body:
-          "{pages} 页，**黑白**，用店里的普通纸即可。请**在 A4 上拼两页、双面打印**，" +
-          "打完从中间裁开。每本 {sheets} 张 A4。",
+          "{pages} 页，**黑白**，用店里的普通纸即可。请**在 A4 上拼 {up} 页、双面打印**，" +
+          "打完{cut}。每本 {sheets} 张 A4。",
       },
       {
         label: "封面",
@@ -150,7 +177,7 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
       {
         label: "装订",
         body:
-          "胶装，或沿订口装订。内边距留了 20 毫米，文字不会被订进去。",
+          "胶装，或沿订口装订。内边距留了 {gutter} 毫米，文字不会被订进去。",
       },
       {
         label: "缩放",
@@ -161,12 +188,15 @@ export const SPEC: Record<PrintLang, SpecCopy> = {
       {
         label: "拼版",
         body:
-          "内页按阅读顺序排列，**未做拼版**。请用打印机自带的小册子或双页拼版功能 — " +
+          "内页按阅读顺序排列，**未做拼版**。请用打印机自带的小册子或 {up} 页拼版功能 — " +
           "它知道自己的翻页方向。",
       },
     ],
   },
 };
+
+/** Per-trim copy on the chooser: what this size is FOR, in one line plus one paragraph. */
+export type EditionCopy = { tagline: string; blurb: string };
 
 /** Page copy outside the spec sheet. */
 export type PageCopy = {
@@ -175,6 +205,11 @@ export type PageCopy = {
   eyebrow: string;
   title: string;
   intro: string;
+  editionsHeading: string;
+  editionsIntro: string;
+  /** Keyed by trim. The name ("A5") comes from the spec — a paper size is a
+   *  paper size in every language — so only the human copy lives here. */
+  editions: Record<EditionKey, EditionCopy>;
   interiorLabel: string;
   interiorMeta: string;
   interiorNote: string;
@@ -200,30 +235,45 @@ export const PAGE: Record<PrintLang, PageCopy> = {
   en: {
     metadataTitle: "Print it at a copy shop",
     metadataDescription:
-      "Two files and a spec sheet — in English, Thai and Chinese — for printing your own copies of Plain Dharma. A5, black-and-white interior, colour covers. Public domain, so print as many as you like.",
+      "Print-ready files and a spec sheet — in English, Thai and Chinese — for printing your own copies of Plain Dharma. A5 or pocket-sized A6, black-and-white interior, colour covers. Public domain, so print as many as you like.",
     eyebrow: "Print",
     title: "Print it at a copy shop",
     intro:
-      "These teachings are public domain. Take the two files below to any copy shop and print as many copies as you like — for a temple, a retreat, a reading group, a friend. No permission needed, and nothing owed.",
+      "These teachings are public domain. Pick a size, take its two files to any copy shop, and print as many copies as you like — for a temple, a retreat, a reading group, a friend. No permission needed, and nothing owed.",
+    editionsHeading: "Two sizes",
+    editionsIntro:
+      "The same book, set in the same 12pt type, on two different pages. Each size is two files: a black-and-white interior and a colour cover sheet.",
+    editions: {
+      a5: {
+        tagline: "The reading size",
+        blurb:
+          "Half an A4 sheet. It sits open on a table and reads like an ordinary paperback. Take this one unless you have a reason not to.",
+      },
+      a6: {
+        tagline: "Pocket size",
+        blurb:
+          "Half an A5 again — small enough for a shirt pocket. The type doesn’t shrink with the page, so the book runs longer; but four pages fit on a side instead of two, so a copy takes fewer sheets of paper, not more.",
+      },
+    },
     interiorLabel: "Interior",
-    interiorMeta: "{pages} pages · A5 · black & white",
-    interiorNote: "The book itself. Prints two-up on A4, double-sided.",
+    interiorMeta: "{pages} pages · {size} · black & white",
+    interiorNote: "The book itself. Prints {up}-up on A4, double-sided.",
     coversLabel: "Covers",
     coversMeta: "2 pages · A4 · colour",
     coversNote: "Front and back, in colour, with crop marks. Print on card.",
     notesHeading: "A few notes",
-    noteCountLead: "The page count is a multiple of four.",
+    noteCountLead: "Each page count is a whole number of sheets.",
     noteCountBody:
-      "Four A5 pages fit on one A4 sheet printed both sides, so {pages} pages comes out to exactly {sheets} sheets with nothing left over. If you edit the book, keep that true or the last sheet will be half empty.",
+      "An A4 sheet printed both sides holds four A5 pages, or eight A6 ones, so each interior is padded out to fill its last sheet exactly. If you edit the book, keep that true or the final sheet comes out part empty.",
     noteCoversLead: "The covers are a separate file on purpose.",
     noteCoversBody:
-      "Shops run colour and black-and-white as different jobs on different paper. Handed one mixed PDF, they’ll usually print all {pages} pages in colour — which is the expensive way to find out.",
-    noteSizeLead: "Why A5?",
+      "Shops run colour and black-and-white as different jobs on different paper. Handed one mixed PDF, they’ll usually print the whole interior in colour — which is the expensive way to find out.",
+    noteSizeLead: "Why A5 and A6?",
     noteSizeBody:
-      "It’s a standard size everywhere outside North America, and two A5 pages tile an A4 sheet with nothing wasted. The type is set at 12pt, larger than most paperbacks, because these are often read aloud and passed around.",
+      "Both are standard sizes everywhere outside North America, and both tile an A4 sheet with nothing left over — two up for A5, four for A6. The type is set at 12pt on both, larger than most paperbacks, because these are often read aloud and passed around. That’s why the pocket edition is longer rather than more finely set: the page gets smaller, the words don’t.",
     homeHeading: "Printing at home instead",
     homeBody:
-      "The same book is on the {link} as a plain PDF — better suited to a desktop printer, where you’d rather have one page per sheet than cut anything in half.",
+      "The same book is on the {link} as a plain PDF — better suited to a desktop printer, where you’d rather have one page per sheet than cut anything up.",
     homeLink: "download page",
     remixHeading: "Changing it",
     remixBody:
@@ -234,30 +284,45 @@ export const PAGE: Record<PrintLang, PageCopy> = {
   th: {
     metadataTitle: "พิมพ์หนังสือเล่มนี้ที่ร้านพิมพ์",
     metadataDescription:
-      "ไฟล์สองไฟล์พร้อมใบสเปกสำหรับร้านพิมพ์ ขนาด A5 เนื้อในขาวดำ ปกสี หนังสือเป็นสาธารณสมบัติ พิมพ์กี่เล่มก็ได้ ไม่ต้องขออนุญาต",
+      "ไฟล์พร้อมพิมพ์และใบสเปกสำหรับร้านพิมพ์ เลือกได้ระหว่างขนาด A5 และขนาดพกพา A6 เนื้อในขาวดำ ปกสี หนังสือเป็นสาธารณสมบัติ พิมพ์กี่เล่มก็ได้ ไม่ต้องขออนุญาต",
     eyebrow: "พิมพ์",
     title: "พิมพ์หนังสือเล่มนี้ที่ร้านพิมพ์",
     intro:
-      "คำสอนเหล่านี้เป็นสาธารณสมบัติ นำไฟล์สองไฟล์ด้านล่างไปที่ร้านพิมพ์ที่ไหนก็ได้ แล้วพิมพ์กี่เล่มก็ได้ตามต้องการ — สำหรับวัด สำหรับคอร์สปฏิบัติธรรม สำหรับกลุ่มอ่านหนังสือ หรือสำหรับเพื่อน ไม่ต้องขออนุญาต และไม่มีค่าใช้จ่ายใด ๆ กับเรา",
+      "คำสอนเหล่านี้เป็นสาธารณสมบัติ เลือกขนาดที่ต้องการ แล้วนำไฟล์สองไฟล์ของขนาดนั้นไปที่ร้านพิมพ์ที่ไหนก็ได้ พิมพ์กี่เล่มก็ได้ตามต้องการ — สำหรับวัด สำหรับคอร์สปฏิบัติธรรม สำหรับกลุ่มอ่านหนังสือ หรือสำหรับเพื่อน ไม่ต้องขออนุญาต และไม่มีค่าใช้จ่ายใด ๆ กับเรา",
+    editionsHeading: "สองขนาด",
+    editionsIntro:
+      "หนังสือเล่มเดียวกัน ใช้ตัวอักษรขนาด 12 พอยต์เท่ากัน ต่างกันแค่ขนาดหน้า แต่ละขนาดมีสองไฟล์ คือเนื้อในขาวดำ กับปกสี",
+    editions: {
+      a5: {
+        tagline: "ขนาดสำหรับอ่าน",
+        blurb:
+          "ครึ่งหนึ่งของกระดาษ A4 กางวางอ่านบนโต๊ะได้สบาย อ่านเหมือนหนังสือปกอ่อนทั่วไป ถ้าไม่มีเหตุผลอื่น แนะนำขนาดนี้",
+      },
+      a6: {
+        tagline: "ขนาดพกพา",
+        blurb:
+          "เล็กลงอีกครึ่งหนึ่งจาก A5 ใส่กระเป๋าเสื้อได้ ตัวหนังสือไม่ได้เล็กลงตามหน้า เล่มจึงหนาขึ้น แต่พิมพ์ได้ 4 หน้าต่อด้านแทนที่จะเป็น 2 หน้า จึงใช้กระดาษต่อเล่มน้อยลง ไม่ใช่มากขึ้น",
+      },
+    },
     interiorLabel: "เนื้อใน",
-    interiorMeta: "{pages} หน้า · A5 · ขาวดำ",
-    interiorNote: "ตัวเล่มหนังสือ พิมพ์ 2 หน้าต่อแผ่น A4 แบบสองหน้า",
+    interiorMeta: "{pages} หน้า · {size} · ขาวดำ",
+    interiorNote: "ตัวเล่มหนังสือ พิมพ์ {up} หน้าต่อแผ่น A4 แบบสองหน้า",
     coversLabel: "ปก",
     coversMeta: "2 หน้า · A4 · สี",
     coversNote: "ปกหน้าและปกหลัง พิมพ์สี มีรอยมาร์กตัด พิมพ์บนกระดาษการ์ด",
     notesHeading: "ข้อควรรู้",
-    noteCountLead: "จำนวนหน้าหารด้วยสี่ลงตัว",
+    noteCountLead: "จำนวนหน้าลงตัวพอดีกับจำนวนแผ่น",
     noteCountBody:
-      "กระดาษ A4 หนึ่งแผ่นพิมพ์สองหน้าจะได้ 4 หน้า A5 ดังนั้น {pages} หน้าจึงพอดีกับ {sheets} แผ่น ไม่มีแผ่นไหนเหลือทิ้ง ถ้าแก้ไขหนังสือ ควรรักษาจำนวนหน้าให้หารสี่ลงตัวไว้ ไม่อย่างนั้นแผ่นสุดท้ายจะว่างไปครึ่งแผ่น",
+      "กระดาษ A4 หนึ่งแผ่นพิมพ์สองหน้าจะได้ 4 หน้า A5 หรือ 8 หน้า A6 เนื้อในแต่ละขนาดจึงเติมหน้าให้เต็มแผ่นสุดท้ายพอดี ไม่มีแผ่นไหนเหลือทิ้ง ถ้าแก้ไขหนังสือ ควรรักษาจำนวนหน้าให้ลงตัวไว้ ไม่อย่างนั้นแผ่นสุดท้ายจะว่างไปบางส่วน",
     noteCoversLead: "ปกแยกเป็นอีกไฟล์โดยตั้งใจ",
     noteCoversBody:
-      "ร้านพิมพ์แยกงานสีกับงานขาวดำเป็นคนละงานและใช้กระดาษคนละแบบ ถ้าให้ไฟล์ PDF ที่รวมทุกอย่างไว้ด้วยกัน ร้านมักจะพิมพ์ทั้ง {pages} หน้าเป็นสีทั้งหมด ซึ่งเป็นวิธีที่แพงที่สุดในการค้นพบเรื่องนี้",
-    noteSizeLead: "ทำไมต้องเป็น A5",
+      "ร้านพิมพ์แยกงานสีกับงานขาวดำเป็นคนละงานและใช้กระดาษคนละแบบ ถ้าให้ไฟล์ PDF ที่รวมทุกอย่างไว้ด้วยกัน ร้านมักจะพิมพ์เนื้อในทั้งเล่มเป็นสี ซึ่งเป็นวิธีที่แพงที่สุดในการค้นพบเรื่องนี้",
+    noteSizeLead: "ทำไมต้องเป็น A5 และ A6",
     noteSizeBody:
-      "A5 เป็นขนาดมาตรฐานทั่วไปนอกอเมริกาเหนือ และสองหน้า A5 พอดีกับกระดาษ A4 หนึ่งแผ่นโดยไม่เหลือเศษ ตัวหนังสือใช้ขนาด 12 พอยต์ ใหญ่กว่าหนังสือปกอ่อนทั่วไป เพราะหนังสือแบบนี้มักถูกอ่านออกเสียงและส่งต่อกันไปเรื่อย ๆ",
+      "ทั้งสองขนาดเป็นขนาดมาตรฐานทั่วไปนอกอเมริกาเหนือ และทั้งคู่พอดีกับกระดาษ A4 โดยไม่เหลือเศษ — A5 พิมพ์ 2 หน้าต่อด้าน A6 พิมพ์ 4 หน้าต่อด้าน ตัวหนังสือใช้ขนาด 12 พอยต์ทั้งสองขนาด ใหญ่กว่าหนังสือปกอ่อนทั่วไป เพราะหนังสือแบบนี้มักถูกอ่านออกเสียงและส่งต่อกันไปเรื่อย ๆ ด้วยเหตุนี้ ฉบับพกพาจึงหนาขึ้นแทนที่จะใช้ตัวอักษรเล็กลง หน้าเล็กลงก็จริง แต่ตัวหนังสือเท่าเดิม",
     homeHeading: "พิมพ์เองที่บ้าน",
     homeBody:
-      "หนังสือเล่มเดียวกันนี้มีเป็นไฟล์ PDF ธรรมดาอยู่ที่{link} (ภาษาอังกฤษ) ซึ่งเหมาะกับเครื่องพิมพ์ที่บ้านมากกว่า เพราะพิมพ์หน้าเดียวต่อแผ่น ไม่ต้องตัดครึ่ง",
+      "หนังสือเล่มเดียวกันนี้มีเป็นไฟล์ PDF ธรรมดาอยู่ที่{link} (ภาษาอังกฤษ) ซึ่งเหมาะกับเครื่องพิมพ์ที่บ้านมากกว่า เพราะพิมพ์หน้าเดียวต่อแผ่น ไม่ต้องตัด",
     homeLink: "หน้าดาวน์โหลด",
     remixHeading: "แก้ไขดัดแปลง",
     remixBody:
@@ -268,27 +333,42 @@ export const PAGE: Record<PrintLang, PageCopy> = {
   zh: {
     metadataTitle: "到打印店印这本书",
     metadataDescription:
-      "两个文件，加一份中英泰三语规格单，让你在任何打印店印出自己的《朴素佛法》。A5 开本，黑白内页，彩色封面。公共领域，想印多少都行。",
+      "可直接送印的文件，加一份中英泰三语规格单，让你在任何打印店印出自己的《朴素佛法》。A5 开本或口袋大小的 A6，黑白内页，彩色封面。公共领域，想印多少都行。",
     eyebrow: "打印",
     title: "到打印店印这本书",
     intro:
-      "这些教法属于公共领域。把下面两个文件拿到任何一家打印店，想印多少本都可以 —— 给寺院、给禅修营、给读书会、给朋友。不需要许可，也不欠谁什么。",
+      "这些教法属于公共领域。选一个开本，把它的两个文件拿到任何一家打印店，想印多少本都可以 —— 给寺院、给禅修营、给读书会、给朋友。不需要许可，也不欠谁什么。",
+    editionsHeading: "两种开本",
+    editionsIntro:
+      "同一本书，同样的 12 磅正文，只是落在不同大小的页面上。每个开本都是两个文件：黑白内页和彩色封面。",
+    editions: {
+      a5: {
+        tagline: "适合阅读",
+        blurb:
+          "一张 A4 的一半。摊开放在桌上刚好，读起来就像普通平装书。没有特别理由的话，选这个。",
+      },
+      a6: {
+        tagline: "口袋大小",
+        blurb:
+          "再对折一次的 A5，小到能放进衬衫口袋。正文不会随页面缩小，所以书更厚；但一面能拼四页而不是两页，一本反而更省纸，不是更费纸。",
+      },
+    },
     interiorLabel: "内页",
-    interiorMeta: "{pages} 页 · A5 · 黑白",
-    interiorNote: "书的正文。在 A4 上拼两页、双面打印。",
+    interiorMeta: "{pages} 页 · {size} · 黑白",
+    interiorNote: "书的正文。在 A4 上拼 {up} 页、双面打印。",
     coversLabel: "封面",
     coversMeta: "2 页 · A4 · 彩色",
     coversNote: "封面封底，彩色，带裁切标记。请印在卡纸上。",
     notesHeading: "几点说明",
-    noteCountLead: "页数是四的倍数。",
+    noteCountLead: "页数正好凑满整张纸。",
     noteCountBody:
-      "一张 A4 双面能放四页 A5，所以 {pages} 页正好是 {sheets} 张，没有半张浪费。如果你改动这本书，请保持这一点，否则最后一张会空掉一半。",
+      "一张 A4 双面能放四页 A5，或八页 A6，所以每个开本的内页都补到正好填满最后一张。如果你改动这本书，请保持这一点，否则最后一张会空掉一部分。",
     noteCoversLead: "封面单独一个文件，是故意的。",
     noteCoversBody:
-      "打印店把彩色和黑白当成两个不同的活、用不同的纸。给他们一个混在一起的 PDF，他们通常会把全部 {pages} 页都印成彩色 —— 那是最贵的一种试错方式。",
-    noteSizeLead: "为什么用 A5？",
+      "打印店把彩色和黑白当成两个不同的活、用不同的纸。给他们一个混在一起的 PDF，他们通常会把整本内页都印成彩色 —— 那是最贵的一种试错方式。",
+    noteSizeLead: "为什么用 A5 和 A6？",
     noteSizeBody:
-      "在北美以外，A5 到处都是标准尺寸，而且两页 A5 正好拼满一张 A4，一点不浪费。正文用 12 磅，比多数平装书都大，因为这些文字常常被人念出声、传来传去。",
+      "在北美以外，两个都是到处可见的标准尺寸，而且都能拼满一张 A4，一点不浪费 —— A5 一面两页，A6 一面四页。两个开本的正文都用 12 磅，比多数平装书都大，因为这些文字常常被人念出声、传来传去。所以口袋版是变厚，而不是把字排得更小：页面变小了，字没有。",
     homeHeading: "在家里打印",
     homeBody:
       "同一本书在{link}上还有一个普通 PDF —— 更适合家用打印机，一张纸印一页，不用裁。",

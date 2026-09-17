@@ -9,22 +9,18 @@ import {
   THAI_CLASS,
   type PrintLang,
 } from "@/content/print-strings";
-import spec from "@/content/printshop-spec.json";
+import {
+  DEFAULT_EDITION,
+  PRINTSHOP_EDITIONS,
+  editionVars,
+  type PrintshopEdition,
+} from "@/content/printshop";
 
-const { trimMm, interior, covers } = spec;
-const TRIM = `${trimMm.w} × ${trimMm.h} mm`;
-
-const VARS = {
-  pages: interior.pages,
-  sheets: interior.sheets,
-  trim: TRIM,
-};
-
-function fill(body: string): string {
-  return body
-    .replace(/\{pages\}/g, String(VARS.pages))
-    .replace(/\{sheets\}/g, String(VARS.sheets))
-    .replace(/\{trim\}/g, VARS.trim);
+/** Substitute the `{placeholders}` an edition supplies. Leaves unknown ones be. */
+function fill(body: string, vars: Record<string, string | number>): string {
+  return body.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in vars ? String(vars[key]) : whole,
+  );
 }
 
 /**
@@ -58,7 +54,9 @@ function FileCard({
   filename: string;
   meta: string;
   note: string;
-  bytes: number;
+  /** Null when the build had no honest measurement — show no size at all
+   *  rather than "0.0 MB". See PrintshopFile in content/printshop.ts. */
+  bytes: number | null;
 }) {
   return (
     <a
@@ -66,18 +64,72 @@ function FileCard({
       className="group block rounded-lg border border-divider bg-paper/40 p-6 transition-colors hover:border-link"
     >
       <div className="flex items-baseline justify-between gap-4">
-        <h2 className="font-serif text-2xl text-ink group-hover:text-link">
+        <h3 className="font-serif text-2xl text-ink group-hover:text-link">
           {label}
-        </h2>
-        <span className="shrink-0 font-sans text-xs uppercase tracking-[0.14em] text-ink/50">
-          {fmtMB(bytes)}
-        </span>
+        </h3>
+        {bytes !== null && (
+          <span className="shrink-0 font-sans text-xs uppercase tracking-[0.14em] text-ink/50">
+            {fmtMB(bytes)}
+          </span>
+        )}
       </div>
       <p className="mt-2 font-sans text-sm text-ink/70">{meta}</p>
       <p className="mt-3 font-serif text-base leading-relaxed text-ink/80">
         {note}
       </p>
     </a>
+  );
+}
+
+/** One trim: what it's for, then its two files. */
+function Edition({
+  edition,
+  lang,
+}: {
+  edition: PrintshopEdition;
+  lang: PrintLang;
+}) {
+  const s = PAGE[lang];
+  const copy = s.editions[edition.key];
+  const vars = editionVars(edition);
+
+  return (
+    <section className="mt-10">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        {/* A paper size reads the same in every language, so it comes from the
+            spec rather than the copy — and it stays LTR-neutral next to Thai. */}
+        <h2 className="font-serif text-3xl text-ink">{edition.label}</h2>
+        <p className="font-sans text-xs uppercase tracking-[0.18em] text-link">
+          {copy.tagline}
+        </p>
+        <p className="font-sans text-xs uppercase tracking-[0.14em] text-ink/40">
+          {vars.trim}
+        </p>
+      </div>
+
+      <p className="mt-3 max-w-2xl font-serif text-lg leading-relaxed text-ink/80">
+        {copy.blurb}
+      </p>
+
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <FileCard
+          label={s.interiorLabel}
+          filename={edition.interior.file}
+          meta={fill(s.interiorMeta, vars)}
+          note={fill(s.interiorNote, vars)}
+          bytes={edition.interior.bytes}
+        />
+        {edition.covers && (
+          <FileCard
+            label={s.coversLabel}
+            filename={edition.covers.file}
+            meta={fill(s.coversMeta, vars)}
+            note={s.coversNote}
+            bytes={edition.covers.bytes}
+          />
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -132,38 +184,36 @@ export function PrintView({ lang }: { lang: PrintLang }) {
         </p>
       </header>
 
-      <section className="grid gap-4 sm:grid-cols-2">
-        <FileCard
-          label={s.interiorLabel}
-          filename={interior.file}
-          meta={fill(s.interiorMeta)}
-          note={s.interiorNote}
-          bytes={interior.bytes}
-        />
-        {covers && (
-          <FileCard
-            label={s.coversLabel}
-            filename={covers.file}
-            meta={s.coversMeta}
-            note={s.coversNote}
-            bytes={covers.bytes}
-          />
-        )}
-      </section>
+      <div className="border-t border-divider pt-10">
+        <h2 className="font-sans text-xs uppercase tracking-[0.2em] text-ink/50">
+          {s.editionsHeading}
+        </h2>
+        <p className="mt-3 max-w-2xl font-serif text-lg leading-relaxed text-ink/80">
+          {s.editionsIntro}
+        </p>
+      </div>
 
-      {/* Opens in the reader's own language; the toggle covers Thai too, since
-          that's where most of these get printed. */}
-      <PrintSpecSheet vars={VARS} defaultLang={lang} />
+      {PRINTSHOP_EDITIONS.map((edition) => (
+        <Edition key={edition.key} edition={edition} lang={lang} />
+      ))}
+
+      {/* Opens in the reader's own language and on the size listed first; the
+          toggle covers Thai too, since that's where most of these get printed. */}
+      <PrintSpecSheet
+        editions={PRINTSHOP_EDITIONS}
+        defaultEdition={DEFAULT_EDITION.key}
+        defaultLang={lang}
+      />
 
       <article className="prose-dharma mt-16">
         <h2>{s.notesHeading}</h2>
 
         <p>
-          <strong>{s.noteCountLead}</strong> {fill(s.noteCountBody)}
+          <strong>{s.noteCountLead}</strong> {s.noteCountBody}
         </p>
 
         <p>
-          <strong>{s.noteCoversLead}</strong> {fill(s.noteCoversBody)}
+          <strong>{s.noteCoversLead}</strong> {s.noteCoversBody}
         </p>
 
         <p>

@@ -156,16 +156,32 @@ type Target = {
 };
 
 /**
- * A5 + 3mm bleed, at 300dpi — the print-shop edition's trim.
- *   A5 trim   148 × 210 mm
- *   + bleed   154 × 216 mm  →  1819 × 2551 px
- * Rendered at scale 2 for 600dpi masters, matching the 5×8 print pair.
- * Note the ratio differs from the 5.25×8.25 covers (0.713 vs 0.636), which is
- * why these are separate renders rather than a resize — scaling the 5×8 art
+ * Print-shop cover geometry: the A-series trims + 3mm bleed, at 300dpi, each
+ * rendered at scale 2 for 600dpi masters to match the 5×8 print pair.
+ *
+ *   A5 trim  148 × 210 mm  →  + bleed  154 × 216 mm  →  1819 × 2551 px
+ *   A6 trim  105 × 148 mm  →  + bleed  111 × 154 mm  →  1311 × 1819 px
+ *
+ * Derived rather than hard-coded, because these have to agree exactly with the
+ * numbers build-printshop-pdf.ts computes for the crop marks — two hand-typed
+ * pixel counts is how the art and the cut line drift a millimetre apart.
+ *
+ * The A-series ratio (0.713) differs from the 5.25×8.25 covers' (0.636), which
+ * is why these are separate renders rather than a resize — scaling the 5×8 art
  * into an A5 page would either crop the composition or leave cream side bars.
+ * A5 and A6 are near-identical in ratio but NOT interchangeable: A6 is rendered
+ * at its own pixel size so the type on the back cover is sized for the page it
+ * actually prints on, instead of being shrunk to 71% with everything on it.
  */
-const A5_BLEED_W = 1819;
-const A5_BLEED_H = 2551;
+const COVER_DPI = 300;
+const COVER_BLEED_MM = 3;
+const mmToPx = (mm: number) => Math.round((mm * COVER_DPI) / 25.4);
+const bleedPx = (trimMm: number) => mmToPx(trimMm + COVER_BLEED_MM * 2);
+
+const A5_BLEED_W = bleedPx(148);
+const A5_BLEED_H = bleedPx(210);
+const A6_BLEED_W = bleedPx(105);
+const A6_BLEED_H = bleedPx(148);
 
 /** Substitute geometry tokens only (front cover has no content tokens). */
 function fillGeom(html: string, geom: Record<string, string>): string {
@@ -174,13 +190,69 @@ function fillGeom(html: string, geom: Record<string, string>): string {
   return out;
 }
 
+/**
+ * front-cover.html's metrics, in the px they're authored at.
+ *
+ * The design is a fixed-px poster tuned at 5.25×8.25 (1575 wide) and reused
+ * unchanged at A5 (1819) — a 15% spread it absorbs fine. A6 is a 28% drop, and
+ * it does not absorb that: the sun alone is 1080px against a 1311px page with
+ * 190px columns, i.e. wider than the 931px it has to sit in. The column
+ * overflowed, and `overflow: hidden` on .cover quietly cropped the byline —
+ * "Translated by / Edited by" and the dharma-gift line — clean off the bottom.
+ */
+const FRONT_COVER_METRICS = {
+  BAND_W: 114,
+  STITCH_L: 98,
+  STITCH_W: 2,
+  STITCH_DASH: 12,
+  STITCH_PERIOD: 26,
+  COL_X: 190,
+  MAST_TOP: 190,
+  EYEBROW_FS: 25,
+  RULE_W: 132,
+  RULE_H: 2,
+  RULE_MT: 36,
+  TITLE_FS: 232,
+  TITLE_MT: 64,
+  SUB_FS: 60,
+  SUB_MT: 52,
+  SUB_MAXW: 920,
+  SUN_W: 1080,
+  BYLINE_MB: 300,
+  AUTHOR_FS: 58,
+  CREDIT_FS: 22,
+  CREDIT_MT: 38,
+} as const;
+
+/**
+ * Fill front-cover.html for one page size.
+ *
+ * `scale` multiplies every metric, so the whole composition keeps its
+ * proportions on a smaller cover instead of the type staying put and the page
+ * shrinking out from under it. Hairlines floor at 1px so the rule and the
+ * stitch can't round away to nothing.
+ *
+ * Scale defaults to 1, which is what the 5.25×8.25 and A5 covers pass: their
+ * output is unchanged to the pixel. Only A6 asks for anything else.
+ */
+function fillFrontCover(html: string, pageW: number, pageH: number, scale = 1): string {
+  const geom: Record<string, string> = {
+    PAGE_W: String(pageW),
+    PAGE_H: String(pageH),
+  };
+  for (const [k, v] of Object.entries(FRONT_COVER_METRICS)) {
+    geom[k] = String(Math.max(1, Math.round(v * scale)));
+  }
+  return fillGeom(html, geom);
+}
+
 const TARGETS: Target[] = [
   {
     html: "front-cover.html",
     cw: 1575,
     ch: 2475,
     scale: 2, // → 3150×4950 ≈ 600dpi at 5.25×8.25
-    build: (h) => fillGeom(h, { PAGE_W: "1575", PAGE_H: "2475" }),
+    build: (h) => fillFrontCover(h, 1575, 2475),
     outputs: [
       { file: "front-cover-print-color.jpg" },
       { file: "front-cover-print-bw.jpg", grayscale: true },
@@ -256,7 +328,7 @@ const TARGETS: Target[] = [
     cw: A5_BLEED_W,
     ch: A5_BLEED_H,
     scale: 2,
-    build: (h) => fillGeom(h, { PAGE_W: String(A5_BLEED_W), PAGE_H: String(A5_BLEED_H) }),
+    build: (h) => fillFrontCover(h, A5_BLEED_W, A5_BLEED_H),
     outputs: [{ file: "front-cover-a5-color.jpg" }],
   },
   {
@@ -279,6 +351,40 @@ const TARGETS: Target[] = [
         { qr: true },
       ),
     outputs: [{ file: "back-cover-a5-color.jpg" }],
+  },
+  // ── Print-shop edition, pocket size (A6 + 3mm bleed) ─────────────────────
+  // Same artwork, re-rendered at A6's own pixel size rather than resized down
+  // from A5: a resize would shrink the back-cover type along with the page and
+  // land the six teasers around 7pt on a 105mm-wide card. The pads below scale
+  // with the trim, but BODY is held up so the entries stay legible at the size
+  // they actually print — this face carries more text per mm than any other.
+  {
+    html: "front-cover.html",
+    cw: A6_BLEED_W,
+    ch: A6_BLEED_H,
+    scale: 2,
+    // Scaled against A5, the widest size these metrics were tuned at.
+    build: (h) => fillFrontCover(h, A6_BLEED_W, A6_BLEED_H, A6_BLEED_W / A5_BLEED_W),
+    outputs: [{ file: "front-cover-a6-color.jpg" }],
+  },
+  {
+    html: "back-cover.html",
+    cw: A6_BLEED_W,
+    ch: A6_BLEED_H,
+    scale: 2,
+    // No ISBN — see fillBackCover. Free-distribution booklet, same as A5.
+    build: (h) =>
+      fillBackCover(
+        h,
+        null,
+        {
+          PAGE_W: String(A6_BLEED_W), PAGE_H: String(A6_BLEED_H), BODY: "33",
+          BAND_W: "125", STITCH_R: "110",
+          PAD_TOP: "112", PAD_LEFT: "104", PAD_RIGHT: "200", PAD_BOT: "112",
+        },
+        { qr: true },
+      ),
+    outputs: [{ file: "back-cover-a6-color.jpg" }],
   },
   // Back cover — ebook trim (6×9), a downloadable companion to cover.jpg.
   {

@@ -12,7 +12,7 @@ import { hasAsset } from "@plain-dharma/content/assets";
 import spec from "./printshop-spec.json";
 
 /** The print-shop trims, in the order /print offers them. */
-export type EditionKey = "a5" | "a6";
+export type EditionKey = "a5" | "a6" | "b6";
 
 export type PrintshopFile = {
   file: string;

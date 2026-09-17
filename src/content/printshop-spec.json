@@ -24,6 +24,28 @@
       }
     },
     {
+      "key": "b6",
+      "label": "B6",
+      "trimMm": {
+        "w": 125,
+        "h": 176
+      },
+      "up": 2,
+      "pagesPerSheet": 4,
+      "gutterMm": 16,
+      "interior": {
+        "file": "plain-dharma-printshop-b6.pdf",
+        "pages": 60,
+        "sheets": 15,
+        "bytes": 1705216
+      },
+      "covers": {
+        "file": "plain-dharma-printshop-b6-covers.pdf",
+        "pages": 2,
+        "bytes": 1615723
+      }
+    },
+    {
       "key": "a6",
       "label": "A6",
       "trimMm": {
@@ -37,7 +59,7 @@
         "file": "plain-dharma-printshop-a6.pdf",
         "pages": 72,
         "sheets": 9,
-        "bytes": 1711702
+        "bytes": 1711709
       },
       "covers": {
         "file": "plain-dharma-printshop-a6-covers.pdf",

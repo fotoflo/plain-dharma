@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import {
   CUT,
+  FIT,
   SPEC,
   PRINT_LANGS,
   THAI_CLASS,
@@ -101,7 +102,11 @@ export function PrintSpecSheet({ editions, defaultEdition, defaultLang }: Props)
 
   const copy = SPEC[lang];
   const edition = editions.find((e) => e.key === key) ?? editions[0];
-  const vars = { ...editionVars(edition), cut: CUT[lang][edition.key] };
+  const vars = {
+    ...editionVars(edition),
+    cut: CUT[lang][edition.key],
+    fit: FIT[lang][edition.key],
+  };
   const thai = lang === "th";
 
   return (

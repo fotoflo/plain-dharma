@@ -112,7 +112,7 @@ const CHARS_PER_MM = 62 / 114;
 type Margins = { inner: number; outer: number; top: number; bottom: number };
 
 type Edition = {
-  key: "a5" | "a6";
+  key: "a5" | "a6" | "b6";
   /** Human label — also stamped into the cover sheets and the PDF metadata. */
   label: string;
   /** Trim size in mm. */
@@ -144,67 +144,15 @@ type Edition = {
 };
 
 /**
- * The two print-shop trims. Everything that differs between them lives here —
- * the templates are shared and tokenised, so the editions can't drift apart in
- * any way that isn't written down on this table.
+ * Tuning the two narrow trims share. A5 sets none of it: the class defaults
+ * already fit its 114mm measure, and it is published, so leaving it alone keeps
+ * its pagination where the spec, the site and anyone's print order say it is.
  *
- * Margins: the inner carries the binding, and outer/top/bottom leave enough
- * that a 3mm trim on the bound block never touches type. A6's are scaled from
- * A5's by trim, then the inner is held back up — A6 runs 72 pages to A5's 52 in
- * a page two thirds the width, so it needs proportionally MORE gutter, not less,
- * or the inside margin disappears into a perfect-bound spine.
+ * Everything here is measured rather than tuned to a number — the running head
+ * sizes itself down until it fits, the contents wraps on width — so a trim
+ * between A5 and A6 can take all three unchanged.
  */
-const EDITIONS: Edition[] = [
-  {
-    key: "a5",
-    label: "A5",
-    trimW: 148,
-    trimH: 210,
-    up: 2,
-    margins: { inner: 20, outer: 14, top: 16, bottom: 18 },
-    chapterSize: "\\LARGE",
-    sectionSize: "\\Large",
-    chapterBefore: 28,
-    chapterAfter: 22,
-    typesetTuning: "",
-    // The class defaults already fit the 114mm measure, and this edition is
-    // published — leaving the heads and the contents alone keeps its pagination
-    // exactly where the spec, the site and anyone's print order say it is.
-    headerTuning: "",
-    tocTuning: "",
-    interiorName: "plain-dharma-printshop-a5.pdf",
-    coversName: "plain-dharma-printshop-a5-covers.pdf",
-    frontCover: join(EBOOK_DIR, "front-cover-a5-color.jpg"),
-    backCover: join(EBOOK_DIR, "back-cover-a5-color.jpg"),
-  },
-  {
-    key: "a6",
-    label: "A6",
-    trimW: 105,
-    trimH: 148,
-    up: 4,
-    // 83mm of measure sets ~45 characters per line at 12pt — under the 60–75
-    // comfort band, and unavoidable: A6 is 105mm wide and the type is fixed at
-    // 12pt by design. Buying line length back would mean either shrinking the
-    // type (which is the one thing this edition exists NOT to do) or cutting the
-    // gutter below what a 72-page perfect-bound block can spare.
-    // top has to clear the running head, which geometry puts ABOVE the top
-    // margin, not inside it: headheight + headsep of space between the paper
-    // edge and the body. At top=10mm and the class's 18pt headsep that came to
-    // -1.3mm, so every running head was printing off the top of the page with
-    // its capitals sliced — on a trim edge the shop then cuts again. headsep
-    // drops to 8pt (the head is one size down here, and doesn't need the
-    // class's A4-sized gap) and top and bottom trade 4mm, which lands the head
-    // 6.2mm below the trim edge and leaves the body block exactly where it was:
-    // 126mm of textheight, so the pagination this edition is published at does
-    // not move.
-    margins: { inner: 14, outer: 8, top: 14, bottom: 8 },
-    chapterSize: "\\Large",
-    sectionSize: "\\large",
-    chapterBefore: 20,
-    chapterAfter: 16,
-    // Three things this trim needs and A5 doesn't.
-    typesetTuning: [
+const NARROW_TYPESET = [
       "\\makeatletter",
       "% Protrusion hangs punctuation and hyphens slightly into the margin, which",
       "% buys back part of a character per line and straightens the optical edge.",
@@ -231,14 +179,9 @@ const EDITIONS: Edition[] = [
       "% a line running out into the margin.",
       "\\setlength{\\emergencystretch}{2em}",
       "\\makeatother",
-    ].join("\n"),
-    // At the class's default size "5. THE FOUNDATIONS OF MINDFULNESS" is wider
-    // than the 83mm measure: it collided with the page number on one side and
-    // ran past the text block on the other. fancyhdr re-lays the same heads one
-    // size down, with the marks defined explicitly so they read exactly as A5's
-    // do (chapter on the verso, section on the recto) rather than picking up
-    // fancyhdr's own "Chapter N." default.
-    headerTuning: [
+    ].join("\n");
+
+const NARROW_HEADER = [
       "\\usepackage{fancyhdr}",
       "\\pagestyle{fancy}",
       "\\fancyhf{}",
@@ -279,16 +222,9 @@ const EDITIONS: Edition[] = [
       "  \\renewcommand{\\headrulewidth}{0pt}%",
       "  \\fancyfoot[C]{\\footnotesize\\thepage}%",
       "}",
-    ].join("\n"),
-    // The longest chapter entry — "3. The Buddha's Third Talk: The Fire Sermon"
-    // — is wider than the contents measure, and the class's defaults turned that
-    // into two separate faults: TeX hyphenated it to "The Fire Ser-", then broke
-    // the page between the halves, stranding "mon" alone at the top of the next
-    // page carrying the page number. It has to wrap here; it just has to wrap
-    // like a title. So: no hyphenation, no break between an entry's own lines,
-    // and a little of the page-number gutter handed back to the text (the
-    // numbers only ever run to two oldstyle digits, nothing like 1.55em wide).
-    tocTuning: [
+    ].join("\n");
+
+const NARROW_TOC = [
       "\\usepackage{etoolbox}",
       "\\makeatletter",
       "\\renewcommand{\\@pnumwidth}{1.3em}",
@@ -327,7 +263,114 @@ const EDITIONS: Edition[] = [
       "  {\\hfill\\nobreak\\hb@xt@\\@pnumwidth}{}%",
       "  {\\message{[plaindharma] WARNING: l@chapter pnum patch FAILED}}",
       "\\makeatother",
-    ].join("\n"),
+    ].join("\n");
+
+/**
+ * The two print-shop trims. Everything that differs between them lives here —
+ * the templates are shared and tokenised, so the editions can't drift apart in
+ * any way that isn't written down on this table.
+ *
+ * Margins: the inner carries the binding, and outer/top/bottom leave enough
+ * that a 3mm trim on the bound block never touches type. A6's are scaled from
+ * A5's by trim, then the inner is held back up — A6 runs 72 pages to A5's 52 in
+ * a page two thirds the width, so it needs proportionally MORE gutter, not less,
+ * or the inside margin disappears into a perfect-bound spine.
+ */
+const EDITIONS: Edition[] = [
+  {
+    key: "a5",
+    label: "A5",
+    trimW: 148,
+    trimH: 210,
+    up: 2,
+    margins: { inner: 20, outer: 14, top: 16, bottom: 18 },
+    chapterSize: "\\LARGE",
+    sectionSize: "\\Large",
+    chapterBefore: 28,
+    chapterAfter: 22,
+    typesetTuning: "",
+    // The class defaults already fit the 114mm measure, and this edition is
+    // published — leaving the heads and the contents alone keeps its pagination
+    // exactly where the spec, the site and anyone's print order say it is.
+    headerTuning: "",
+    tocTuning: "",
+    interiorName: "plain-dharma-printshop-a5.pdf",
+    coversName: "plain-dharma-printshop-a5-covers.pdf",
+    frontCover: join(EBOOK_DIR, "front-cover-a5-color.jpg"),
+    backCover: join(EBOOK_DIR, "back-cover-a5-color.jpg"),
+  },
+  {
+    key: "b6",
+    label: "B6",
+    trimW: 125,
+    trimH: 176,
+    // B6 is not an A-size, so it does NOT tile A4: two side by side is 250mm
+    // against A4's 210, two stacked is 352mm against 297. Two fit only turned
+    // sideways (176 × 250 inside 210 × 297), which leaves a border all round
+    // and throws away about a third of every sheet. The shop therefore cannot
+    // halve or quarter the sheet by eye the way it can for A5 and A6 — it has
+    // to cut to marks. See the imposition note in the /print copy.
+    up: 2,
+    // 98mm of measure sets ~53 characters per line: between A5's 62 and A6's
+    // 45, and the first of the three to land inside the 45–75 comfort band at
+    // a size that still goes in a pocket.
+    margins: { inner: 16, outer: 11, top: 16, bottom: 14 },
+    chapterSize: "\\Large",
+    sectionSize: "\\large",
+    chapterBefore: 24,
+    chapterAfter: 19,
+    typesetTuning: NARROW_TYPESET,
+    headerTuning: NARROW_HEADER,
+    tocTuning: NARROW_TOC,
+    interiorName: "plain-dharma-printshop-b6.pdf",
+    coversName: "plain-dharma-printshop-b6-covers.pdf",
+    frontCover: join(EBOOK_DIR, "front-cover-b6-color.jpg"),
+    backCover: join(EBOOK_DIR, "back-cover-b6-color.jpg"),
+  },
+  {
+    key: "a6",
+    label: "A6",
+    trimW: 105,
+    trimH: 148,
+    up: 4,
+    // 83mm of measure sets ~45 characters per line at 12pt — under the 60–75
+    // comfort band, and unavoidable: A6 is 105mm wide and the type is fixed at
+    // 12pt by design. Buying line length back would mean either shrinking the
+    // type (which is the one thing this edition exists NOT to do) or cutting the
+    // gutter below what a 72-page perfect-bound block can spare.
+    // top has to clear the running head, which geometry puts ABOVE the top
+    // margin, not inside it: headheight + headsep of space between the paper
+    // edge and the body. At top=10mm and the class's 18pt headsep that came to
+    // -1.3mm, so every running head was printing off the top of the page with
+    // its capitals sliced — on a trim edge the shop then cuts again. headsep
+    // drops to 8pt (the head is one size down here, and doesn't need the
+    // class's A4-sized gap) and top and bottom trade 4mm, which lands the head
+    // 6.2mm below the trim edge and leaves the body block exactly where it was:
+    // 126mm of textheight, so the pagination this edition is published at does
+    // not move.
+    margins: { inner: 14, outer: 8, top: 14, bottom: 8 },
+    chapterSize: "\\Large",
+    sectionSize: "\\large",
+    chapterBefore: 20,
+    chapterAfter: 16,
+    // Three things this trim needs and A5 doesn't.
+    typesetTuning: NARROW_TYPESET,
+    // At the class's default size "5. THE FOUNDATIONS OF MINDFULNESS" is wider
+    // than the 83mm measure: it collided with the page number on one side and
+    // ran past the text block on the other. fancyhdr re-lays the same heads one
+    // size down, with the marks defined explicitly so they read exactly as A5's
+    // do (chapter on the verso, section on the recto) rather than picking up
+    // fancyhdr's own "Chapter N." default.
+    headerTuning: NARROW_HEADER,
+    // The longest chapter entry — "3. The Buddha's Third Talk: The Fire Sermon"
+    // — is wider than the contents measure, and the class's defaults turned that
+    // into two separate faults: TeX hyphenated it to "The Fire Ser-", then broke
+    // the page between the halves, stranding "mon" alone at the top of the next
+    // page carrying the page number. It has to wrap here; it just has to wrap
+    // like a title. So: no hyphenation, no break between an entry's own lines,
+    // and a little of the page-number gutter handed back to the text (the
+    // numbers only ever run to two oldstyle digits, nothing like 1.55em wide).
+    tocTuning: NARROW_TOC,
     interiorName: "plain-dharma-printshop-a6.pdf",
     coversName: "plain-dharma-printshop-a6-covers.pdf",
     frontCover: join(EBOOK_DIR, "front-cover-a6-color.jpg"),

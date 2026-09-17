@@ -182,6 +182,22 @@ const A5_BLEED_W = bleedPx(148);
 const A5_BLEED_H = bleedPx(210);
 const A6_BLEED_W = bleedPx(105);
 const A6_BLEED_H = bleedPx(148);
+const B6_BLEED_W = bleedPx(125);
+const B6_BLEED_H = bleedPx(176);
+
+/**
+ * B6's back-cover metrics, interpolated between the two that were tuned by eye.
+ *
+ * B6 sits between A6 and A5 in width, so rather than a third set of hand-typed
+ * pads that can drift from both, each value is read off the line joining the A6
+ * and A5 numbers at B6's width. BODY comes along for the ride, which keeps the
+ * deliberate hold-up in A6's body size (33 where a pure scale wanted 29) partly
+ * in effect here instead of throwing it away.
+ */
+const b6Mix = (a6: number, a5: number): string => {
+  const t = (B6_BLEED_W - A6_BLEED_W) / (A5_BLEED_W - A6_BLEED_W);
+  return String(Math.round(a6 + t * (a5 - a6)));
+};
 
 /** Substitute geometry tokens only (front cover has no content tokens). */
 function fillGeom(html: string, geom: Record<string, string>): string {
@@ -385,6 +401,41 @@ const TARGETS: Target[] = [
         { qr: true },
       ),
     outputs: [{ file: "back-cover-a6-color.jpg" }],
+  },
+  // ── Print-shop edition, pocket paperback (B6 + 3mm bleed) ────────────────
+  // B6 is not an A-size and does not tile A4 — see the note on the B6 edition
+  // in build-printshop-pdf.ts. It still gets its own render for the same reason
+  // A6 does: the faces are laid out in fixed px, so a resize would take the
+  // back-cover type down with the page instead of setting it for the page it
+  // prints on.
+  {
+    html: "front-cover.html",
+    cw: B6_BLEED_W,
+    ch: B6_BLEED_H,
+    scale: 2,
+    build: (h) => fillFrontCover(h, B6_BLEED_W, B6_BLEED_H, B6_BLEED_W / A5_BLEED_W),
+    outputs: [{ file: "front-cover-b6-color.jpg" }],
+  },
+  {
+    html: "back-cover.html",
+    cw: B6_BLEED_W,
+    ch: B6_BLEED_H,
+    scale: 2,
+    // No ISBN — see fillBackCover. Free-distribution booklet, same as A5 and A6.
+    build: (h) =>
+      fillBackCover(
+        h,
+        null,
+        {
+          PAGE_W: String(B6_BLEED_W), PAGE_H: String(B6_BLEED_H),
+          BODY: b6Mix(33, 40),
+          BAND_W: b6Mix(125, 173), STITCH_R: b6Mix(110, 152),
+          PAD_TOP: b6Mix(112, 165), PAD_LEFT: b6Mix(104, 150),
+          PAD_RIGHT: b6Mix(200, 290), PAD_BOT: b6Mix(112, 165),
+        },
+        { qr: true },
+      ),
+    outputs: [{ file: "back-cover-b6-color.jpg" }],
   },
   // Back cover — ebook trim (6×9), a downloadable companion to cover.jpg.
   {

@@ -7,6 +7,8 @@
  * of a machine-written file doesn't leak into the views.
  */
 
+import { hasAsset } from "@plain-dharma/content/assets";
+
 import spec from "./printshop-spec.json";
 
 /** The print-shop trims, in the order /print offers them. */
@@ -44,7 +46,44 @@ export type PrintshopEdition = {
  * edition may carry `covers: null`), which is narrower than it looks and not
  * worth fighting. The build script owns this shape; PrintshopEdition mirrors it.
  */
-export const PRINTSHOP_EDITIONS = spec.editions as unknown as PrintshopEdition[];
+const ALL_EDITIONS = spec.editions as unknown as PrintshopEdition[];
+
+/**
+ * The editions /print may actually offer: the ones whose PDFs are on the CDN.
+ *
+ * printshop-spec.json is committed and the PDFs are not — they're built locally
+ * and pushed to the bucket by `pnpm upload-assets`, which is a separate step
+ * from shipping the code that links to them. So the spec runs ahead of reality
+ * between "the build script learned about a new size" and "that size's files
+ * exist", and in that window a download card would be a 404 dressed up as an
+ * offer. The version map is the record of what was uploaded, so ask it.
+ *
+ * The same check covers the cover sheet on its own: an interior can be up while
+ * its covers aren't, and half an edition is still worth offering.
+ *
+ * A new size therefore needs no second deploy. It appears on the page the moment
+ * its files land in the bucket and the version map that names them is committed.
+ */
+function published(path: string): boolean {
+  return hasAsset(`downloads/${path}`);
+}
+
+const LIVE_EDITIONS: PrintshopEdition[] = ALL_EDITIONS.filter((e) =>
+  published(e.interior.file),
+).map((e) => ({
+  ...e,
+  covers: e.covers && published(e.covers.file) ? e.covers : null,
+}));
+
+/**
+ * Fall back to the unfiltered list when nothing looks published, matching the
+ * rule assets.ts already follows: an empty version map means nobody has uploaded
+ * yet (a fresh clone, a first run), not that the book has no editions. Blanking
+ * the page in that case would be a worse failure than an optimistic link.
+ */
+export const PRINTSHOP_EDITIONS: PrintshopEdition[] = LIVE_EDITIONS.length
+  ? LIVE_EDITIONS
+  : ALL_EDITIONS;
 
 /** The size /print opens on, and the one the download page describes. */
 export const DEFAULT_EDITION: PrintshopEdition = PRINTSHOP_EDITIONS[0];

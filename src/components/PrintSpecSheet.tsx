@@ -2,25 +2,28 @@
 
 import { useState, type ReactNode } from "react";
 import {
+  CUT,
   SPEC,
   PRINT_LANGS,
   THAI_CLASS,
   type PrintLang,
 } from "@/content/print-strings";
-
-type Vars = { pages: number; sheets: number; trim: string };
+import {
+  editionVars,
+  type EditionKey,
+  type PrintshopEdition,
+} from "@/content/printshop";
 
 /**
- * Render one copy string: fill `{pages}` / `{sheets}` / `{trim}`, then turn
- * `**bold**` into <strong>. Deliberately tiny — the only markup the print copy
- * needs, and keeping it to two rules means a translator can edit the strings
- * without learning anything.
+ * Render one copy string: fill the `{placeholders}`, then turn `**bold**` into
+ * <strong>. Deliberately tiny — the only markup the print copy needs, and
+ * keeping it to two rules means a translator can edit the strings without
+ * learning anything.
  */
-function format(body: string, vars: Vars): ReactNode {
-  const filled = body
-    .replace(/\{pages\}/g, String(vars.pages))
-    .replace(/\{sheets\}/g, String(vars.sheets))
-    .replace(/\{trim\}/g, vars.trim);
+function format(body: string, vars: Record<string, string | number>): ReactNode {
+  const filled = body.replace(/\{(\w+)\}/g, (whole, key: string) =>
+    key in vars ? String(vars[key]) : whole,
+  );
 
   return filled.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith("**") && part.endsWith("**") ? (
@@ -31,23 +34,74 @@ function format(body: string, vars: Vars): ReactNode {
   );
 }
 
+/** One segmented control. Both toggles on this sheet are the same widget. */
+function Toggle<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: { code: T; label: string }[];
+  value: T;
+  onChange: (code: T) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className="flex shrink-0 overflow-hidden rounded-md border border-divider"
+    >
+      {options.map(({ code, label: text }) => {
+        const active = code === value;
+        return (
+          <button
+            key={code}
+            type="button"
+            onClick={() => onChange(code)}
+            aria-pressed={active}
+            className={[
+              "px-3 py-1.5 font-sans text-xs transition-colors",
+              active
+                ? "bg-ink text-paper"
+                : "text-ink/60 hover:bg-ink/5 hover:text-ink",
+              code === "th" ? THAI_CLASS : "",
+            ].join(" ")}
+          >
+            {text}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 type Props = {
-  vars: Vars;
+  editions: PrintshopEdition[];
+  /** Which trim the sheet opens on — whichever the reader was just looking at. */
+  defaultEdition: EditionKey;
   /** Which language the sheet opens on — the page's own locale. */
   defaultLang: PrintLang;
 };
 
 /**
- * The shop-facing spec sheet, switchable between English, Thai and Chinese.
+ * The shop-facing spec sheet: one trim, one language, at a time.
  *
- * Each language also has its own full page (/print, /th/print, /zh/print), but
- * this toggle is not redundant with them: it's for the moment you're standing
- * at the counter reading English and need to show the clerk the Thai, without
- * navigating away from the downloads you just opened.
+ * Both toggles exist for the same reason — this is the thing you hold up at the
+ * counter. The language toggle is not redundant with /print, /th/print and
+ * /zh/print: it's for the moment you're standing there reading English and need
+ * to show the clerk the Thai, without navigating away from the downloads you
+ * just opened. The edition toggle is stricter than that: the sheet shows ONE
+ * size's numbers, never both, because a shop handed two page counts and two cut
+ * instructions on one card is a shop about to guess.
  */
-export function PrintSpecSheet({ vars, defaultLang }: Props) {
+export function PrintSpecSheet({ editions, defaultEdition, defaultLang }: Props) {
   const [lang, setLang] = useState<PrintLang>(defaultLang);
+  const [key, setKey] = useState<EditionKey>(defaultEdition);
+
   const copy = SPEC[lang];
+  const edition = editions.find((e) => e.key === key) ?? editions[0];
+  const vars = { ...editionVars(edition), cut: CUT[lang][edition.key] };
   const thai = lang === "th";
 
   return (
@@ -66,31 +120,22 @@ export function PrintSpecSheet({ vars, defaultLang }: Props) {
           </p>
         </div>
 
-        <div
-          role="group"
-          aria-label="Spec sheet language"
-          className="flex shrink-0 overflow-hidden rounded-md border border-divider"
-        >
-          {PRINT_LANGS.map(({ code, label }) => {
-            const active = code === lang;
-            return (
-              <button
-                key={code}
-                type="button"
-                onClick={() => setLang(code)}
-                aria-pressed={active}
-                className={[
-                  "px-3 py-1.5 font-sans text-xs transition-colors",
-                  active
-                    ? "bg-ink text-paper"
-                    : "text-ink/60 hover:bg-ink/5 hover:text-ink",
-                  code === "th" ? THAI_CLASS : "",
-                ].join(" ")}
-              >
-                {label}
-              </button>
-            );
-          })}
+        <div className="flex shrink-0 flex-wrap items-center gap-3">
+          {/* Only offered when there's a choice to make. */}
+          {editions.length > 1 && (
+            <Toggle
+              label="Spec sheet size"
+              options={editions.map((e) => ({ code: e.key, label: e.label }))}
+              value={key}
+              onChange={setKey}
+            />
+          )}
+          <Toggle
+            label="Spec sheet language"
+            options={PRINT_LANGS.map(({ code, label }) => ({ code, label }))}
+            value={lang}
+            onChange={setLang}
+          />
         </div>
       </div>
 

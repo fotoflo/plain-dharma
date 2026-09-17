@@ -1,6 +1,6 @@
 # Architecture — Plain Dharma
 
-*Last updated: 2026-06-08*
+*Last updated: 2026-09-17*
 
 ## Detailed docs
 
@@ -11,6 +11,8 @@
 | Design system (palette, typography, Wash, NightSky) | [design-system.md](design-system.md) |
 | Illustrations (Gemini generation, transparency pipeline) | [illustrations.md](illustrations.md) |
 | Audio playback (TTS pipeline, manifests, player) | [audio.md](audio.md) |
+| Downloads & distribution (EPUB, PDF, audiobook, KDP) | [downloads.md](downloads.md) |
+| Print-shop editions (A5, B6, A6 for copy shops) | [print-shop-editions.md](print-shop-editions.md) |
 | Dev workflow (ngrok tunnel, QR code, scripts) | [dev-workflow.md](dev-workflow.md) |
 | Deployment (Vercel, DNS, routing) | [deployment.md](deployment.md) |
 | Mobile app (React Native / Expo monorepo) | [mobile.md](mobile.md) |

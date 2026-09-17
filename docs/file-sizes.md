@@ -1,5 +1,53 @@
 # File Size Snapshots
 
+## 2026-09-17 (current)
+
+Scanned: `src`, `public`, `docs`, `.claude` — the script's scope. It does **not**
+cover `scripts/` or `packages/`.
+
+### Distribution
+
+| Bucket     | Count |
+|------------|-------|
+| <=50       | 67    |
+| 51-150     | 81    |
+| 151-300    | 33    |
+| 301-500    | 9    |
+| 501-1000   | 6    |
+| 1001-2000  | 0    |
+| 2000+      | 0    |
+
+Total files: 196
+
+**No delta is given against 2026-07-26, because the two runs are not comparable.**
+That snapshot was taken from the main checkout, where the scan recurses into
+`.claude/worktrees/` and counts every worktree's copy of the repo again — 555
+extra files today, 741 in total. This one was taken inside a worktree, where
+`.claude` holds no nested checkouts. Subtracting one from the other suggests a
+~48% deletion that never happened. Compare future snapshots only against runs
+from the same place, or fix the script to prune `.claude/worktrees`.
+
+### Largest file
+
+`src/app/assets/page.tsx` — 818 lines (+4 since 2026-07-26)
+
+### Files over 500 lines (in scan scope)
+
+- `src/app/assets/page.tsx` — 818
+- `src/components/AudioPlayer.tsx` — 796
+- `src/views/HowItWasMadeView.tsx` — 667
+- `src/components/marginalia/Marginalia.tsx` — 529
+- `docs/architecture/mobile.md` — 525
+- `docs/manuscript-review.md` — 515
+
+### Touched this session, outside the scan scope
+
+`scripts/` is not scanned, but this session grew two files there worth recording:
+
+- `scripts/build-printshop-pdf.ts` — 867 lines (+291 this session; it now drives
+  three trims off one EDITIONS table)
+- `scripts/render-covers.ts` — 544 lines (+51 this session)
+
 ## 2026-07-26 (current)
 
 ### Distribution

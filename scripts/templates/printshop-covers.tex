@@ -1,0 +1,73 @@
+% Plain Dharma — print-shop COVER sheets (2 pages, color, on A4).
+%
+% ONE template for every print-shop trim: build-printshop-pdf.ts computes the
+% geometry from the edition's trim and substitutes the __TOKENS__ below, so the
+% crop-mark arithmetic lives in one place (TypeScript, where it can be read and
+% checked) rather than being hand-copied per size into LaTeX.
+%
+% One A4 sheet per cover, each carrying the cover art at full bleed with crop
+% marks. The shop prints these two pages in color on card, trims to the marks,
+% and wraps them around the B&W interior.
+%
+% One cover per sheet even for A6, where two would look like they ought to fit:
+% A6 + 3mm bleed is 111 × 154 mm, so a pair side by side needs 222 mm across an
+% A4 sheet that is 210 mm wide, and a pair stacked needs 308 mm down one that is
+% 297 mm tall. Dropping the bleed to make them fit would put the cut line exactly
+% on the edge of the art, which is the one thing bleed exists to prevent.
+%
+% Geometry (all centered on the A4 sheet, so every mark is symmetric — which is
+% also why the crop marks don't care which corner LaTeX calls the origin):
+%
+%   A4 sheet    210 × 297 mm
+%   bleed box   __BLEED_W__ × __BLEED_H__ mm   → __BLEED_SIDE__ mm in from left/right, __BLEED_TB__ mm top/bottom
+%   trim box    __TRIM_W__ × __TRIM_H__ mm   → __TRIM_SIDE__ mm in from left/right, __TRIM_TB__ mm top/bottom
+%
+% The 3mm difference is the bleed: the art runs past the cut line so a drifting
+% blade never exposes a white hairline at the edge.
+
+\documentclass[12pt]{article}
+\usepackage[paperwidth=210mm,paperheight=297mm,top=__BLEED_TB__mm,bottom=25mm,left=__BLEED_SIDE__mm,right=__BLEED_SIDE__mm]{geometry}
+\usepackage{graphicx}
+\usepackage{eso-pic}
+\usepackage{xcolor}
+\usepackage{fontspec}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\definecolor{markgray}{gray}{0.45}
+
+% One crop mark. Rules are offset by half their thickness so the mark straddles
+% the cut line rather than sitting beside it.
+\newcommand{\hmark}[2]{\put(\LenToUnit{#1},\LenToUnit{\dimexpr#2-0.125mm\relax}){%
+  \color{markgray}\rule{8mm}{0.25mm}}}
+\newcommand{\vmark}[2]{\put(\LenToUnit{\dimexpr#1-0.125mm\relax},\LenToUnit{#2}){%
+  \color{markgray}\rule{0.25mm}{8mm}}}
+
+% Eight marks, two per corner, each ending 2mm clear of the bleed box so they're
+% never printed over by the art.
+\newcommand{\cropmarks}{%
+  \AddToShipoutPictureFG*{%
+    \hmark{__HMARK_XL__mm}{__HMARK_YB__mm}\hmark{__HMARK_XL__mm}{__HMARK_YT__mm}%     left, at both trim heights
+    \hmark{__HMARK_XR__mm}{__HMARK_YB__mm}\hmark{__HMARK_XR__mm}{__HMARK_YT__mm}%   right
+    \vmark{__VMARK_XL__mm}{__VMARK_YB__mm}\vmark{__VMARK_XR__mm}{__VMARK_YB__mm}%     bottom, at both trim widths
+    \vmark{__VMARK_XL__mm}{__VMARK_YT__mm}\vmark{__VMARK_XR__mm}{__VMARK_YT__mm}%   top
+  }%
+}
+
+% One cover sheet: art at full bleed, crop marks, and a note in the trim-off
+% margin telling the shop what it's looking at. The note is below the cut line,
+% so it vanishes when they trim.
+\newcommand{\coversheet}[2]{%
+  \cropmarks
+  \noindent\includegraphics[width=__BLEED_W__mm,height=__BLEED_H__mm]{#1}%
+  \par\vspace{5mm}%
+  \centerline{\sffamily\footnotesize\color{markgray} #2 — trim to the marks (__TRIM_W__ × __TRIM_H__ mm)}%
+  \clearpage
+}
+
+\begin{document}
+\coversheet{__FRONT_COVER__}{FRONT COVER — __EDITION__}
+\coversheet{__BACK_COVER__}{BACK COVER — __EDITION__}
+\end{document}

@@ -46,6 +46,26 @@ const BACK_COVER_TITLES = [
   "How to Decide What to Believe",
 ];
 
+/**
+ * The site QR used on the print-shop back cover, generated once into
+ * book/assets/ so the HTML can reference it relatively (Chrome loads the filled
+ * template from BOOK_DIR). Regenerate by deleting the file.
+ */
+const SITE_QR = "qr-plaindharma.png";
+function siteQrFilename(): string {
+  return SITE_QR;
+}
+function ensureSiteQr(): void {
+  const out = join(BOOK_DIR, "assets", SITE_QR);
+  if (existsSync(out)) return;
+  execFileSync(
+    "qrencode",
+    ["-o", out, "-t", "PNG32", "-s", "12", "-m", "1", "-l", "M", "https://plaindharma.com"],
+    { stdio: "inherit" },
+  );
+  console.log(`[render-covers] generated ${out}`);
+}
+
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -72,19 +92,35 @@ function backCoverEntries(): string {
 const ECO_NOTE =
   "<small>Printed on groundwood paper &mdash; at least 15% lower CO₂.</small>";
 
-/** Fill the back-cover template tokens (geometry + ISBN + barcode + entries). */
+/**
+ * Fill the back-cover template tokens (geometry + ISBN + barcode + entries).
+ *
+ * `isbn` is nullable: pass null and the whole ISBN/barcode box is omitted. The
+ * print-shop edition takes that path — it's a free-distribution booklet, not the
+ * Amazon paperback, so stamping it with 978-1-891328-38-1 would make every copy
+ * scan as a retail product it isn't.
+ */
 function fillBackCover(
   html: string,
-  isbn: string,
+  isbn: string | null,
   geom: Record<string, string>,
-  opts: { eco?: boolean } = {},
+  opts: { eco?: boolean; qr?: boolean } = {},
 ): string {
-  const barcode = ean13Svg(isbn, { moduleWidth: 2.6, barHeight: 100, fontPx: 22 });
+  let isbnBlock = "";
+  if (isbn) {
+    isbnBlock =
+      `<div class="isbn">\n      <p class="label">ISBN ${isbn}</p>\n      ` +
+      `${ean13Svg(isbn, { moduleWidth: 2.6, barHeight: 100, fontPx: 22 })}\n    </div>`;
+  } else if (opts.qr) {
+    // Relative path — Chrome loads the filled template from BOOK_DIR.
+    isbnBlock =
+      `<div class="qrbox">\n      <img src="assets/${siteQrFilename()}" alt="">\n` +
+      `      <p class="label">READ &middot; LISTEN &middot; SHARE</p>\n    </div>`;
+  }
   let out = html
-    .replace(/__ENTRIES__/g, backCoverEntries())
-    .replace(/__BARCODE__/g, barcode)
-    .replace(/__ECO_NOTE__/g, opts.eco ? ECO_NOTE : "")
-    .replace(/__ISBN__/g, isbn);
+    .replace(/__ENTRIES__/g, () => backCoverEntries())
+    .replace(/__ISBN_BLOCK__/g, () => isbnBlock)
+    .replace(/__ECO_NOTE__/g, opts.eco ? ECO_NOTE : "");
   for (const [k, v] of Object.entries(geom)) out = out.replace(new RegExp(`__${k}__`, "g"), v);
   return out;
 }
@@ -119,12 +155,120 @@ type Target = {
   build?: (templateHtml: string) => string;
 };
 
+/**
+ * Print-shop cover geometry: the A-series trims + 3mm bleed, at 300dpi, each
+ * rendered at scale 2 for 600dpi masters to match the 5×8 print pair.
+ *
+ *   A5 trim  148 × 210 mm  →  + bleed  154 × 216 mm  →  1819 × 2551 px
+ *   A6 trim  105 × 148 mm  →  + bleed  111 × 154 mm  →  1311 × 1819 px
+ *
+ * Derived rather than hard-coded, because these have to agree exactly with the
+ * numbers build-printshop-pdf.ts computes for the crop marks — two hand-typed
+ * pixel counts is how the art and the cut line drift a millimetre apart.
+ *
+ * The A-series ratio (0.713) differs from the 5.25×8.25 covers' (0.636), which
+ * is why these are separate renders rather than a resize — scaling the 5×8 art
+ * into an A5 page would either crop the composition or leave cream side bars.
+ * A5 and A6 are near-identical in ratio but NOT interchangeable: A6 is rendered
+ * at its own pixel size so the type on the back cover is sized for the page it
+ * actually prints on, instead of being shrunk to 71% with everything on it.
+ */
+const COVER_DPI = 300;
+const COVER_BLEED_MM = 3;
+const mmToPx = (mm: number) => Math.round((mm * COVER_DPI) / 25.4);
+const bleedPx = (trimMm: number) => mmToPx(trimMm + COVER_BLEED_MM * 2);
+
+const A5_BLEED_W = bleedPx(148);
+const A5_BLEED_H = bleedPx(210);
+const A6_BLEED_W = bleedPx(105);
+const A6_BLEED_H = bleedPx(148);
+const B6_BLEED_W = bleedPx(125);
+const B6_BLEED_H = bleedPx(176);
+
+/**
+ * B6's back-cover metrics, interpolated between the two that were tuned by eye.
+ *
+ * B6 sits between A6 and A5 in width, so rather than a third set of hand-typed
+ * pads that can drift from both, each value is read off the line joining the A6
+ * and A5 numbers at B6's width. BODY comes along for the ride, which keeps the
+ * deliberate hold-up in A6's body size (33 where a pure scale wanted 29) partly
+ * in effect here instead of throwing it away.
+ */
+const b6Mix = (a6: number, a5: number): string => {
+  const t = (B6_BLEED_W - A6_BLEED_W) / (A5_BLEED_W - A6_BLEED_W);
+  return String(Math.round(a6 + t * (a5 - a6)));
+};
+
+/** Substitute geometry tokens only (front cover has no content tokens). */
+function fillGeom(html: string, geom: Record<string, string>): string {
+  let out = html;
+  for (const [k, v] of Object.entries(geom)) out = out.replace(new RegExp(`__${k}__`, "g"), v);
+  return out;
+}
+
+/**
+ * front-cover.html's metrics, in the px they're authored at.
+ *
+ * The design is a fixed-px poster tuned at 5.25×8.25 (1575 wide) and reused
+ * unchanged at A5 (1819) — a 15% spread it absorbs fine. A6 is a 28% drop, and
+ * it does not absorb that: the sun alone is 1080px against a 1311px page with
+ * 190px columns, i.e. wider than the 931px it has to sit in. The column
+ * overflowed, and `overflow: hidden` on .cover quietly cropped the byline —
+ * "Translated by / Edited by" and the dharma-gift line — clean off the bottom.
+ */
+const FRONT_COVER_METRICS = {
+  BAND_W: 114,
+  STITCH_L: 98,
+  STITCH_W: 2,
+  STITCH_DASH: 12,
+  STITCH_PERIOD: 26,
+  COL_X: 190,
+  MAST_TOP: 190,
+  EYEBROW_FS: 25,
+  RULE_W: 132,
+  RULE_H: 2,
+  RULE_MT: 36,
+  TITLE_FS: 232,
+  TITLE_MT: 64,
+  SUB_FS: 60,
+  SUB_MT: 52,
+  SUB_MAXW: 920,
+  SUN_W: 1080,
+  BYLINE_MB: 300,
+  AUTHOR_FS: 58,
+  CREDIT_FS: 22,
+  CREDIT_MT: 38,
+} as const;
+
+/**
+ * Fill front-cover.html for one page size.
+ *
+ * `scale` multiplies every metric, so the whole composition keeps its
+ * proportions on a smaller cover instead of the type staying put and the page
+ * shrinking out from under it. Hairlines floor at 1px so the rule and the
+ * stitch can't round away to nothing.
+ *
+ * Scale defaults to 1, which is what the 5.25×8.25 and A5 covers pass: their
+ * output is unchanged to the pixel. Only A6 asks for anything else.
+ */
+function fillFrontCover(html: string, pageW: number, pageH: number, scale = 1): string {
+  const geom: Record<string, string> = {
+    PAGE_W: String(pageW),
+    PAGE_H: String(pageH),
+  };
+  for (const [k, v] of Object.entries(FRONT_COVER_METRICS)) {
+    geom[k] = String(Math.max(1, Math.round(v * scale)));
+  }
+  return fillGeom(html, geom);
+}
+
 const TARGETS: Target[] = [
   {
     html: "front-cover.html",
     cw: 1575,
     ch: 2475,
     scale: 2, // → 3150×4950 ≈ 600dpi at 5.25×8.25
+    build: (h) => fillFrontCover(h, 1575, 2475),
     outputs: [
       { file: "front-cover-print-color.jpg" },
       { file: "front-cover-print-bw.jpg", grayscale: true },
@@ -190,6 +334,108 @@ const TARGETS: Target[] = [
         { eco: true },
       ),
     outputs: [{ file: "back-cover-print-groundwood.jpg" }],
+  },
+  // ── Print-shop edition (A5 + 3mm bleed) ──────────────────────────────────
+  // Fed to build-printshop-pdf.ts, which lays each one on an A4 sheet with crop
+  // marks. Color only: the shop runs the two cover sheets on card in color and
+  // the interior in B&W, so a grayscale sibling would never be used.
+  {
+    html: "front-cover.html",
+    cw: A5_BLEED_W,
+    ch: A5_BLEED_H,
+    scale: 2,
+    build: (h) => fillFrontCover(h, A5_BLEED_W, A5_BLEED_H),
+    outputs: [{ file: "front-cover-a5-color.jpg" }],
+  },
+  {
+    html: "back-cover.html",
+    cw: A5_BLEED_W,
+    ch: A5_BLEED_H,
+    scale: 2,
+    // No ISBN — see fillBackCover. Geometry scaled from the 5×8 back cover:
+    // the page is 15% wider but only 3% taller, so the horizontal pads grow
+    // and the body size ticks up to keep the measure from going slack.
+    build: (h) =>
+      fillBackCover(
+        h,
+        null,
+        {
+          PAGE_W: String(A5_BLEED_W), PAGE_H: String(A5_BLEED_H), BODY: "40",
+          BAND_W: "173", STITCH_R: "152",
+          PAD_TOP: "165", PAD_LEFT: "150", PAD_RIGHT: "290", PAD_BOT: "165",
+        },
+        { qr: true },
+      ),
+    outputs: [{ file: "back-cover-a5-color.jpg" }],
+  },
+  // ── Print-shop edition, pocket size (A6 + 3mm bleed) ─────────────────────
+  // Same artwork, re-rendered at A6's own pixel size rather than resized down
+  // from A5: a resize would shrink the back-cover type along with the page and
+  // land the six teasers around 7pt on a 105mm-wide card. The pads below scale
+  // with the trim, but BODY is held up so the entries stay legible at the size
+  // they actually print — this face carries more text per mm than any other.
+  {
+    html: "front-cover.html",
+    cw: A6_BLEED_W,
+    ch: A6_BLEED_H,
+    scale: 2,
+    // Scaled against A5, the widest size these metrics were tuned at.
+    build: (h) => fillFrontCover(h, A6_BLEED_W, A6_BLEED_H, A6_BLEED_W / A5_BLEED_W),
+    outputs: [{ file: "front-cover-a6-color.jpg" }],
+  },
+  {
+    html: "back-cover.html",
+    cw: A6_BLEED_W,
+    ch: A6_BLEED_H,
+    scale: 2,
+    // No ISBN — see fillBackCover. Free-distribution booklet, same as A5.
+    build: (h) =>
+      fillBackCover(
+        h,
+        null,
+        {
+          PAGE_W: String(A6_BLEED_W), PAGE_H: String(A6_BLEED_H), BODY: "33",
+          BAND_W: "125", STITCH_R: "110",
+          PAD_TOP: "112", PAD_LEFT: "104", PAD_RIGHT: "200", PAD_BOT: "112",
+        },
+        { qr: true },
+      ),
+    outputs: [{ file: "back-cover-a6-color.jpg" }],
+  },
+  // ── Print-shop edition, pocket paperback (B6 + 3mm bleed) ────────────────
+  // B6 is not an A-size and does not tile A4 — see the note on the B6 edition
+  // in build-printshop-pdf.ts. It still gets its own render for the same reason
+  // A6 does: the faces are laid out in fixed px, so a resize would take the
+  // back-cover type down with the page instead of setting it for the page it
+  // prints on.
+  {
+    html: "front-cover.html",
+    cw: B6_BLEED_W,
+    ch: B6_BLEED_H,
+    scale: 2,
+    build: (h) => fillFrontCover(h, B6_BLEED_W, B6_BLEED_H, B6_BLEED_W / A5_BLEED_W),
+    outputs: [{ file: "front-cover-b6-color.jpg" }],
+  },
+  {
+    html: "back-cover.html",
+    cw: B6_BLEED_W,
+    ch: B6_BLEED_H,
+    scale: 2,
+    // No ISBN — see fillBackCover. Free-distribution booklet, same as A5 and A6.
+    build: (h) =>
+      fillBackCover(
+        h,
+        null,
+        {
+          PAGE_W: String(B6_BLEED_W), PAGE_H: String(B6_BLEED_H),
+          BODY: b6Mix(33, 40),
+          BAND_W: b6Mix(125, 173), STITCH_R: b6Mix(110, 152),
+          PAD_TOP: b6Mix(112, 165), PAD_LEFT: b6Mix(104, 150),
+          PAD_RIGHT: b6Mix(200, 290), PAD_BOT: b6Mix(112, 165),
+        },
+        { qr: true },
+      ),
+    outputs: [{ file: "back-cover-b6-color.jpg" }],
   },
   // Back cover — ebook trim (6×9), a downloadable companion to cover.jpg.
   {
@@ -287,6 +533,7 @@ function writeOutput(master: string, out: Output): void {
 function main(): void {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
   const chrome = findChrome();
+  ensureSiteQr();
   for (const t of TARGETS) {
     const master = renderMaster(chrome, t);
     for (const out of t.outputs) writeOutput(master, out);

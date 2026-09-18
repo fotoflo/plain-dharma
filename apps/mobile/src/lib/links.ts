@@ -70,12 +70,11 @@ export function asDownloadFormat(raw: string | undefined | null): DownloadFormat
 }
 
 // The EPUB is the Kindle edition, sold on Amazon. We don't sell it — Amazon
-// does, and it sets its own price; the full book stays free here (CC0). Paste
-// the real product URL once the KDP listing is live. An empty string hides the
-// "available on Kindle" note in the download screen, so this is safe to ship
-// before launch. Opening Amazon in the in-app browser keeps it an informational
-// pointer, not an in-app purchase, so it stays App-Store-safe.
-export const AMAZON_KINDLE_URL = ""; // e.g. "https://www.amazon.com/dp/B0XXXXXXXX"
+// does, and it sets its own price; the full book stays free here (CC0).
+// Mirrors src/lib/book-links.ts on the web. Opening Amazon in the in-app
+// browser keeps it an informational pointer, not an in-app purchase, so it
+// stays App-Store-safe.
+export const AMAZON_KINDLE_URL = "https://www.amazon.com/dp/B0H4W4TVGM";
 
 export function openKindleStore(): Promise<unknown> {
   return WebBrowser.openBrowserAsync(AMAZON_KINDLE_URL);

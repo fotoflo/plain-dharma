@@ -1,0 +1,138 @@
+% Plain Dharma — XeLaTeX preamble for the PRINT-SHOP editions (A5 and A6, 12pt).
+%
+% ONE template, rendered per edition: build-printshop-pdf.ts substitutes the
+% __TOKENS__ below from its EDITIONS table, so A5 and A6 can never drift apart
+% typographically — only the numbers that must differ actually do.
+%
+% This edition: __EDITION__ — __TRIM__ trim, __MEASURE__mm measure
+% (~__CPL__ characters per line), __UP__-up on A4.
+%
+% These are the files you hand a copy shop. They differ from pdf-preamble-print.tex
+% (the KDP-shaped 5×8) in four ways:
+%
+%   1. A-series trim, so the pages tile an A4 sheet exactly — which is how the
+%      shop prints them (n-up, duplex, cut, bind). The 5.25×8.25 print PDF isn't
+%      an A-size, so a shop can only centre it on A4 and waste the margins, or
+%      scale it and guess. That's what made the first attempt come out small.
+%   2. 12pt body instead of 10pt, on BOTH sizes. A6 is the pocket edition, not
+%      the small-print edition: the page shrinks, the type does not. That is the
+%      whole point of it, and it's why A6 runs about twice the page count of A5
+%      for the same words rather than the same count at 8pt.
+%   3. White paper, no \pagecolor. Shops print on stock they already have; a
+%      cream flood would cost a full-coverage ink charge on every page.
+%   4. NO bleed and NO cover pages. The covers are a separate 2-page color file
+%      (see build-printshop-pdf.ts) because the shop runs them on card in a
+%      different pass — a single mixed file gets printed entirely in color by
+%      mistake, which is the expensive way to find out.
+%
+% Margins are set in build-printshop-pdf.ts, not here: a generous inner for the
+% binding, and outer/top/bottom left wide enough that a 3mm trim never touches
+% type.
+
+% Garamond Libre — same family as every other edition.
+\setmainfont{GaramondLibre}[
+  Path=__FONTS_DIR__/,
+  Extension=.otf,
+  UprightFont=*-Regular,
+  ItalicFont=*-Italic,
+  BoldFont=*-Bold,
+  BoldItalicFont=*-BoldItalic,
+  Ligatures=TeX,
+  Numbers=OldStyle
+]
+
+% Brand palette. Everything here prints as gray in the shop's B&W pass; the
+% values are kept so a shop that quotes color interior gets the real colors.
+\definecolor{ink}{HTML}{2A2520}
+\definecolor{muted}{HTML}{6B5F50}
+\definecolor{saffron}{HTML}{C7651C}
+
+\color{ink}
+\linespread{1.18}
+
+% Heading sizes step down with the trim. On the __MEASURE__mm measure a chapter
+% title set any larger than __CHAPTER_SIZE__ wraps mid-phrase, which reads as a
+% mistake rather than as a line break.
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont__CHAPTER_SIZE__\bfseries\color{ink}}
+  {}
+  {0pt}
+  {__CHAPTER_SIZE__}
+\titlespacing*{\chapter}{0pt}{__CHAPTER_BEFORE__pt}{__CHAPTER_AFTER__pt}
+
+\titleformat{\section}
+  {\normalfont__SECTION_SIZE__\bfseries\color{ink}}
+  {}
+  {0pt}
+  {}
+
+% Blockquote (per-chapter drops): italic, muted, indented.
+\renewenvironment{quote}{%
+  \begin{list}{}{%
+    \leftmargin=1.2em\rightmargin=1.2em\itemindent=0pt%
+  }\item\itshape\color{muted}}{%
+  \end{list}}
+
+% Illustrations. build-printshop-pdf.ts rewrites each standalone image into an
+% explicit \begin{center} block, so the default \includegraphics width here is
+% only a fallback — see the centering note in that script.
+\usepackage{graphicx}
+\setkeys{Gin}{width=0.66\linewidth,keepaspectratio}
+
+% Pali diacritics fallback (same as every other edition).
+\usepackage{newunicodechar}
+\newfontfamily\palifallback{STIX Two Text}
+\newunicodechar{ṇ}{{\palifallback ṇ}}
+\newunicodechar{ṭ}{{\palifallback ṭ}}
+
+% Let long source URLs break across lines — the measure is only __MEASURE__mm
+% and an Access to Insight path is far wider. url.sty ships with BasicTeX;
+% xurl does not.
+\usepackage{url}
+\Urlmuskip=0mu plus 1mu\relax
+\def\UrlBreaks{\do\/\do\-\do\.\do\_\do\?\do\&\do\=\do\#\do\:}
+
+\usepackage{enumitem}
+\setlist{itemsep=0.15em,topsep=0.3em}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\hyphenation{Mindfulness Loving-Kindness Dharma Buddha Buddhist}
+
+% Line breaking, head spacing and blank-page style. A5 is published and takes
+% the class defaults; the narrow trim needs all three adjusted.
+__TYPESET_TUNING__
+
+% Running heads. The book class sets them at \normalsize, which fits the A5
+% measure and overruns the A6 one: "5. THE FOUNDATIONS OF MINDFULNESS" is wider
+% than 83mm, so it ran into the page number at one end and past the text block
+% at the other. A6 therefore re-lays the head a size down; A5 keeps the class
+% default untouched, so its already-published pagination is unaffected.
+__HEADER_TUNING__
+
+% Contents. Same story as the running heads: the class's defaults assume a
+% measure the narrower trim doesn't have, and the failure is worse here because
+% it lands on the one page a reader uses to find their way around.
+__TOC_TUNING__
+
+% Pad the book out to a multiple of __PAGES_PER_SHEET__ pages. __UP__-up duplex
+% puts __PAGES_PER_SHEET__ __EDITION__ pages on one A4 sheet, so a page count
+% that isn't divisible by __PAGES_PER_SHEET__ leaves the shop with a part-used
+% final sheet and an ambiguous cut. build-printshop-pdf.ts measures the first
+% pass and substitutes the count here on the second.
+__PAD_PAGES__
+
+% Print hyperlink convention: link text renders as plain ink. Nobody can click
+% a booklet.
+\AtBeginDocument{%
+  \hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+    pdfauthor={Gautama Buddha; translated by Claude Opus; edited by Alex Miller},
+    pdfsubject={Six Foundational Buddhist Teachings in Plain Modern English},
+    pdfkeywords={Buddhism, suttas, dharma, meditation, mindfulness},
+    pdfcreator={pandoc + XeLaTeX (print-shop edition, __EDITION__)}
+  }%
+}

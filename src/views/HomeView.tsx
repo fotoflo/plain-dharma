@@ -7,7 +7,8 @@ import { SuttaIllustration } from "@/components/SuttaIllustration";
 import { Wash } from "@/components/Wash";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { StoreBadges } from "@/components/StoreBadges";
-import { APP_LINKS } from "@/lib/app-links";
+import { APP_LINKS, APP_PUBLISHED } from "@/lib/app-links";
+import { BOOK_LINKS } from "@/lib/book-links";
 
 // Editorial layout config for the six hero illustrations.
 //
@@ -217,6 +218,14 @@ function BookSection({ locale }: { locale: Locale }) {
             >
               {s.home.bookCta}
             </Link>
+            <a
+              href={BOOK_LINKS.amazonPaperback}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full border border-divider px-6 py-2.5 font-sans text-sm font-medium text-ink no-underline hover:no-underline hover:border-accent"
+            >
+              {s.home.bookCtaPaperback}
+            </a>
             <Link
               href={`${localizedHref(locale, "read")}?play=1`}
               className="inline-flex items-center justify-center rounded-full border border-divider px-6 py-2.5 font-sans text-sm font-medium text-ink no-underline hover:no-underline hover:border-accent"
@@ -263,11 +272,11 @@ function AppBand({ locale }: { locale: Locale }) {
             {s.home.appBandBody}
           </p>
           <div className="mt-7 flex flex-col items-center gap-5 md:items-start">
-            {/* Once the App Store listing is approved (APP_LINKS.published),
-                StoreBadges renders the official badges; until then we surface
-                the live TestFlight public link so people can try the iPhone
-                beta now. */}
-            {APP_LINKS.published ? (
+            {/* With a store listing live (APP_PUBLISHED), StoreBadges renders
+                the official badge(s) — currently the App Store; Google Play
+                joins when that listing is approved. The TestFlight CTA remains
+                as the fallback if every store flag is ever off. */}
+            {APP_PUBLISHED ? (
               <StoreBadges className="justify-center md:justify-start" />
             ) : (
               <a
@@ -280,7 +289,7 @@ function AppBand({ locale }: { locale: Locale }) {
                 {s.home.appBetaCta}
               </a>
             )}
-            {!APP_LINKS.published && (
+            {!APP_PUBLISHED && (
               <p className="font-sans text-xs text-ink/55">
                 {s.home.appBetaNote}
               </p>

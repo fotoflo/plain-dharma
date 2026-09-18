@@ -147,6 +147,24 @@
     margin: 0 0 4px;
   }
   .isbn svg { display: block; }
+
+  /* Print-shop edition: a QR to the site stands where the ISBN box sits on the
+     retail covers. The booklet is a free giveaway with no retail identity, so
+     "scan to read or listen" is the useful thing to put in that corner.
+     5em of the 40px A5 body = 200px ≈ 17mm at 300dpi — comfortably scannable. */
+  .qrbox { text-align: center; }
+  .qrbox img {
+    display: block;
+    width: 5em; height: 5em;
+    image-rendering: pixelated;   /* keep the modules crisp, never blurred */
+  }
+  .qrbox .label {
+    font-family: "Geist", system-ui, sans-serif;
+    font-size: 0.5em;
+    letter-spacing: 0.04em;
+    color: var(--cover-mute);
+    margin: 8px 0 0;
+  }
 </style>
 </head>
 <body>
@@ -178,10 +196,7 @@
       <small>Free PDF, EPUB, audiobook, and printable booklets.</small>
       __ECO_NOTE__
     </div>
-    <div class="isbn">
-      <p class="label">ISBN __ISBN__</p>
-      __BARCODE__
-    </div>
+    __ISBN_BLOCK__
   </div>
 </article>
 

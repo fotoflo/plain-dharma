@@ -36,6 +36,10 @@ export function Footer() {
               {s.footer.byLineLinkText}
             </a>
           </p>
+          {/* Required by the Amazon Associates Operating Agreement — the
+              paperback/Kindle links on the home and download pages carry the
+              plaindharma-20 tag (see src/lib/book-links.ts). */}
+          <p className="mt-1 text-xs text-ink/50">{s.footer.affiliateLine}</p>
         </div>
         <div className="flex items-center gap-5 text-xs">
           <Link href={localizedHref(locale, "about")}>
@@ -46,6 +50,9 @@ export function Footer() {
           </Link>
           {/* Remix is EN-only (like /download), so it always points at /remix. */}
           <Link href="/remix">{s.footer.remixLink}</Link>
+          {/* /print DOES have a ZH twin — the copy-shop spec is the one thing a
+              non-English reader most needs, so it follows the locale. */}
+          <Link href={localizedHref(locale, "print")}>{s.footer.printLink}</Link>
           <Link href={localizedHref(locale, "contribute")}>
             {s.footer.contributeLink}
           </Link>

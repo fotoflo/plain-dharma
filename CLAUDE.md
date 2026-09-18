@@ -24,6 +24,7 @@ Everything else should remain compatible with `output: 'export'`. Don't add more
 | `pnpm generate-illustrations` | Run Gemini image generation (needs `GOOGLE_GENERATIVE_AI_KEY` in `.env.local`) |
 | `pnpm transparentize-illustrations` | Alpha-fade backgrounds in-place |
 | `pnpm generate-audio` | TTS pipeline (run via `node --env-file=.env.local --import tsx`) |
+| `pnpm build-printshop-pdf` | A5 + A6 print-shop editions — a B&W interior + color cover sheet per size, both 12pt. Needs `pnpm render-covers` first. Writes the page/sheet counts `/print` quotes into the committed `src/content/printshop-spec.json`; `PRINTSHOP_KEEP_SIZES=1` leaves the file sizes in it alone (for rebuilding pagination without the real illustrations) |
 | `pnpm build-remix-assets` | Copy MDX source + build the text/audio zips into `public/downloads` for `/remix` |
 | `pnpm upload-assets` | Publish the heavy binaries (audio, illustrations, downloads) to the public Supabase bucket + write `asset-version.json` |
 

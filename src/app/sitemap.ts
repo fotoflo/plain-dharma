@@ -30,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/glossary`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/download`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/remix`,    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${SITE_URL}/print`,    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/contribute`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
     { url: `${SITE_URL}/privacy`,  lastModified: now, changeFrequency: "yearly",  priority: 0.3 },
     // ZH (no /zh/download — EN-only Stripe flow)
@@ -37,6 +38,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/zh/read`,     lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE_URL}/zh/about`,    lastModified: now, changeFrequency: "yearly",  priority: 0.5 },
     { url: `${SITE_URL}/zh/glossary`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${SITE_URL}/zh/print`,    lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    // Thai exists for /print only — the URL handed to Thai copy shops.
+    { url: `${SITE_URL}/th/print`,    lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${SITE_URL}/zh/contribute`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${SITE_URL}/zh/privacy`,  lastModified: now, changeFrequency: "yearly",  priority: 0.2 },
   ];

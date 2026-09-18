@@ -110,6 +110,16 @@ const DESTINATIONS: { title: string; note: string; files: string[] }[] = [
     files: ["audiobook/audiobook-cover.jpg", "audiobook/plain-dharma.m4b"],
   },
   {
+    title: "Print shop — hand these over the counter",
+    note: "one interior + one cover sheet PER SIZE · never mix the two jobs · specs at /print",
+    files: [
+      "printshop/plain-dharma-printshop-a5.pdf",
+      "printshop/plain-dharma-printshop-a5-covers.pdf",
+      "printshop/plain-dharma-printshop-a6.pdf",
+      "printshop/plain-dharma-printshop-a6-covers.pdf",
+    ],
+  },
+  {
     title: "Reading / share PDFs",
     note: "the digital reading edition + print-at-home",
     files: [

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:authors.spotify.com)",
+      "Bash(open:*)",
+      "Bash(/dev/null echo:*)"
+    ]
+  }
+}

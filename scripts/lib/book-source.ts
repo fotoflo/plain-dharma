@@ -211,7 +211,7 @@ export function buildBookMarkdown(opts: BookSourceOptions): string {
     );
     parts.push(`![](${opts.qrCodePath})\n`);
     parts.push(
-      `- Read it in the browser\n- Download the PDF or EPUB\n- **Listen to the narrated audiobook** — about 38 minutes, free from the site or on Amazon and Audible\n- Get the **paperback** or **ebook**, for reading or for giving away\n- Print booklets for free distribution at temples and retreats\n`
+      `- Read it in the browser\n- Download the PDF or EPUB\n- **Listen to the narrated audiobook** — about 38 minutes, free from the site or wherever you get audiobooks\n- Get the **paperback** or **ebook**, for reading or for giving away\n- Print booklets for free distribution at temples and retreats\n`
     );
     parts.push(
       `Updates and corrections, when they happen, go up there first.\n`

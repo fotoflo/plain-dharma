@@ -72,7 +72,7 @@ const en = {
     ctaReadAll: "Read all six",
     ctaDownload: "Free Download",
     heroBlurb:
-      "Six short sutras — the ones at the root of the whole tradition — rendered for a first-time reader who'd rather understand than wade through footnotes. Free to read, free to copy, free to print, free to listen.",
+      "Six short sutras — the ones at the root of the whole tradition. They began as an oral tradition and were only later written down by monks, so they're translated here back toward the spoken word, for a first-time reader who'd rather understand than wade through footnotes. Free to read, free to copy, free to print, free to listen.",
     sixTeachingsLabel: "The six teachings",
     bookTitle: "Download the Book",
     bookFormats: "Available in paperback, ebook, audiobook, and app form.",
@@ -111,7 +111,7 @@ const en = {
       "What Plain Dharma is, who it's for, and where the original teachings come from.",
     kicker: "About",
     h1: "About this version",
-    p1: "These six teachings are rendered here in plain modern English — not as a scholarly translation, but as a plain reading of what the Buddha actually said. The goal is to make the foundational teachings accessible to a first-time reader without sacrificing the substance.",
+    p1: "These six teachings are rendered here in plain modern English — not as a scholarly translation, but as a plain reading of what the Buddha actually said. The suttas began as an oral tradition and were only later written down by monks, so this version takes the liberty of translating them back toward the spoken word. The goal is to make the foundational teachings accessible to a first-time reader without sacrificing the substance.",
     p2: "This is not a substitute for canonical translation. If you find a teaching here that moves you, the next step is to read the same passage as translated by Bhikkhu Bodhi, Thanissaro Bhikkhu, or the collaborative team at SuttaCentral — three rigorous sources, all freely available.",
     p3PreservedStripped:
       "What's preserved: the structure, the repetitions, the key images, and the moments where the original itself does something striking — like the cosmic ending of the first talk, or the mother-and-only-child image in the Mettā Sutra. What's stripped: archaic English (\"thus have I heard\"), unfamiliar terminology where a modern word does the same job, and the formal cadences that can put a contemporary reader to sleep.",
@@ -423,7 +423,7 @@ const zh: Strings = {
     ctaReadAll: "六篇一起读",
     ctaDownload: "免费下载",
     heroBlurb:
-      "六篇短短的开示——整个传承的根基——为第一次接触的读者而做，与其在脚注里钻来钻去，不如直接读懂。可以自由阅读、自由复制、自由打印、自由聆听。",
+      "六篇短短的开示——整个传承的根基。它们最初是口头传承，后来才由僧人写下，所以这里把它们译回口语，为第一次接触的读者而做，与其在脚注里钻来钻去，不如直接读懂。可以自由阅读、自由复制、自由打印、自由聆听。",
     sixTeachingsLabel: "这六篇开示",
     bookTitle: "下载这本书",
     bookFormats: "提供纸质书、电子书、有声书和应用四种形式。",
@@ -461,7 +461,7 @@ const zh: Strings = {
       "Plain Dharma 是什么、为谁而做、这些教法的原文来自哪里。",
     kicker: "关于",
     h1: "关于这个版本",
-    p1: "这六篇开示在这里用平实的现代汉语呈现——不是一份学术翻译，而是一次直白的呈现，让你读到佛陀真正说过的话。目标是让第一次接触的读者也能进入这些根基性的教法，同时不削弱原文的分量。",
+    p1: "这六篇开示在这里用平实的现代汉语呈现——不是一份学术翻译，而是一次直白的呈现，让你读到佛陀真正说过的话。这些经文最初是口头传承，后来才由僧人写下，所以这个版本冒昧地把它们译回口语。目标是让第一次接触的读者也能进入这些根基性的教法，同时不削弱原文的分量。",
     p2: "这不能替代正式的经文翻译。如果这里某一篇打动了你，下一步就去读同一段——Bhikkhu Bodhi 的译本、Thanissaro Bhikkhu 的译本，或者 SuttaCentral 的合作译本。这三个来源都很严谨，而且都可以自由取用。",
     p3PreservedStripped:
       "保留下来的是：结构、重复、关键的画面，以及原文本身就特别有力的那些时刻——比如第一次开示末尾那场宇宙震动，或者《慈经》里母亲守护独生子的画面。剥掉的是：古旧的英文措辞（「如是我闻」那一类）、那些用一个普通的现代词就能说清的术语，以及那些容易把当代读者读睡着的正式腔调。",

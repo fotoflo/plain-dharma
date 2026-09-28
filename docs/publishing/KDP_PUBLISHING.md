@@ -74,6 +74,8 @@ Six of the Buddha's foundational teachings, rendered in plain modern English —
 
 This is not a scholarly translation bristling with Pali and footnotes. It is a plain reading: the same teachings working scholars have translated for decades, set down in everyday language so a first-time reader can actually follow them — without watering down the substance.
 
+The suttas began as an oral tradition and were only later written down by monks. Plain Dharma takes the liberty of translating them back toward the spoken word.
+
 Inside:
 
 1. The Buddha's First Talk (Dhammacakkappavattana) — the middle path, the four noble truths, and the eightfold way to live.

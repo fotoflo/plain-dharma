@@ -118,6 +118,11 @@ export async function HowItWasMadeView() {
             read.
           </p>
           <p>
+            But the suttas began as an oral tradition. They were only later
+            written down by monks, and the formality came with the writing. So
+            I took the liberty of translating them back toward the spoken word.
+          </p>
+          <p>
             But the dharma had reached me anyway — never through the scripture,
             but through everything around it. The imagery: mandalas, paintings
             on temple walls. The searching in D.T. Suzuki’s essays and Kerouac’s{" "}

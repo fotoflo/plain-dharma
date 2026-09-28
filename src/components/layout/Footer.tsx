@@ -28,13 +28,7 @@ export function Footer() {
           </p>
           <p className="mt-1 text-xs text-ink/50">
             {s.footer.byLinePrefix}
-            <a
-              href="https://aimhuge.com"
-              target="_blank"
-              rel="noopener"
-            >
-              {s.footer.byLineLinkText}
-            </a>
+            <Link href="/author">{s.footer.byLineLinkText}</Link>
           </p>
           {/* Required by the Amazon Associates Operating Agreement — the
               paperback/Kindle links on the home and download pages carry the

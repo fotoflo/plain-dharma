@@ -10,6 +10,7 @@ import {
 import { APP_LINKS } from "@/lib/app-links";
 import { BOOK_LINKS_CANONICAL, PAPERBACK_ISBN } from "@/lib/book-links";
 import { suttaMtime } from "@/lib/sutta-dates";
+import { AUTHOR_NAME, AUTHOR_LINKS } from "@/lib/author";
 
 // Builders return plain JSON-LD nodes (no `@context`); `graph()` wraps a set of
 // nodes into one `@graph` document for a single <script> tag. Cross-references
@@ -22,6 +23,7 @@ const ORG_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 const LOGO_URL = `${SITE_URL}/logo/plain-dharma-logo.png`;
 const REPO_URL = "https://github.com/fotoflo/plain-dharma";
+const EDITOR_ID = `${SITE_URL}/author#person`;
 
 /** schema.org `inLanguage` BCP-47 tags keyed by our internal locale. */
 const BCP47: Record<Locale, string> = { en: "en", zh: "zh-Hans" };
@@ -57,6 +59,23 @@ export function websiteJsonLd(locale: Locale): JsonLdNode {
   };
 }
 
+/** The editor, for the /author page. The book node references it by `@id`. */
+export function personJsonLd(): JsonLdNode {
+  return {
+    "@type": "Person",
+    "@id": EDITOR_ID,
+    name: AUTHOR_NAME,
+    url: `${SITE_URL}/author`,
+    image: `${SITE_URL}/author/alex-miller.jpg`,
+    jobTitle: "Editor, Plain Dharma",
+    alumniOf: [
+      { "@type": "CollegeOrUniversity", name: "Oberlin College" },
+      { "@type": "CollegeOrUniversity", name: "Peking University" },
+    ],
+    sameAs: AUTHOR_LINKS.map((l) => l.url),
+  };
+}
+
 export function mobileApplicationJsonLd(): JsonLdNode {
   return {
     "@type": "MobileApplication",
@@ -87,6 +106,7 @@ export function bookJsonLd(): JsonLdNode {
     url: `${SITE_URL}/download`,
     inLanguage: BCP47.en,
     author: { "@type": "Person", name: "Gautama Buddha" },
+    editor: { "@type": "Person", "@id": EDITOR_ID, name: AUTHOR_NAME, url: `${SITE_URL}/author` },
     publisher: { "@id": ORG_ID },
     license: LICENSE_URL,
     isAccessibleForFree: true,

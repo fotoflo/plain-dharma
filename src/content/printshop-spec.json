@@ -15,12 +15,12 @@
         "file": "plain-dharma-printshop-a5.pdf",
         "pages": 52,
         "sheets": 13,
-        "bytes": 1700609
+        "bytes": 1700826
       },
       "covers": {
         "file": "plain-dharma-printshop-a5-covers.pdf",
         "pages": 2,
-        "bytes": 1960992
+        "bytes": 2035696
       }
     },
     {
@@ -37,12 +37,12 @@
         "file": "plain-dharma-printshop-b6.pdf",
         "pages": 60,
         "sheets": 15,
-        "bytes": 1705216
+        "bytes": 1705423
       },
       "covers": {
         "file": "plain-dharma-printshop-b6-covers.pdf",
         "pages": 2,
-        "bytes": 1615723
+        "bytes": 1671013
       }
     },
     {
@@ -59,12 +59,12 @@
         "file": "plain-dharma-printshop-a6.pdf",
         "pages": 72,
         "sheets": 9,
-        "bytes": 1711709
+        "bytes": 1711885
       },
       "covers": {
         "file": "plain-dharma-printshop-a6-covers.pdf",
         "pages": 2,
-        "bytes": 1360057
+        "bytes": 1417962
       }
     }
   ]

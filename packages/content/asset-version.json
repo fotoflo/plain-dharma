@@ -914,88 +914,88 @@
     "bytes": 6148
   },
   "audio/en/_closing/01-opening.mp3": {
-    "v": "69c435d7",
-    "bytes": 404628
+    "v": "8cf69f17",
+    "bytes": 202310
   },
   "audio/en/_closing/fast/01-opening.mp3": {
-    "v": "46ffa564",
-    "bytes": 364922
+    "v": "ee7e19cc",
+    "bytes": 182457
   },
   "audio/en/_closing/manifest.json": {
     "v": "a24237db",
     "bytes": 335
   },
   "audio/en/_colophon/01-opening.mp3": {
-    "v": "cc7c00d3",
-    "bytes": 1663939
+    "v": "35585f1b",
+    "bytes": 831965
   },
   "audio/en/_colophon/fast/01-opening.mp3": {
-    "v": "4d2e77d5",
-    "bytes": 1498845
+    "v": "3495004c",
+    "bytes": 749418
   },
   "audio/en/_colophon/manifest.json": {
     "v": "c3d0eb91",
     "bytes": 337
   },
   "audio/en/_frontmatter/01-opening.mp3": {
-    "v": "a3cdc7b9",
-    "bytes": 1657670
+    "v": "113b1bed",
+    "bytes": 826532
   },
   "audio/en/_frontmatter/fast/01-opening.mp3": {
-    "v": "e6b5c526",
-    "bytes": 1493412
+    "v": "76b0391d",
+    "bytes": 744612
   },
   "audio/en/_frontmatter/manifest.json": {
     "v": "8d2e8457",
     "bytes": 340
   },
   "audio/en/fire-sermon/00-title.mp3": {
-    "v": "b0172b8e",
-    "bytes": 260014
+    "v": "f7a6f3f2",
+    "bytes": 130003
   },
   "audio/en/fire-sermon/01-opening.mp3": {
-    "v": "777415ed",
-    "bytes": 1262698
+    "v": "188cf47b",
+    "bytes": 631345
   },
   "audio/en/fire-sermon/02-the-same-fire-everywhere.mp3": {
-    "v": "c9a9cdfc",
-    "bytes": 1599991
+    "v": "a0dd5b68",
+    "bytes": 846397
   },
   "audio/en/fire-sermon/03-what-to-do-about-it.mp3": {
-    "v": "db481615",
-    "bytes": 901582
+    "v": "70f12720",
+    "bytes": 450787
   },
   "audio/en/fire-sermon/04-how-they-heard-it.mp3": {
-    "v": "4346595d",
-    "bytes": 384984
+    "v": "c70efdd4",
+    "bytes": 192488
   },
   "audio/en/fire-sermon/99-drop.mp3": {
-    "v": "3cf38f0a",
-    "bytes": 181020
+    "v": "2c13ff12",
+    "bytes": 90506
   },
   "audio/en/fire-sermon/fast/00-title.mp3": {
-    "v": "ae67f4a1",
-    "bytes": 234519
+    "v": "fd046cd4",
+    "bytes": 117255
   },
   "audio/en/fire-sermon/fast/01-opening.mp3": {
-    "v": "4c663e16",
-    "bytes": 1137728
+    "v": "9ae60773",
+    "bytes": 568860
   },
   "audio/en/fire-sermon/fast/02-the-same-fire-everywhere.mp3": {
-    "v": "bee3f70f",
-    "bytes": 1382653
+    "v": "6a0d5747",
+    "bytes": 739839
   },
   "audio/en/fire-sermon/fast/03-what-to-do-about-it.mp3": {
-    "v": "b9aec759",
-    "bytes": 812138
+    "v": "b907caf0",
+    "bytes": 406065
   },
   "audio/en/fire-sermon/fast/04-how-they-heard-it.mp3": {
-    "v": "938871ac",
-    "bytes": 346950
+    "v": "b47f1d68",
+    "bytes": 173471
   },
   "audio/en/fire-sermon/fast/99-drop.mp3": {
-    "v": "4c09490e",
-    "bytes": 163048
+    "v": "6178978b",
+    "bytes": 81520
   },
   "audio/en/fire-sermon/manifest.json": {
     "v": "2062aa70",
@@ -1006,268 +1006,268 @@
     "bytes": 6148
   },
   "audio/en/first-talk/00-title.mp3": {
-    "v": "f2351214",
-    "bytes": 262940
+    "v": "c79631bc",
+    "bytes": 131466
   },
   "audio/en/first-talk/00b-preface.mp3": {
-    "v": "4fee547d",
-    "bytes": 1231351
+    "v": "744a9167",
+    "bytes": 614418
   },
   "audio/en/first-talk/01-opening.mp3": {
-    "v": "ef90f9f6",
-    "bytes": 1794760
+    "v": "f16f88f0",
+    "bytes": 897376
   },
   "audio/en/first-talk/02-the-four-noble-truths.mp3": {
-    "v": "e91129c7",
-    "bytes": 1322048
+    "v": "44c55d26",
+    "bytes": 661020
   },
   "audio/en/first-talk/03-knowing-each-one-three-ways.mp3": {
-    "v": "ce1156ff",
-    "bytes": 1330408
+    "v": "d7cee481",
+    "bytes": 665200
   },
   "audio/en/first-talk/04-how-they-heard-it.mp3": {
-    "v": "315c705f",
-    "bytes": 1835720
+    "v": "61d3921c",
+    "bytes": 917856
   },
   "audio/en/first-talk/99-drop.mp3": {
-    "v": "21b74c25",
-    "bytes": 100772
+    "v": "342d1c69",
+    "bytes": 50382
   },
   "audio/en/first-talk/fast/00-title.mp3": {
-    "v": "92ea4e8a",
-    "bytes": 237026
+    "v": "873500ba",
+    "bytes": 118509
   },
   "audio/en/first-talk/fast/00b-preface.mp3": {
-    "v": "3b2dc1c2",
-    "bytes": 1109307
+    "v": "8bebd312",
+    "bytes": 553395
   },
   "audio/en/first-talk/fast/01-opening.mp3": {
-    "v": "82a9e807",
-    "bytes": 1617128
+    "v": "cc75d85f",
+    "bytes": 808560
   },
   "audio/en/first-talk/fast/02-the-four-noble-truths.mp3": {
-    "v": "68652248",
-    "bytes": 1191227
+    "v": "21bf2761",
+    "bytes": 595609
   },
   "audio/en/first-talk/fast/03-knowing-each-one-three-ways.mp3": {
-    "v": "f66babc2",
-    "bytes": 1198751
+    "v": "88a17b39",
+    "bytes": 599371
   },
   "audio/en/first-talk/fast/04-how-they-heard-it.mp3": {
-    "v": "004a88d1",
-    "bytes": 1653908
+    "v": "27209512",
+    "bytes": 826950
   },
   "audio/en/first-talk/fast/99-drop.mp3": {
-    "v": "e56bab62",
-    "bytes": 90741
+    "v": "70dc7b27",
+    "bytes": 45366
   },
   "audio/en/first-talk/manifest.json": {
     "v": "f42da680",
     "bytes": 1397
   },
   "audio/en/how-to-decide/00-title.mp3": {
-    "v": "51cfcda3",
-    "bytes": 170153
+    "v": "38294c56",
+    "bytes": 85072
   },
   "audio/en/how-to-decide/01-opening.mp3": {
-    "v": "7f27ad09",
-    "bytes": 1207110
+    "v": "e4bd9548",
+    "bytes": 603551
   },
   "audio/en/how-to-decide/02-dont-just-take-anyones-word-for-it.mp3": {
-    "v": "7bd1ca23",
-    "bytes": 857696
+    "v": "caa84a32",
+    "bytes": 428844
   },
   "audio/en/how-to-decide/03-so-what-do-you-go-on.mp3": {
-    "v": "206c1aac",
-    "bytes": 1644295
+    "v": "6c76de59",
+    "bytes": 822143
   },
   "audio/en/how-to-decide/04-now-do-the-same-in-reverse.mp3": {
-    "v": "4da56f10",
-    "bytes": 1123518
+    "v": "2da0f6bc",
+    "bytes": 561755
   },
   "audio/en/how-to-decide/05-the-reassurance-at-the-end.mp3": {
-    "v": "493a6779",
-    "bytes": 1183286
+    "v": "49972087",
+    "bytes": 591639
   },
   "audio/en/how-to-decide/99-drop.mp3": {
-    "v": "22ea56ce",
-    "bytes": 168481
+    "v": "e12db075",
+    "bytes": 84236
   },
   "audio/en/how-to-decide/fast/00-title.mp3": {
-    "v": "b1ac61dd",
-    "bytes": 153435
+    "v": "0acc66bd",
+    "bytes": 76713
   },
   "audio/en/how-to-decide/fast/01-opening.mp3": {
-    "v": "4e8a171a",
-    "bytes": 1087573
+    "v": "e829ed5c",
+    "bytes": 543782
   },
   "audio/en/how-to-decide/fast/02-dont-just-take-anyones-word-for-it.mp3": {
-    "v": "98d6462c",
-    "bytes": 772850
+    "v": "0bb7a493",
+    "bytes": 386421
   },
   "audio/en/how-to-decide/fast/03-so-what-do-you-go-on.mp3": {
-    "v": "b2a3fca5",
-    "bytes": 1481291
+    "v": "57560576",
+    "bytes": 740641
   },
   "audio/en/how-to-decide/fast/04-now-do-the-same-in-reverse.mp3": {
-    "v": "e82c924b",
-    "bytes": 1012341
+    "v": "14f3ef6a",
+    "bytes": 506166
   },
   "audio/en/how-to-decide/fast/05-the-reassurance-at-the-end.mp3": {
-    "v": "3d0ff0af",
-    "bytes": 1065839
+    "v": "c1223173",
+    "bytes": 532915
   },
   "audio/en/how-to-decide/fast/99-drop.mp3": {
-    "v": "36010681",
-    "bytes": 151763
+    "v": "551b0a5b",
+    "bytes": 75877
   },
   "audio/en/how-to-decide/manifest.json": {
     "v": "6ed6b2ce",
     "bytes": 1509
   },
   "audio/en/loving-kindness/00-title.mp3": {
-    "v": "e0eca93f",
-    "bytes": 211949
+    "v": "ea4f8e3e",
+    "bytes": 105996
   },
   "audio/en/loving-kindness/01-opening.mp3": {
-    "v": "a88ca84d",
-    "bytes": 2755231
+    "v": "cde95673",
+    "bytes": 1377611
   },
   "audio/en/loving-kindness/99-drop.mp3": {
-    "v": "f1f392e5",
-    "bytes": 191469
+    "v": "901b5418",
+    "bytes": 95730
   },
   "audio/en/loving-kindness/fast/00-title.mp3": {
-    "v": "f68455da",
-    "bytes": 178512
+    "v": "af5a0d54",
+    "bytes": 89252
   },
   "audio/en/loving-kindness/fast/01-opening.mp3": {
-    "v": "6d87c061",
-    "bytes": 2482303
+    "v": "18d2bc93",
+    "bytes": 1241147
   },
   "audio/en/loving-kindness/fast/99-drop.mp3": {
-    "v": "f8ead53f",
-    "bytes": 172661
+    "v": "da996443",
+    "bytes": 86326
   },
   "audio/en/loving-kindness/manifest.json": {
     "v": "c9d8f113",
     "bytes": 650
   },
   "audio/en/mindfulness/00-title.mp3": {
-    "v": "ff4bdb56",
-    "bytes": 181856
+    "v": "4095f6e9",
+    "bytes": 90924
   },
   "audio/en/mindfulness/01-opening.mp3": {
-    "v": "9ce07638",
-    "bytes": 1103038
+    "v": "f69917f1",
+    "bytes": 551515
   },
   "audio/en/mindfulness/02-1-watching-the-body.mp3": {
-    "v": "a089e018",
-    "bytes": 6417389
+    "v": "145e880e",
+    "bytes": 3208690
   },
   "audio/en/mindfulness/03-2-watching-your-feelings.mp3": {
-    "v": "0d766474",
-    "bytes": 1303658
+    "v": "5fe4d9c0",
+    "bytes": 651825
   },
   "audio/en/mindfulness/04-3-watching-your-mind.mp3": {
-    "v": "c03d3f58",
-    "bytes": 1767175
+    "v": "9fed8ccf",
+    "bytes": 883583
   },
   "audio/en/mindfulness/05-4-watching-the-contents-of-experience.mp3": {
-    "v": "c893910a",
-    "bytes": 5911658
+    "v": "9a312340",
+    "bytes": 2955825
   },
   "audio/en/mindfulness/06-what-it-leads-to.mp3": {
-    "v": "87434a71",
-    "bytes": 652896
+    "v": "eec857b2",
+    "bytes": 326444
   },
   "audio/en/mindfulness/99-drop.mp3": {
-    "v": "d2d3e0cc",
-    "bytes": 92831
+    "v": "98503040",
+    "bytes": 46411
   },
   "audio/en/mindfulness/fast/00-title.mp3": {
-    "v": "ac81bc0c",
-    "bytes": 163884
+    "v": "38298057",
+    "bytes": 81938
   },
   "audio/en/mindfulness/fast/01-opening.mp3": {
-    "v": "dff1870d",
-    "bytes": 993951
+    "v": "0b6b20b3",
+    "bytes": 496971
   },
   "audio/en/mindfulness/fast/02-1-watching-the-body.mp3": {
-    "v": "727265c0",
-    "bytes": 5781255
+    "v": "bb1d804e",
+    "bytes": 2890623
   },
   "audio/en/mindfulness/fast/03-2-watching-your-feelings.mp3": {
-    "v": "7a2dcc13",
-    "bytes": 1174509
+    "v": "a02a2dcb",
+    "bytes": 587250
   },
   "audio/en/mindfulness/fast/04-3-watching-your-mind.mp3": {
-    "v": "ed73e3b0",
-    "bytes": 1592050
+    "v": "980dfcf0",
+    "bytes": 796021
   },
   "audio/en/mindfulness/fast/05-4-watching-the-contents-of-experience.mp3": {
-    "v": "afc519d7",
-    "bytes": 5326097
+    "v": "ef0bdfa6",
+    "bytes": 2663044
   },
   "audio/en/mindfulness/fast/06-what-it-leads-to.mp3": {
-    "v": "e79099ea",
-    "bytes": 588112
+    "v": "cd3ffd63",
+    "bytes": 294052
   },
   "audio/en/mindfulness/fast/99-drop.mp3": {
-    "v": "77d21f97",
-    "bytes": 83635
+    "v": "06fe173f",
+    "bytes": 41813
   },
   "audio/en/mindfulness/manifest.json": {
     "v": "73a4887a",
     "bytes": 1672
   },
   "audio/en/not-self/00-title.mp3": {
-    "v": "c52f6751",
-    "bytes": 237862
+    "v": "59caa510",
+    "bytes": 118927
   },
   "audio/en/not-self/01-opening.mp3": {
-    "v": "68748709",
-    "bytes": 1867067
+    "v": "dd0c2cd1",
+    "bytes": 933529
   },
   "audio/en/not-self/02-the-questions.mp3": {
-    "v": "bfba06c8",
-    "bytes": 1134803
+    "v": "75fedba5",
+    "bytes": 567397
   },
   "audio/en/not-self/03-the-takeaway.mp3": {
-    "v": "30bfd1f8",
-    "bytes": 1198333
+    "v": "e6695fa9",
+    "bytes": 599162
   },
   "audio/en/not-self/04-how-they-heard-it.mp3": {
-    "v": "c03853c9",
-    "bytes": 501177
+    "v": "38c2476b",
+    "bytes": 250584
   },
   "audio/en/not-self/99-drop.mp3": {
-    "v": "631f2f32",
-    "bytes": 109549
+    "v": "1670ab3f",
+    "bytes": 54770
   },
   "audio/en/not-self/fast/00-title.mp3": {
-    "v": "e0429a65",
-    "bytes": 214457
+    "v": "e1505987",
+    "bytes": 107224
   },
   "audio/en/not-self/fast/01-opening.mp3": {
-    "v": "64b9fe18",
-    "bytes": 1681911
+    "v": "dab7da3e",
+    "bytes": 840951
   },
   "audio/en/not-self/fast/02-the-questions.mp3": {
-    "v": "84081110",
-    "bytes": 1022790
+    "v": "6463dc8f",
+    "bytes": 511391
   },
   "audio/en/not-self/fast/03-the-takeaway.mp3": {
-    "v": "047547a7",
-    "bytes": 1079632
+    "v": "db745d3c",
+    "bytes": 539812
   },
   "audio/en/not-self/fast/04-how-they-heard-it.mp3": {
-    "v": "19d2062b",
-    "bytes": 451439
+    "v": "af573da1",
+    "bytes": 225715
   },
   "audio/en/not-self/fast/99-drop.mp3": {
-    "v": "17e01850",
-    "bytes": 99100
+    "v": "fbe556e9",
+    "bytes": 49546
   },
   "audio/en/not-self/manifest.json": {
     "v": "9d01bd24",
@@ -1468,36 +1468,36 @@
     "bytes": 6148
   },
   "downloads/plain-dharma-audio-en.zip": {
-    "v": "b77b2824",
-    "bytes": 44226992
+    "v": "8b3fc75d",
+    "bytes": 22016069
   },
   "downloads/plain-dharma-audio-zh.zip": {
     "v": "42096c83",
     "bytes": 30212101
   },
   "downloads/plain-dharma-back-cover.jpg": {
-    "v": "6b1c735c",
-    "bytes": 439523
+    "v": "1a4aa583",
+    "bytes": 461252
   },
   "downloads/plain-dharma-book-photo-dark.png": {
     "v": "38031718",
     "bytes": 1292673
   },
   "downloads/plain-dharma-book-photo.png": {
-    "v": "5c886e37",
-    "bytes": 435300
+    "v": "47a350b0",
+    "bytes": 409794
   },
   "downloads/plain-dharma-cover.jpg": {
-    "v": "1f3af7bb",
-    "bytes": 279797
+    "v": "8a5ea3a7",
+    "bytes": 279772
   },
   "downloads/plain-dharma-print-bw.pdf": {
-    "v": "07025948",
-    "bytes": 2509662
+    "v": "0640aa42",
+    "bytes": 2565578
   },
   "downloads/plain-dharma-print-color.pdf": {
-    "v": "3a16aec8",
-    "bytes": 5678186
+    "v": "505f3c20",
+    "bytes": 5744690
   },
   "downloads/plain-dharma-print-sizes.jpg": {
     "v": "a4a332d1",
@@ -1508,44 +1508,44 @@
     "bytes": 8827
   },
   "downloads/plain-dharma-printshop-a5-covers.pdf": {
-    "v": "9d4d74ab",
-    "bytes": 1960992
+    "v": "0d567172",
+    "bytes": 2035696
   },
   "downloads/plain-dharma-printshop-a5.pdf": {
-    "v": "40766600",
-    "bytes": 1700609
+    "v": "cc7f3b93",
+    "bytes": 1700826
   },
   "downloads/plain-dharma-printshop-a6-covers.pdf": {
-    "v": "43d760e1",
-    "bytes": 1360057
+    "v": "6ec5f6fa",
+    "bytes": 1417962
   },
   "downloads/plain-dharma-printshop-a6.pdf": {
-    "v": "a9874121",
-    "bytes": 1711709
+    "v": "5d04cb0b",
+    "bytes": 1711885
   },
   "downloads/plain-dharma-printshop-b6-covers.pdf": {
-    "v": "edb9a2c9",
-    "bytes": 1615723
+    "v": "627f74b3",
+    "bytes": 1671013
   },
   "downloads/plain-dharma-printshop-b6.pdf": {
-    "v": "844cf56f",
-    "bytes": 1705216
+    "v": "5c4980cf",
+    "bytes": 1705423
   },
   "downloads/plain-dharma-text.zip": {
-    "v": "0e267e1f",
+    "v": "cdf702b4",
     "bytes": 25673
   },
   "downloads/plain-dharma.epub": {
-    "v": "9f9eeaff",
-    "bytes": 884986
+    "v": "0cb1ea90",
+    "bytes": 907534
   },
   "downloads/plain-dharma.m4b": {
-    "v": "1bb612a9",
-    "bytes": 25319522
+    "v": "e8ff4800",
+    "bytes": 25309886
   },
   "downloads/plain-dharma.pdf": {
-    "v": "5876f2a6",
-    "bytes": 4166007
+    "v": "9ee38ca5",
+    "bytes": 4187878
   },
   "downloads/text/en/fire-sermon.mdx": {
     "v": "e18cb68d",

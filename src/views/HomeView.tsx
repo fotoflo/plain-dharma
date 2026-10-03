@@ -8,7 +8,7 @@ import { Wash } from "@/components/Wash";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { StoreBadges } from "@/components/StoreBadges";
 import { APP_LINKS, APP_PUBLISHED } from "@/lib/app-links";
-import { BOOK_LINKS } from "@/lib/book-links";
+import { BOOK_LINKS, SPOTIFY_SHOW_URL } from "@/lib/book-links";
 
 // Editorial layout config for the six hero illustrations.
 //
@@ -187,17 +187,16 @@ function BookSection({ locale }: { locale: Locale }) {
     <section className="relative mt-24 overflow-hidden rounded-2xl border border-divider/70 px-6 py-14 sm:py-16">
       <Wash size="md" position="top-right" intensity={0.07} />
       <div className="relative mx-auto flex max-w-4xl flex-col items-center gap-10 md:flex-row md:gap-14">
-        {/* Photorealistic shot of the printed book — a transparent cut-out that
-            floats on both themes (night-sky render, dark backdrop keyed out);
-            CSS adds the drop-shadow. */}
+        {/* Flat front-cover render at its true 2:3 ratio (the old book-photo
+            cut-out was 440x777 and read as squeezed); CSS adds the shadow. */}
         <div className="shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={assetUrl("downloads/plain-dharma-book-photo.png")}
-            alt="Plain Dharma — the printed book"
-            width={440}
-            height={777}
-            className="w-[240px] [filter:drop-shadow(0_16px_24px_rgba(31,24,18,0.28))] sm:w-[280px]"
+            src={assetUrl("downloads/plain-dharma-cover.jpg")}
+            alt="Plain Dharma — the book cover"
+            width={1600}
+            height={2400}
+            className="w-[240px] rounded-[3px] [filter:drop-shadow(0_16px_24px_rgba(31,24,18,0.28))] dark:[filter:brightness(0.93)_drop-shadow(0_0_26px_rgba(224,131,58,0.22))_drop-shadow(0_18px_28px_rgba(0,0,0,0.55))] dark:ring-1 dark:ring-white/10 sm:w-[280px]"
           />
         </div>
 
@@ -232,7 +231,36 @@ function BookSection({ locale }: { locale: Locale }) {
             >
               {s.home.bookCtaListen}
             </Link>
+            <a
+              href={SPOTIFY_SHOW_URL}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center justify-center rounded-full border border-divider px-6 py-2.5 font-sans text-sm font-medium text-ink no-underline hover:no-underline hover:border-accent"
+            >
+              {s.home.bookCtaSpotify}
+            </a>
           </div>
+          {/* Reader testimonial — quoted with permission. English-only: the
+              quote is in English and the zh home shouldn't carry it. */}
+          {locale === "en" && (
+            <figure className="mt-8 border-l-2 border-accent/50 pl-4 text-left">
+              <blockquote className="font-serif text-base italic leading-relaxed text-ink/80">
+                “I picked up the book to have a look, and I unintentionally
+                read the whole thing. I really enjoyed it and found it very
+                soothing.”
+              </blockquote>
+              <figcaption className="mt-2 font-sans text-xs text-ink/60">
+                Romi Grossberg, author of{" "}
+                <a
+                  href="https://www.romigrossberg.com/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Hip Hop &amp; Hope
+                </a>
+              </figcaption>
+            </figure>
+          )}
         </div>
       </div>
     </section>
@@ -257,7 +285,7 @@ function AppBand({ locale }: { locale: Locale }) {
             height={1543}
             loading="lazy"
             decoding="async"
-            className="w-[200px] sm:w-[240px]"
+            className="w-[200px] dark:[filter:drop-shadow(0_0_1.5px_rgba(255,255,255,0.6))_drop-shadow(0_0_24px_rgba(224,131,58,0.2))] sm:w-[240px]"
           />
         </div>
 

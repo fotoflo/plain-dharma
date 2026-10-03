@@ -26,5 +26,13 @@ export const BOOK_LINKS = {
   amazonKindle: `${BOOK_LINKS_CANONICAL.amazonKindle}?tag=${AMAZON_TAG}`,
 } as const;
 
+/**
+ * The audiobook as a Spotify show. Visible links carry our own UTM tags;
+ * Spotify's share-sheet params (`si=`, `utm_source=sfa`, …) are dropped so the
+ * link doesn't carry a personal share id and attributes traffic to this site.
+ */
+export const SPOTIFY_SHOW_URL =
+  "https://open.spotify.com/show/79f7UOjKYgn2nCKJuIblQo?utm_source=plaindharma&utm_medium=website&utm_campaign=home-book";
+
 /** ISBN-13 of the paperback, for structured data. */
 export const PAPERBACK_ISBN = "9781891328381";

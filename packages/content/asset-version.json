@@ -1508,28 +1508,36 @@
     "bytes": 8827
   },
   "downloads/plain-dharma-printshop-a5-covers.pdf": {
-    "v": "0d567172",
-    "bytes": 2035696
+    "v": "3ec5ca1b",
+    "bytes": 2035697
+  },
+  "downloads/plain-dharma-printshop-a5-large-print-covers.pdf": {
+    "v": "1f203d87",
+    "bytes": 2041989
+  },
+  "downloads/plain-dharma-printshop-a5-large-print.pdf": {
+    "v": "8522a548",
+    "bytes": 1708980
   },
   "downloads/plain-dharma-printshop-a5.pdf": {
-    "v": "cc7f3b93",
-    "bytes": 1700826
+    "v": "2e713e6e",
+    "bytes": 1700824
   },
   "downloads/plain-dharma-printshop-a6-covers.pdf": {
-    "v": "6ec5f6fa",
-    "bytes": 1417962
+    "v": "223c9b25",
+    "bytes": 1417965
   },
   "downloads/plain-dharma-printshop-a6.pdf": {
-    "v": "5d04cb0b",
-    "bytes": 1711885
+    "v": "7d65ccae",
+    "bytes": 1711884
   },
   "downloads/plain-dharma-printshop-b6-covers.pdf": {
-    "v": "627f74b3",
-    "bytes": 1671013
+    "v": "e1a9b48f",
+    "bytes": 1671014
   },
   "downloads/plain-dharma-printshop-b6.pdf": {
-    "v": "5c4980cf",
-    "bytes": 1705423
+    "v": "e7d255bb",
+    "bytes": 1705425
   },
   "downloads/plain-dharma-text.zip": {
     "v": "cdf702b4",

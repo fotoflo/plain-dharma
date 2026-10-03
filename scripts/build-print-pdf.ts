@@ -180,7 +180,7 @@ function runPandoc(
     "--toc",
     "--toc-depth=2",
     "-V", "documentclass=book",
-    "-V", "classoption=twoside,openright",
+    "-V", "classoption=twoside,openany", // no blank pages before chapters
     "-V", "papersize=",
     // 5"×8" trim + 0.125" bleed each side = 5.25"×8.25" PDF.
     "-V", "geometry:paperwidth=5.25in",
@@ -195,7 +195,7 @@ function runPandoc(
     "-V", `subtitle=${BOOK_SUBTITLE}`,
     "-V", `author=${TITLE_PAGE_AUTHOR_TEX}`,
     "-V", "lang=en",
-    "-V", "fontsize=10pt", // tighter than screen — narrower text block
+    "-V", "fontsize=12pt", // matches the paperback; test prints read best at 12pt
     `--output=${outPdf}`,
     bookMdPath,
   ];

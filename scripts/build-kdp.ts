@@ -169,7 +169,7 @@ function renderPreamble(variant: Variant, variantDir: string): string {
 
 // Cover-free 5×8 interior. Page = 5.25×8.25 (trim + 0.125in bleed all sides,
 // matching build-print-pdf; KDP accepts this — the inner over-bleed is absorbed
-// by the binding). Twoside, openright. 10pt for the narrower text block.
+// by the binding). Twoside, openright. 12pt — test prints read best at 12pt.
 function buildInterior(
   variant: Variant,
   bookMdPath: string,
@@ -185,7 +185,7 @@ function buildInterior(
     "--toc",
     "--toc-depth=2",
     "-V", "documentclass=book",
-    "-V", "classoption=twoside,openright",
+    "-V", "classoption=twoside,openany", // no blank pages before chapters
     "-V", "papersize=",
     "-V", "geometry:paperwidth=5.25in",
     "-V", "geometry:paperheight=8.25in",
@@ -203,7 +203,7 @@ function buildInterior(
     "-V", `subtitle=${BOOK_SUBTITLE}`,
     "-V", `author=${TITLE_PAGE_AUTHOR_TEX}`,
     "-V", "lang=en",
-    "-V", "fontsize=10pt",
+    "-V", "fontsize=12pt",
     `--output=${outPdf}`,
     bookMdPath,
   ];

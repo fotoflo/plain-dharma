@@ -1,12 +1,13 @@
 /**
  * Build the Plain Dharma PRINT-SHOP editions — the files you hand a copy shop.
  *
- * Produces FOUR files in dist/printshop/ (and publishes all four to
+ * Produces these files in dist/printshop/ (and publishes them to
  * public/downloads):
  *   plain-dharma-printshop-a5.pdf         — A5 interior, B&W, 12pt
  *   plain-dharma-printshop-a5-covers.pdf  — 2 pages, color, A4 with crop marks
  *   plain-dharma-printshop-a6.pdf         — A6 interior, B&W, 12pt
  *   plain-dharma-printshop-a6-covers.pdf  — 2 pages, color, A4 with crop marks
+ *   (plus B6, and an A5 LARGE PRINT edition at 16pt — see the EDITIONS table)
  *
  * Why two files per edition: the shop runs the covers on card in a color pass
  * and the interior in a B&W pass. Handed one mixed PDF they will either print
@@ -109,10 +110,25 @@ const MARK_GAP_MM = 2;
 // than in a printed proof.
 const CHARS_PER_MM = 62 / 114;
 
+/** Approximate characters per line for an edition, scaled from the 12pt rate. */
+const cpl = (e: Edition): number => Math.round((measure(e) * CHARS_PER_MM * 12) / e.fontPt);
+
 type Margins = { inner: number; outer: number; top: number; bottom: number };
 
 type Edition = {
-  key: "a5" | "a6" | "b6";
+  key: "a5" | "a6" | "b6" | "a5-lp";
+  /**
+   * Body size in pt. 12 everywhere except the large print. Sizes other than 12
+   * go through scrextend (the book class stops at 12pt), which rescales every
+   * size command with the base.
+   */
+  fontPt: number;
+  /**
+   * Whether /print offers it. An unlisted edition is built and published to
+   * downloads but kept out of printshop-spec.json, because the /print copy
+   * (three languages, keyed by edition) has no strings for it yet.
+   */
+  listed: boolean;
   /** Human label — also stamped into the cover sheets and the PDF metadata. */
   label: string;
   /** Trim size in mm. */
@@ -279,6 +295,8 @@ const NARROW_TOC = [
 const EDITIONS: Edition[] = [
   {
     key: "a5",
+    fontPt: 12,
+    listed: true,
     label: "A5",
     trimW: 148,
     trimH: 210,
@@ -300,7 +318,57 @@ const EDITIONS: Edition[] = [
     backCover: join(EBOOK_DIR, "back-cover-a5-color.jpg"),
   },
   {
+    // A5 at 16pt — the large print. Same trim and sheet as A5, so the shop
+    // prints it exactly the same way; it just runs to more sheets.
+    key: "a5-lp",
+    fontPt: 16,
+    listed: false,
+    label: "A5 Large Print",
+    trimW: 148,
+    trimH: 210,
+    up: 2,
+    // A5's margins. 114mm at 16pt sets ~47 characters a line — the same
+    // narrow-measure regime A6 lives in at 12pt, so it takes the same tuning.
+    margins: { inner: 20, outer: 14, top: 16, bottom: 18 },
+    // Relative to the 16pt base: \Large is ~22pt, \large ~19pt.
+    chapterSize: "\\Large",
+    sectionSize: "\\large",
+    chapterBefore: 28,
+    chapterAfter: 22,
+    typesetTuning: [
+      "\\usepackage[fontsize=16pt]{scrextend}",
+      NARROW_TYPESET,
+      // At 16pt a page holds few enough lines that a stranded one shows badly
+      // ("Their resolve melted before he said a word." alone atop a page).
+      // Same cure as the KDP paperback: forbid widows and orphans and let
+      // pages run short rather than stretch the paragraph gaps.
+      "\\widowpenalty=10000",
+      "\\clubpenalty=10000",
+      "\\displaywidowpenalty=10000",
+      "\\raggedbottom",
+    ].join("\n"),
+    // \footnotesize on a 16pt base is ~13pt, too tall for the 14pt head box.
+    headerTuning: [
+      NARROW_HEADER.replace("{14pt}", "{18pt}"),
+      // Unnumbered chapters (About This Book, Preface…) don't set the marks,
+      // so their pages kept "CONTENTS" as the head. Set them from the starred
+      // chapter too, as the KDP preamble does.
+      "\\makeatletter",
+      "\\let\\pd@schapter\\@schapter",
+      "\\def\\@schapter#1{\\pd@schapter{#1}\\markboth{#1}{#1}}",
+      "\\makeatother",
+    ].join("\n"),
+    tocTuning: NARROW_TOC,
+    interiorName: "plain-dharma-printshop-a5-large-print.pdf",
+    coversName: "plain-dharma-printshop-a5-large-print-covers.pdf",
+    frontCover: join(EBOOK_DIR, "front-cover-a5-lp-color.jpg"),
+    // The back cover doesn't change with the interior's type.
+    backCover: join(EBOOK_DIR, "back-cover-a5-color.jpg"),
+  },
+  {
     key: "b6",
+    fontPt: 12,
+    listed: true,
     label: "B6",
     trimW: 125,
     trimH: 176,
@@ -329,6 +397,8 @@ const EDITIONS: Edition[] = [
   },
   {
     key: "a6",
+    fontPt: 12,
+    listed: true,
     label: "A6",
     trimW: 105,
     trimH: 148,
@@ -516,7 +586,7 @@ function renderPreamble(e: Edition, padPages: number): string {
       EDITION: e.label,
       TRIM: `${e.trimW} × ${e.trimH} mm`,
       MEASURE: measure(e),
-      CPL: Math.round(measure(e) * CHARS_PER_MM),
+      CPL: cpl(e),
       UP: e.up,
       PAGES_PER_SHEET: pagesPerSheet(e),
       CHAPTER_SIZE: e.chapterSize,
@@ -610,7 +680,7 @@ function buildInterior(e: Edition, bookMd: string): Built {
   console.log(
     `[build-printshop-pdf] ${e.label} interior ${final} pages ` +
       `(${raw} + ${padLabel(pad)}) = ${final / perSheet} A4 sheets duplex, ` +
-      `${measure(e)}mm measure (~${Math.round(measure(e) * CHARS_PER_MM)} chars/line)`,
+      `${measure(e)}mm measure (~${cpl(e)} chars/line at ${e.fontPt}pt)`,
   );
   return { path: outPdf, pages: final };
 }
@@ -833,6 +903,8 @@ function main(): void {
 
     const covers = buildCovers(e);
     if (covers) publishToDownloads(covers.path, e.coversName);
+
+    if (!e.listed) continue;
 
     spec.push({
       key: e.key,

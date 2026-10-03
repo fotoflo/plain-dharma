@@ -20,7 +20,13 @@
  * — the latter carries the paperback ISBN barcode). The 6×9 designer cover.jpg
  * is NOT used here (wrong ratio for 5×8). Run those two generators first.
  *
- * Run: pnpm build-kdp
+ * LARGE PRINT (`--large-print`, pnpm build-kdp-large): a separate edition at
+ * 6×9 trim with 16pt body type — KDP's floor for calling a book "Large Print".
+ * One B&W-on-cream interior + its wraparound, written as
+ * plain-dharma-kdp-large-{interior,cover}.pdf. Same pipeline; the EDITION
+ * table holds everything that differs.
+ *
+ * Run: pnpm build-kdp | pnpm build-kdp-large
  */
 
 import { execFileSync } from "node:child_process";
@@ -58,10 +64,9 @@ const BACK_COVER = join(EBOOK_DIR, "back-cover-print-color.jpg");
 // The bw edition prints on groundwood, so its back cover carries the paper note.
 // Same art otherwise — still color, per the note above.
 const BACK_COVER_GROUNDWOOD = join(EBOOK_DIR, "back-cover-print-groundwood.jpg");
-
-// Paperback trim (inches). The wrap template + spine math derive from these.
-const TRIM_W = 5;
-const TRIM_H = 8;
+// 6×9 large-print pair (6.25×9.25 with bleed), also from render-covers.ts.
+const FRONT_COVER_LP = join(EBOOK_DIR, "front-cover-6x9-lp-color.jpg");
+const BACK_COVER_LP = join(EBOOK_DIR, "back-cover-6x9-lp-color.jpg");
 
 const ILLUSTRATION_TARGET_WIDTH = 1200; // 300 PPI at ~4in displayed width
 const ILLUSTRATION_JPEG_QUALITY = 88;
@@ -120,6 +125,98 @@ const VARIANTS: Record<Variant, VariantCfg> = {
   },
 };
 
+/**
+ * Everything that differs between the standard and large-print paperbacks.
+ * Trim and margins are inches; the PDF page is trim + 0.125in bleed per edge.
+ * The head and foot clearances are explained in buildInterior.
+ */
+type Edition = {
+  key: "standard" | "large";
+  trimW: number;
+  trimH: number;
+  /** dist/kdp/ names: `${prefix}-interior….pdf`, `${prefix}-cover….pdf`. */
+  outPrefix: string;
+  variants: Variant[];
+  inner: number;
+  outer: number;
+  top: number;
+  bottom: number;
+  footskip: number;
+  headsep: string;
+  headheight: string;
+  /** LaTeX appended to the shared preamble, or null for none. */
+  extraPreamble: string | null;
+  frontCover: string;
+  /** Overrides the variant's back cover (the large print has its own art). */
+  backCover: string | null;
+};
+
+const STANDARD: Edition = {
+  key: "standard",
+  trimW: 5,
+  trimH: 8,
+  outPrefix: "plain-dharma-kdp",
+  variants: ["bw", "color"],
+  inner: 0.875,
+  outer: 0.625,
+  top: 0.85,
+  bottom: 0.85,
+  footskip: 0.35,
+  headsep: "8pt",
+  headheight: "14pt",
+  extraPreamble: null,
+  frontCover: FRONT_COVER,
+  backCover: null,
+};
+
+/**
+ * 16pt body via scrextend, which recomputes every size command (\footnotesize,
+ * \Large…) from the new base — the book class itself stops at 12pt. The shared
+ * preamble sizes its heads and folios relative to \normalsize, so they scale
+ * with it; the head box grows to fit, and `top` grows to keep it in the safe
+ * zone (top − headsep − headheight ≈ 0.6in from the PDF edge).
+ */
+const LARGE_PRINT_PREAMBLE = String.raw`
+% Large print: 16pt body (KDP's minimum for the "Large Print" label).
+\usepackage[fontsize=16pt]{scrextend}
+\setlength{\headheight}{18pt}
+\setlength{\headsep}{10pt}
+% ~50 characters a line at 16pt on the 6x9 measure; a little more stretch
+% keeps the rare stubborn line out of the margin.
+\setlength{\emergencystretch}{3em}
+% \LARGE on a 16pt base is ~25pt; one step down keeps chapter titles to two
+% lines at most.
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries\color{ink}\raggedright\hyphenpenalty=10000}
+  {}{0pt}{\Large}
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{ink}\raggedright\hyphenpenalty=10000}
+  {}{0pt}{}
+% 70% of the wider measure would let the illustrations dominate the page.
+\setkeys{Gin}{width=0.6\linewidth,keepaspectratio}
+`;
+
+const LARGE: Edition = {
+  key: "large",
+  trimW: 6,
+  trimH: 9,
+  outPrefix: "plain-dharma-kdp-large",
+  // B&W on cream only: large-print readers want contrast, not color plates.
+  variants: ["bw"],
+  inner: 0.95,
+  outer: 0.7,
+  top: 0.95,
+  bottom: 0.9,
+  footskip: 0.4,
+  headsep: "10pt",
+  headheight: "18pt",
+  extraPreamble: LARGE_PRINT_PREAMBLE,
+  frontCover: FRONT_COVER_LP,
+  backCover: BACK_COVER_LP,
+};
+
+const EDITION: Edition = process.argv.includes("--large-print") ? LARGE : STANDARD;
+
 function findXelatex(): string {
   return existsSync(XELATEX_BIN) ? XELATEX_BIN : "xelatex";
 }
@@ -159,9 +256,10 @@ function prepareIllustration(
 function renderPreamble(variant: Variant, variantDir: string): string {
   const cfg = VARIANTS[variant];
   const tpl = readFileSync(join(TEMPLATE_DIR, "pdf-preamble-print.tex"), "utf8");
-  const rendered = tpl
+  let rendered = tpl
     .replace(/__FONTS_DIR__/g, FONTS_DIR)
     .replace(/__PAGECOLOR_SETUP__/g, cfg.pagecolorSetup);
+  if (EDITION.extraPreamble) rendered += EDITION.extraPreamble;
   const out = join(variantDir, "preamble.tex");
   writeFileSync(out, rendered);
   return out;
@@ -187,23 +285,23 @@ function buildInterior(
     "-V", "documentclass=book",
     "-V", "classoption=twoside,openany", // no blank pages before chapters
     "-V", "papersize=",
-    "-V", "geometry:paperwidth=5.25in",
-    "-V", "geometry:paperheight=8.25in",
-    "-V", "geometry:inner=0.875in",
-    "-V", "geometry:outer=0.625in",
+    "-V", `geometry:paperwidth=${EDITION.trimW + 0.25}in`,
+    "-V", `geometry:paperheight=${EDITION.trimH + 0.25}in`,
+    "-V", `geometry:inner=${EDITION.inner}in`,
+    "-V", `geometry:outer=${EDITION.outer}in`,
     // The running head must clear KDP's safe zone too: head box top =
     // top − headsep(8pt) − headheight(14pt) ≈ 0.54in from the PDF edge,
     // i.e. ≥0.375in inside the trim after the 0.125in bleed.
-    "-V", "geometry:top=0.85in",
-    "-V", "geometry:headsep=8pt",
-    "-V", "geometry:headheight=14pt",
+    "-V", `geometry:top=${EDITION.top}in`,
+    "-V", `geometry:headsep=${EDITION.headsep}`,
+    "-V", `geometry:headheight=${EDITION.headheight}`,
     // Bottom margin + footskip keep the page number clear of KDP's 0.25in
     // safe zone. With 0.125in bleed, the footer baseline lands at
     // bottom − footskip = 0.5in from the PDF edge = 0.375in from the trim —
     // comfortably inside. (At 0.75/default-footskip it fell to ~0.2in and KDP
     // flagged the chapter-opener page numbers.)
-    "-V", "geometry:bottom=0.85in",
-    "-V", "geometry:footskip=0.35in",
+    "-V", `geometry:bottom=${EDITION.bottom}in`,
+    "-V", `geometry:footskip=${EDITION.footskip}in`,
     "-V", `title=${BOOK_TITLE}`,
     "-V", `subtitle=${BOOK_SUBTITLE}`,
     "-V", `author=${TITLE_PAGE_AUTHOR_TEX}`,
@@ -233,8 +331,9 @@ function buildWrapCover(
 ): void {
   const cfg = VARIANTS[variant];
   const spineIn = pages * cfg.caliper;
-  const paperW = 0.125 + TRIM_W + spineIn + TRIM_W + 0.125;
-  const paperH = TRIM_H + 0.25;
+  const { trimW, trimH } = EDITION;
+  const paperW = 0.125 + trimW + spineIn + trimW + 0.125;
+  const paperH = trimH + 0.25;
   const fmt = (n: number) => `${n.toFixed(4)}in`;
   console.log(
     `[build-kdp:${variant}] ${pages} pages → spine ${spineIn.toFixed(4)}in; ` +
@@ -245,12 +344,12 @@ function buildWrapCover(
   const rendered = tpl
     .replace(/__PAPER_W__/g, fmt(paperW))
     .replace(/__PAPER_H__/g, fmt(paperH))
-    .replace(/__TRIM_W__/g, `${TRIM_W}in`)
-    .replace(/__TRIM_H__/g, `${TRIM_H}in`)
+    .replace(/__TRIM_W__/g, `${trimW}in`)
+    .replace(/__TRIM_H__/g, `${trimH}in`)
     .replace(/__SPINE_W__/g, fmt(spineIn))
-    .replace(/__BACK_IMG__/g, cfg.backCover)
-    .replace(/__FRONT_IMG__/g, FRONT_COVER);
-  const jobname = `kdp-cover-${cfg.slug}`;
+    .replace(/__BACK_IMG__/g, EDITION.backCover ?? cfg.backCover)
+    .replace(/__FRONT_IMG__/g, EDITION.frontCover);
+  const jobname = `kdp-cover-${EDITION.key}-${cfg.slug}`;
   const texPath = join(variantDir, `${jobname}.tex`);
   writeFileSync(texPath, rendered);
 
@@ -272,7 +371,10 @@ function buildWrapCover(
 
 function buildVariant(variant: Variant): void {
   const cfg = VARIANTS[variant];
-  const variantDir = join(OUT_DIR, cfg.slug);
+  const variantDir = join(
+    OUT_DIR,
+    EDITION.key === "standard" ? cfg.slug : `${EDITION.key}-${cfg.slug}`,
+  );
   const imagesDir = join(variantDir, "images");
   if (!existsSync(imagesDir)) mkdirSync(imagesDir, { recursive: true });
 
@@ -286,16 +388,22 @@ function buildVariant(variant: Variant): void {
   writeFileSync(bookMd, md);
 
   const preamble = renderPreamble(variant, variantDir);
-  const interiorPdf = join(OUT_DIR, `plain-dharma-kdp-interior-${cfg.slug}.pdf`);
+  // A single-variant edition needs no suffix to tell its files apart.
+  const suffix = EDITION.variants.length > 1 ? `-${cfg.slug}` : "";
+  const interiorPdf = join(OUT_DIR, `${EDITION.outPrefix}-interior${suffix}.pdf`);
   buildInterior(variant, bookMd, preamble, interiorPdf);
 
   const pages = pageCount(interiorPdf);
-  const coverPdf = join(OUT_DIR, `plain-dharma-kdp-cover-${cfg.slug}.pdf`);
+  const coverPdf = join(OUT_DIR, `${EDITION.outPrefix}-cover${suffix}.pdf`);
   buildWrapCover(variant, pages, variantDir, coverPdf);
 }
 
 function main(): void {
-  for (const img of [FRONT_COVER, BACK_COVER, BACK_COVER_GROUNDWOOD]) {
+  const art =
+    EDITION.key === "large"
+      ? [FRONT_COVER_LP, BACK_COVER_LP]
+      : [FRONT_COVER, BACK_COVER, BACK_COVER_GROUNDWOOD];
+  for (const img of art) {
     if (!existsSync(img)) {
       console.error(
         `ERROR: missing cover art ${img}. Run \`pnpm render-covers\` and ` +
@@ -305,7 +413,7 @@ function main(): void {
     }
   }
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
-  for (const variant of Object.keys(VARIANTS) as Variant[]) {
+  for (const variant of EDITION.variants) {
     buildVariant(variant);
   }
 }

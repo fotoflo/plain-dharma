@@ -36,6 +36,11 @@ const STAGE_INSET = 24; // the .cover offset inside the dark stage (see the HTML
 // Back-cover ISBNs (per-edition Bowker records — see docs/publishing).
 const EBOOK_ISBN = "978-1-891328-37-4";
 const PRINT_ISBN = "978-1-891328-39-8";
+// The large-print paperback is a separate edition and needs its own ISBN. Until
+// one is assigned this stays null: the back cover then leaves the lower-right
+// corner empty, which is where KDP prints its own barcode when the cover
+// doesn't carry one. Set it, re-render, and the EAN-13 drops into that corner.
+const LARGE_PRINT_ISBN: string | null = null;
 // Hardcoded English titles, paired in order with the registry teasers.
 const BACK_COVER_TITLES = [
   "The Buddha's First Talk",
@@ -185,6 +190,19 @@ const A6_BLEED_H = bleedPx(148);
 const B6_BLEED_W = bleedPx(125);
 const B6_BLEED_H = bleedPx(176);
 
+// KDP large-print paperback: 6×9in trim + 0.125in bleed per edge, at 300dpi.
+const LP_6X9_W = 1875;
+const LP_6X9_H = 2775;
+
+/**
+ * Eyebrow line on the front cover. The large-print covers swap the text and
+ * set it bigger: at the default 25px it vanishes in an Amazon thumbnail, which
+ * is exactly where a large-print buyer needs to see it.
+ */
+type Eyebrow = { text: string; sizeMul: number };
+const DEFAULT_EYEBROW: Eyebrow = { text: "Six Foundational Teachings", sizeMul: 1 };
+const LARGE_PRINT_EYEBROW: Eyebrow = { text: "Large Print Edition", sizeMul: 1.9 };
+
 /**
  * B6's back-cover metrics, interpolated between the two that were tuned by eye.
  *
@@ -251,13 +269,21 @@ const FRONT_COVER_METRICS = {
  * Scale defaults to 1, which is what the 5.25×8.25 and A5 covers pass: their
  * output is unchanged to the pixel. Only A6 asks for anything else.
  */
-function fillFrontCover(html: string, pageW: number, pageH: number, scale = 1): string {
+function fillFrontCover(
+  html: string,
+  pageW: number,
+  pageH: number,
+  scale = 1,
+  eyebrow: Eyebrow = DEFAULT_EYEBROW,
+): string {
   const geom: Record<string, string> = {
     PAGE_W: String(pageW),
     PAGE_H: String(pageH),
+    EYEBROW: eyebrow.text,
   };
   for (const [k, v] of Object.entries(FRONT_COVER_METRICS)) {
-    geom[k] = String(Math.max(1, Math.round(v * scale)));
+    const mul = k === "EYEBROW_FS" ? eyebrow.sizeMul : 1;
+    geom[k] = String(Math.max(1, Math.round(v * scale * mul)));
   }
   return fillGeom(html, geom);
 }
@@ -368,6 +394,17 @@ const TARGETS: Target[] = [
       ),
     outputs: [{ file: "back-cover-a5-color.jpg" }],
   },
+  // ── Print-shop large print (A5 + 3mm bleed) ──────────────────────────────
+  // Same face as the A5 edition with the eyebrow saying what it is. The back
+  // cover is shared with A5 — nothing on it changes with the interior's type.
+  {
+    html: "front-cover.html",
+    cw: A5_BLEED_W,
+    ch: A5_BLEED_H,
+    scale: 2,
+    build: (h) => fillFrontCover(h, A5_BLEED_W, A5_BLEED_H, 1, LARGE_PRINT_EYEBROW),
+    outputs: [{ file: "front-cover-a5-lp-color.jpg" }],
+  },
   // ── Print-shop edition, pocket size (A6 + 3mm bleed) ─────────────────────
   // Same artwork, re-rendered at A6's own pixel size rather than resized down
   // from A5: a resize would shrink the back-cover type along with the page and
@@ -436,6 +473,33 @@ const TARGETS: Target[] = [
         { qr: true },
       ),
     outputs: [{ file: "back-cover-b6-color.jpg" }],
+  },
+  // ── KDP large-print paperback (6×9 + 0.125in bleed) ──────────────────────
+  // Feeds `build-kdp --large-print`. The poster is reused at A5's metrics
+  // scaled to this width, the same way A6 and B6 are derived.
+  {
+    html: "front-cover.html",
+    cw: LP_6X9_W,
+    ch: LP_6X9_H,
+    scale: 2,
+    build: (h) =>
+      fillFrontCover(h, LP_6X9_W, LP_6X9_H, LP_6X9_W / A5_BLEED_W, LARGE_PRINT_EYEBROW),
+    outputs: [{ file: "front-cover-6x9-lp-color.jpg" }],
+  },
+  {
+    html: "back-cover.html",
+    cw: LP_6X9_W,
+    ch: LP_6X9_H,
+    scale: 2,
+    // The 5×8 back cover's geometry scaled by width (1875 / 1575), with the
+    // body held a little larger — a large-print book's back should read as one.
+    build: (h) =>
+      fillBackCover(h, LARGE_PRINT_ISBN, {
+        PAGE_W: String(LP_6X9_W), PAGE_H: String(LP_6X9_H), BODY: "48",
+        BAND_W: "179", STITCH_R: "157",
+        PAD_TOP: "179", PAD_LEFT: "155", PAD_RIGHT: "298", PAD_BOT: "179",
+      }),
+    outputs: [{ file: "back-cover-6x9-lp-color.jpg" }],
   },
   // Back cover — ebook trim (6×9), a downloadable companion to cover.jpg.
   {

@@ -16,10 +16,10 @@ Account / start: <https://kdp.amazon.com/en_US/bookshelf>
 |---|---|---|
 | eBook manuscript | `dist/ebook/plain-dharma.epub` | EPUB 3, cover + CC0 page already embedded |
 | eBook cover art (front) | `dist/ebook/cover-kindle.jpg` | 1600×2560 (Kindle's ideal 1.6:1), cream-padded, carries the "translated by Claude Opus, edited by Alex Miller" byline — for the **Kindle** edition. (`cover.jpg` is the unpadded 6×9 used by the PDF cover page, EPUB interior, and audiobook art.) |
-| Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 48 pp, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
-| Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 48 pp, grayscale, white paper, **cover-free** |
-| Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.35×8.25, back+spine+front, spine 0.108", barcode = print ISBN ‑38‑1 |
-| Paperback wraparound cover (B&W interior) | `dist/kdp/plain-dharma-kdp-cover-bw.pdf` | same art, spine 0.113" (groundwood caliper) — match to the B&W interior |
+| Paperback interior (color) | `dist/kdp/plain-dharma-kdp-interior-color.pdf` | 51 pp, 12pt, 5.25"×8.25" (5×8 + bleed), **cover-free**, cream bg |
+| Paperback interior (B&W, cheaper) | `dist/kdp/plain-dharma-kdp-interior-bw.pdf` | 51 pp, 12pt, grayscale, **cover-free** — this is the live paperback (B&W on cream) |
+| Paperback wraparound cover (color) | `dist/kdp/plain-dharma-kdp-cover-color.pdf` | 10.36×8.25, back+spine+front, spine 0.115" (51pp, white), barcode = print ISBN ‑39‑8 |
+| Paperback wraparound cover (B&W interior) | `dist/kdp/plain-dharma-kdp-cover-bw.pdf` | same art, spine 0.1275" (51pp, cream caliper) — match to the B&W interior |
 
 If you edited any content, rebuild first:
 `pnpm build-ebook && pnpm generate-front-cover && pnpm generate-back-cover && pnpm build-kdp`
@@ -247,13 +247,21 @@ The front is a **generated 5×8** cover (`generate-front-cover.ts` — the 6×9
 designer `cover.jpg` is the wrong ratio for 5×8 and is Kindle-only). The back
 carries the real **paperback ISBN barcode (978-1-891328-39-8)**. Built dimensions:
 
-- Page count: **48** · spine = 48 × caliper → **0.108"** color (white, 0.002252) / **0.113"** B&W (groundwood, 0.002347)
+- Page count: **51** (12pt body since 3 Oct 2026; was 48 at 10pt) · spine = 51 × caliper → **0.115"** color (white, 0.002252) / **0.1275"** B&W (cream, 0.0025). The spine is recomputed from the interior's page count on every `pnpm build-kdp`, so **re-upload interior and cover together** — a cover built for a different page count won't fit.
 - Verified against KDP's [cover calculator](https://kdp.amazon.com/cover-calculator) (5×8, B&W, groundwood, 48pp): spine 0.113", full cover 10.363×8.25 — ours builds 10.3627×8.25.
 - Changing the paper choice means changing `CALIPER` in `scripts/build-kdp.ts` and rebuilding the wraparound; the spine drives both panel offsets.
 - Full cover **width** = 0.125 + 5 + spine + 5 + 0.125 ≈ **10.35"**; **height** = 8.25"
 - **No spine text** — at 46 pages the spine is ~0.10", below KDP's 100-page minimum.
 
 To rebuild after a content/cover change: `pnpm generate-front-cover && pnpm generate-back-cover && pnpm build-kdp`.
+
+### Interior typesetting (3 Oct 2026)
+
+The template is `scripts/templates/pdf-preamble-print.tex`, shared by `build-kdp.ts` and `build-print-pdf.ts` (so the free print PDFs match). From reader feedback on a printed copy: 12pt body; `openany` (no blank pages before chapters; only the verso before page 1 remains, printed with no head or folio); widow/club penalties at 10000; `\raggedbottom` instead of the stretched paragraph gaps `\flushbottom` produced; page numbers centred at the foot on every page (running head: "PLAIN DHARMA" / chapter title, top centre); unhyphenated ragged-right headings; running heads for unnumbered chapters via a patched `\@schapter`.
+
+**KDP safe zone gotcha:** the previewer errors on any text inside 0.375" of the trim ("This text is outside the margins"), which with 0.125" bleed means ≥ 36pt from the PDF edge. The running head must clear it: `geometry:top=0.85in`, `headsep=8pt`, `headheight=14pt` put it at ~41.7pt. These go through `-V geometry:…` in `build-kdp.ts`; a bare `\setlength{\headsep}` in the preamble is overridden by the geometry package. Check with `pdftotext -bbox` (min yMin ≥ 36) before uploading.
+
+**Updating the live paperback** (same ISBN, no new edition): Bookshelf → paperback → Edit content. Uploading a new interior clears the cover, so upload the interior, wait for processing, then re-upload the cover and re-tick "my cover has a barcode". Re-answer the AI-content question and tick the accuracy confirmation. Launch Previewer, Approve, then Save and Continue → Publish. Review takes ≤72h; the current version stays live meanwhile.
 
 ## Screen 3 — Paperback Pricing
 

@@ -114,6 +114,12 @@ export type BookSourceOptions = {
    * config — the measure is far narrower than an Access to Insight path.
    */
   printUrls?: boolean;
+  /**
+   * Build a retailer sample instead of the full book: front matter, preface
+   * and the first N suttas, then a "Keep Reading" pointer to the site. Skips
+   * the closing, colophon and appendix. Used for the Apple Books sample EPUB.
+   */
+  sampleSuttas?: number;
 };
 
 /**
@@ -172,7 +178,10 @@ export function buildBookMarkdown(opts: BookSourceOptions): string {
   parts.push(`# Preface {.unnumbered}\n`);
   parts.push(`${PREFACE[DEFAULT_LOCALE]}\n`);
 
-  for (const meta of SUTTAS_IN_ORDER) {
+  const suttas = opts.sampleSuttas
+    ? SUTTAS_IN_ORDER.slice(0, opts.sampleSuttas)
+    : SUTTAS_IN_ORDER;
+  for (const meta of suttas) {
     parts.push(`# ${meta.ordinal}. ${meta.title}\n`);
     parts.push(`*${meta.pali_name}*\n`);
     parts.push(`> ${DROPS[DEFAULT_LOCALE][meta.slug]}\n`);
@@ -184,6 +193,26 @@ export function buildBookMarkdown(opts: BookSourceOptions): string {
     }
 
     parts.push(`${readSuttaBody(meta.slug)}\n`);
+  }
+
+  if (opts.sampleSuttas) {
+    parts.push(`# Keep Reading {.unnumbered}\n`);
+    // Back-cover pitch (book/back-cover.html), adapted for the end of a sample.
+    // No store or format mentions: retailers reject samples that point readers
+    // to other stores.
+    parts.push(
+      `This sample ends here — with the first of six teachings.\n\nThe full book is what the Buddha actually taught, before the schools, the systems, and the centuries of commentary: the first three talks he gave, the instructions on loving-kindness, the foundations of mindfulness, and his answer to the question of how to decide what to believe.\n\nSix teachings, rendered in plain modern English — not a scholarly translation, but a plain reading, translated back toward the spoken word for a first-time reader without sacrificing the substance.\n`
+    );
+    parts.push(
+      SUTTAS_IN_ORDER.map(
+        (meta, i) =>
+          `${i + 1}. **${meta.title}**${i < opts.sampleSuttas! ? " *(in this sample)*" : ""} — *${meta.teaser}*`
+      ).join("\n") + "\n"
+    );
+    parts.push(
+      `Read them slowly. Read them more than once. The work from here is yours.\n\nThe complete text, released into the public domain under CC0, is at **[plaindharma.com](${SITE_URL})**.\n`
+    );
+    return parts.join("\n");
   }
 
   parts.push(`# Closing {.unnumbered}\n`);

@@ -67,7 +67,7 @@ Non-published artifacts (print, KDP, storyboard) remain in `dist/` for proofing 
 | `scripts/templates/back-cover.tex` | Parameterized back cover source (Garamond Libre, brand palette, gold stitched stripe on spine). Tokens: `__FONTSIZE__`, `__PAPER_W__`, `__PAPER_H__`, `__STRIPE_W__`, `__STITCH_X__`, `__SUTTA_ENTRIES__` (injected list of numbered titles + teasers). Two runs per target for TikZ current-page node. |
 | `scripts/templates/pdf-back-cover.tex` | Appends back cover to screen PDF via `\AtEndDocument` — xelatex only. |
 | `scripts/build-pdf.ts` | Build screen PDF (6×9" + 0.125" bleed, xelatex, cream background) from book markdown; append back cover as final page; publish as final step. |
-| `scripts/build-ebook.ts` | Build EPUB from MDX sources via pandoc; append back cover image as full-width final page; publish as final step. |
+| `scripts/build-ebook.ts` | Build EPUB from MDX sources via pandoc; append back cover image as full-width final page; publish as final step. `--sample` builds `dist/ebook/plain-dharma-sample.epub` instead (About + Preface + first sutta + a back-cover-style "Keep Reading" page, via `sampleSuttas` in `book-source.ts`); the sample is a retailer upload only and is **not** published to `/downloads`. |
 | `scripts/build-audiobook.ts` | Stitch per-sutta MP3 manifests into single M4B with chapter markers; publish as final step. |
 | `scripts/build-print-pdf.ts` | Build two print variants (color on white, B&W on cream) at 5.25×8.25 (5×8 trim + 0.125" bleed). Each appends its print-trim back cover as final page. Non-published. |
 | `scripts/build-kdp.ts` | Build KDP paperback packages: cover-free interiors (bw/color at 6×9 + 0.125" bleed) and computed wraparound covers. Spine width = page count × paper caliper (color: white 0.002252in, B&W: cream 0.0025in per page). Always full-color covers. |
@@ -177,6 +177,7 @@ These are cached independently in `dist/{format}/images/`, so regenerating one d
 | `node --import tsx scripts/cutout-book.ts` | `public/downloads/plain-dharma-book-photo.png` (transparent cutout) | `/downloads/plain-dharma-book-photo.png` |
 | `pnpm build-pdf` | `dist/pdf/plain-dharma.pdf` (40 pages, 6×9 + bleed, back cover final page) | `/downloads/plain-dharma.pdf` |
 | `pnpm build-ebook` | `dist/ebook/plain-dharma.epub` (back cover final page) | `/downloads/plain-dharma.epub` |
+| `pnpm build-ebook --sample` | `dist/ebook/plain-dharma-sample.epub` (retailer sample) | — (not published) |
 | `pnpm build-audiobook` | `dist/audiobook/plain-dharma.m4b` (with chapter markers) | `/downloads/plain-dharma.m4b` |
 | `pnpm build-print-pdf` | `dist/print/{color,bw}/plain-dharma-print-{color,bw}.pdf` (5.25×8.25 + bleed, back cover final page) | — |
 | `pnpm build-kdp` | `dist/kdp/plain-dharma-kdp-interior-{bw,color}.pdf`, `plain-dharma-kdp-cover-{bw,color}.pdf` (cover-free interiors + computed wraparound covers) | — |

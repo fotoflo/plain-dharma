@@ -15,6 +15,8 @@
  * scripts/render-covers.ts.
  *
  * Run: pnpm build-ebook
+ *      pnpm build-ebook --sample   → dist/ebook/plain-dharma-sample.epub
+ *        (preface + first sutta, for the Apple Books sample slot; not published)
  */
 
 import { execFileSync } from "node:child_process";
@@ -57,6 +59,9 @@ const BACK_COVER_PATH = join(OUT_DIR, "back-cover.jpg");
 const ILLUSTRATION_TARGET_WIDTH = 800;
 const ILLUSTRATION_JPEG_QUALITY = 85;
 const ILLUSTRATION_BG = "#F5EFE0"; // cream — matches site --color-cream
+
+const SAMPLE = process.argv.includes("--sample");
+const SAMPLE_SUTTAS = 1;
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -179,11 +184,14 @@ function ensureOutDir(): void {
 }
 
 function runPandoc(): void {
-  const bookMd = join(OUT_DIR, "book.md");
+  const bookMd = join(OUT_DIR, SAMPLE ? "book-sample.md" : "book.md");
   const metadataYaml = join(OUT_DIR, "metadata.yaml");
   const cssPath = join(OUT_DIR, "ebook.css");
   const coverJpg = join(OUT_DIR, "cover.jpg");
-  const outEpub = join(OUT_DIR, "plain-dharma.epub");
+  const outEpub = join(
+    OUT_DIR,
+    SAMPLE ? "plain-dharma-sample.epub" : "plain-dharma.epub"
+  );
 
   const args = [
     // Disable implicit_figures so `![alt](src)` renders a plain <img alt="…">
@@ -213,6 +221,8 @@ function runPandoc(): void {
   console.log(`\n[build-ebook] wrote ${outEpub}`);
 
   // Publishing is tied to generation — push the just-built EPUB to the site.
+  // The sample is a retailer upload only; the site already has the full book.
+  if (SAMPLE) return;
   publishToDownloads(outEpub, "plain-dharma.epub");
 }
 
@@ -221,13 +231,13 @@ function main(): void {
   ensureOutDir();
 
   const qrPath = generateQrCode(SITE_URL, join(IMAGES_DIR, "qr.png"));
-  const md = appendBackCover(
-    buildBookMarkdown({
-      getIllustrationPath: prepareIllustration,
-      qrCodePath: qrPath,
-    })
-  );
-  writeFileSync(join(OUT_DIR, "book.md"), md);
+  const book = buildBookMarkdown({
+    getIllustrationPath: prepareIllustration,
+    qrCodePath: qrPath,
+    sampleSuttas: SAMPLE ? SAMPLE_SUTTAS : undefined,
+  });
+  const md = SAMPLE ? book : appendBackCover(book);
+  writeFileSync(join(OUT_DIR, SAMPLE ? "book-sample.md" : "book.md"), md);
   writeFileSync(join(OUT_DIR, "metadata.yaml"), buildMetadataYaml());
   writeFileSync(join(OUT_DIR, "ebook.css"), EBOOK_CSS);
 

@@ -191,7 +191,12 @@ function buildInterior(
     "-V", "geometry:paperheight=8.25in",
     "-V", "geometry:inner=0.875in",
     "-V", "geometry:outer=0.625in",
-    "-V", "geometry:top=0.75in",
+    // The running head must clear KDP's safe zone too: head box top =
+    // top − headsep(8pt) − headheight(14pt) ≈ 0.54in from the PDF edge,
+    // i.e. ≥0.375in inside the trim after the 0.125in bleed.
+    "-V", "geometry:top=0.85in",
+    "-V", "geometry:headsep=8pt",
+    "-V", "geometry:headheight=14pt",
     // Bottom margin + footskip keep the page number clear of KDP's 0.25in
     // safe zone. With 0.125in bleed, the footer baseline lands at
     // bottom − footskip = 0.5in from the PDF edge = 0.375in from the trim —

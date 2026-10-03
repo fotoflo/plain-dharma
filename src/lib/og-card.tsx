@@ -86,8 +86,10 @@ export async function publicImageDataUrl(publicPath: string): Promise<string> {
 type OgCardOpts = {
   eyebrow: string;                 // top-left label (uppercase)
   title: string;                   // huge headline; \n forces a line break
+  titleSize?: number;              // override the length-based headline size
   tagline?: string;                // optional second-tier line below title (italic)
   illustrationDataUrl: string;     // required art column on the right
+  artShape?: "square" | "cover";   // "cover" = a 2:3 book cover with a shadow
   cjk?: boolean;                   // load the Noto Serif SC fallback for Chinese text
 };
 
@@ -101,7 +103,8 @@ export async function renderOgCard(opts: OgCardOpts) {
   // Size each text zone to its content so long Pali names / titles / subtitles
   // don't wrap into each other or push the footer off the 630px canvas.
   const titleLen = opts.title.replace(/\n/g, " ").length;
-  const titleSize = titleLen <= 24 ? 92 : titleLen <= 32 ? 74 : 62;
+  const titleSize =
+    opts.titleSize ?? (titleLen <= 24 ? 92 : titleLen <= 32 ? 74 : 62);
   const eyebrowSize = opts.eyebrow.length > 17 ? 28 : 38;
   const taglineLen = opts.tagline?.length ?? 0;
   const taglineSize = taglineLen > 70 ? 32 : taglineLen > 50 ? 37 : 42;
@@ -218,14 +221,30 @@ export async function renderOgCard(opts: OgCardOpts) {
             padding: "60px 60px 60px 0",
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={opts.illustrationDataUrl}
-            alt=""
-            width={410}
-            height={410}
-            style={{ width: 410, height: 410, objectFit: "contain" }}
-          />
+          {opts.artShape === "cover" ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={opts.illustrationDataUrl}
+              alt=""
+              width={320}
+              height={480}
+              style={{
+                width: 320,
+                height: 480,
+                borderRadius: 4,
+                boxShadow: "0 18px 40px rgba(31,24,18,0.32)",
+              }}
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={opts.illustrationDataUrl}
+              alt=""
+              width={410}
+              height={410}
+              style={{ width: 410, height: 410, objectFit: "contain" }}
+            />
+          )}
         </div>
       </div>
     ),

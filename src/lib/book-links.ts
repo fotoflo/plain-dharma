@@ -11,12 +11,12 @@ const AMAZON_TAG = "plaindharma-20";
 
 /**
  * Untagged canonical product URLs — used in structured data, where an
- * affiliate parameter doesn't belong. The paperback's ISBN-10 (1891328387,
- * ISBN-13 978-1-891328-38-1) doubles as its ASIN; the Kindle edition is
- * ASIN B0H4W4TVGM (from the paperback listing's format swatch).
+ * affiliate parameter doesn't belong. The paperback's ISBN-10 (1891328395,
+ * ISBN-13 978-1-891328-39-8, the replacement edition; …-38-1 is retired)
+ * doubles as its ASIN; the Kindle edition is ASIN B0H4W4TVGM (from the paperback listing's format swatch).
  */
 export const BOOK_LINKS_CANONICAL = {
-  amazonPaperback: "https://www.amazon.com/dp/1891328387",
+  amazonPaperback: "https://www.amazon.com/dp/1891328395",
   amazonKindle: "https://www.amazon.com/dp/B0H4W4TVGM",
 } as const;
 
@@ -35,4 +35,4 @@ export const SPOTIFY_SHOW_URL =
   "https://open.spotify.com/show/79f7UOjKYgn2nCKJuIblQo?utm_source=plaindharma&utm_medium=website&utm_campaign=home-book";
 
 /** ISBN-13 of the paperback, for structured data. */
-export const PAPERBACK_ISBN = "9781891328381";
+export const PAPERBACK_ISBN = "9781891328398";

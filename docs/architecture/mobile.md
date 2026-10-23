@@ -27,6 +27,15 @@ plain-dharma/
   `apps/mobile` doesn't affect the web build, but root-level `pnpm lint`/`tsc`
   now also traverse `apps/mobile` (scope/ignore as needed), and Vercel installs
   the whole workspace (heavier install).
+- **A hoisted tree means shared version pins.** Because every workspace package
+  installs into one `node_modules`, bumping `react`, `typescript` or
+  `@types/react` at the root also moves what `apps/mobile` resolves. Root pins
+  React 19.2.4 / TS `^5`; `apps/mobile` pins React 19.2.3 / TS `~6.0.3` for Expo
+  SDK 56 + RN 0.85. Next.js's React peer range is only `^19.0.0`, so a Next
+  upgrade never *requires* a React bump — and bumping root React just to satisfy
+  a new Next release would drag the mobile app off Expo's tested version. Drive
+  React/TS bumps from the Expo side (`expo install --fix`), not from the web
+  side.
 
 ## `packages/content` — shared source of truth
 

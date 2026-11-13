@@ -27,6 +27,15 @@ export const BOOK_LINKS = {
 } as const;
 
 /**
+ * The audiobook on Audible (ASIN B0HRLCRKY8), as the ACX "bounty" referral
+ * link: ACX pays the rights holder when a listener's first Audible purchase
+ * comes through it. This is ACX's programme, not Amazon Associates, so it
+ * carries its own `source_code` instead of the Associates tag. Used on /buy.
+ */
+export const AUDIBLE_BOUNTY_URL =
+  "https://www.audible.com/pd/B0HRLCRKY8/?source_code=AUDFPWS0223189MWT-BK-ACX0-532945&ref=acx_bty_BK_ACX0_532945_rh_us";
+
+/**
  * The audiobook as a Spotify show. Visible links carry our own UTM tags;
  * Spotify's share-sheet params (`si=`, `utm_source=sfa`, …) are dropped so the
  * link doesn't carry a personal share id and attributes traffic to this site.

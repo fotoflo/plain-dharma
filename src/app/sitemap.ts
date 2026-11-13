@@ -30,6 +30,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/author`,   lastModified: now, changeFrequency: "yearly",  priority: 0.5 },
     { url: `${SITE_URL}/glossary`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/download`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    // EN-only short link for emails and print: the Amazon editions.
+    { url: `${SITE_URL}/buy`,      lastModified: now, changeFrequency: "yearly",  priority: 0.6 },
     { url: `${SITE_URL}/remix`,    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/print`,    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/contribute`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },

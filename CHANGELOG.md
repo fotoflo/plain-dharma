@@ -13,3 +13,7 @@ Weft writes this file as cards ship; a version bump moves Unreleased under the n
 ### Changed
 
 - **💬 /buy now sells the book.** A new headline, a reader's quote, the six teachings listed with a line each, three reasons to pick it up, and the buy buttons repeated at the end. A link goes to the reviews on Amazon; the review ask and the "every format is free" line sit at the bottom. `src/views/BuyView.tsx`
+
+### Fixed
+
+- **Kalama Sutra narration no longer switches voices mid-track.** The "Opening" of How to Decide What to Believe drifted into a different-sounding voice for about 20 seconds (the Buddha's reply). That section is re-voiced on the site (both speeds), in the M4B audiobook, the audio zip and the doubt Short. Every other English track checked clean. `public/audio/en/how-to-decide/manifest.json`, `scripts/master-english-audio.ts`.

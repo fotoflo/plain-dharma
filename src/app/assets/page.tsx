@@ -22,6 +22,55 @@ import {
 import { ZipDownload, type ZipFile } from "@/components/ZipDownload";
 import { Wash } from "@/components/Wash";
 import { ogBase, altLanguages } from "@/lib/og-meta";
+import { TESTIMONIALS } from "@/content/testimonials";
+import { JsonLd } from "@/components/JsonLd";
+import { graph } from "@/lib/structured-data";
+import { SITE_URL } from "@/lib/og-meta";
+import SHORTS_DATA from "@/content/shorts.json";
+
+/** A vertical quote Short: narration with the words lighting up, then one back card. */
+type Short = {
+  id: string;
+  title: string;
+  quote: string;
+  /** Everything the narrator says: the video's transcript. */
+  transcript: string;
+  /** YYYY-MM-DD it was rendered. */
+  date: string;
+  sutta: SuttaSlug;
+  seconds: number;
+  back: "reader" | "qr";
+  reader?: string;
+};
+const SHORTS = SHORTS_DATA as Short[];
+const shortPath = (id: string, ext: "mp4" | "jpg") => `downloads/shorts/${id}.${ext}`;
+
+/**
+ * VideoObject markup per published Short, with its transcript, so search and
+ * AI answers can read what each video says and which teaching it's from.
+ */
+function shortsJsonLd() {
+  return graph(
+    SHORTS.filter((v) => hasAsset(shortPath(v.id, "mp4"))).map((v) => {
+      const sutta = getMeta("en", v.sutta);
+      return {
+        "@type": "VideoObject",
+        "@id": `${SITE_URL}/assets#short-${v.id}`,
+        name: v.title || `${v.quote} (${sutta.title})`,
+        description: `From ${sutta.title} (${sutta.pali_name}), read aloud from Plain Dharma: ${v.transcript}`,
+        transcript: v.transcript,
+        thumbnailUrl: assetUrl(shortPath(v.id, "jpg")),
+        contentUrl: assetUrl(shortPath(v.id, "mp4")),
+        uploadDate: v.date,
+        duration: `PT${Math.round(v.seconds)}S`,
+        inLanguage: "en",
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        about: { "@type": "CreativeWork", name: sutta.title, url: `${SITE_URL}/${v.sutta}` },
+        license: "https://creativecommons.org/publicdomain/zero/1.0/",
+      };
+    })
+  );
+}
 
 const TITLE = "Assets";
 const DESCRIPTION =
@@ -321,6 +370,7 @@ export default function AssetsPage() {
   return (
     <div className="relative mx-auto w-full max-w-4xl overflow-hidden px-6 py-16 sm:py-20">
       <Wash size="md" position="top-right" intensity={0.09} />
+      {SHORTS.length > 0 && <JsonLd data={shortsJsonLd()} />}
 
       <header className="mb-12">
         <p className="font-sans text-xs uppercase tracking-[0.2em] text-link">
@@ -331,7 +381,7 @@ export default function AssetsPage() {
         </h1>
         <p className="mt-6 max-w-2xl font-serif text-lg leading-relaxed text-ink/80">
           {liveTracks} narration tracks across two languages, the book in every
-          format, the source art — and {archive.files} files of earlier takes
+          format, the source art, the Shorts — and {archive.files} files of earlier takes
           that were replaced along the way. Everything is{" "}
           <a
             href="https://creativecommons.org/publicdomain/zero/1.0/"
@@ -401,6 +451,80 @@ export default function AssetsPage() {
               </>
             )}
           </p>
+        </Accordion>
+
+        {/* SHORTS — vertical quote videos for YouTube Shorts, Reels and TikTok */}
+        {SHORTS.some((v) => hasAsset(shortPath(v.id, "mp4"))) && (
+          <Accordion
+            title="Shorts"
+            meta={`${SHORTS.length} vertical videos · 1080×1920`}
+            download={zipFor(
+              [
+                ...SHORTS.map((v) => shortPath(v.id, "mp4")),
+                ...listAssets("downloads/shorts/cards/"),
+              ].filter((p) => hasAsset(p)),
+              "plain-dharma-shorts.zip"
+            )}
+          >
+            <p className="mb-5 max-w-2xl font-serif text-base leading-relaxed text-ink/75">
+              A line from the book, narrated, with each word lighting up as
+              it&rsquo;s spoken. Each ends on one card: a reader&rsquo;s quote
+              or the QR code to the book.
+            </p>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {SHORTS.filter((v) => hasAsset(shortPath(v.id, "mp4"))).map((v) => (
+                <ShortTile key={v.id} short={v} />
+              ))}
+            </div>
+          </Accordion>
+        )}
+
+        {/* TESTIMONIALS — what readers said, and the Shorts card made from each */}
+        <Accordion
+          title="Testimonials"
+          meta={`${TESTIMONIALS.length} readers · quoted with permission`}
+        >
+          <div className="space-y-6">
+            {TESTIMONIALS.map((t) => (
+              <figure
+                key={t.id}
+                className="flex flex-col gap-4 sm:flex-row sm:items-start"
+              >
+                <div className="flex-1">
+                  <blockquote className="border-l-2 border-accent/50 pl-4 font-serif text-lg italic leading-relaxed text-ink/85">
+                    &ldquo;{t.quote}&rdquo;
+                  </blockquote>
+                  <figcaption className="mt-2 pl-4 font-sans text-xs text-ink/60">
+                    {t.name},{" "}
+                    {t.href ? (
+                      <a href={t.href} target="_blank" rel="noopener" className="text-link hover:text-accent">
+                        {t.role}
+                      </a>
+                    ) : (
+                      t.role
+                    )}
+                    <span className="block text-ink/40">{t.source}</span>
+                  </figcaption>
+                </div>
+                {hasAsset(t.card) && (
+                  <a href={assetDownloadUrl(t.card)} download className="block w-32 shrink-0 no-underline">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={assetUrl(t.card)}
+                      alt={`Shorts card with ${t.name}'s quote`}
+                      width={1080}
+                      height={1920}
+                      loading="lazy"
+                      className="aspect-[9/16] w-full rounded border border-divider/70 object-cover"
+                    />
+                    <span className="mt-1 block font-sans text-[0.68rem] uppercase tracking-[0.1em] text-ink/50">
+                      Card · {fmtSize(t.card)}
+                    </span>
+                  </a>
+                )}
+              </figure>
+            ))}
+          </div>
         </Accordion>
 
         {/* ONE ACCORDION PER BOOK */}
@@ -636,6 +760,40 @@ function Accordion({
  * specific background, so the dark variant previews on a dark plate — on paper
  * it would read as a smear.
  */
+function ShortTile({ short: v }: { short: Short }) {
+  const mp4 = shortPath(v.id, "mp4");
+  const jpg = shortPath(v.id, "jpg");
+  const reader = TESTIMONIALS.find((t) => t.id === v.reader);
+  return (
+    <div className="overflow-hidden rounded-lg border border-divider/70">
+      <video
+        src={assetUrl(mp4)}
+        poster={hasAsset(jpg) ? assetUrl(jpg) : undefined}
+        controls
+        playsInline
+        preload="none"
+        className="aspect-[9/16] w-full bg-paper object-cover"
+      />
+      <div className="space-y-1 px-3 py-2">
+        <p className="font-serif text-sm leading-snug text-ink">
+          {v.title || v.quote}
+        </p>
+        <p className="font-sans text-[0.68rem] text-ink/50">
+          {getMeta("en", v.sutta).title} · {Math.round(v.seconds)}s ·{" "}
+          {v.back === "reader" ? `ends on ${reader?.name ?? "a reader"}` : "ends on QR"}
+        </p>
+        <a
+          href={assetDownloadUrl(mp4)}
+          download
+          className="font-sans text-xs text-link hover:text-accent"
+        >
+          Download MP4 ({fmtSize(mp4)})
+        </a>
+      </div>
+    </div>
+  );
+}
+
 function IllustrationTile({
   path,
   alt,

@@ -22,6 +22,9 @@
  *
  * Run (after `pnpm build-remix-assets` so the zips exist):
  *   pnpm upload-assets
+ *
+ * Upload just one folder (the rest of the bucket and map are left as they are):
+ *   pnpm upload-assets --only downloads/shorts/
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -81,6 +84,8 @@ function contentType(path: string): string {
       return "audio/mp4";
     case ".zip":
       return "application/zip";
+    case ".mp4":
+      return "video/mp4";
     case ".mdx":
     case ".md":
       return "text/markdown; charset=utf-8";
@@ -171,7 +176,14 @@ async function ensureBucket(): Promise<void> {
 async function main(): Promise<void> {
   await ensureBucket();
 
-  const files = collect();
+  // --only <prefix>: upload just the files under one bucket path, so publishing a
+  // new folder (say downloads/shorts/) doesn't re-push every local file, some of
+  // which may be older than what's already in the bucket.
+  const onlyAt = process.argv.indexOf("--only");
+  const only = onlyAt > -1 ? process.argv[onlyAt + 1] : undefined;
+  const files = collect().filter(
+    (f) => !only || relative(PUBLIC_DIR, f).split(/[\\/]/).join("/").startsWith(only)
+  );
   if (files.length === 0) {
     console.error("No assets found under public/ — nothing to upload.");
     process.exit(1);

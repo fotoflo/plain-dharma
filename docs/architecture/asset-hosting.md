@@ -20,6 +20,7 @@ The split is **metadata in git, binaries on the CDN**:
 | per-sutta `manifest.json` (the web build reads it via `fs`) | `audio/**/*.mp3` (slow + `fast/`) |
 | `packages/content/asset-version.json` (hashes + sizes, including `-dark.png` variants) | `illustrations/<slug>.png` + `-dark.png` variants + `originals.zip` |
 | the MDX source under `packages/content/` | `downloads/*` (m4b, pdf, epub, covers, zips, `text/`) |
+| `src/content/shorts.json` (the Shorts list + transcripts), `src/content/testimonials.ts` | `downloads/shorts/<id>.mp4` + `<id>.jpg` poster, `downloads/shorts/cards/*.png` (back cards) |
 
 ## Where things are
 
@@ -28,6 +29,10 @@ The split is **metadata in git, binaries on the CDN**:
   `https://ffoiltrarbdbibmymlqm.supabase.co/storage/v1/object/public/assets`
 - **Bucket layout mirrors the old `/public` paths 1:1:** `audio/<locale>/<slug>/<file>.mp3`,
   `illustrations/<slug>.png` + `<slug>-dark.png` (dark-mode variant), `downloads/<file>`.
+- **Shorts:** rendered in `~/.weft/show/quote-shorts` (`publish.js` copies them into
+  `public/downloads/shorts/` and writes `src/content/shorts.json`), then
+  `pnpm upload-assets --only downloads/shorts/` publishes just that folder. `/assets` lists them
+  with VideoObject JSON-LD (transcript included) and the reader testimonials.
 - **Two prefixes don't mirror `public/`** because their sources live outside it:
   `audio-masters/` (raw un-stretched ElevenLabs output — `backup-audio-masters.ts`)
   and `archive/` (superseded takes, pacing experiments, older book builds —

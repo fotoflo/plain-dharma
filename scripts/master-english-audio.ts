@@ -28,7 +28,9 @@
  * Back up first — this overwrites the live files:
  *   pnpm archive-audio-takes
  *
- * Run: pnpm master-english-audio [slug ...] [--dry-run]
+ * Run: pnpm master-english-audio [slug ...] [--dry-run] [--section=<file>]
+ *      --section=01-opening.mp3 masters just that file from its raw master (a
+ *      fresh re-voice, where the 1.2× check can't apply) and leaves the rest.
  *      (no slugs → every unit, including front matter/closing/colophon)
  */
 
@@ -63,6 +65,7 @@ const STRETCH_MIN = 1.18;
 const STRETCH_MAX = 1.22;
 
 const args = process.argv.slice(2);
+const SECTION = args.find((a) => a.startsWith("--section="))?.split("=")[1];
 const DRY_RUN = args.includes("--dry-run");
 const only = args.filter((a) => !a.startsWith("--"));
 const UNITS =
@@ -137,11 +140,14 @@ function main(): void {
       const live = join(dir, fileName);
       const fast = join(dir, "fast", fileName);
       const master = join(dir, "candidates", `orig-${fileName}`);
+      if (SECTION && fileName !== SECTION) continue;
       if (!existsSync(live)) throw new Error(`Missing live audio: ${live}`);
+      if (SECTION && !existsSync(master)) throw new Error(`--section needs its raw master: ${master}`);
 
       // Is the master the thing this live cut was actually made from?
+      // (--section: a fresh re-voice, so the master is the source by definition.)
       let useMaster = existsSync(master);
-      if (useMaster) {
+      if (useMaster && !SECTION) {
         const ratio = duration(live) / duration(master);
         if (ratio < STRETCH_MIN || ratio > STRETCH_MAX) {
           useMaster = false;
@@ -150,7 +156,7 @@ function main(): void {
               `mastered the existing file in place instead`
           );
         }
-      } else {
+      } else if (!useMaster) {
         warnings.push(`${unit}/${fileName}: no master on disk — mastered the existing file`);
       }
 

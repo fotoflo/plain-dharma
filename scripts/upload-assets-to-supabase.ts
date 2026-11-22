@@ -25,6 +25,7 @@
  *
  * Upload just one folder (the rest of the bucket and map are left as they are):
  *   pnpm upload-assets --only downloads/shorts/
+ *   pnpm upload-assets --only audio/en/how-to-decide/,downloads/plain-dharma.m4b   (comma-separated)
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -176,13 +177,13 @@ async function ensureBucket(): Promise<void> {
 async function main(): Promise<void> {
   await ensureBucket();
 
-  // --only <prefix>: upload just the files under one bucket path, so publishing a
+  // --only <prefix>[,<prefix>…]: upload just the files under those bucket paths, so publishing a
   // new folder (say downloads/shorts/) doesn't re-push every local file, some of
   // which may be older than what's already in the bucket.
   const onlyAt = process.argv.indexOf("--only");
-  const only = onlyAt > -1 ? process.argv[onlyAt + 1] : undefined;
+  const only = onlyAt > -1 ? process.argv[onlyAt + 1].split(",").filter(Boolean) : undefined;
   const files = collect().filter(
-    (f) => !only || relative(PUBLIC_DIR, f).split(/[\\/]/).join("/").startsWith(only)
+    (f) => !only || only.some((p) => relative(PUBLIC_DIR, f).split(/[\\/]/).join("/").startsWith(p))
   );
   if (files.length === 0) {
     console.error("No assets found under public/ — nothing to upload.");

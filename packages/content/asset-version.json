@@ -1070,8 +1070,8 @@
     "bytes": 85072
   },
   "audio/en/how-to-decide/01-opening.mp3": {
-    "v": "e4bd9548",
-    "bytes": 603551
+    "v": "e72eeb76",
+    "bytes": 590385
   },
   "audio/en/how-to-decide/02-dont-just-take-anyones-word-for-it.mp3": {
     "v": "caa84a32",
@@ -1098,8 +1098,8 @@
     "bytes": 76713
   },
   "audio/en/how-to-decide/fast/01-opening.mp3": {
-    "v": "e829ed5c",
-    "bytes": 543782
+    "v": "bac379ed",
+    "bytes": 531871
   },
   "audio/en/how-to-decide/fast/02-dont-just-take-anyones-word-for-it.mp3": {
     "v": "0bb7a493",
@@ -1122,7 +1122,7 @@
     "bytes": 75877
   },
   "audio/en/how-to-decide/manifest.json": {
-    "v": "6ed6b2ce",
+    "v": "4556306c",
     "bytes": 1509
   },
   "audio/en/loving-kindness/00-title.mp3": {
@@ -1468,8 +1468,8 @@
     "bytes": 6148
   },
   "downloads/plain-dharma-audio-en.zip": {
-    "v": "8b3fc75d",
-    "bytes": 22016069
+    "v": "b0852a36",
+    "bytes": 22002737
   },
   "downloads/plain-dharma-audio-zh.zip": {
     "v": "42096c83",
@@ -1540,7 +1540,7 @@
     "bytes": 1705425
   },
   "downloads/plain-dharma-text.zip": {
-    "v": "cdf702b4",
+    "v": "f59c1ed2",
     "bytes": 25673
   },
   "downloads/plain-dharma.epub": {
@@ -1548,8 +1548,8 @@
     "bytes": 907534
   },
   "downloads/plain-dharma.m4b": {
-    "v": "e8ff4800",
-    "bytes": 25309886
+    "v": "4bee4676",
+    "bytes": 25298258
   },
   "downloads/plain-dharma.pdf": {
     "v": "9ee38ca5",
@@ -1596,8 +1596,8 @@
     "bytes": 36428
   },
   "downloads/shorts/doubt.mp4": {
-    "v": "02021cc5",
-    "bytes": 5142545
+    "v": "2daa2ff4",
+    "bytes": 5138007
   },
   "downloads/shorts/either-way.jpg": {
     "v": "08674132",

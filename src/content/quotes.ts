@@ -54,10 +54,10 @@ export const QUOTES: Quote[] = [
     short: "body",
   },
   {
-    id: "the-same-test",
-    topics: ["self"],
+    id: "if-the-body-were-you",
+    topics: ["self", "the body"],
     sutta: "not-self",
-    text: "If it were truly you, it would do what you say and never cause you grief. But none of them do.",
+    text: "If the body really were you — your self, the thing you actually are — then it would never let you down, and you'd be able to tell it: ‘Be like this, don't be like that,’ and it would obey. But you can't.",
     short: "body",
   },
 

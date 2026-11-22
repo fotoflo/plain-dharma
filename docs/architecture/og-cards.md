@@ -139,3 +139,18 @@ return renderOgCard({
 
 The dynamic route produces cards at `/[slug]/opengraph-image/card` (and the
 `/zh/...` mirror) that social scrapers fetch when users share the page URL.
+
+## Quote cards (/quotes)
+
+`src/lib/quote-card.tsx` renders one pull quote (from `src/content/quotes.ts`) in the same palette and Garamond, in two shapes:
+
+| Route | Size | Use |
+|---|---|---|
+| `/quotes/[id]/buddha-quote.png` (route handler, force-static) | 1080×1080 | The graphic to post in groups, Instagram, Threads; "Download image" on the site |
+| `/quotes/[id]/opengraph-image` | 1200×630 | Link preview of `/quotes/[id]`, so a shared link shows the quote |
+| `/quotes/[id]/buddha-quote-photo.png` | 1080×1080 | The **photo** variant (A/B partner): one of Alex's Buddha photos full-bleed, darkened to the bottom, quote in cream. `renderQuotePhotoCard` |
+| `/quotes/opengraph-image` | 1200×630 | Preview of the index (the "you-looked" quote) |
+
+The photo variant exists because nearly every Google Images result for "buddha quotes" shows a Buddha figure, while the illustration set deliberately has none (see `scripts/generate-illustrations.ts`). The posting skill alternates the two and the weekly report compares them. Photos: `QUOTE_PHOTOS` in `quote-card.tsx`, 1080² crops in the bucket at `downloads/quote-photos/` (`pnpm upload-assets --only downloads/quote-photos/`); a quote can pin one with `photo`. Every image carries ImageObject licence markup (CC0, `acquireLicensePage`) for Google Images' "Licensable" badge, and both are in the sitemap.
+
+Every quote is checked word for word against the English MDX by `pnpm check-quotes` (`scripts/check-quotes.ts`). Straight apostrophes are curled on the card only (Garamond's `'` reads as a prime). Never rename a quote `id` once it has been shared: it's the URL.

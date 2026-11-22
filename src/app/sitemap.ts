@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SUTTAS } from "@/content";
 import { sourceSlugs } from "@plain-dharma/content/source";
 import { suttaMtime } from "@/lib/sutta-dates";
+import { QUOTES } from "@/content/quotes";
 
 const SITE_URL = "https://plaindharma.com";
 
@@ -34,6 +35,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/buy`,      lastModified: now, changeFrequency: "yearly",  priority: 0.6 },
     // Every asset, incl. the Shorts (VideoObject markup) and reader testimonials
     { url: `${SITE_URL}/assets`,   lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    // EN-only pull quotes, each with a share graphic (see quotePages below)
+    { url: `${SITE_URL}/quotes`,   lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/remix`,    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/print`,    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/contribute`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
@@ -73,5 +76,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...enSuttaPages, ...zhSuttaPages, ...sourcePages];
+  const quotePages: MetadataRoute.Sitemap = QUOTES.map((q) => ({
+    url: `${SITE_URL}/quotes/${q.id}`,
+    lastModified: suttaMtime(q.sutta, "en"),
+    changeFrequency: "yearly" as const,
+    priority: 0.5,
+    // Image sitemap entry, so the quote graphic is found by Google Images.
+    images: [
+      `${SITE_URL}/quotes/${q.id}/buddha-quote.png`,
+      `${SITE_URL}/quotes/${q.id}/buddha-quote-photo.png`,
+    ],
+  }));
+
+  return [...staticPages, ...enSuttaPages, ...zhSuttaPages, ...sourcePages, ...quotePages];
 }

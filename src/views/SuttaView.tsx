@@ -16,6 +16,7 @@ import { Wash } from "@/components/Wash";
 import { Drop } from "@/components/Drop";
 import { Preface } from "@/components/Preface";
 import { CanonicalLinks } from "@/components/CanonicalLinks";
+import { QUOTES } from "@/content/quotes";
 import { ReadingControls } from "@/components/ReadingControls";
 import { FloatingAudioPlayer } from "@/components/FloatingAudioPlayer";
 
@@ -80,6 +81,27 @@ export async function SuttaView({ locale, slug }: SuttaViewProps) {
         </div>
 
         <CanonicalLinks locale={locale} slug={slug} />
+
+        {/* EN-only: the quote pages and graphics are English. */}
+        {locale === "en" && QUOTES.some((q) => q.sutta === slug) && (
+          <section className="mt-12 border-t border-divider/80 pt-8">
+            <h2 className="font-sans text-xs uppercase tracking-[0.2em] text-link">
+              Quotes from this teaching
+            </h2>
+            <ul className="mt-4 space-y-2 font-serif text-base">
+              {QUOTES.filter((q) => q.sutta === slug).map((q) => (
+                <li key={q.id}>
+                  <Link href={`/quotes/${q.id}`}>“{q.text}”</Link>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 font-sans text-sm">
+              <Link href="/quotes" className="text-link hover:text-accent">
+                All Buddha quotes, with free images →
+              </Link>
+            </p>
+          </section>
+        )}
 
         {hasSourceView(locale, slug) && (
           <div className="mt-8 text-center">

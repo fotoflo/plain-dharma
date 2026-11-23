@@ -34,7 +34,8 @@ export function SourceDiff({
 
       <div className="divide-y divide-divider/60">
         {rows.map((row, i) => (
-          <div key={i} className={cols}>
+          // #p-N anchors let glossary term pages link to the passage a word appears in.
+          <div key={i} id={`p-${i + 1}`} className={`${cols} scroll-mt-24`}>
             {/* Pāli — original */}
             <div className="relative bg-ink/[0.03] px-5 py-5">
               <span className="absolute right-2.5 top-2.5 font-sans text-[0.65rem] tabular-nums text-ink/30">

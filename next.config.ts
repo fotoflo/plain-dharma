@@ -61,11 +61,20 @@ const nextConfig: NextConfig = {
   async redirects() {
     const CDN =
       "https://ffoiltrarbdbibmymlqm.supabase.co/storage/v1/object/public/assets";
-    return ["audio", "illustrations", "downloads"].map((dir) => ({
+    const assets = ["audio", "illustrations", "downloads"].map((dir) => ({
       source: `/${dir}/:path*`,
       destination: `${CDN}/${dir}/:path*`,
       permanent: true,
     }));
+    // EN-only pages have no /zh twin. The locale switcher used to link to
+    // /zh/<path> for them; Google crawled those 404s, so send them home.
+    const zhEnOnly = [
+      ...["download", "remix", "quotes", "buy", "author", "assets", "how-it-was-made"].map(
+        (p) => ({ source: `/zh/${p}/:rest*`, destination: `/${p}/:rest*`, permanent: true }),
+      ),
+      { source: "/zh/:slug/:sub(compare|source)", destination: "/:slug/:sub", permanent: true },
+    ];
+    return [...assets, ...zhEnOnly];
   },
 };
 

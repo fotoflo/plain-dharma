@@ -34,8 +34,10 @@ export async function generateMetadata({
   const { slug } = await params;
   if (!isSuttaSlug(slug) || !hasSourceView("en", slug)) return {};
   const { name, ref } = PALI_SOURCE[slug];
-  const title = `${name} — Pāli & Plain English`;
-  const description = `The ${name} (${ref}) in the original Pāli, laid out line by line beside a plain modern English retelling. Free, CC0.`;
+  // Searchers on these pages ask for a translation they can read online or
+  // keep ("… in plain english pdf", "… read online"); say both.
+  const title = `${name} (${ref}): Pāli with Plain English Translation`;
+  const description = `Read the ${name} online free: the original Pāli line by line beside a plain modern English translation. Download the PDF and audio too. Public domain.`;
   const url = `/${slug}/source`;
   return {
     title,

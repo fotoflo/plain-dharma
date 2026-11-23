@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE, type Locale } from "@/content";
+import { DEFAULT_LOCALE, SUTTAS, type Locale } from "@/content";
 
 /**
  * Build a locale-aware URL path. EN routes live at the root (no prefix);
@@ -52,5 +52,24 @@ export function switchLocalePath(
   targetLocale: Locale,
 ): string {
   const logical = stripLocalePrefix(pathname);
+  if (targetLocale !== DEFAULT_LOCALE && !hasZhTwin(logical)) {
+    return localizedHref(targetLocale, "");
+  }
   return localizedHref(targetLocale, logical);
+}
+
+/**
+ * The pages under src/app/zh/: a few static routes plus one page per sutta.
+ * Many EN pages have no ZH twin (/download, /quotes, /remix, /buy, /author,
+ * /<sutta>/source, /<sutta>/compare …). Without this check the switcher sent
+ * those to /zh/<same path>, which 404s, and Google crawled the 404s.
+ */
+const ZH_STATIC = new Set(["read", "about", "privacy", "print", "contribute", "glossary"]);
+
+function hasZhTwin(logicalPath: string): boolean {
+  const segs = logicalPath.split("/").filter(Boolean);
+  if (segs.length === 0) return true;
+  if (segs.length > 1) return false;
+  const [seg] = segs;
+  return ZH_STATIC.has(seg) || (SUTTAS as readonly string[]).includes(seg);
 }

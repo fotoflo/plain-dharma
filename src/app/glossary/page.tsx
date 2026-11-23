@@ -4,7 +4,7 @@ import { GlossaryView } from "@/views/GlossaryView";
 import { ogBase, altLanguages } from "@/lib/og-meta";
 
 const s = getStrings("en");
-const TITLE = s.nav.glossary;
+const TITLE = "Buddhist Glossary: Pali Terms in Plain English";
 const DESCRIPTION = s.glossary.metadataDescription;
 
 export const metadata: Metadata = {

@@ -220,3 +220,58 @@ export const GLOSSARY: Record<Locale, GlossaryEntry[]> = {
     },
   ],
 };
+
+/**
+ * URL slug for a glossary term: diacritics folded, a leading "The" dropped.
+ * "Anattā" → "anatta", "The Eightfold Path" → "eightfold-path",
+ * "Satipaṭṭhāna" → "satipatthana". Used by the web's /glossary/[term] pages.
+ */
+export function glossarySlug(term: string): string {
+  return term
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/^the\s+/i, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/**
+ * An EN entry by slug, with its index (the ZH list is kept parallel, so the
+ * same index gives the Chinese term).
+ */
+export function getGlossaryEntry(
+  slug: string,
+): { entry: GlossaryEntry; index: number } | undefined {
+  const index = GLOSSARY.en.findIndex((e) => glossarySlug(e.term) === slug);
+  return index === -1 ? undefined : { entry: GLOSSARY.en[index], index };
+}
+
+/**
+ * How to find each EN term in the six suttas, for the term pages' "Where it
+ * appears" list: `pali` are stems matched in the Pāli root text (diacritics
+ * folded, so "dukkh" finds dukkhaṁ, dukkhā …), `en` are the plain-English
+ * words our translation uses for it (we rarely keep the Pāli word), `topics`
+ * pick the pull quote (src/content/quotes.ts topics). Keyed by
+ * glossarySlug. Terms with neither (Mahāyāna, Theravāda) never come up in
+ * the texts.
+ */
+export const GLOSSARY_MATCH: Record<
+  string,
+  { pali?: string[]; en?: string[]; topics?: string[] }
+> = {
+  anatta: { pali: ["anatt"], en: ["not-self", "not self"], topics: ["self", "the body"] },
+  anicca: { pali: ["anicc"], en: ["impermanen", "changes"], topics: ["letting go"] },
+  bodhi: { pali: ["sambodh"], en: ["awaken"], topics: ["freedom"] },
+  dharma: { pali: ["dhamm"], en: ["teaching", "truth"], topics: ["truth"] },
+  dukkha: { pali: ["dukkh"], en: ["suffering"], topics: ["suffering"] },
+  "eightfold-path": { pali: ["atthangik"], en: ["eightfold"], topics: ["the middle way"] },
+  "five-aggregates": { pali: ["khandh"], en: ["aggregate"], topics: ["self", "the body"] },
+  "four-noble-truths": { pali: ["ariyasacc"], en: ["noble truth"], topics: ["suffering"] },
+  karma: { pali: ["kamm"], topics: ["living well"] },
+  metta: { pali: ["mett"], en: ["loving-kindness", "goodwill"], topics: ["loving-kindness"] },
+  nirvana: { pali: ["nibban", "nibbut"], topics: ["freedom", "letting go"] },
+  sangha: { pali: ["sangh"], topics: ["kindness"] },
+  satipatthana: { pali: ["satipatthan"], en: ["mindfulness"], topics: ["mindfulness", "meditation"] },
+  tathagata: { pali: ["tathagat"], topics: ["the middle way"] },
+};

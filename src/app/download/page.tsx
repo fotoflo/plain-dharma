@@ -8,9 +8,9 @@ import { BOOK_LINKS } from "@/lib/book-links";
 import { StoreBadges } from "@/components/StoreBadges";
 import { PRINTSHOP_EDITIONS } from "@/content/printshop";
 
-const TITLE = "Download";
+const TITLE = "Free Dharma Download: Buddha's Teachings PDF & Audiobook";
 const DESCRIPTION =
-  "PDF and audiobook downloads of all six teachings, free for anyone to keep, copy, and share — or get the paperback on Amazon. Pay what feels right.";
+  "Download the Buddha's six foundational teachings in plain English, free: PDF ebook and narrated audiobook, yours to keep, copy and share. Or get the paperback.";
 
 export const metadata: Metadata = {
   title: TITLE,

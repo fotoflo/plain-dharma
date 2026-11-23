@@ -3,6 +3,7 @@ import { SUTTAS } from "@/content";
 import { sourceSlugs } from "@plain-dharma/content/source";
 import { suttaMtime } from "@/lib/sutta-dates";
 import { QUOTES } from "@/content/quotes";
+import { GLOSSARY, glossarySlug } from "@plain-dharma/content/glossary";
 
 const SITE_URL = "https://plaindharma.com";
 
@@ -88,5 +89,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ],
   }));
 
-  return [...staticPages, ...enSuttaPages, ...zhSuttaPages, ...sourcePages, ...quotePages];
+  // One page per EN glossary term (/glossary/[term]).
+  const glossaryPages: MetadataRoute.Sitemap = GLOSSARY.en.map((e) => ({
+    url: `${SITE_URL}/glossary/${glossarySlug(e.term)}`,
+    lastModified: now,
+    changeFrequency: "yearly" as const,
+    priority: 0.5,
+  }));
+
+  return [
+    ...staticPages,
+    ...enSuttaPages,
+    ...zhSuttaPages,
+    ...sourcePages,
+    ...quotePages,
+    ...glossaryPages,
+  ];
 }

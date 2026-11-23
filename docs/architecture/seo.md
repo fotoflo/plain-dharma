@@ -187,3 +187,13 @@ Once the beta is ready to share, add `APP_LINKS.testflight` to the home page's *
 - **`SearchAction` on `WebSite`** — only meaningful with a real search endpoint; the site has none. Revisit if site-search ships.
 - **`AudioObject` on sutta pages** — the narrations could be marked up for audio-rich results, but the manifest/asset wiring is non-trivial; defer to a follow-up once core schema lands.
 - **`/translations` & `/print`** routes (reserved in `sitemap.md`) — add to sitemap + structured data when built.
+
+## 8. Search Console findings (Nov 2026) and what they changed
+
+From the 90-day Search Console report (21 clicks, 843 impressions, avg position 28):
+
+- **Language switcher.** `switchLocalePath` (`src/lib/locale-href.ts`) sends EN-only pages to `/zh` instead of a non-existent `/zh/<path>`; `next.config.ts` 308-redirects the `/zh/<en-only>` URLs Google already crawled (download, remix, quotes, buy, author, assets, how-it-was-made, and `/zh/<sutta>/compare|source`).
+- **Glossary term pages.** `/glossary/[term]` (EN only, one per entry in `GLOSSARY.en`, slug from `glossarySlug`) carries `DefinedTerm` + `BreadcrumbList` JSON-LD, the teaching's illustration, a matching quote card, and a "Where it appears" passage list built from the Pāli/English alignment via `GLOSSARY_MATCH` (`packages/content/glossary.ts`: Pāli stems, English names, quote topics). Source-page rows carry `#p-N` anchors for the links. Terms are in the sitemap.
+- **Search titles.** Sutta pages use a separate `SEO` map in `src/app/[slug]/page.tsx` (traditional names), so on-page titles in `SUTTA_DISPLAY` and the app are unchanged. `/source`, `/download` and `/glossary` metadata were rewritten to match real queries.
+- **Indexing notes.** `/zh/*` pages show "Discovered, not indexed" (young site, not a bug); `/compare` is intentionally `noindex`.
+

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Locale } from "@/content";
-import { GLOSSARY } from "@plain-dharma/content/glossary";
+import { GLOSSARY, glossarySlug } from "@plain-dharma/content/glossary";
 import { getStrings } from "@plain-dharma/content/strings";
 import { localizedHref } from "@/lib/locale-href";
 import { Wash } from "@/components/Wash";
@@ -29,10 +29,21 @@ export function GlossaryView({ locale }: { locale: Locale }) {
         {entries.map((entry) => (
           <div
             key={entry.term}
+            id={locale === "en" ? glossarySlug(entry.term) : undefined}
             className="grid grid-cols-1 gap-2 py-6 lg:grid-cols-[18rem_1fr] lg:gap-12"
           >
             <dt className="font-serif text-xl text-ink">
-              <span className="font-semibold">{entry.term}</span>
+              {/* EN terms each have their own page (/glossary/[term]); ZH stays one list. */}
+              {locale === "en" ? (
+                <Link
+                  href={`/glossary/${glossarySlug(entry.term)}`}
+                  className="font-semibold text-ink no-underline hover:text-accent hover:underline"
+                >
+                  {entry.term}
+                </Link>
+              ) : (
+                <span className="font-semibold">{entry.term}</span>
+              )}
               {entry.pali ? (
                 <span className="mt-1 block font-sans text-xs uppercase tracking-wider text-ink/65">
                   <em className="font-serif normal-case tracking-normal">
